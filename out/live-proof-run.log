@@ -1,0 +1,7 @@
+[live lane] M1 enrich: invoking OpenRouter (stealth/ox-alpha) at runtime for real generation -- use no flag / omit --live to replay cached outputs instead
+[live lane] M2 comms: invoking OpenRouter (stealth/ox-alpha) at runtime for real generation -- use no flag / omit --live to replay cached outputs instead
+stage      seconds  key output                                          pass/fail
+---------  -------  --------------------------------------------------  ---------
+M1 enrich  229.87   input_rows=150 fake_excluded=3 within_batch_dupe_p  PASS     
+M2 comms   129.93   AttributeError: 'NoneType' object has no attribute  FAIL     
+EXIT=1

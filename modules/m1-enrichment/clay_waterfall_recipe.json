@@ -1,0 +1,323 @@
+{
+  "_generated_note": "Hand-authored to match modules/m1-enrichment/clay_spec.md and enrich.py::FIELDS exactly. Field names in maps_to_field are copy-pasted from enrich.py's FIELDS list -- if enrich.py's FIELDS changes, re-check this file (same drift risk clay_spec.md's header calls out).",
+  "table_name": "post-event-m1-lead-enrichment",
+  "source": {
+    "type": "webhook",
+    "description": "Zoom Webinar Registrants report (or GoTo/ON24 equivalent), same columns as data/incoming/registrants.csv, posted one row per registrant by n8n after the webinar platform's post-event export webhook fires.",
+    "n8n_upstream_workflow": "orchestrator/n8n/cloud/master.json (node before 'Push to Clay Table')",
+    "webhook_url_placeholder": "https://api.clay.com/v3/sources/webhook/<CLAY_WEBHOOK_ID>",
+    "trigger": "manual CSV import today; production trigger is the webinar platform's post-event webhook per clay_spec.md 'Source' section"
+  },
+  "input_columns": [
+    {
+      "column": "First Name",
+      "type": "text",
+      "maps_to_field": "firstname"
+    },
+    {
+      "column": "Last Name",
+      "type": "text",
+      "maps_to_field": "lastname"
+    },
+    {
+      "column": "Email",
+      "type": "text",
+      "maps_to_field": "email"
+    },
+    {
+      "column": "Job Title",
+      "type": "text",
+      "maps_to_field": "jobtitle"
+    },
+    {
+      "column": "Company",
+      "type": "text",
+      "maps_to_field": "company"
+    },
+    {
+      "column": "Country/Region",
+      "type": "text",
+      "maps_to_field": "country"
+    },
+    {
+      "column": "Registration Time",
+      "type": "datetime",
+      "maps_to_field": "registration_time"
+    },
+    {
+      "column": "Attended",
+      "type": "text (Yes/No)",
+      "maps_to_field": "attendance_status"
+    },
+    {
+      "column": "Time in Session (minutes)",
+      "type": "number",
+      "maps_to_field": "time_in_session_minutes"
+    }
+  ],
+  "enrichment_columns": [
+    {
+      "order": 1,
+      "column": "Email Normalized",
+      "type": "formula",
+      "formula": "lowercase(trim(Email))",
+      "matches_clay_spec_column": 1,
+      "maps_to_field": "email",
+      "credit_estimate": 0
+    },
+    {
+      "order": 2,
+      "column": "Name Normalized",
+      "type": "formula",
+      "formula": "title_case(trim(First Name)) / title_case(trim(Last Name))",
+      "matches_clay_spec_column": 2,
+      "maps_to_field": "firstname / lastname",
+      "credit_estimate": 0
+    },
+    {
+      "order": 3,
+      "column": "Is Fake/Test Row",
+      "type": "formula",
+      "formula": "regex against placeholder localparts/names (noreply, test, asdf, sample, donotreply, ...)",
+      "matches_clay_spec_column": 3,
+      "maps_to_field": "n/a -- excluded upstream of hubspot_ready.csv, logged in dedupe_report.json",
+      "credit_estimate": 0
+    },
+    {
+      "order": 4,
+      "column": "HubSpot Match",
+      "type": "native_enrichment",
+      "provider": "Clay native HubSpot enrichment",
+      "fallback_order": [
+        "exact email match",
+        "fuzzy name+company match"
+      ],
+      "matches_clay_spec_column": 4,
+      "maps_to_field": "merge_action / hubspot_contact_id",
+      "credit_estimate": 1
+    },
+    {
+      "order": 5,
+      "column": "Person Enrichment (waterfall)",
+      "type": "waterfall",
+      "description": "Resolves job title, seniority, and function for the registrant. Each provider only runs if the prior step returns no match, so credits are spent in cheapest-first order.",
+      "providers_in_order": [
+        {
+          "step": 1,
+          "provider": "People Data Labs",
+          "clay_provider_name": "PDL - Person Enrich (by email)",
+          "credit_estimate": 1
+        },
+        {
+          "step": 2,
+          "provider": "Apollo",
+          "clay_provider_name": "Apollo - Person Match (by email)",
+          "credit_estimate": 1
+        },
+        {
+          "step": 3,
+          "provider": "LinkedIn scrape",
+          "clay_provider_name": "Clay native LinkedIn Profile Scrape (by name + company)",
+          "credit_estimate": 3
+        }
+      ],
+      "fallback_order": [
+        "People Data Labs",
+        "Apollo",
+        "LinkedIn scrape",
+        "prompts/inference.md LLM column",
+        "manual review queue"
+      ],
+      "matches_clay_spec_column": 6,
+      "maps_to_field": "jobtitle / function / seniority",
+      "credit_estimate_total": 5,
+      "credit_estimate_note": "worst case (all 3 waterfall steps miss); typical row resolves at PDL step for 1 credit"
+    },
+    {
+      "order": 6,
+      "column": "Company Enrichment",
+      "type": "waterfall",
+      "description": "Resolves company (resolved), industry, and company size for the registrant's domain / raw company name.",
+      "providers_in_order": [
+        {
+          "step": 1,
+          "provider": "People Data Labs",
+          "clay_provider_name": "PDL - Company Enrich (by domain)",
+          "credit_estimate": 1
+        },
+        {
+          "step": 2,
+          "provider": "Clearbit",
+          "clay_provider_name": "Clearbit Company API (by domain, fallback)",
+          "credit_estimate": 1
+        }
+      ],
+      "fallback_order": [
+        "domain enrichment (PDL)",
+        "name-search enrichment (Clearbit)",
+        "prompts/inference.md LLM column",
+        "manual review queue"
+      ],
+      "matches_clay_spec_column": 5,
+      "maps_to_field": "company / industry / numemployees",
+      "credit_estimate_total": 2
+    },
+    {
+      "order": 7,
+      "column": "Email Verification (Debounce)",
+      "type": "native_enrichment",
+      "provider": "Debounce",
+      "description": "Verifies deliverability before HubSpot send-to; does not gate enrichment, only flags rows for the confidence/needs_review columns downstream.",
+      "matches_clay_spec_column": null,
+      "maps_to_field": "confidence (deduction), needs_review (flag on hard-bounce/invalid result)",
+      "credit_estimate": 1
+    },
+    {
+      "order": 8,
+      "column": "Industry",
+      "type": "native_enrichment_plus_ai",
+      "provider": "Clearbit/Clay firmographic industry field",
+      "ai_fallback": "prompts/inference.md LLM read of company name for non-English/non-Latin names",
+      "matches_clay_spec_column": 7,
+      "maps_to_field": "industry",
+      "credit_estimate": 1
+    },
+    {
+      "order": 9,
+      "column": "Function / Seniority",
+      "type": "native_enrichment",
+      "provider": "Clay Job Title Formatter",
+      "ai_fallback": "prompts/inference.md LLM columns when title itself came from LLM inference",
+      "matches_clay_spec_column": 9,
+      "maps_to_field": "function / seniority",
+      "credit_estimate": 1
+    },
+    {
+      "order": 10,
+      "column": "AI: Title Normalization + ICP Tier",
+      "type": "ai_column",
+      "provider": "Clay AI column (Anthropic Claude backend)",
+      "description": "Normalizes the resolved title and produces a human-readable second opinion on the deterministic ICP tier formula. The deterministic rule engine (icp_tier() in enrich.py, mirrored as a Clay formula column) stays authoritative -- this AI column never silently overrides it, per the guardrails embedded in the prompt text below.",
+      "prompt_source": "modules/m1-enrichment/prompts/icp_scoring.md",
+      "prompt_text": "# Prompt: ICP Tier Scoring + Rationale\n\nUsed by `enrich.py --live` as a qualitative check on top of the deterministic\n`icp_tier()` function in `enrich.py` (exact title-list + company-size-range +\nindustry-set match against `config/icp.yaml`). The deterministic function is\nauthoritative for the tier assignment shipped in `hubspot_ready.csv` --\nthis prompt's job is to produce a second, human-readable rationale for the\nrows a reviewer is most likely to question (borderline sizes, `industry:\n\"Other\"`, or `unqualified`), and to flag disagreement for a human to\nresolve rather than silently overriding the rule engine.\n\nCalled once per batch of flagged rows, same batching discipline as\n`inference.md`.\n\n## Input contract\n\n```json\n{\n  \"icp_config\": {\n    \"tier1\": {\"titles\": [\"VP Marketing\", \"Head of Demand Gen\", \"Director Marketing Ops\", \"CMO\"], \"company_size\": [200, 5000], \"industries\": [\"SaaS\", \"Fintech\", \"IT Services\"]},\n    \"tier2\": {\"titles\": [\"Marketing Manager\", \"Growth Manager\", \"RevOps Manager\"], \"company_size\": [50, 200], \"industries\": [\"SaaS\", \"Fintech\", \"IT Services\", \"Ecommerce\"]},\n    \"tier3\": {\"titles\": [\"*\"], \"company_size\": [1, 50], \"industries\": [\"*\"]}\n  },\n  \"rows\": [\n    {\n      \"row_id\": \"elena.kapoor@pinehollowsoftware.com\",\n      \"jobtitle\": \"RevOps Manager\",\n      \"company\": \"Pinehollow Software\",\n      \"industry\": \"SaaS\",\n      \"company_size\": 43,\n      \"rule_engine_tier\": \"tier3\",\n      \"rule_engine_rationale\": \"tier3 -- catch-all title 'RevOps Manager'; company_size=43 in [1, 50]; industry=SaaS (wildcard).\"\n    }\n  ]\n}\n```\n\n## Output contract\n\n```json\n{\n  \"rows\": [\n    {\n      \"row_id\": \"elena.kapoor@pinehollowsoftware.com\",\n      \"llm_tier\": \"tier3\",\n      \"agrees_with_rule_engine\": true,\n      \"rationale\": \"RevOps Manager at a 43-person SaaS company is a real buyer for a RevOps tool, but company_size falls short of tier2's 50-person floor -- rule engine's tier3 call is correct, not a borderline miss.\",\n      \"confidence\": 0.85\n    }\n  ]\n}\n```\n\n## Guardrails\n\n- `llm_tier` must be one of `tier1`, `tier2`, `tier3`, `unqualified` --\n  the same closed set the rule engine uses. No new tiers.\n- If `agrees_with_rule_engine` is `false`, `rationale` must name the exact\n  criterion the model weighs differently (title, size, or industry) --\n  never a vague \"seems like a better fit.\"\n- This prompt never changes what ships in `hubspot_ready.csv`.\n  Disagreements are logged for a human reviewer (the same judgment-gate\n  principle as M2's send-approval step) -- no blind auto-override of the\n  deterministic tier.\n- Do not use this prompt to re-derive company_size or industry -- those are\n  inputs here, not outputs. If they look wrong, that's `inference.md`'s job.\n",
+      "fires_on": "rows the rule engine scored at confidence < 0.7 (same trigger as enrich.py::needs_icp_second_opinion())",
+      "matches_clay_spec_column": 10,
+      "maps_to_field": "icp_tier (rule engine authoritative) / icp_rationale (AI second opinion appended)",
+      "credit_estimate": 2
+    },
+    {
+      "order": 11,
+      "column": "Region / Owner",
+      "type": "formula",
+      "formula": "country -> region lookup (config/icp.yaml regions), then static owner-assignment table",
+      "matches_clay_spec_column": 11,
+      "maps_to_field": "region / hubspot_owner_email",
+      "credit_estimate": 0
+    },
+    {
+      "order": 12,
+      "column": "Lifecycle Stage",
+      "type": "formula",
+      "formula": "pinned rubric (tier1+attended+session>=25min -> marketingqualifiedlead; tier1/tier2 attended or no-show -> lead; else subscriber), then no-regression check against existing HubSpot stage from column 4's match",
+      "matches_clay_spec_column": 12,
+      "maps_to_field": "lifecyclestage / hs_lead_status",
+      "credit_estimate": 0
+    },
+    {
+      "order": 13,
+      "column": "Confidence",
+      "type": "formula",
+      "formula": "weighted average of per-column enrichment confidence (Clay surfaces a confidence score per waterfall step) plus Debounce verification result",
+      "matches_clay_spec_column": 13,
+      "maps_to_field": "confidence",
+      "credit_estimate": 0
+    },
+    {
+      "order": 14,
+      "column": "Needs Review",
+      "type": "formula",
+      "formula": "true when a firmographic/industry lookup structurally couldn't resolve the row, or Debounce returns invalid/hard-bounce",
+      "matches_clay_spec_column": 14,
+      "maps_to_field": "needs_review",
+      "credit_estimate": 0
+    },
+    {
+      "order": 15,
+      "column": "Company Domain",
+      "type": "formula",
+      "formula": "registrant email domain, excluded for freemail addresses",
+      "matches_clay_spec_column": 15,
+      "maps_to_field": "company_domain",
+      "credit_estimate": 0
+    }
+  ],
+  "output_actions": [
+    {
+      "order": 1,
+      "action": "HTTP API",
+      "description": "Callback that resumes the n8n workflow's Wait node once this Clay table's run completes, so the downstream 'Shape M1 Payload' step never reads clay_* fields before Clay finishes writing them (same pattern as orchestrator/n8n/cloud/master.json's 'Wait for Clay Enrichment Callback' node).",
+      "trigger": "Clay table-level 'run complete' webhook (table Settings -> Webhooks -- NOT a per-column trigger, so partial/in-progress rows are never posted)",
+      "target_url_placeholder": "https://<N8N_HOST>/webhook-waiting/<WORKFLOW_ID>/wait-for-clay-enrichment",
+      "payload_shape": "body.rows[], each row containing every enrichment_columns field above under its clay_* key",
+      "credit_estimate": 0
+    },
+    {
+      "order": 2,
+      "action": "Send to HubSpot",
+      "object_type": "Company",
+      "match_on": "domain",
+      "fields_sent": [
+        "domain",
+        "name",
+        "industry",
+        "numemployees"
+      ],
+      "row_scope": "one row per resolvable company_domain (freemail/unresolved domains excluded -- no Company object to associate to)",
+      "credit_estimate": 0
+    },
+    {
+      "order": 3,
+      "action": "Send to HubSpot",
+      "object_type": "Contact",
+      "match_on": "email (primary), fallback to hubspot_contact_id from the HubSpot Match column on disagreement",
+      "fields_sent": [
+        "firstname",
+        "lastname",
+        "jobtitle",
+        "company",
+        "function",
+        "seniority",
+        "country",
+        "region",
+        "hubspot_owner_email",
+        "lifecyclestage",
+        "hs_lead_status",
+        "attendance_status",
+        "time_in_session_minutes",
+        "registration_time",
+        "icp_tier",
+        "icp_rationale",
+        "confidence",
+        "merge_action",
+        "needs_review",
+        "company_domain"
+      ],
+      "associations": "company_domain -> the Company object created in action 2",
+      "trigger": "manual 'Push to HubSpot' button (judgment gate -- reviewer scans confidence/needs_review/icp_rationale under 0.7 or flagged before pushing, per clay_spec.md)",
+      "credit_estimate": 0
+    }
+  ],
+  "credit_estimate_per_row": {
+    "hubspot_match": 1,
+    "person_enrichment_waterfall_worst_case": 5,
+    "company_enrichment_waterfall": 2,
+    "email_verification_debounce": 1,
+    "industry_native_plus_ai_fallback": 1,
+    "function_seniority_native": 1,
+    "ai_title_and_icp_tier": 2,
+    "formula_columns_region_lifecycle_confidence_needsreview_domain": 0,
+    "total_worst_case_credits_per_row": 13,
+    "total_typical_credits_per_row_note": "typical row resolves at the first waterfall step (PDL) and skips the AI column (confidence >= 0.7), landing closer to 5-6 credits/row"
+  },
+  "rate_limits": "HubSpot private-app token allows 100 requests/10s; Clay batches the two Send-to-HubSpot actions accordingly, no manual throttling needed (clay_spec.md 'Rate limits')."
+}

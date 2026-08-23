@@ -1,0 +1,7 @@
+[live lane] M1 enrich: invoking OpenRouter (nvidia/nemotron-3-ultra-550b-a55b:free) at runtime for real generation -- use no flag / omit --live to replay cached outputs instead
+[live lane] M2 comms: invoking OpenRouter (nvidia/nemotron-3-ultra-550b-a55b:free) at runtime for real generation -- use no flag / omit --live to replay cached outputs instead
+stage      seconds  key output                                          pass/fail
+---------  -------  --------------------------------------------------  ---------
+M1 enrich  120.79   input_rows=150 fake_excluded=3 within_batch_dupe_p  PASS     
+M2 comms   130.96   refusing to send: openrouter: unexpected response   FAIL     
+EXIT=1

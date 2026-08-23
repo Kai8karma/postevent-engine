@@ -1,0 +1,25 @@
+{
+  "event_name": "Speed to Lead: Fixing the First 5 Minutes After a Demo Request",
+  "date": "2026-08-10",
+  "host_company": "ACME Revenue Cloud",
+  "host_domain": "acmerevenue.example",
+  "topic": "Response-time benchmarks, routing automation, and the handoff choreography between marketing and SDR teams",
+  "duration_min": 48,
+  "platform": "Zoom Webinars",
+  "recording_url": "https://drive.example/rec/speed-to-lead.mp4",
+  "registration_page": "https://acmerevenue.example/webinars/speed-to-lead",
+  "speakers": [
+    {
+      "name": "Priya Nair",
+      "title": "VP Marketing",
+      "company": "ACME Revenue Cloud",
+      "linkedin": "https://www.linkedin.com/in/priya-nair-example"
+    },
+    {
+      "name": "Owen Marsh",
+      "title": "Director of SDR",
+      "company": "ACME Revenue Cloud",
+      "linkedin": "https://www.linkedin.com/in/owen-marsh-example"
+    }
+  ]
+}

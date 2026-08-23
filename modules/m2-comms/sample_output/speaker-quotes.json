@@ -1,0 +1,22 @@
+{
+  "_comment": "Cached output of prompts/speaker.md — one `claude -p` call per event, then comms.py fills the same template per named speaker. --live regenerates this file. Quotes are verbatim, timestamp-attributable to data/incoming/transcript.md.",
+  "by_speaker": {
+    "Priya Nair": {
+      "top_quote": "Being in the room doesn't tell you the click-through rate on your quote three weeks later.",
+      "timestamp": "21:02",
+      "internal_or_external_note": "Since you're on the ACME team, this snapshot is about internal recognition, not relationship maintenance — it's so Tuesday's numbers don't just live in your head. Forward it to your own leadership as evidence for the next event's budget ask."
+    },
+    "Daniel Kim": {
+      "top_quote": "This isn't new content spend, it's yield on content you already produced and mostly let evaporate after the live hour ended.",
+      "timestamp": "39:38",
+      "internal_or_external_note": "As an external guest, consider this an open invite to do this again — and if any of this is useful to reshare with your own network, we'd genuinely welcome it, no ask required."
+    },
+    "Sara Alvarez": {
+      "top_quote": "Attribution is the mirror, not the engine.",
+      "timestamp": "54:15",
+      "internal_or_external_note": "As an external guest, this snapshot is as much a thank-you as an open door — we'd love to have you back, and a reshare to your own network takes this session further than our list alone can."
+    }
+  },
+  "subject_a": "Your session numbers are in: 82 attendees, 58% avg watch-through",
+  "subject_b": "Thank you, {{first_name}} — here's how Tuesday's session performed"
+}

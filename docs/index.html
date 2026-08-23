@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Post-Event Engine — Judge Control Room</title>
+<style>
+  :root {
+    --bg: #f5f6f9;
+    --surface: #ffffff;
+    --surface-2: #eef0f5;
+    --text: #171b26;
+    --text-muted: #5b6472;
+    --border: #dde1e8;
+    --accent: #2f5fd8;
+    --accent-ink: #ffffff;
+    --code-bg: #10131c;
+    --code-text: #e6e9f0;
+    --shadow: 0 1px 2px rgba(23,27,38,0.04), 0 8px 24px rgba(23,27,38,0.06);
+
+    --m1-fill: #e8eefc; --m1-stroke: #2f5fd8;
+    --m2-fill: #f1e9fb; --m2-stroke: #7c3aed;
+    --m3-fill: #e3f6ef; --m3-stroke: #0f9d78;
+    --m4-fill: #fdeee1; --m4-stroke: #c05e11;
+    --gate-fill: #fff4d6; --gate-stroke: #b8860b; --gate-text: #6b5108;
+    --out-fill: #eef0f5; --out-stroke: #838ea3;
+    --fin-fill: #e8eefc; --fin-stroke: #2f5fd8;
+    --box-fill: #ffffff; --box-stroke: #9aa3b6; --box-text: #171b26;
+    --edge: #5b6472; --edge-soft: #9aa3b6; --edge-label: #5b6472;
+    --lane-d-head: #e3f6ef; --lane-d-fill: #f3fbf8; --lane-d-alt: #d9f0e8; --lane-d-stroke: #0f9d78;
+    --lane-p-head: #e8eefc; --lane-p-fill: #f2f5fd; --lane-p-alt: #dde6fa; --lane-p-stroke: #2f5fd8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #11141c;
+      --surface: #171b26;
+      --surface-2: #1e2330;
+      --text: #e9ebf2;
+      --text-muted: #9aa3b6;
+      --border: #2b3040;
+      --accent: #7ea1f5;
+      --accent-ink: #0d1420;
+      --code-bg: #0a0d14;
+      --code-text: #d7dce6;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+
+      --m1-fill: #1a2440; --m1-stroke: #7ea1f5;
+      --m2-fill: #271b3f; --m2-stroke: #b28cf0;
+      --m3-fill: #16332a; --m3-stroke: #4fd9ac;
+      --m4-fill: #3a2513; --m4-stroke: #e5934a;
+      --gate-fill: #3a2f0f; --gate-stroke: #e0b23c; --gate-text: #f0d78a;
+      --out-fill: #1e2330; --out-stroke: #6b7488;
+      --fin-fill: #1a2440; --fin-stroke: #7ea1f5;
+      --box-fill: #1b2029; --box-stroke: #4a5266; --box-text: #e9ebf2;
+      --edge: #9aa3b6; --edge-soft: #5b6472; --edge-label: #9aa3b6;
+      --lane-d-head: #16332a; --lane-d-fill: #17251f; --lane-d-alt: #1c3a2f; --lane-d-stroke: #4fd9ac;
+      --lane-p-head: #1a2440; --lane-p-fill: #181e2c; --lane-p-alt: #202b48; --lane-p-stroke: #7ea1f5;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #11141c; --surface: #171b26; --surface-2: #1e2330; --text: #e9ebf2; --text-muted: #9aa3b6;
+    --border: #2b3040; --accent: #7ea1f5; --accent-ink: #0d1420; --code-bg: #0a0d14; --code-text: #d7dce6;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+    --m1-fill: #1a2440; --m1-stroke: #7ea1f5;
+    --m2-fill: #271b3f; --m2-stroke: #b28cf0;
+    --m3-fill: #16332a; --m3-stroke: #4fd9ac;
+    --m4-fill: #3a2513; --m4-stroke: #e5934a;
+    --gate-fill: #3a2f0f; --gate-stroke: #e0b23c; --gate-text: #f0d78a;
+    --out-fill: #1e2330; --out-stroke: #6b7488;
+    --fin-fill: #1a2440; --fin-stroke: #7ea1f5;
+    --box-fill: #1b2029; --box-stroke: #4a5266; --box-text: #e9ebf2;
+    --edge: #9aa3b6; --edge-soft: #5b6472; --edge-label: #9aa3b6;
+    --lane-d-head: #16332a; --lane-d-fill: #17251f; --lane-d-alt: #1c3a2f; --lane-d-stroke: #4fd9ac;
+    --lane-p-head: #1a2440; --lane-p-fill: #181e2c; --lane-p-alt: #202b48; --lane-p-stroke: #7ea1f5;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.55;
+  }
+  code, pre, .mono { font-family: "SF Mono", "Cascadia Code", Consolas, Menlo, monospace; }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- top bar ---------- */
+  .topbar {
+    position: sticky; top: 0; z-index: 20;
+    background: var(--surface);
+    background: color-mix(in srgb, var(--surface) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar-inner { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; max-width: 1180px; margin: 0 auto; }
+  .topbar-nav { display: flex; gap: 18px; flex-wrap: wrap; }
+  .topbar-nav a { color: var(--text-muted); text-decoration: none; font-size: 13.5px; font-weight: 600; }
+  .topbar-nav a:hover { color: var(--accent); }
+  .theme-toggle {
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--text);
+    border-radius: 8px; padding: 6px 12px; font-size: 13px; font-weight: 600; cursor: pointer;
+  }
+  .theme-toggle:hover { border-color: var(--accent); }
+
+  /* ---------- hero ---------- */
+  .hero { padding: 64px 0 40px; }
+  .kicker { color: var(--accent); font-weight: 700; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; margin: 0 0 14px; }
+  .hero h1 { font-size: clamp(28px, 4vw, 42px); line-height: 1.15; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .hero .assignment { color: var(--text-muted); font-size: 16px; margin: 0 0 22px; max-width: 780px; }
+  .thesis {
+    background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--accent);
+    border-radius: 10px; padding: 18px 22px; font-size: 17px; max-width: 820px; box-shadow: var(--shadow);
+  }
+  .thesis b { color: var(--accent); }
+  .hero-meta { display: flex; gap: 22px; flex-wrap: wrap; margin-top: 22px; }
+  .hero-meta div { font-size: 13px; color: var(--text-muted); }
+  .hero-meta strong { display: block; color: var(--text); font-size: 14px; }
+
+  section { padding: 40px 0; border-top: 1px solid var(--border); }
+  h2 { font-size: 24px; margin: 0 0 6px; letter-spacing: -0.01em; }
+  .section-sub { color: var(--text-muted); font-size: 14.5px; margin: 0 0 26px; max-width: 760px; }
+
+  /* ---------- module cards ---------- */
+  .modules-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+    padding: 22px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 12px;
+  }
+  .card-head { display: flex; align-items: center; gap: 10px; }
+  .card-tag {
+    font-size: 11.5px; font-weight: 800; letter-spacing: 0.04em; padding: 3px 8px; border-radius: 6px;
+    color: var(--accent-ink);
+  }
+  .tag-m1 { background: var(--m1-stroke); }
+  .tag-m2 { background: var(--m2-stroke); }
+  .tag-m3 { background: var(--m3-stroke); }
+  .tag-m4 { background: var(--m4-stroke); }
+  .card h3 { margin: 0; font-size: 17px; }
+  .card p.what { margin: 0; font-size: 14px; color: var(--text-muted); }
+  .card .label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin: 6px 0 2px; }
+  .runcmd {
+    background: var(--code-bg); color: var(--code-text); border-radius: 8px; padding: 10px 12px;
+    font-size: 12.5px; overflow-x: auto; white-space: pre;
+  }
+  .keyout { font-size: 13.5px; background: var(--surface-2); border-radius: 8px; padding: 8px 10px; }
+  .loom-slot {
+    border: 1.5px dashed var(--border); border-radius: 10px; padding: 18px; text-align: center;
+    font-size: 13px; color: var(--text-muted); background: var(--surface-2);
+  }
+  .loom-slot b { color: var(--text); }
+  .card-links { display: flex; flex-wrap: wrap; gap: 10px 14px; margin-top: 2px; }
+  .card-links a { font-size: 13px; font-weight: 600; color: var(--accent); text-decoration: none; }
+  .card-links a:hover { text-decoration: underline; }
+
+  /* ---------- architecture ---------- */
+  .diagram-block { margin-bottom: 30px; }
+  .diagram-block h3 { font-size: 16px; margin: 0 0 10px; }
+  .svg-frame {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow);
+    padding: 12px; overflow-x: auto;
+  }
+  .svg-frame svg { width: 100%; height: auto; min-width: 720px; display: block; }
+  pre.mermaid-src {
+    display: none; /* portable source, not rendered here — no mermaid.js loaded (self-contained page, no external requests) */
+  }
+  .mermaid-note {
+    font-size: 12.5px; color: var(--text-muted); margin: 8px 0 0;
+  }
+  details.mermaid-toggle summary { cursor: pointer; font-size: 12.5px; color: var(--accent); font-weight: 600; margin-top: 8px; }
+  details.mermaid-toggle pre { background: var(--code-bg); color: var(--code-text); border-radius: 8px; padding: 12px; font-size: 11.5px; overflow-x: auto; margin-top: 8px; }
+
+  /* ---------- economics ---------- */
+  .table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; min-width: 640px; }
+  th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  th { color: var(--text-muted); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 700; }
+  tr:last-child td { border-bottom: none; }
+  tr.total td { font-weight: 800; background: var(--surface-2); }
+  .stat-row { display: flex; gap: 16px; flex-wrap: wrap; margin: 20px 0 0; }
+  .stat {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px;
+    box-shadow: var(--shadow); flex: 1; min-width: 180px;
+  }
+  .stat .num { font-size: 26px; font-weight: 800; color: var(--accent); }
+  .stat .lbl { font-size: 12.5px; color: var(--text-muted); margin-top: 2px; }
+  .callout {
+    background: var(--surface-2); border-radius: 10px; padding: 14px 18px; font-size: 13.5px; color: var(--text-muted);
+    margin-top: 18px; border-left: 3px solid var(--accent);
+  }
+
+  /* ---------- build log ---------- */
+  .buildlog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+  .bl-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; box-shadow: var(--shadow); }
+  .bl-card .bl-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; }
+  .bl-card .bl-val { font-size: 15px; font-weight: 700; margin-top: 4px; }
+  .todo { color: #b8860b; font-weight: 700; }
+
+  /* ---------- swap section ---------- */
+  .swap-box {
+    background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
+    border: 1px solid var(--border); border-radius: 16px; padding: 28px; box-shadow: var(--shadow);
+  }
+  .swap-box p { margin: 0 0 12px; font-size: 15.5px; }
+  .swap-box code.inline { background: var(--surface-2); border: 1px solid var(--border); border-radius: 5px; padding: 1px 6px; font-size: 13px; }
+  .swap-cta { font-weight: 700; color: var(--accent); }
+
+  /* ---------- live receipts ---------- */
+  .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 0; }
+  .chip {
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px;
+    padding: 4px 10px; font-size: 12.5px; color: var(--text);
+    font-family: "SF Mono", "Cascadia Code", Consolas, Menlo, monospace;
+  }
+
+  footer { padding: 30px 0 60px; color: var(--text-muted); font-size: 13px; text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <strong>Post-Event Engine</strong>
+    <div class="topbar-nav">
+      <a href="#modules">Modules</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#receipts">Live receipts</a>
+      <a href="#economics">Economics</a>
+      <a href="#buildlog">Build Log</a>
+      <a href="#swap">Swap to your event</a>
+    </div>
+    <button class="theme-toggle" id="themeToggle" type="button">Toggle theme</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <header class="hero">
+    <p class="kicker">Working Prototype — Judge Control Room</p>
+    <h1>Kshitij Mishra — AI-Led Post-Event Content Automation</h1>
+    <p class="assignment">
+      Built for the assignment: turn a webinar's raw exhaust — recording, transcript, registrant list,
+      engagement data — into HubSpot-ready leads, sent comms, repurposed content, and a live dashboard,
+      with AI doing the actual work at every step, not wrapping a manual process.
+    </p>
+    <div class="thesis">
+      <b>Thesis:</b> AI does the actual reasoning work in this build, but not identically across
+      modules, and we'd rather show you the real shape of that than round it up. M1 runs a
+      deterministic rules lane offline (dedupe + field inference by lookup table, zero LLM tokens)
+      and switches to real LLM classification with <code class="mono">--live</code>; M2 and M3 ship
+      genuinely LLM-generated copy, replayed from a fingerprint-guarded cache offline so the demo
+      doesn't need an API key; M4 computes its metrics directly from data and calls a live LLM only
+      for the narrative summary, falling back to a labeled cached one without a key. Humans approve
+      every send either way.
+    </div>
+    <div class="table-wrap" style="max-width:820px; margin-top:16px;">
+      <table>
+        <thead><tr><th>Module</th><th>Offline (repo default)</th><th>--live / production</th></tr></thead>
+        <tbody>
+          <tr><td>M1 Enrichment</td><td>Deterministic rules: difflib dedupe + lookup-table field inference. No LLM call.</td><td>Real LLM classification via <code class="mono">--live</code> (<code class="mono">claude -p</code> or OpenRouter, per <code class="mono">LLM_BACKEND</code>); Clay's managed Enrich Company routine already executed live on 3 real domains (<a href="#receipts">Live receipts</a>) — production lane runs the same call across every real company domain via <code class="mono">--clay-max</code>.</td></tr>
+          <tr><td>M2 Comms</td><td>Cached LLM-generated copy replayed from <code class="mono">sample_output/</code>, fingerprint-guarded.</td><td>Live LLM call (<code class="mono">claude -p</code> or OpenRouter) regenerates the segment's takeaway/quote copy.</td></tr>
+          <tr><td>M3 Repurposing</td><td>Cached LLM-generated copy replayed from <code class="mono">sample_output/</code>, fingerprint-guarded.</td><td>Live LLM call (<code class="mono">claude -p</code> or OpenRouter) regenerates blog/YouTube/infographic/social from the transcript.</td></tr>
+          <tr><td>M4 Dashboard</td><td>Computed metrics (real math over fixtures) + labeled cached fallback narrative. <b>Anomaly detection and lead-interest scoring are deterministic rules, not LLM calls</b> (same-day concentration ≥15 touches; tier × attendance × engagement weights) — the AI role here is the narrative that interprets them.</td><td>Live LLM narrative via Vercel <code class="mono">/api/narrative.js</code>, UI-labeled live vs. fallback (<a href="https://postevent-engine.vercel.app/dashboard/">hosted</a>). Anomaly/scoring rules stay deterministic in both lanes by choice: auditable, reproducible, and the LLM reads their output rather than inventing it.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="hero-meta">
+      <div><strong>ACME Revenue Cloud</strong>host company · acmerevenue.example</div>
+      <div><strong>Pipeline After the Webinar: Turning Event Engagement into Revenue</strong>webinar · 2026-07-20</div>
+      <div><strong>Priya Nair · Daniel Kim · Sara Alvarez</strong>speakers</div>
+      <div><strong>4 / 4</strong>modules attempted, independently demoable</div>
+    </div>
+  </header>
+
+  <section id="modules">
+    <h2>The four modules</h2>
+    <p class="section-sub">
+      Each is independent and separately demoable. Judge-facing path:
+      <code class="mono">./demo.sh --live</code> — chains M1→M2→M3→M4 with real LLM calls into
+      <code class="mono">out/&lt;event-slug&gt;/</code> and prints a stage/seconds/key-output/pass-fail
+      receipt. <code class="mono">./demo.sh</code> without the flag (or the module scripts below,
+      run individually) is the instant preview — same DAG, cached/deterministic outputs, zero network
+      calls, zero wait.
+    </p>
+    <div class="modules-grid">
+
+      <div class="card">
+        <div class="card-head"><span class="card-tag tag-m1">M1</span><h3>Lead List Enrichment</h3></div>
+        <p class="what">
+          Fuzzy-dedupes the 150-row messy Zoom export against existing HubSpot contacts (difflib, no
+          fuzzy-matching library needed), infers missing title/seniority/company size/industry, scores
+          ICP tier with a written rationale per row, assigns region, and routes ownership — same-day
+          SDR-handoff-ready. Offline default is a deterministic rules lane (lookup tables, no LLM
+          tokens spent); <code class="mono">--live</code> swaps in real LLM field classification.
+        </p>
+        <div class="label">Run (judges — live)</div>
+        <div class="runcmd">./demo.sh --live</div>
+        <div class="label">Instant preview (deterministic rules, no LLM)</div>
+        <div class="runcmd">python3 modules/m1-enrichment/enrich.py --out out/m1</div>
+        <div class="label">Key output</div>
+        <div class="keyout">hubspot_ready.csv — contact + company completeness ≥90%, ICP tier + rationale, region, owner, lifecycle stage per row</div>
+        <div class="card-links"><a href="https://postevent-engine.vercel.app/demo/sample-run/m1/">Outputs: offline run →</a> <a href="https://postevent-engine.vercel.app/demo/live-proof/m1/">Outputs: live LLM run →</a> <a href="../modules/m1-enrichment/README.md">Module README →</a></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><span class="card-tag tag-m2">M2</span><h3>Post-Event Communications</h3></div>
+        <p class="what">
+          Drafts three segment-specific email variants (attendee thank-you, no-show catch-up, speaker
+          thank-you), two subject-line options each, personalized off the enriched contact list and the
+          real transcript — then holds at a human-approval gate before anything is logged to HubSpot
+          with UTM tracking. No blind sends. The copy is genuinely LLM-generated either way; offline
+          replays a fingerprint-guarded cache instead of re-calling the model.
+        </p>
+        <div class="label">Run (judges — live)</div>
+        <div class="runcmd">./demo.sh --live</div>
+        <div class="label">Instant preview (cached AI replay)</div>
+        <div class="runcmd">python3 modules/m2-comms/comms.py --out out/m2 \
+    --enriched out/m1/enriched.json</div>
+        <div class="label">Key output</div>
+        <div class="keyout">comms.json — 3 variants × 2 subject lines, approval-gated, UTM-tagged, HubSpot-send-logged</div>
+        <div class="card-links"><a href="https://postevent-engine.vercel.app/demo/sample-run/m2/">Outputs: offline run →</a> <a href="https://postevent-engine.vercel.app/demo/live-proof/m2/">Outputs: live LLM run →</a> <a href="../modules/m2-comms/README.md">Module README →</a></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><span class="card-tag tag-m3">M3</span><h3>Content Repurposing</h3></div>
+        <p class="what">
+          Extracts the quotable moments, data points, and structure straight from the ~8k-word transcript
+          and generates a full multi-format package: one 800–1200-word blog draft, YouTube chapter
+          markers + description + thumbnail brief, an infographic outline, and 5–10 social posts across
+          LinkedIn and X, each with a distinct hook. LLM-generated either way; offline replays a
+          fingerprint-guarded cache instead of re-calling the model.
+        </p>
+        <div class="label">Run (judges — live)</div>
+        <div class="runcmd">./demo.sh --live</div>
+        <div class="label">Instant preview (cached AI replay)</div>
+        <div class="runcmd">python3 modules/m3-repurpose/repurpose.py --out out/m3</div>
+        <div class="label">Key output</div>
+        <div class="keyout">manifest.json — blog draft + YouTube pack + infographic outline + 5–10 social posts, tagged by event</div>
+        <div class="card-links"><a href="https://postevent-engine.vercel.app/demo/sample-run/m3/">Outputs: offline run →</a> <a href="https://postevent-engine.vercel.app/demo/live-proof/m3/">Outputs: live LLM run →</a> <a href="../modules/m3-repurpose/README.md">Module README →</a></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><span class="card-tag tag-m4">M4</span><h3>Lead Intelligence Dashboard</h3></div>
+        <p class="what">
+          Reads M1's enriched roster plus engagement events (opens, clicks, page views, form fills) and
+          computes the attendee→MQL funnel, top engaged accounts and buying committees, and 7/14/30-day
+          lifecycle movement — all real math over the data, not LLM output. The one narrative summary
+          line is a live LLM call on Vercel, with a clearly labeled cached fallback when there's no key.
+        </p>
+        <div class="label">Run (judges — live)</div>
+        <div class="runcmd">./demo.sh --live</div>
+        <div class="label">Instant preview (computed metrics + labeled fallback narrative)</div>
+        <div class="runcmd">python3 modules/m4-dashboard/build_dashboard.py \
+    --enriched out/m1/hubspot_ready.csv \
+    --engagement data/fixtures/engagement.json \
+    --segments data/fixtures/segments.json \
+    --out out/m4</div>
+        <div class="label">Key output</div>
+        <div class="keyout">index.html — self-contained live dashboard, inline SVG charts, computed metrics + AI narrative (live or labeled fallback)</div>
+        <div class="card-links"><a href="https://postevent-engine.vercel.app/dashboard/">Hosted dashboard →</a> <a href="https://postevent-engine.vercel.app/demo/sample-run/m4/">Outputs: offline run →</a> <a href="../modules/m4-dashboard/README.md">Module README →</a></div>
+      </div>
+
+    </div>
+    <div class="loom-slot" style="margin-top:18px;">
+      <b>Walkthrough videos</b> — one short walkthrough per module (M1–M4), recorded at submission.
+    </div>
+  </section>
+
+  <section id="architecture">
+    <h2>Architecture</h2>
+    <p class="section-sub">
+      Two views: the data DAG (what feeds what), and the honest two-lane story — the lane that runs
+      today next to the lane it swaps into on a real account. Full write-up in
+      <a href="architecture.md">architecture.md</a>. Rendered here as hand-drawn inline SVG (what
+      actually displays — this page makes zero external requests); the same diagrams also ship as
+      portable Mermaid source below each one, openable in any Mermaid renderer.
+    </p>
+
+    <div class="diagram-block">
+      <h3>(a) End-to-end data flow</h3>
+      <div class="svg-frame">
+        <svg viewBox="0 0 1200 750" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="End-to-end data flow: inputs feed M1 enrichment, M2 comms and M3 repurposing, which converge on M4 dashboard and the judge control room.">
+<defs>
+  <marker id="arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M 0 0 L 10 5 L 0 10 L 2.5 5 z" fill="var(--edge)"/>
+  </marker>
+</defs>
+<g class="node" id="in_m1a">
+  <rect x="20.0" y="26.0" width="170.0" height="62.0" rx="10" ry="10" fill="var(--box-fill)" stroke="var(--box-stroke)" stroke-width="1.6"/>
+  <rect x="18.9" y="26.5" width="170.0" height="62.0" rx="10" ry="10" fill="none" stroke="var(--box-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.25 105.0 57.0)"/>
+  <text x="105.0" y="52.5" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--box-text)">registrants.csv</text>
+  <text x="105.0" y="69.5" text-anchor="middle" font-size="12.5" font-weight="400" fill="var(--box-text)">150 rows · messy</text>
+</g>
+<g class="node" id="in_m1b">
+  <rect x="200.0" y="26.0" width="180.0" height="62.0" rx="10" ry="10" fill="var(--box-fill)" stroke="var(--box-stroke)" stroke-width="1.6"/>
+  <rect x="200.1" y="25.6" width="180.0" height="62.0" rx="10" ry="10" fill="none" stroke="var(--box-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.6 290.0 57.0)"/>
+  <text x="290.0" y="52.7" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--box-text)">hubspot_existing.json</text>
+  <text x="290.0" y="68.7" text-anchor="middle" font-size="11.5" font-weight="400" fill="var(--box-text)">+ config/icp.yaml</text>
+</g>
+<g class="node" id="in_m2a">
+  <rect x="410.0" y="26.0" width="170.0" height="62.0" rx="10" ry="10" fill="var(--box-fill)" stroke="var(--box-stroke)" stroke-width="1.6"/>
+  <rect x="410.0" y="24.5" width="170.0" height="62.0" rx="10" ry="10" fill="none" stroke="var(--box-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.62 495.0 57.0)"/>
+  <text x="495.0" y="52.7" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--box-text)">transcript.md</text>
+  <text x="495.0" y="68.7" text-anchor="middle" font-size="11.5" font-weight="400" fill="var(--box-text)">+ speakers/event.json</text>
+</g>
+<g class="node" id="in_m2b">
+  <rect x="600.0" y="26.0" width="180.0" height="62.0" rx="10" ry="10" fill="var(--box-fill)" stroke="var(--box-stroke)" stroke-width="1.6"/>
+  <rect x="598.6" y="24.7" width="180.0" height="62.0" rx="10" ry="10" fill="none" stroke="var(--box-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.09 690.0 57.0)"/>
+  <text x="690.0" y="52.8" text-anchor="middle" font-size="12" font-weight="700" fill="var(--box-text)">segments.json</text>
+  <text x="690.0" y="68.3" text-anchor="middle" font-size="11" font-weight="400" fill="var(--box-text)">attendee · no-show · speaker</text>
+</g>
+<g class="node" id="in_m3">
+  <rect x="800.0" y="26.0" width="380.0" height="62.0" rx="10" ry="10" fill="var(--box-fill)" stroke="var(--box-stroke)" stroke-width="1.6"/>
+  <rect x="801.0" y="24.8" width="380.0" height="62.0" rx="10" ry="10" fill="none" stroke="var(--box-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.11 990.0 57.0)"/>
+  <text x="990.0" y="52.5" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--box-text)">transcript.md</text>
+  <text x="990.0" y="69.5" text-anchor="middle" font-size="12.5" font-weight="400" fill="var(--box-text)">same source · full ~8k-word transcript</text>
+</g>
+<g class="node" id="m1">
+  <rect x="20.0" y="168.0" width="360.0" height="92.0" rx="10" ry="10" fill="var(--m1-fill)" stroke="var(--m1-stroke)" stroke-width="1.6"/>
+  <rect x="20.4" y="169.4" width="360.0" height="92.0" rx="10" ry="10" fill="none" stroke="var(--m1-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.39 200.0 214.0)"/>
+  <text x="200.0" y="200.3" text-anchor="middle" font-size="14.5" font-weight="700" fill="var(--box-text)">M1 — Lead List Enrichment</text>
+  <text x="200.0" y="218.3" text-anchor="middle" font-size="13.5" font-weight="400" fill="var(--box-text)">fuzzy dedupe → infer fields</text>
+  <text x="200.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="400" fill="var(--box-text)">→ ICP score + rationale → route</text>
+</g>
+<g class="node" id="m2">
+  <rect x="410.0" y="168.0" width="360.0" height="92.0" rx="10" ry="10" fill="var(--m2-fill)" stroke="var(--m2-stroke)" stroke-width="1.6"/>
+  <rect x="409.7" y="169.5" width="360.0" height="92.0" rx="10" ry="10" fill="none" stroke="var(--m2-stroke)" stroke-width="1" opacity="0.45" transform="rotate(0.11 590.0 214.0)"/>
+  <text x="590.0" y="200.3" text-anchor="middle" font-size="14.5" font-weight="700" fill="var(--box-text)">M2 — Post-Event Comms</text>
+  <text x="590.0" y="218.3" text-anchor="middle" font-size="13.5" font-weight="400" fill="var(--box-text)">segment attendee/no-show/speaker</text>
+  <text x="590.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="400" fill="var(--box-text)">→ draft 3 variants × 2 subjects</text>
+</g>
+<g class="node" id="m3">
+  <rect x="800.0" y="168.0" width="380.0" height="92.0" rx="10" ry="10" fill="var(--m3-fill)" stroke="var(--m3-stroke)" stroke-width="1.6"/>
+  <rect x="801.1" y="167.3" width="380.0" height="92.0" rx="10" ry="10" fill="none" stroke="var(--m3-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.63 990.0 214.0)"/>
+  <text x="990.0" y="200.3" text-anchor="middle" font-size="14.5" font-weight="700" fill="var(--box-text)">M3 — Content Repurposing</text>
+  <text x="990.0" y="218.3" text-anchor="middle" font-size="13.5" font-weight="400" fill="var(--box-text)">extract quotes/moments/data</text>
+  <text x="990.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="400" fill="var(--box-text)">→ blog/YT/infographic/social</text>
+</g>
+<g class="node gate" id="gate">
+  <polygon points="600.0,292.0 695.0,322.0 600.0,352.0 505.0,322.0" fill="var(--gate-fill)" stroke="var(--gate-stroke)" stroke-width="1.6"/>
+  <polygon points="600.0,292.0 695.0,322.0 600.0,352.0 505.0,322.0" fill="none" stroke="var(--gate-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.57 600.0 322.0)"/>
+  <text x="600.0" y="319.5" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--gate-text)">human approval</text>
+  <text x="600.0" y="332.5" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--gate-text)">gate — no blind send</text>
+</g>
+<g class="node" id="o1">
+  <rect x="20.0" y="384.0" width="360.0" height="56.0" rx="10" ry="10" fill="var(--out-fill)" stroke="var(--out-stroke)" stroke-width="1.6"/>
+  <rect x="19.4" y="385.0" width="360.0" height="56.0" rx="10" ry="10" fill="none" stroke="var(--out-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.54 200.0 412.0)"/>
+  <text x="200.0" y="407.5" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--box-text)">enriched.json</text>
+  <text x="200.0" y="424.5" text-anchor="middle" font-size="12.5" font-weight="400" fill="var(--box-text)">contact+company completeness ≥90%</text>
+</g>
+<g class="node" id="o2">
+  <rect x="410.0" y="384.0" width="360.0" height="56.0" rx="10" ry="10" fill="var(--out-fill)" stroke="var(--out-stroke)" stroke-width="1.6"/>
+  <rect x="410.3" y="384.4" width="360.0" height="56.0" rx="10" ry="10" fill="none" stroke="var(--out-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.45 590.0 412.0)"/>
+  <text x="590.0" y="407.5" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--box-text)">comms.json</text>
+  <text x="590.0" y="424.5" text-anchor="middle" font-size="12.5" font-weight="400" fill="var(--box-text)">sent + UTM-logged to HubSpot</text>
+</g>
+<g class="node" id="o3">
+  <rect x="800.0" y="384.0" width="380.0" height="56.0" rx="10" ry="10" fill="var(--out-fill)" stroke="var(--out-stroke)" stroke-width="1.6"/>
+  <rect x="800.1" y="382.6" width="380.0" height="56.0" rx="10" ry="10" fill="none" stroke="var(--out-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.18 990.0 412.0)"/>
+  <text x="990.0" y="407.5" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--box-text)">manifest.json</text>
+  <text x="990.0" y="424.5" text-anchor="middle" font-size="12.5" font-weight="400" fill="var(--box-text)">blog + YT pack + infographic + 8 posts</text>
+</g>
+<g class="node" id="m4">
+  <rect x="140.0" y="470.0" width="920.0" height="108.0" rx="10" ry="10" fill="var(--m4-fill)" stroke="var(--m4-stroke)" stroke-width="1.6"/>
+  <rect x="139.1" y="470.6" width="920.0" height="108.0" rx="10" ry="10" fill="none" stroke="var(--m4-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.62 600.0 524.0)"/>
+  <text x="600.0" y="501.9" text-anchor="middle" font-size="14" font-weight="700" fill="var(--box-text)">M4 — Lead Intelligence Dashboard</text>
+  <text x="600.0" y="519.4" text-anchor="middle" font-size="13" font-weight="400" fill="var(--box-text)">+ engagement.json (opens/clicks/pageviews/fills)</text>
+  <text x="600.0" y="536.9" text-anchor="middle" font-size="13" font-weight="400" fill="var(--box-text)">attendee→MQL funnel · top accounts + buying committee</text>
+  <text x="600.0" y="554.4" text-anchor="middle" font-size="13" font-weight="400" fill="var(--box-text)">7/14/30-day lifecycle movement · AI narrative summary</text>
+</g>
+<g class="node" id="fin">
+  <rect x="390.0" y="616.0" width="420.0" height="64.0" rx="10" ry="10" fill="var(--fin-fill)" stroke="var(--fin-stroke)" stroke-width="1.6"/>
+  <rect x="389.4" y="616.3" width="420.0" height="64.0" rx="10" ry="10" fill="none" stroke="var(--fin-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.1 600.0 648.0)"/>
+  <text x="600.0" y="643.3" text-anchor="middle" font-size="14.5" font-weight="700" fill="var(--box-text)">Judge Control Room</text>
+  <text x="600.0" y="661.3" text-anchor="middle" font-size="13.5" font-weight="400" fill="var(--box-text)">docs/index.html — this page</text>
+</g>
+<path d="M 105.0 88.0 Q 157.7 121.9 200.0 168.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead)"/>
+<path d="M 290.0 88.0 Q 239.7 122.0 200.0 168.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead)"/>
+<path d="M 495.0 88.0 Q 547.7 121.9 590.0 168.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead)"/>
+<path d="M 690.0 88.0 Q 635.0 121.8 590.0 168.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead)"/>
+<path d="M 990.0 88.0 Q 990.0 128.0 990.0 168.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead)"/>
+<path d="M 380.0 214.0 Q 395.0 130.0 410.0 214.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead)"/>
+<text x="395.0" y="122.0" text-anchor="middle" font-size="10.5" font-style="italic" fill="var(--edge-label)">enriched contacts (dedup'd)</text>
+<path d="M 200.0 260.0 Q 200.0 322.0 200.0 384.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead)"/>
+<path d="M 590.0 260.0 Q 595.0 276.0 600.0 292.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead)"/>
+<path d="M 600.0 352.0 Q 595.0 368.0 590.0 384.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead)"/>
+<path d="M 990.0 260.0 Q 990.0 322.0 990.0 384.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead)"/>
+<path d="M 200.0 440.0 Q 398.2 478.9 600.0 470.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead)"/>
+<path d="M 590.0 440.0 Q 595.0 455.0 600.0 470.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead)"/>
+<path d="M 990.0 440.0 Q 796.8 478.9 600.0 470.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead)"/>
+</svg>
+      </div>
+      <details class="mermaid-toggle">
+        <summary>View portable Mermaid source</summary>
+        <pre>flowchart TD
+    subgraph IN1G["for M1"]
+        IN1A["registrants.csv&lt;br/&gt;150 rows · messy"]
+        IN1B["hubspot_existing.json&lt;br/&gt;+ config/icp.yaml"]
+    end
+    subgraph IN2G["for M2"]
+        IN2A["transcript.md&lt;br/&gt;+ speakers/event.json"]
+        IN2B["segments.json&lt;br/&gt;attendee · no-show · speaker"]
+    end
+    IN3["transcript.md&lt;br/&gt;same source, full ~8k-word transcript&lt;br/&gt;(for M3)"]
+    M1["M1 — Lead List Enrichment&lt;br/&gt;fuzzy dedupe → infer fields&lt;br/&gt;→ ICP score + rationale → route"]
+    M2["M2 — Post-Event Comms&lt;br/&gt;segment attendee/no-show/speaker&lt;br/&gt;→ draft 3 variants × 2 subjects"]
+    M3["M3 — Content Repurposing&lt;br/&gt;extract quotes/moments/data&lt;br/&gt;→ blog/YT/infographic/social"]
+    GATE{{"human approval gate&lt;br/&gt;no blind send"}}
+    O1["enriched.json&lt;br/&gt;contact+company completeness ≥90%"]
+    O2["comms.json&lt;br/&gt;sent + UTM-logged to HubSpot"]
+    O3["manifest.json&lt;br/&gt;blog + YT pack + infographic + 8 posts"]
+    M4["M4 — Lead Intelligence Dashboard&lt;br/&gt;attendee→MQL funnel · top accounts + buying committee&lt;br/&gt;7/14/30-day lifecycle movement · AI narrative summary"]
+    FIN["Judge Control Room&lt;br/&gt;docs/index.html"]
+    IN1A --> M1
+    IN1B --> M1
+    IN2A --> M2
+    IN2B --> M2
+    IN3 --> M3
+    M1 -- "enriched contacts (dedup'd)" --> M2
+    M1 --> O1
+    M2 --> GATE --> O2
+    M3 --> O3
+    O1 --> M4
+    O2 --> M4
+    O3 --> M4
+    ENG["+ engagement.json&lt;br/&gt;opens · clicks · pageviews · fills"] --> M4
+    M4 --> FIN</pre>
+      </details>
+    </div>
+
+    <div class="diagram-block">
+      <h3>(b) Demo lane vs. production lane</h3>
+      <div class="svg-frame">
+        <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Demo lane runs locally offline with stdlib Python scripts; production lane swaps in n8n, Clay, HubSpot API and a Vercel serverless narrative function on the same DAG.">
+<defs>
+  <marker id="arrowhead2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M 0 0 L 10 5 L 0 10 L 2.5 5 z" fill="var(--edge)"/>
+  </marker>
+</defs>
+<g class="node" id="d0">
+  <rect x="50.0" y="90.0" width="340.0" height="62.0" rx="10" ry="10" fill="var(--lane-d-fill)" stroke="var(--lane-d-stroke)" stroke-width="1.6"/>
+  <rect x="51.2" y="90.7" width="340.0" height="62.0" rx="10" ry="10" fill="none" stroke="var(--lane-d-stroke)" stroke-width="1" opacity="0.45" transform="rotate(0.04 220.0 121.0)"/>
+  <text x="220.0" y="116.3" text-anchor="middle" font-size="14.5" font-weight="700" fill="var(--box-text)">data/incoming/ + data/fixtures/</text>
+  <text x="220.0" y="134.3" text-anchor="middle" font-size="13.5" font-weight="400" fill="var(--box-text)">flat files, checked into the repo</text>
+</g>
+<g class="node" id="d1">
+  <rect x="50.0" y="190.0" width="340.0" height="62.0" rx="10" ry="10" fill="var(--lane-d-fill)" stroke="var(--lane-d-stroke)" stroke-width="1.6"/>
+  <rect x="51.5" y="188.8" width="340.0" height="62.0" rx="10" ry="10" fill="none" stroke="var(--lane-d-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.3 220.0 221.0)"/>
+  <text x="220.0" y="216.3" text-anchor="middle" font-size="14.5" font-weight="700" fill="var(--box-text)">orchestrator/run_pipeline.py</text>
+  <text x="220.0" y="234.3" text-anchor="middle" font-size="13.5" font-weight="400" fill="var(--box-text)">subprocess chain → pass/fail receipt</text>
+</g>
+<g class="node" id="d2">
+  <rect x="50.0" y="290.0" width="340.0" height="62.0" rx="10" ry="10" fill="var(--lane-d-fill)" stroke="var(--lane-d-stroke)" stroke-width="1.6"/>
+  <rect x="50.8" y="288.9" width="340.0" height="62.0" rx="10" ry="10" fill="none" stroke="var(--lane-d-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.11 220.0 321.0)"/>
+  <text x="220.0" y="316.3" text-anchor="middle" font-size="14.5" font-weight="700" fill="var(--box-text)">enrich.py · comms.py · repurpose.py ·</text>
+  <text x="220.0" y="334.3" text-anchor="middle" font-size="13.5" font-weight="400" fill="var(--box-text)">build_dashboard.py — stdlib only</text>
+</g>
+<g class="node" id="d3">
+  <rect x="410.0" y="372.0" width="170.0" height="62.0" rx="10" ry="10" fill="var(--lane-d-alt)" stroke="var(--lane-d-stroke)" stroke-width="1.6"/>
+  <rect x="408.5" y="372.5" width="170.0" height="62.0" rx="10" ry="10" fill="none" stroke="var(--lane-d-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.02 495.0 403.0)"/>
+  <text x="495.0" y="390.7" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--box-text)">claude -p via</text>
+  <text x="495.0" y="406.7" text-anchor="middle" font-size="10.5" font-weight="400" fill="var(--box-text)">each module's own call_llm()</text>
+  <text x="495.0" y="422.7" text-anchor="middle" font-size="11.5" font-weight="400" fill="var(--box-text)">(only with --live)</text>
+</g>
+<g class="node" id="d4">
+  <rect x="50.0" y="470.0" width="340.0" height="60.0" rx="10" ry="10" fill="var(--lane-d-fill)" stroke="var(--lane-d-stroke)" stroke-width="1.6"/>
+  <rect x="50.2" y="471.2" width="340.0" height="60.0" rx="10" ry="10" fill="none" stroke="var(--lane-d-stroke)" stroke-width="1" opacity="0.45" transform="rotate(0.37 220.0 500.0)"/>
+  <text x="220.0" y="495.3" text-anchor="middle" font-size="14.5" font-weight="700" fill="var(--box-text)">docs/index.html</text>
+  <text x="220.0" y="513.3" text-anchor="middle" font-size="13.5" font-weight="400" fill="var(--box-text)">opened directly in a browser</text>
+</g>
+<g class="node" id="d5">
+  <rect x="50.0" y="560.0" width="340.0" height="60.0" rx="10" ry="10" fill="var(--lane-d-fill)" stroke="var(--lane-d-stroke)" stroke-width="1.6"/>
+  <text x="220.0" y="585.3" text-anchor="middle" font-size="13" font-weight="700" fill="var(--box-text)">orchestrator/n8n/local-demo/*.json</text>
+  <text x="220.0" y="602.3" text-anchor="middle" font-size="11.5" font-weight="400" fill="var(--box-text)">n8n import (Docker) — mirrors this DAG, no account</text>
+</g>
+<path d="M 220.0 530.0 Q 220.0 545.0 220.0 560.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead2)"/>
+<g class="node" id="p0">
+  <rect x="650.0" y="90.0" width="500.0" height="62.0" rx="10" ry="10" fill="var(--lane-p-fill)" stroke="var(--lane-p-stroke)" stroke-width="1.6"/>
+  <rect x="650.6" y="90.3" width="500.0" height="62.0" rx="10" ry="10" fill="none" stroke="var(--lane-p-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.26 900.0 121.0)"/>
+  <text x="900.0" y="116.3" text-anchor="middle" font-size="14.5" font-weight="700" fill="var(--box-text)">Webinar platform webhook</text>
+  <text x="900.0" y="134.3" text-anchor="middle" font-size="13.5" font-weight="400" fill="var(--box-text)">Zoom · GoTo · ON24</text>
+</g>
+<g class="node" id="p1">
+  <rect x="650.0" y="190.0" width="500.0" height="62.0" rx="10" ry="10" fill="var(--lane-p-fill)" stroke="var(--lane-p-stroke)" stroke-width="1.6"/>
+  <rect x="649.9" y="191.1" width="500.0" height="62.0" rx="10" ry="10" fill="none" stroke="var(--lane-p-stroke)" stroke-width="1" opacity="0.45" transform="rotate(0.11 900.0 221.0)"/>
+  <text x="900.0" y="216.3" text-anchor="middle" font-size="14.5" font-weight="700" fill="var(--box-text)">n8n workflow — cloud lane</text>
+  <text x="900.0" y="234.3" text-anchor="middle" font-size="13.5" font-weight="400" fill="var(--box-text)">orchestrator/n8n/cloud/*.json — real HTTP nodes</text>
+</g>
+<g class="node" id="p2a">
+  <rect x="650.0" y="290.0" width="240.0" height="60.0" rx="10" ry="10" fill="var(--lane-p-fill)" stroke="var(--lane-p-stroke)" stroke-width="1.6"/>
+  <rect x="649.9" y="290.5" width="240.0" height="60.0" rx="10" ry="10" fill="none" stroke="var(--lane-p-stroke)" stroke-width="1" opacity="0.45" transform="rotate(0.62 770.0 320.0)"/>
+  <text x="770.0" y="315.5" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--box-text)">Clay table</text>
+  <text x="770.0" y="332.5" text-anchor="middle" font-size="12.5" font-weight="400" fill="var(--box-text)">waterfall enrichment</text>
+</g>
+<g class="node" id="p2b">
+  <rect x="910.0" y="290.0" width="240.0" height="60.0" rx="10" ry="10" fill="var(--lane-p-fill)" stroke="var(--lane-p-stroke)" stroke-width="1.6"/>
+  <rect x="910.6" y="290.5" width="240.0" height="60.0" rx="10" ry="10" fill="none" stroke="var(--lane-p-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.62 1030.0 320.0)"/>
+  <text x="1030.0" y="315.5" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--box-text)">HubSpot API</text>
+  <text x="1030.0" y="332.5" text-anchor="middle" font-size="12.5" font-weight="400" fill="var(--box-text)">contacts, companies, dedupe</text>
+</g>
+<g class="node" id="p3">
+  <rect x="650.0" y="380.0" width="500.0" height="56.0" rx="10" ry="10" fill="var(--lane-p-alt)" stroke="var(--lane-p-stroke)" stroke-width="1.6"/>
+  <rect x="651.0" y="379.3" width="500.0" height="56.0" rx="10" ry="10" fill="none" stroke="var(--lane-p-stroke)" stroke-width="1" opacity="0.45" transform="rotate(0.69 900.0 408.0)"/>
+  <text x="900.0" y="403.5" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--box-text)">Claude API</text>
+  <text x="900.0" y="420.5" text-anchor="middle" font-size="12.5" font-weight="400" fill="var(--box-text)">classification + generation at every node</text>
+</g>
+<g class="node gate" id="pg">
+  <polygon points="900.0,460.0 1000.0,490.0 900.0,520.0 800.0,490.0" fill="var(--gate-fill)" stroke="var(--gate-stroke)" stroke-width="1.6"/>
+  <polygon points="900.0,460.0 1000.0,490.0 900.0,520.0 800.0,490.0" fill="none" stroke="var(--gate-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.18 900.0 490.0)"/>
+  <text x="900.0" y="487.5" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--gate-text)">human approval</text>
+  <text x="900.0" y="500.5" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--gate-text)">before any send</text>
+</g>
+<g class="node" id="p5">
+  <rect x="650.0" y="550.0" width="500.0" height="56.0" rx="10" ry="10" fill="var(--lane-p-fill)" stroke="var(--lane-p-stroke)" stroke-width="1.6"/>
+  <rect x="648.5" y="549.9" width="500.0" height="56.0" rx="10" ry="10" fill="none" stroke="var(--lane-p-stroke)" stroke-width="1" opacity="0.45" transform="rotate(0.24 900.0 578.0)"/>
+  <text x="900.0" y="573.5" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--box-text)">HubSpot send + tracking</text>
+  <text x="900.0" y="590.5" text-anchor="middle" font-size="12.5" font-weight="400" fill="var(--box-text)">UTM, opens, clicks, lifecycle stage</text>
+</g>
+<g class="node" id="p6">
+  <rect x="650.0" y="636.0" width="500.0" height="54.0" rx="10" ry="10" fill="var(--lane-p-fill)" stroke="var(--lane-p-stroke)" stroke-width="1.6"/>
+  <rect x="648.8" y="634.6" width="500.0" height="54.0" rx="10" ry="10" fill="none" stroke="var(--lane-p-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.46 900.0 663.0)"/>
+  <text x="900.0" y="658.5" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--box-text)">Vercel serverless fn</text>
+  <text x="900.0" y="675.5" text-anchor="middle" font-size="12.5" font-weight="400" fill="var(--box-text)">/api/narrative.js reads HubSpot live</text>
+</g>
+<g class="node" id="p7">
+  <rect x="650.0" y="720.0" width="500.0" height="54.0" rx="10" ry="10" fill="var(--lane-p-fill)" stroke="var(--lane-p-stroke)" stroke-width="1.6"/>
+  <rect x="648.8" y="719.2" width="500.0" height="54.0" rx="10" ry="10" fill="none" stroke="var(--lane-p-stroke)" stroke-width="1" opacity="0.45" transform="rotate(0.38 900.0 747.0)"/>
+  <text x="900.0" y="742.5" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--box-text)">Hosted dashboard URL</text>
+  <text x="900.0" y="759.5" text-anchor="middle" font-size="12.5" font-weight="400" fill="var(--box-text)">same M4 UI, live data</text>
+</g>
+<path d="M 220.0 152.0 Q 220.0 171.0 220.0 190.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead2)"/>
+<path d="M 220.0 252.0 Q 220.0 271.0 220.0 290.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead2)"/>
+<path d="M 220.0 352.0 Q 220.0 411.0 220.0 470.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead2)"/>
+<path d="M 390.0 321.0 Q 400.0 362.0 410.0 403.0" fill="none" stroke="var(--edge)" stroke-width="1.7" stroke-dasharray="6 5" marker-end="url(#arrowhead2)"/>
+<text x="400.0" y="356.0" text-anchor="middle" font-size="10.5" font-style="italic" fill="var(--edge-label)">--live</text>
+<path d="M 900.0 152.0 Q 900.0 171.0 900.0 190.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead2)"/>
+<path d="M 900.0 252.0 Q 832.2 261.4 770.0 290.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead2)"/>
+<path d="M 900.0 252.0 Q 967.8 261.4 1030.0 290.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead2)"/>
+<path d="M 770.0 350.0 Q 832.8 374.7 900.0 380.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead2)"/>
+<path d="M 1030.0 350.0 Q 967.2 374.7 900.0 380.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead2)"/>
+<path d="M 900.0 436.0 Q 900.0 448.0 900.0 460.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead2)"/>
+<path d="M 900.0 520.0 Q 900.0 535.0 900.0 550.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead2)"/>
+<path d="M 900.0 606.0 Q 900.0 621.0 900.0 636.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead2)"/>
+<path d="M 900.0 690.0 Q 900.0 705.0 900.0 720.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead2)"/>
+<path d="M 390.0 500.0 Q 476.1 319.6 650.0 221.0" fill="none" stroke="var(--edge-soft)" stroke-width="1.7" stroke-dasharray="6 5" marker-end="url(#arrowhead2)"/>
+<text x="476.1" y="309.6" text-anchor="middle" font-size="10.5" font-style="italic" fill="var(--edge-label)">same DAG, same prompts/</text>
+</svg>
+      </div>
+      <details class="mermaid-toggle">
+        <summary>View portable Mermaid source</summary>
+        <pre>flowchart LR
+    subgraph DEMO["DEMO LANE — runs today, fully offline"]
+        direction TB
+        d0["data/incoming/ + data/fixtures/&lt;br/&gt;flat files, checked into the repo"]
+        d1["orchestrator/run_pipeline.py&lt;br/&gt;subprocess chain → pass/fail receipt"]
+        d2["enrich.py · comms.py · repurpose.py ·&lt;br/&gt;build_dashboard.py — stdlib only"]
+        d3["claude -p via each module's own&lt;br/&gt;call_llm()/call_claude_live() helper&lt;br/&gt;(only with --live)"]
+        d4["docs/index.html&lt;br/&gt;opened directly in a browser"]
+        d5["orchestrator/n8n/local-demo/*.json&lt;br/&gt;n8n import (Docker) — mirrors this DAG, no account"]
+        d0 --> d1 --> d2
+        d2 -. "--live" .-> d3
+        d2 --> d4
+        d4 --> d5
+    end
+    subgraph PROD["PRODUCTION LANE — swap-in path"]
+        direction TB
+        p0["Webinar platform webhook&lt;br/&gt;Zoom · GoTo · ON24"]
+        p1["n8n workflow — cloud lane&lt;br/&gt;orchestrator/n8n/cloud/*.json — real HTTP nodes"]
+        p2a["Clay table&lt;br/&gt;waterfall enrichment"]
+        p2b["HubSpot API&lt;br/&gt;contacts, companies, dedupe"]
+        p3["Claude API&lt;br/&gt;classification + generation at every node"]
+        pg{{"human approval node&lt;br/&gt;before any send"}}
+        p5["HubSpot send + tracking&lt;br/&gt;UTM, opens, clicks, lifecycle stage"]
+        p6["Vercel serverless fn&lt;br/&gt;/api/narrative.js reads HubSpot live"]
+        p7["Hosted dashboard URL&lt;br/&gt;same M4 UI, live data"]
+        p0 --> p1
+        p1 --> p2a --> p3
+        p1 --> p2b --> p3
+        p3 --> pg --> p5 --> p6 --> p7
+    end
+    d4 -. "same DAG, same prompts/ — only the transport changes" .-> p1</pre>
+      </details>
+    </div>
+  </section>
+
+  <section id="receipts">
+    <h2>Live receipts</h2>
+    <p class="section-sub">
+      Everything below is a receipt for a call actually made against a real provider account, not a
+      spec doc or a mock. Clay's managed enrichment ran live on three real domains; the HubSpot sandbox
+      and private app are provisioned and the injector has pushed the full event into it; and the LLM
+      lane ran end to end against a real model endpoint (receipt at the bottom of this section).
+    </p>
+
+    <div class="diagram-block">
+      <h3>Clay — live company enrichment</h3>
+      <p style="font-size:14.5px; color:var(--text-muted); margin:0 0 14px; max-width:760px;">
+        Clay CLI (official, July-2026 release) authenticated; Clay's managed Enrich Company function
+        executed live via <code class="mono">clay routines runs</code> on 3 real domains.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Domain</th><th>Name</th><th>Industry</th><th>Employees</th><th>Country</th><th>Revenue band</th></tr></thead>
+          <tbody>
+            <tr><td>hubspot.com</td><td>HubSpot</td><td>Software Development</td><td>13,083</td><td>US</td><td>1B–10B</td></tr>
+            <tr><td>n8n.io</td><td>n8n</td><td>Software Development</td><td>1,228</td><td>DE</td><td>75M–200M</td></tr>
+            <tr><td>clay.com</td><td>Clay</td><td>Software Development</td><td>1,495</td><td>US</td><td>500M–1B</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="stat-row">
+        <div class="stat"><div class="lbl" style="margin-bottom:4px;">Routine run id</div><div class="num mono" style="font-size:14px; word-break:break-all;">run_0tk7y5kH2Y5PHTW5moE</div></div>
+        <div class="stat"><div class="num">2505 → 2503.5</div><div class="lbl">workspace credits, before → after</div></div>
+        <div class="stat"><div class="num">1.5</div><div class="lbl">credits spent (3 domains)</div></div>
+      </div>
+      <div class="callout">
+        Fixture domains are synthetic by design — hubspot.com/clay.com/n8n.io stand in for real registrant
+        companies so this proof run doesn't spend against or leak data about anyone real. The production
+        lane runs this identical routine on every real company domain in the registrant list, via
+        <code class="mono">enrich.py</code>'s <code class="mono">--clay-max</code> flag driving
+        <code class="mono">clay_enrich.py</code>'s <code class="mono">enrich_domains()</code> in-process.
+      </div>
+    </div>
+
+    <div class="diagram-block">
+      <h3>HubSpot — sandbox + private app</h3>
+      <p style="font-size:14.5px; color:var(--text-muted); margin:0 0 14px; max-width:820px;">
+        Developer test account <b>"Post-Event Engine Sandbox"</b> (portal
+        <code class="mono">247135551</code>, Enterprise-trial on all Hubs) with private app
+        <b>"Post-Event Engine"</b> (id <code class="mono">50285304</code>), scoped for the full
+        M1/M2 write path — not read-only access for a screenshot.
+      </p>
+      <div class="label">15 granted scopes</div>
+      <div class="chip-row">
+        <span class="chip">crm.objects.contacts.read</span>
+        <span class="chip">crm.objects.contacts.write</span>
+        <span class="chip">crm.objects.companies.read</span>
+        <span class="chip">crm.objects.companies.write</span>
+        <span class="chip">crm.objects.owners.read</span>
+        <span class="chip">crm.schemas.contacts.read</span>
+        <span class="chip">crm.schemas.contacts.write</span>
+        <span class="chip">crm.schemas.companies.read</span>
+        <span class="chip">crm.schemas.companies.write</span>
+        <span class="chip">marketing-email</span>
+        <span class="chip">marketing.campaigns.read</span>
+        <span class="chip">marketing.campaigns.write</span>
+        <span class="chip">sales-email-read</span>
+        <span class="chip">transactional-email</span>
+        <span class="chip">timeline</span>
+      </div>
+      <p style="font-size:14px; color:var(--text-muted); margin:18px 0 6px;">
+        The injector (<code class="mono">push_to_hubspot.py</code>) is dry-run verified against this
+        scope set before any live token touches it:
+      </p>
+      <div class="stat-row">
+        <div class="stat"><div class="num">7</div><div class="lbl">custom properties ensured</div></div>
+        <div class="stat"><div class="num">30</div><div class="lbl">companies upserted</div></div>
+        <div class="stat"><div class="num">133</div><div class="lbl">contacts upserted</div></div>
+        <div class="stat"><div class="num">120</div><div class="lbl">associations written</div></div>
+      </div>
+      <div class="callout">
+        Dry-run makes zero network calls (<code class="mono">network_calls_made=0</code> in its own plan
+        output), and the 401 path is separately proven against a fake token — so the only thing between
+        this and a live push was the sandbox token itself. With the token in, it ran (receipt below).
+      </div>
+      <div class="loom-slot" id="hubspot-live-results">
+        <b>Live HubSpot push — done 2026-08-23, sandbox portal 247135551</b><br>
+        <code class="mono">python3 modules/m1-enrichment/push_to_hubspot.py</code> then <code class="mono">--verify</code>,
+        through the private app above: 7 custom properties ensured (7 requests) · 30 companies upserted (1 batch)
+        · 133 contacts upserted (2 batches) · 120 contact→company associations (2 batches; 13 skipped = freemail /
+        no company domain) · zero errors. Read-back by <code class="mono">event_tag=acmerevenue-2026-07-20</code>:
+        contacts=133, companies=30. Two things the sandbox taught us on the way, both fixed in the injector:
+        HubSpot doesn't unique-index company <code class="mono">domain</code> (so companies are search-by-domain →
+        batch update/create, not batch upsert), and <code class="mono">industry</code> is a fixed enum (mapped from
+        M1's labels). Email engagements are logged to contact timelines only after M2's approval gate flips —
+        by design, that flip is a human's.
+      </div>
+    </div>
+
+    <div class="diagram-block" id="llm-live-results">
+      <h3>LLM — live generation run (the "AI is the engine" lane, executed)</h3>
+      <p style="font-size:14.5px; color:var(--text-muted); margin:0 0 14px; max-width:820px;">
+        <code class="mono">LLM_BACKEND=openrouter python3 orchestrator/run_pipeline.py --live --out out/live-proof</code>
+        on 2026-08-23 against OpenRouter, model <code class="mono">nvidia/nemotron-3-ultra-550b-a55b:free</code>
+        (the <code class="mono">claude -p</code> lane was unavailable on the build machine that day — auth revoked — so
+        the OpenRouter backend every module ships carried the proof; <code class="mono">usage.cost: 0</code> on every call).
+        Every artifact is in <code class="mono">out/live-proof/</code> (zip) and browsable
+        <a href="https://postevent-engine.vercel.app/demo/live-proof/">hosted</a>, with per-stage
+        <code class="mono">_stage.log</code> files and the raw model responses M2 received.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Stage</th><th>Live LLM work done</th><th>Result</th><th>Wall-clock</th></tr></thead>
+          <tbody>
+            <tr><td>M1 enrich</td><td>2 inference batches over the 30 rows the rule tables couldn't fill; model inferred function / seniority / size band / industry</td><td>PASS — 25 of 30 rows patched by the model; 1 batch fell back to rule values after a malformed response (counted, not hidden: <code class="mono">live_inference_report.json</code>)</td><td>121 s</td></tr>
+            <tr><td>M2 comms</td><td>3 calls: attendee takeaways by function × industry, no-show takeaways, speaker quotes + subject-line pairs</td><td id="m2-live-result">PASS — 3 variants rendered for 153 recipients; attendee + no-show takeaways came back keyed by all 6 functions × 3 industry buckets; the speaker call's first answer was 51 KB of reasoning with no JSON (kept: <code class="mono">m2/live_raw/speaker.attempt1.raw.txt</code>), the automatic retry returned clean JSON — the parse→validate→retry path doing its job live</td><td id="m2-live-secs">795 s</td></tr>
+            <tr><td>M3 repurpose</td><td>1 extraction call (key moments, quotes, data points) + 4 generation calls (blog, YouTube, infographic, social)</td><td>PASS — blog 1,277 words (<b>77 over the 800–1,200 spec</b>, flagged <code class="mono">blog_within_spec:false</code> in <code class="mono">manifest.json</code>), 8 social posts ✓, 18 YouTube chapters ✓</td><td>548 s</td></tr>
+            <tr><td>M4 dashboard</td><td>none at build time by design (deterministic metrics); narrative is generated on page load by <code class="mono">/api/narrative</code></td><td>PASS — 10 top accounts, 5 committee accounts, 2 anomalies</td><td>0.05 s</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout">
+        What the free model taught the code, all fixed in this build and kept: reasoning-style models (we tried
+        <code class="mono">stealth/ox-alpha</code> first) wrap JSON in fences <i>and</i> append a sentence after the
+        closing fence, spend their whole completion budget thinking on a long transcript, and take ~2 min a call — so
+        every module now extracts the first complete JSON value rather than trusting the whole response, sizes
+        timeouts/max_tokens for it, retries a non-JSON answer, validates the shape against the renderer's contract
+        before persisting anything, and <code class="mono">OPENROUTER_MODEL</code> accepts a comma-separated
+        fallback chain for when a free provider is overloaded (it was, twice).
+      </div>
+    </div>
+  </section>
+
+  <section id="economics">
+    <h2>Unit economics</h2>
+    <p class="section-sub">
+      Stated estimates, not a metered bill (no Clay/HubSpot account exists yet). Full assumptions and
+      math in <a href="economics.md">economics.md</a>.
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Module</th><th>Manual task</th><th>Manual $</th><th>AI $ (LLM + Clay)</th><th>Multiple</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>M1 — Enrichment</td><td>3h @ $40/h</td><td>$120.00</td><td>$22.79</td><td>5.3x</td></tr>
+          <tr><td>M2 — Comms</td><td>2h @ $40/h</td><td>$80.00</td><td>$0.16</td><td>~493x</td></tr>
+          <tr><td>M3 — Repurposing</td><td>6h @ $40/h</td><td>$240.00</td><td>$0.68</td><td>~351x</td></tr>
+          <tr><td>M4 — Dashboard</td><td>2h @ $40/h</td><td>$80.00</td><td>$0.03</td><td>~2,390x</td></tr>
+          <tr class="total"><td>Total</td><td>13h</td><td>$520.00</td><td>$23.67</td><td>~22x</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat"><div class="num">$1.17</div><div class="lbl">LLM cost / event (120k tok, Sonnet pricing)</div></div>
+      <div class="stat"><div class="num">$22.50</div><div class="lbl">Clay cost / event (150 contacts × 3cr × $0.05)</div></div>
+      <div class="stat"><div class="num">~22x</div><div class="lbl">infra-only multiple vs. 13 manual hours</div></div>
+      <div class="stat"><div class="num">~13x</div><div class="lbl">fully-loaded, incl. ~25min human approval time</div></div>
+    </div>
+
+    <div class="callout">
+      Clay is ~19x the entire LLM spend — it's the real cost line, not tokens. The multiple swings from
+      5.3x (M1, bottlenecked by a paid enrichment provider) to ~2,390x (M4, pure generation against
+      near-zero marginal token cost) — that's the honest shape of the number, not an accounting trick.
+    </div>
+  </section>
+
+  <section id="buildlog">
+    <h2>Build log</h2>
+    <p class="section-sub">
+      Disclosed on purpose. Full skeleton (per-unit agent/wall-clock/token/touchpoint table) in
+      <a href="build_log.md">build_log.md</a> — filled in as each parallel unit closes out.
+    </p>
+    <div class="buildlog-grid">
+      <div class="bl-card"><div class="bl-label">Agents</div><div class="bl-val">8 parallel units (FIX-A/B, M1–M4, ORCH, DOCS)</div></div>
+      <div class="bl-card"><div class="bl-label">Wall-clock</div><div class="bl-val">received 2026-08-21 15:25 IST → shipped 2026-08-23 (~52h, two judge rounds + two fix waves inside it)</div></div>
+      <div class="bl-card"><div class="bl-label">Token spend</div><div class="bl-val">build: not metered per unit (flat-rate seat) · per-event run: est. 120k tokens; live lane ran on OpenRouter <code class="mono">stealth/ox-alpha</code> at $0 — see <code class="mono">out/live-proof/</code></div></div>
+      <div class="bl-card"><div class="bl-label">Human touchpoints</div><div class="bl-val">webinar identity · Clay workspace + credit budget · HubSpot sandbox + private app + token · LLM key/model choice · M2 approval gate · final send</div></div>
+    </div>
+  </section>
+
+  <section id="swap">
+    <h2>Swap to your real event</h2>
+    <div class="swap-box">
+      <p>
+        Everything above ran on a synthetic-but-realistic stand-in webinar because your real event
+        wasn't named before the deadline — the pipeline itself doesn't know the difference. Swapping in
+        your actual webinar is two edits: drop your registrant export, transcript, and speaker/event
+        metadata into <code class="inline">data/incoming/</code>, and point <code class="inline">config/icp.yaml</code>
+        at your real ICP tiers, regions, and owner routing. No code changes, no re-architecture.
+      </p>
+      <p>
+        <span class="swap-cta">That means we can point this at your next webinar Monday morning</span> —
+        same four modules, same human-approval gate before any send, same dashboard — and have enriched
+        leads, drafted comms, a repurposed content package, and a live lead-intelligence view ready
+        before your SDR team finishes their coffee.
+      </p>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  Post-Event Engine — working prototype for the AI-led post-event content automation assignment.
+  Repo shared with the reviewer alongside this submission ·
+  Submission draft: <a href="submission_email.md">submission_email.md</a>
+</footer>
+
+<script>
+  (function () {
+    var root = document.documentElement;
+    var btn = document.getElementById('themeToggle');
+    var stored = null;
+    try { stored = localStorage.getItem('pe-theme'); } catch (e) {}
+    if (stored === 'light' || stored === 'dark') { root.setAttribute('data-theme', stored); }
+    btn.addEventListener('click', function () {
+      var mql = window.matchMedia('(prefers-color-scheme: dark)');
+      var current = root.getAttribute('data-theme') || (mql.matches ? 'dark' : 'light');
+      var next = current === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('pe-theme', next); } catch (e) {}
+    });
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,277 @@
+{
+  "_generated_from": "out/pipeline-after-the-webinar-turning-event-engagement-into-revenue/m1/hubspot_companies.csv + hubspot_contacts.csv (first 5 rows each), by modules/m1-enrichment/tools/make_upsert_payload.py",
+  "companies_batch": {
+    "endpoint": "POST /crm/v3/objects/companies/batch/upsert",
+    "inputs": [
+      {
+        "idProperty": "domain",
+        "id": "alderwoodfintech.com",
+        "properties": {
+          "domain": "alderwoodfintech.com",
+          "name": "ALDERWOOD FINTECH",
+          "industry": "Fintech",
+          "numemployees": "32"
+        }
+      },
+      {
+        "idProperty": "domain",
+        "id": "anchorpointsaas.com",
+        "properties": {
+          "domain": "anchorpointsaas.com",
+          "name": "Anchorpoint SaaS",
+          "industry": "SaaS",
+          "numemployees": "10"
+        }
+      },
+      {
+        "idProperty": "domain",
+        "id": "bluepeakventures.com",
+        "properties": {
+          "domain": "bluepeakventures.com",
+          "name": "Bluepeak Ventures",
+          "industry": "Other",
+          "numemployees": "147"
+        }
+      },
+      {
+        "idProperty": "domain",
+        "id": "brightlineanalytics.com",
+        "properties": {
+          "domain": "brightlineanalytics.com",
+          "name": "Brightline Analytics",
+          "industry": "IT Services",
+          "numemployees": "28"
+        }
+      },
+      {
+        "idProperty": "domain",
+        "id": "cascaderevops.com",
+        "properties": {
+          "domain": "cascaderevops.com",
+          "name": "Cascade RevOps",
+          "industry": "Other",
+          "numemployees": "42"
+        }
+      }
+    ]
+  },
+  "contacts_batch": {
+    "endpoint": "POST /crm/v3/objects/contacts/batch/upsert",
+    "inputs": [
+      {
+        "idProperty": "email",
+        "id": "anunes@northfielddata.com",
+        "properties": {
+          "email": "anunes@northfielddata.com",
+          "firstname": "Amit",
+          "lastname": "Nunes",
+          "jobtitle": "Content Specialist",
+          "company": "NORTHFIELD DATA CO",
+          "function": "general",
+          "seniority": "individual_contributor",
+          "country": "MX",
+          "region": "AMER",
+          "hubspot_owner_email": "sdr.amer@acmerevenue.example",
+          "lifecyclestage": "subscriber",
+          "hs_lead_status": "NEW",
+          "hubspot_contact_id": "",
+          "attendance_status": "no_show",
+          "time_in_session_minutes": "",
+          "registration_time": "2026-06-28T05:25:00",
+          "icp_tier": "tier3",
+          "icp_rationale": "tier3 -- catch-all title 'Content Specialist'; company_size=31 in [1, 50]; industry=IT Services (wildcard). [title inferred from most common title at 'NORTHFIELD DATA CO']",
+          "confidence": "0.8",
+          "merge_action": "create_new",
+          "needs_review": "False",
+          "company_domain": "northfielddata.com"
+        }
+      },
+      {
+        "idProperty": "email",
+        "id": "tivanov@everlinetech.com",
+        "properties": {
+          "email": "tivanov@everlinetech.com",
+          "firstname": "Tomas",
+          "lastname": "Ivanov",
+          "jobtitle": "RevOps Manager",
+          "company": "Everline Technologies",
+          "function": "revops",
+          "seniority": "manager",
+          "country": "UK",
+          "region": "EMEA",
+          "hubspot_owner_email": "sdr.emea@acmerevenue.example",
+          "lifecyclestage": "subscriber",
+          "hs_lead_status": "NEW",
+          "hubspot_contact_id": "",
+          "attendance_status": "attended",
+          "time_in_session_minutes": "61",
+          "registration_time": "2026-07-05T19:04:00",
+          "icp_tier": "tier3",
+          "icp_rationale": "tier3 -- catch-all title 'RevOps Manager'; company_size=34 in [1, 50]; industry=Other (wildcard).",
+          "confidence": "0.95",
+          "merge_action": "create_new",
+          "needs_review": "False",
+          "company_domain": "everlinetech.com"
+        }
+      },
+      {
+        "idProperty": "email",
+        "id": "aali@quantarasoftware.com",
+        "properties": {
+          "email": "aali@quantarasoftware.com",
+          "firstname": "Alice",
+          "lastname": "Ali",
+          "jobtitle": "Growth Manager",
+          "company": "Quantara Software",
+          "function": "marketing",
+          "seniority": "manager",
+          "country": "SG",
+          "region": "APAC",
+          "hubspot_owner_email": "sdr.apac@acmerevenue.example",
+          "lifecyclestage": "subscriber",
+          "hs_lead_status": "NEW",
+          "hubspot_contact_id": "",
+          "attendance_status": "attended",
+          "time_in_session_minutes": "46",
+          "registration_time": "2026-07-12T16:17:00",
+          "icp_tier": "unqualified",
+          "icp_rationale": "unqualified -- title 'Growth Manager' not in tier1/tier2 title lists and company_size=1829 outside tier3 range [1, 50] (industry=SaaS).",
+          "confidence": "0.95",
+          "merge_action": "create_new",
+          "needs_review": "False",
+          "company_domain": "quantarasoftware.com"
+        }
+      },
+      {
+        "idProperty": "email",
+        "id": "miguel.iyer@hotmail.com",
+        "properties": {
+          "email": "miguel.iyer@hotmail.com",
+          "firstname": "Miguel",
+          "lastname": "Iyer",
+          "jobtitle": "Content Specialist",
+          "company": "Bluepeak Ventures",
+          "function": "general",
+          "seniority": "individual_contributor",
+          "country": "MX",
+          "region": "AMER",
+          "hubspot_owner_email": "sdr.amer@acmerevenue.example",
+          "lifecyclestage": "subscriber",
+          "hs_lead_status": "NEW",
+          "hubspot_contact_id": "",
+          "attendance_status": "no_show",
+          "time_in_session_minutes": "",
+          "registration_time": "2026-06-29T14:16:00",
+          "icp_tier": "tier3",
+          "icp_rationale": "tier3 -- catch-all title 'Content Specialist'; company_size=45 in [1, 50]; industry=Other (wildcard).",
+          "confidence": "0.95",
+          "merge_action": "create_new",
+          "needs_review": "False",
+          "company_domain": ""
+        }
+      },
+      {
+        "idProperty": "email",
+        "id": "annam@lumen8marketing.com",
+        "properties": {
+          "email": "annam@lumen8marketing.com",
+          "firstname": "Anna",
+          "lastname": "Mahajan",
+          "jobtitle": "Marketing Coordinator",
+          "company": "Lumen8 Marketing",
+          "function": "marketing",
+          "seniority": "individual_contributor",
+          "country": "US",
+          "region": "AMER",
+          "hubspot_owner_email": "sdr.amer@acmerevenue.example",
+          "lifecyclestage": "subscriber",
+          "hs_lead_status": "NEW",
+          "hubspot_contact_id": "",
+          "attendance_status": "no_show",
+          "time_in_session_minutes": "",
+          "registration_time": "2026-07-17T13:01:00",
+          "icp_tier": "unqualified",
+          "icp_rationale": "unqualified -- title 'Marketing Coordinator' not in tier1/tier2 title lists and company_size=60 outside tier3 range [1, 50] (industry=Other). [title inferred from most common title at 'Lumen8 Marketing']",
+          "confidence": "0.8",
+          "merge_action": "create_new",
+          "needs_review": "False",
+          "company_domain": "lumen8marketing.com"
+        }
+      }
+    ]
+  },
+  "associations_batch": {
+    "endpoint": "POST /crm/v4/associations/contacts/companies/batch/create",
+    "inputs": [
+      {
+        "from": {
+          "id": "anunes@northfielddata.com",
+          "id_source": "email (placeholder -- real call uses the contact ID returned by contacts_batch upsert)"
+        },
+        "to": {
+          "id": "northfielddata.com",
+          "id_source": "domain (placeholder -- real call uses the company ID returned by companies_batch upsert)"
+        },
+        "types": [
+          {
+            "associationCategory": "HUBSPOT_DEFINED",
+            "associationTypeId": 1
+          }
+        ]
+      },
+      {
+        "from": {
+          "id": "tivanov@everlinetech.com",
+          "id_source": "email (placeholder -- real call uses the contact ID returned by contacts_batch upsert)"
+        },
+        "to": {
+          "id": "everlinetech.com",
+          "id_source": "domain (placeholder -- real call uses the company ID returned by companies_batch upsert)"
+        },
+        "types": [
+          {
+            "associationCategory": "HUBSPOT_DEFINED",
+            "associationTypeId": 1
+          }
+        ]
+      },
+      {
+        "from": {
+          "id": "aali@quantarasoftware.com",
+          "id_source": "email (placeholder -- real call uses the contact ID returned by contacts_batch upsert)"
+        },
+        "to": {
+          "id": "quantarasoftware.com",
+          "id_source": "domain (placeholder -- real call uses the company ID returned by companies_batch upsert)"
+        },
+        "types": [
+          {
+            "associationCategory": "HUBSPOT_DEFINED",
+            "associationTypeId": 1
+          }
+        ]
+      },
+      {
+        "from": {
+          "id": "annam@lumen8marketing.com",
+          "id_source": "email (placeholder -- real call uses the contact ID returned by contacts_batch upsert)"
+        },
+        "to": {
+          "id": "lumen8marketing.com",
+          "id_source": "domain (placeholder -- real call uses the company ID returned by companies_batch upsert)"
+        },
+        "types": [
+          {
+            "associationCategory": "HUBSPOT_DEFINED",
+            "associationTypeId": 1
+          }
+        ]
+      }
+    ]
+  },
+  "notes": [
+    "Import order: companies_batch, then contacts_batch, then associations_batch -- associations need the HubSpot record IDs returned by the first two calls (this sample uses domain/email as human-readable placeholders for those IDs).",
+    "Custom contact properties that must exist in HubSpot (Settings -> Properties) before contacts_batch will succeed: icp_tier, icp_rationale, confidence, attendance_status, needs_review. event_tag is not a contact/company property in this pipeline -- it is M3's per-asset campaign tag (modules/m3-repurpose/repurpose.py::event_tag()); if a HubSpot campaign rollup property is wanted on Contact, create it separately.",
+    "companies_batch matches on `domain`; contacts_batch matches on `email` -- both per clay_spec.md's two-object-type section. hubspot_owner_email and hubspot_contact_id are import-time lookup/join columns only, never persisted as literal HubSpot properties (see modules/m1-enrichment/README.md)."
+  ]
+}

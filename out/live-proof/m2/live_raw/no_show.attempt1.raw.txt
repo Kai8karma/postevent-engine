@@ -1,0 +1,35 @@
+{
+  "by_function": {
+    "marketing": {
+      "headline": "No-shows clicked our recording link more than attendees in 6 of 8 webinars",
+      "body": "Daniel Kim shared at [15:44] that Northwind's no-show follow-up — recording link plus a three-bullet summary — outperformed the attendee follow-up on click-through rate in six of their last eight webinars. His working theory: no-shows have higher intent-to-consume because they haven't gotten the content yet. At [17:15] Sara Alvarez added that timestamping the link to the five minutes most relevant to the registrant's stated interest drives even higher engagement than sending the full hour."
+    },
+    "revops": {
+      "headline": "Cutting internal routing from 18 hours to under 2 lifted webinar-sourced opportunities 41%",
+      "body": "Sara Alvarez reported at [11:30–12:05] that when Meridian reduced the average internal handoff delay from ~18 hours to under two hours — same leads, same list quality — their webinar-sourced opportunity creation rate rose 41% the following quarter. At [48:56–49:35] she noted attendees who received segmented follow-up within the critical window reached MQL status 60% faster than those who got generic delayed follow-up."
+    },
+    "sales": {
+      "headline": "Three-plus attendees from one account nearly doubles opportunity conversion",
+      "body": "Sara Alvarez flagged at [06:20–06:48] that accounts with three or more attendees on the same webinar convert to opportunity at almost double the rate of single-attendee accounts. At [13:50–14:30] she described how hot attendees — full-session stay, Q&A participation, pricing-content clicks — are pushed as contextual tasks to the right rep within 1–2 hours, not dumped on a list at day's end."
+    },
+    "executive": {
+      "headline": "Fully-loaded event ROI of 11–14× within two quarters when all three layers are tracked",
+      "body": "Sara Alvarez shared at [51:48–52:30] that Meridian's end-to-end attributed events — counting direct attendee pipeline plus secondary pipeline from repurposed content touching non-registrants — return 11–14× the fully-loaded event cost within two quarters. Daniel Kim underscored at [53:45] that none of that return appears if speed and segmentation (layers one and two) are broken: attribution measures value, it doesn't create it."
+    },
+    "customer_success": {
+      "headline": "Chapter markers lift average watch time by letting viewers jump to their pain point",
+      "body": "Daniel Kim admitted at [45:05–45:40] he was skeptical of YouTube chapters until tracking showed they meaningfully increase average watch time on recordings — viewers jump to the relevant section instead of bouncing in the first 90 seconds. Sara Alvarez added at [46:05–46:20] that chapter clicks are a proxy signal worth feeding back into lead scoring, the same way a pricing-page visit would be."
+    },
+    "general": {
+      "headline": "The four-hour window is real: 3.2× reply rate vs. next-day follow-up",
+      "body": "Daniel Kim presented the core decay curve at [08:35–09:24]: follow-up within the first hour post-webinar yields the best reply rates; within four hours still delivers a 3.2× lift over next-day; by 24 hours the lift drops to ~1.4×; by 48 hours you're at baseline. At [10:18–10:55] he explained the operational unlock: auto-generate segmented drafts from the transcript so a human only reviews and hits send — making the four-hour window achievable at scale."
+    }
+  },
+  "by_industry": {
+    "saas": "For SaaS teams like Northwind, the same transcript pass that powers the no-show summary also fuels the blog post, social quotes, and infographic outline that collectively generated 2.4× the pipeline-influenced touches of the live session itself [38:42–39:38].",
+    "services_it": "Services and IT shops can borrow Meridian's routing fix — cutting internal handoff from 18 hours to under two — which moved webinar-sourced opportunity creation 41% with zero new content spend [11:30–12:05].",
+    "other_commercial": "Across commercial segments, the compounding lesson holds: speed enables segmentation to matter, segmentation and speed together drive the MQL lift, and attribution is just the mirror that proves it happened [54:15–54:22]."
+  },
+  "subject_a": "You missed the session — here's the 5-minute segment that matters for {{function_relevant_segment}}",
+  "subject_b": "Recording + the three bullets your peers from {{company}} clicked most"
+}

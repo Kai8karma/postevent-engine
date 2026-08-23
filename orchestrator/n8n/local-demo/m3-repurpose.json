@@ -1,0 +1,61 @@
+{
+  "name": "Post-Event Engine \u2014 M3 Content Repurposing [LOCAL DEMO STAND-IN]",
+  "nodes": [
+    {
+      "id": "sticky-local-demo-note",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        160,
+        -20
+      ],
+      "parameters": {
+        "content": "## LOCAL DEMO STAND-IN\nThis workflow shells out to the same Python CLI scripts used by `orchestrator/run_pipeline.py` via Execute Command nodes -- it lets a judge see the pipeline DAG inside n8n's UI with zero credentials.\n\n**It will NOT run on n8n Cloud** (Execute Command requires a self-hosted/queue-mode n8n with shell access) and it is not the production design.\n\nProduction lane: `orchestrator/n8n/cloud/master.json` -- real Webhook trigger, HTTP Request nodes to the webinar platform / Clay / HubSpot, a Code node for payload shaping, a Wait+IF approval gate, and a disabled Telegram notify.",
+        "height": 300,
+        "width": 460,
+        "color": 5
+      }
+    },
+    {
+      "id": "1",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        200,
+        300
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "2",
+      "name": "M3 Repurpose",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        440,
+        300
+      ],
+      "parameters": {
+        "command": "python3 modules/m3-repurpose/repurpose.py --out out/pipeline/m3"
+      }
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "M3 Repurpose",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

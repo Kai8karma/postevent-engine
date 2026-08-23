@@ -1,0 +1,454 @@
+{
+  "name": "Post-Event Engine \u2014 Cloud Production",
+  "nodes": [
+    {
+      "id": "sticky-cloud-note",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -60,
+        -360
+      ],
+      "parameters": {
+        "content": "## PRODUCTION LANE\nReal trigger + real HTTP calls -- no Execute Command anywhere, so this runs unmodified on n8n Cloud.\n\nBefore running: wire the 4 credential placeholders below (Webinar Platform header auth, HubSpot private-app token, Telegram bot token) and point the Webhook node's production URL at your webinar platform's \"session ended\" callback (Zoom/GoTo/ON24 webhook config, done outside n8n).\n\nLocal-demo lane (Execute Command, offline, zero creds): `orchestrator/n8n/local-demo/master.json`.",
+        "height": 320,
+        "width": 480,
+        "color": 4
+      }
+    },
+    {
+      "id": "1",
+      "name": "Webinar Ended (webhook)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        200,
+        400
+      ],
+      "webhookId": "webinar-ended-placeholder-0001",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "webinar-ended",
+        "responseMode": "onReceived",
+        "responseData": "{\"status\": \"accepted\"}",
+        "options": {}
+      }
+    },
+    {
+      "id": "2",
+      "name": "Fetch Registrants",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        460,
+        400
+      ],
+      "notes": "Stand-in webinar-platform endpoint (no real Zoom/GoTo/ON24 account in this demo) -- in production this is your platform's registrants API. On error the run continues: the demo webhook payload carries the registrant rows itself, and every node downstream reads from the webhook/wait payloads, so the lane stays executable end to end.",
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.webinar-platform.example/v2/webinars/{{ $json.body.webinar_id }}/registrants",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "include",
+              "value": "attendance,contact_fields"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "PLACEHOLDER_WEBINAR_PLATFORM_CRED",
+          "name": "Webinar Platform API (placeholder)"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "id": "3",
+      "name": "Push to Clay Table",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        700,
+        400
+      ],
+      "notes": "PLACEHOLDER Clay table webhook id -- wire your Clay table's webhook source here. The body already ships the resume callback_url so Clay's HTTP-API column can call the Wait node back with enriched rows. On error (placeholder id) the run continues to the Wait, which a demo driver resumes with enriched rows -- same contract Clay would use.",
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.clay.com/v3/sources/webhook/PLACEHOLDER_CLAY_TABLE_WEBHOOK_ID",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"rows\": $('Webinar Ended (webhook)').item.json.body.registrants, \"event_id\": $('Webinar Ended (webhook)').item.json.body.event_id, \"callback_url\": $execution.resumeUrl } }}",
+        "options": {}
+      },
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "id": "3b",
+      "name": "Wait for Clay Enrichment Callback",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        940,
+        400
+      ],
+      "webhookId": "clay-enrichment-callback-placeholder-0001",
+      "notes": "Clay enrichment (clay_title_inferred, clay_company_name, clay_company_size, clay_industry, clay_icp_tier) runs async after 'Push to Clay Table' fires -- without this pause, 'Shape M1 Payload' would read clay_* fields before Clay finished writing them. Pauses the execution until Clay calls back. Clay-side wiring: on the target Clay table, add a webhook output (Clay UI -> table -> Settings -> Webhooks, table-level 'run complete' trigger -- NOT a per-column one, so partial/in-progress rows are never posted) pointed at this node's resume-webhook URL (n8n shows the exact URL here once the workflow is active, same pattern as 'Wait for Human Approval' downstream). Clay's callback body must post the enriched rows in the same shape 'Shape M1 Payload' expects (body.rows[], each with clay_* fields) since that node reads $input.first().json.body?.rows straight off this node's resume payload.",
+      "parameters": {
+        "resume": "webhook",
+        "options": {}
+      }
+    },
+    {
+      "id": "4",
+      "name": "Shape M1 Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1180,
+        400
+      ],
+      "notes": "JS payload shaping per M1 contract (see modules/m1-enrichment/enrich.py hubspot_ready.csv columns). Clay's enrichment columns land on each row under item.json.clay_* -- mapped here to HubSpot property names. Runs only after 'Wait for Clay Enrichment Callback' resumes, so clay_* fields are guaranteed present by the time this code executes.",
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const rows = $input.first().json.rows || $input.first().json.body?.rows || [];\n\nconst contacts = [];\nconst companies = [];\n\nfor (const row of rows) {\n  const email = (row.email || '').trim().toLowerCase();\n  if (!email) continue;\n\n  contacts.push({\n    idProperty: 'email',\n    id: email,\n    properties: {\n      email,\n      firstname: row.firstname || row.first_name || '',\n      lastname: row.lastname || row.last_name || '',\n      jobtitle: row.jobtitle || row.clay_title_inferred || '',\n      company: row.company || row.clay_company_name || '',\n      hs_lead_status: row.hs_lead_status || 'NEW',\n      lifecyclestage: row.lifecyclestage || 'marketingqualifiedlead',\n      icp_tier: row.icp_tier || row.clay_icp_tier || 'unscored',\n      hubspot_owner_email: row.hubspot_owner_email || ''\n    }\n  });\n\n  const companyDomain = email.split('@')[1] || '';\n  if (companyDomain) {\n    companies.push({\n      idProperty: 'domain',\n      id: companyDomain,\n      properties: {\n        domain: companyDomain,\n        name: row.company || row.clay_company_name || '',\n        numberofemployees: row.clay_company_size || '',\n        industry: row.clay_industry || ''\n      }\n    });\n  }\n}\n\n// de-dupe companies by domain (many contacts share one company row)\nconst seenDomains = new Set();\nconst uniqueCompanies = companies.filter(c => {\n  if (seenDomains.has(c.id)) return false;\n  seenDomains.add(c.id);\n  return true;\n});\n\nreturn [{\n  json: {\n    contactsBatch: { inputs: contacts },\n    companiesBatch: { inputs: uniqueCompanies },\n    eventSlug: $('Webinar Ended (webhook)').item.json.body.event_slug || 'unknown-event'\n  }\n}];"
+      }
+    },
+    {
+      "id": "5",
+      "name": "HubSpot Upsert Contacts",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1420,
+        280
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.hubapi.com/crm/v3/objects/contacts/batch/upsert",
+        "authentication": "genericCredentialType",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.contactsBatch }}",
+        "options": {},
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "PLACEHOLDER_HUBSPOT_HEADER_AUTH",
+          "name": "HubSpot Sandbox (Header Auth: Authorization: Bearer <private-app token>)"
+        }
+      },
+      "notes": "Generic HTTP over n8n's native HubSpot node, deliberately: the native node has no v3 batch/upsert, so 133 contacts would be 133 requests instead of 2 (100/batch). Native HubSpot node is the right call for single-record ops; batch ingestion wants the raw endpoint. Credential: HubSpot App Token (private app, sandbox portal 247135551). Auth: generic Header Auth credential -- header 'Authorization', value 'Bearer <HubSpot private-app token>' (portable across n8n versions; the dedicated HubSpot credential types are for the native node)."
+    },
+    {
+      "id": "6",
+      "name": "HubSpot Upsert Companies",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1420,
+        520
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.hubapi.com/crm/v3/objects/companies/batch/upsert",
+        "authentication": "genericCredentialType",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $('Shape M1 Payload').item.json.companiesBatch }}",
+        "options": {},
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "PLACEHOLDER_HUBSPOT_HEADER_AUTH",
+          "name": "HubSpot Sandbox (Header Auth: Authorization: Bearer <private-app token>)"
+        }
+      },
+      "notes": "Same batch-endpoint rationale as contacts. Note from the live push: HubSpot does not unique-index company domain -- production hardening is search-by-domain then batch update/create (implemented in modules/m1-enrichment/push_to_hubspot.py). Auth: generic Header Auth credential -- header 'Authorization', value 'Bearer <HubSpot private-app token>' (portable across n8n versions; the dedicated HubSpot credential types are for the native node)."
+    },
+    {
+      "id": "7",
+      "name": "Associate Contacts to Companies",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1660,
+        400
+      ],
+      "notes": "v4 batch associations endpoint -- also absent from the native HubSpot node. 120 associations = 2 requests. Auth: generic Header Auth credential -- header 'Authorization', value 'Bearer <HubSpot private-app token>' (portable across n8n versions; the dedicated HubSpot credential types are for the native node).",
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.hubapi.com/crm/v4/associations/contacts/companies/batch/create/default",
+        "authentication": "genericCredentialType",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"inputs\": $json.associationPairs || [] } }}",
+        "options": {},
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "PLACEHOLDER_HUBSPOT_HEADER_AUTH",
+          "name": "HubSpot Sandbox (Header Auth: Authorization: Bearer <private-app token>)"
+        }
+      }
+    },
+    {
+      "id": "8",
+      "name": "Wait for Human Approval",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1900,
+        400
+      ],
+      "webhookId": "approve-send-placeholder-0001",
+      "notes": "Pauses the execution. Resumes when a human POSTs the approval decision to this node's resume-webhook URL (n8n shows the exact URL on the node once the workflow is active) -- e.g. from the M2 approval_gate.json review step.",
+      "parameters": {
+        "resume": "webhook",
+        "options": {}
+      }
+    },
+    {
+      "id": "9",
+      "name": "Approved?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2140,
+        400
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "cond-approved",
+              "leftValue": "={{ $json.body.approved }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "10",
+      "name": "HubSpot Single Send",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2380,
+        280
+      ],
+      "notes": "HubSpot Single-Send API (transactional/marketing single sends via a published email + token). emailId placeholder must match a published Marketing Email in the target portal. Auth: generic Header Auth credential -- header 'Authorization', value 'Bearer <HubSpot private-app token>' (portable across n8n versions; the dedicated HubSpot credential types are for the native node).",
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.hubapi.com/marketing/v3/transactional/single-email/send",
+        "authentication": "genericCredentialType",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"emailId\": \"PLACEHOLDER_HUBSPOT_EMAIL_ID\", \"message\": { \"to\": $json.body.recipient_email }, \"contactProperties\": [ { \"name\": \"event_slug\", \"value\": $('Shape M1 Payload').item.json.eventSlug } ] } }}",
+        "options": {},
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "PLACEHOLDER_HUBSPOT_HEADER_AUTH",
+          "name": "HubSpot Sandbox (Header Auth: Authorization: Bearer <private-app token>)"
+        }
+      }
+    },
+    {
+      "id": "11",
+      "name": "Blocked - Not Approved",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2380,
+        520
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "12",
+      "name": "Notify Team (disabled)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2620,
+        280
+      ],
+      "disabled": true,
+      "parameters": {
+        "chatId": "REPLACE_WITH_CHAT_ID",
+        "text": "=Post-event engine run complete for {{ $('Shape M1 Payload').item.json.eventSlug }}. Comms sent, dashboard ready for review.",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "PLACEHOLDER_TELEGRAM_BOT_CRED",
+          "name": "Telegram Bot (placeholder)"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webinar Ended (webhook)": {
+      "main": [
+        [
+          {
+            "node": "Fetch Registrants",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Registrants": {
+      "main": [
+        [
+          {
+            "node": "Push to Clay Table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Push to Clay Table": {
+      "main": [
+        [
+          {
+            "node": "Wait for Clay Enrichment Callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Clay Enrichment Callback": {
+      "main": [
+        [
+          {
+            "node": "Shape M1 Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Shape M1 Payload": {
+      "main": [
+        [
+          {
+            "node": "HubSpot Upsert Contacts",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HubSpot Upsert Companies",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HubSpot Upsert Contacts": {
+      "main": [
+        [
+          {
+            "node": "Associate Contacts to Companies",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HubSpot Upsert Companies": {
+      "main": [
+        [
+          {
+            "node": "Associate Contacts to Companies",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Associate Contacts to Companies": {
+      "main": [
+        [
+          {
+            "node": "Wait for Human Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Human Approval": {
+      "main": [
+        [
+          {
+            "node": "Approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approved?": {
+      "main": [
+        [
+          {
+            "node": "HubSpot Single Send",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Blocked - Not Approved",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HubSpot Single Send": {
+      "main": [
+        [
+          {
+            "node": "Notify Team (disabled)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

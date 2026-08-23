@@ -1,0 +1,21 @@
+{
+  "by_speaker": {
+    "Priya Nair": {
+      "top_quote": "for years our own team ran webinars, got great attendance, felt good about ourselves, and then just... let the leads sit. Like, sit for days. So this is equal parts what we learned from doing it wrong and what actually works.",
+      "timestamp": "01:15",
+      "internal_or_external_note": "Your session drove {{attendance_count}} live attendees with {{watch_pct}}% average watch time \u2014 great ammo for your next budget conversation with leadership."
+    },
+    "Daniel Kim": {
+      "top_quote": "No-shows are often just as valuable, sometimes more, because they self-selected into your topic enough to register, then something legitimate came up. Our no-show follow-up \u2014 recording link plus a genuinely useful three-bullet summary, not 'sorry we missed you' fluff \u2014 that email actually gets a better click-through rate than our attendee follow-up in like six of the last eight webinars. Six of eight.",
+      "timestamp": "15:44",
+      "internal_or_external_note": "We'd love to have you back for a future session \u2014 and if the recording resonates, a reshare to your network would mean a lot."
+    },
+    "Sara Alvarez": {
+      "top_quote": "Attribution is the mirror, not the engine.",
+      "timestamp": "54:15",
+      "internal_or_external_note": "We'd value having you back for a future session \u2014 and a reshare to your network would help us reach more RevOps leaders like you."
+    }
+  },
+  "subject_a": "{{first_name}}, your segment drove {{attendance_count}} attendees with {{watch_pct}}% avg watch",
+  "subject_b": "Thank you for a standout session, {{first_name}}"
+}

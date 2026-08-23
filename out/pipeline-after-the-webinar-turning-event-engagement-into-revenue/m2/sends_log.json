@@ -1,0 +1,696 @@
+{
+  "generated_at": "2026-08-23T09:14:49.488644+00:00",
+  "event": {
+    "name": "Pipeline After the Webinar: Turning Event Engagement into Revenue",
+    "date": "2026-07-20",
+    "campaign": "pipeline-after-the-webinar-2026-07-20"
+  },
+  "status": "queued_pending_approval",
+  "mode": "offline",
+  "batches": [
+    {
+      "segment": "attendee",
+      "to_count": 82,
+      "subject_a": "The 3.2x stat from today's session (and your takeaways)",
+      "subject_b": "Priya, Daniel & Sara's follow-up: your recording + 3 takeaways",
+      "utm_campaign": "pipeline-after-the-webinar-2026-07-20",
+      "utm_content_a": "attendee-thank-you-a",
+      "utm_content_b": "attendee-thank-you-b",
+      "template_file": "emails/attendee-thank-you.md",
+      "sample_sends": [
+        {
+          "emailId": "attendee-thank-you",
+          "message": {
+            "to": "tivanov@everlinetech.com",
+            "from": "priya.nair@acmerevenue.example",
+            "sendId": "pipeline-after-the-webinar-2026-07-20-attendee-tivanov@everlinetech.com"
+          },
+          "contactProperties": [
+            {
+              "name": "firstname",
+              "value": "Tomas"
+            },
+            {
+              "name": "company",
+              "value": "Everline Technologies"
+            },
+            {
+              "name": "icp_tier",
+              "value": "tier3"
+            },
+            {
+              "name": "function",
+              "value": "revops"
+            },
+            {
+              "name": "industry_bucket",
+              "value": "other_commercial"
+            },
+            {
+              "name": "takeaway_headline",
+              "value": "Multi-threading is already happening \u2014 most teams just don't see it."
+            },
+            {
+              "name": "takeaway_body",
+              "value": "Sara Alvarez (Meridian Software) flagged that accounts with three or more attendees on the same webinar convert to opportunity at almost double the rate of single-attendee accounts \u2014 worth checking your own account list for this event. [25:04] Per Daniel Kim's fourth-layer point ([26:15]), the version of this worth your attention outside pure enterprise software leads with time-to-value and pricing rather than integration depth \u2014 that's the objection he flagged as the real one at smaller or less software-native shops. [26:52]"
+            }
+          ],
+          "customProperties": [
+            {
+              "name": "utm_campaign",
+              "value": "pipeline-after-the-webinar-2026-07-20"
+            },
+            {
+              "name": "utm_content",
+              "value": "attendee-thank-you-a"
+            }
+          ]
+        },
+        {
+          "emailId": "attendee-thank-you",
+          "message": {
+            "to": "aali@quantarasoftware.com",
+            "from": "priya.nair@acmerevenue.example",
+            "sendId": "pipeline-after-the-webinar-2026-07-20-attendee-aali@quantarasoftware.com"
+          },
+          "contactProperties": [
+            {
+              "name": "firstname",
+              "value": "Alice"
+            },
+            {
+              "name": "company",
+              "value": "Quantara Software"
+            },
+            {
+              "name": "icp_tier",
+              "value": "unqualified"
+            },
+            {
+              "name": "function",
+              "value": "marketing"
+            },
+            {
+              "name": "industry_bucket",
+              "value": "saas"
+            },
+            {
+              "name": "takeaway_headline",
+              "value": "Subject lines aren't a rounding error."
+            },
+            {
+              "name": "takeaway_body",
+              "value": "Daniel Kim (Northwind Analytics) A/B tested two attendee thank-you subject lines \u2014 one led with the speaker's name, one led with a specific stat \u2014 and the stat-led version won by about 14 percentage points on open rate. [18:15] Daniel Kim's point about a fourth personalization layer, industry and company size, is worth applying literally here: he described leading enterprise-tier takeaways with integration and security rather than pricing, since that's usually the actual blocker on a software deal. [26:52]"
+            }
+          ],
+          "customProperties": [
+            {
+              "name": "utm_campaign",
+              "value": "pipeline-after-the-webinar-2026-07-20"
+            },
+            {
+              "name": "utm_content",
+              "value": "attendee-thank-you-a"
+            }
+          ]
+        },
+        {
+          "emailId": "attendee-thank-you",
+          "message": {
+            "to": "lzhang@kestrelit.com",
+            "from": "priya.nair@acmerevenue.example",
+            "sendId": "pipeline-after-the-webinar-2026-07-20-attendee-lzhang@kestrelit.com"
+          },
+          "contactProperties": [
+            {
+              "name": "firstname",
+              "value": "Layla"
+            },
+            {
+              "name": "company",
+              "value": "KESTREL IT SERVICES"
+            },
+            {
+              "name": "icp_tier",
+              "value": "tier3"
+            },
+            {
+              "name": "function",
+              "value": "marketing"
+            },
+            {
+              "name": "industry_bucket",
+              "value": "services_it"
+            },
+            {
+              "name": "takeaway_headline",
+              "value": "Subject lines aren't a rounding error."
+            },
+            {
+              "name": "takeaway_body",
+              "value": "Daniel Kim (Northwind Analytics) A/B tested two attendee thank-you subject lines \u2014 one led with the speaker's name, one led with a specific stat \u2014 and the stat-led version won by about 14 percentage points on open rate. [18:15] If you're reading this from an IT-services or agency seat, Daniel Kim's fourth-layer point ([26:15]) is the reason this doesn't read like a generic recap \u2014 the same transcript is meant to land differently depending on which of your own client accounts it's relevant to."
+            }
+          ],
+          "customProperties": [
+            {
+              "name": "utm_campaign",
+              "value": "pipeline-after-the-webinar-2026-07-20"
+            },
+            {
+              "name": "utm_content",
+              "value": "attendee-thank-you-a"
+            }
+          ]
+        },
+        {
+          "emailId": "attendee-thank-you",
+          "message": {
+            "to": "adityak@alderwoodfintech.com",
+            "from": "priya.nair@acmerevenue.example",
+            "sendId": "pipeline-after-the-webinar-2026-07-20-attendee-adityak@alderwoodfintech.com"
+          },
+          "contactProperties": [
+            {
+              "name": "firstname",
+              "value": "Aditya"
+            },
+            {
+              "name": "company",
+              "value": "ALDERWOOD FINTECH"
+            },
+            {
+              "name": "icp_tier",
+              "value": "tier3"
+            },
+            {
+              "name": "function",
+              "value": "sales"
+            },
+            {
+              "name": "industry_bucket",
+              "value": "other_commercial"
+            },
+            {
+              "name": "takeaway_headline",
+              "value": "Context wins the first call."
+            },
+            {
+              "name": "takeaway_body",
+              "value": "Sara Alvarez (Meridian Software) described hot-attendee tasks getting routed to reps with real context attached \u2014 e.g. \"attended the full session, asked about integration timelines\" \u2014 rather than a bare list. That context is what changes how a rep opens the conversation. [13:50] Per Daniel Kim's fourth-layer point ([26:15]), the version of this worth your attention outside pure enterprise software leads with time-to-value and pricing rather than integration depth \u2014 that's the objection he flagged as the real one at smaller or less software-native shops. [26:52]"
+            }
+          ],
+          "customProperties": [
+            {
+              "name": "utm_campaign",
+              "value": "pipeline-after-the-webinar-2026-07-20"
+            },
+            {
+              "name": "utm_content",
+              "value": "attendee-thank-you-a"
+            }
+          ]
+        },
+        {
+          "emailId": "attendee-thank-you",
+          "message": {
+            "to": "rnair@kestrelit.com",
+            "from": "priya.nair@acmerevenue.example",
+            "sendId": "pipeline-after-the-webinar-2026-07-20-attendee-rnair@kestrelit.com"
+          },
+          "contactProperties": [
+            {
+              "name": "firstname",
+              "value": "Ravi"
+            },
+            {
+              "name": "company",
+              "value": "KESTREL IT SERVICES"
+            },
+            {
+              "name": "icp_tier",
+              "value": "tier3"
+            },
+            {
+              "name": "function",
+              "value": "customer_success"
+            },
+            {
+              "name": "industry_bucket",
+              "value": "services_it"
+            },
+            {
+              "name": "takeaway_headline",
+              "value": "Every draft still gets a human set of eyes."
+            },
+            {
+              "name": "takeaway_body",
+              "value": "Daniel Kim (Northwind Analytics) was explicit in Q&A: \"AI drafts, human approves, every single time\" \u2014 no generated follow-up or repurposed asset goes out unreviewed. [58:28] If you're reading this from an IT-services or agency seat, Daniel Kim's fourth-layer point ([26:15]) is the reason this doesn't read like a generic recap \u2014 the same transcript is meant to land differently depending on which of your own client accounts it's relevant to."
+            }
+          ],
+          "customProperties": [
+            {
+              "name": "utm_campaign",
+              "value": "pipeline-after-the-webinar-2026-07-20"
+            },
+            {
+              "name": "utm_content",
+              "value": "attendee-thank-you-a"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "segment": "no_show",
+      "to_count": 68,
+      "subject_a": "You registered for a reason \u2014 here's the 6-minute version",
+      "subject_b": "Sorry we missed you (recording + the part that's about you)",
+      "utm_campaign": "pipeline-after-the-webinar-2026-07-20",
+      "utm_content_a": "no-show-catchup-a",
+      "utm_content_b": "no-show-catchup-b",
+      "template_file": "emails/no-show-catchup.md",
+      "sample_sends": [
+        {
+          "emailId": "no_show-thank-you",
+          "message": {
+            "to": "anunes@northfielddata.com",
+            "from": "priya.nair@acmerevenue.example",
+            "sendId": "pipeline-after-the-webinar-2026-07-20-no_show-anunes@northfielddata.com"
+          },
+          "contactProperties": [
+            {
+              "name": "firstname",
+              "value": "Amit"
+            },
+            {
+              "name": "company",
+              "value": "NORTHFIELD DATA CO"
+            },
+            {
+              "name": "icp_tier",
+              "value": "tier3"
+            },
+            {
+              "name": "function",
+              "value": "general"
+            },
+            {
+              "name": "industry_bucket",
+              "value": "services_it"
+            },
+            {
+              "name": "takeaway_headline",
+              "value": "Segmentation alone triples click-through."
+            },
+            {
+              "name": "takeaway_body",
+              "value": "Sara Alvarez (Meridian Software) shared that moving from one blanket post-webinar email to attendee/no-show/speaker segmentation \u2014 plus role-based variants \u2014 took overall click-through from about 6% to just over 17%, without changing send timing at all. [28:20] If you're running this across client accounts at an IT-services or agency shop, Daniel Kim's fourth-layer point ([26:15]) is exactly why we didn't send you one generic recap \u2014 which part is worth your time depends on which client this session was actually for."
+            }
+          ],
+          "customProperties": [
+            {
+              "name": "utm_campaign",
+              "value": "pipeline-after-the-webinar-2026-07-20"
+            },
+            {
+              "name": "utm_content",
+              "value": "no-show-catchup-a"
+            }
+          ]
+        },
+        {
+          "emailId": "no_show-thank-you",
+          "message": {
+            "to": "miguel.iyer@hotmail.com",
+            "from": "priya.nair@acmerevenue.example",
+            "sendId": "pipeline-after-the-webinar-2026-07-20-no_show-miguel.iyer@hotmail.com"
+          },
+          "contactProperties": [
+            {
+              "name": "firstname",
+              "value": "Miguel"
+            },
+            {
+              "name": "company",
+              "value": "Bluepeak Ventures"
+            },
+            {
+              "name": "icp_tier",
+              "value": "tier3"
+            },
+            {
+              "name": "function",
+              "value": "general"
+            },
+            {
+              "name": "industry_bucket",
+              "value": "other_commercial"
+            },
+            {
+              "name": "takeaway_headline",
+              "value": "Segmentation alone triples click-through."
+            },
+            {
+              "name": "takeaway_body",
+              "value": "Sara Alvarez (Meridian Software) shared that moving from one blanket post-webinar email to attendee/no-show/speaker segmentation \u2014 plus role-based variants \u2014 took overall click-through from about 6% to just over 17%, without changing send timing at all. [28:20] Per Daniel Kim's fourth-layer point ([26:15]), the six minutes worth your time outside pure enterprise software is the time-to-value-and-pricing section he called out as the real objection for buyers at that size. [26:52]"
+            }
+          ],
+          "customProperties": [
+            {
+              "name": "utm_campaign",
+              "value": "pipeline-after-the-webinar-2026-07-20"
+            },
+            {
+              "name": "utm_content",
+              "value": "no-show-catchup-a"
+            }
+          ]
+        },
+        {
+          "emailId": "no_show-thank-you",
+          "message": {
+            "to": "annam@lumen8marketing.com",
+            "from": "priya.nair@acmerevenue.example",
+            "sendId": "pipeline-after-the-webinar-2026-07-20-no_show-annam@lumen8marketing.com"
+          },
+          "contactProperties": [
+            {
+              "name": "firstname",
+              "value": "Anna"
+            },
+            {
+              "name": "company",
+              "value": "Lumen8 Marketing"
+            },
+            {
+              "name": "icp_tier",
+              "value": "unqualified"
+            },
+            {
+              "name": "function",
+              "value": "marketing"
+            },
+            {
+              "name": "industry_bucket",
+              "value": "other_commercial"
+            },
+            {
+              "name": "takeaway_headline",
+              "value": "The recording link should already know what they care about."
+            },
+            {
+              "name": "takeaway_body",
+              "value": "Sara Alvarez (Meridian Software) suggested pointing no-shows to a timestamp for their specific registration interest rather than the full hour \u2014 \"you mentioned integration challenges when you registered, here's the twelve-minute mark\" \u2014 way higher engagement than the whole recording. [16:45] Per Daniel Kim's fourth-layer point ([26:15]), the six minutes worth your time outside pure enterprise software is the time-to-value-and-pricing section he called out as the real objection for buyers at that size. [26:52]"
+            }
+          ],
+          "customProperties": [
+            {
+              "name": "utm_campaign",
+              "value": "pipeline-after-the-webinar-2026-07-20"
+            },
+            {
+              "name": "utm_content",
+              "value": "no-show-catchup-a"
+            }
+          ]
+        },
+        {
+          "emailId": "no_show-thank-you",
+          "message": {
+            "to": "maria.sato@wavecrestit.com",
+            "from": "priya.nair@acmerevenue.example",
+            "sendId": "pipeline-after-the-webinar-2026-07-20-no_show-maria.sato@wavecrestit.com"
+          },
+          "contactProperties": [
+            {
+              "name": "firstname",
+              "value": "Maria"
+            },
+            {
+              "name": "company",
+              "value": "Wavecrest IT Services"
+            },
+            {
+              "name": "icp_tier",
+              "value": "unqualified"
+            },
+            {
+              "name": "function",
+              "value": "marketing"
+            },
+            {
+              "name": "industry_bucket",
+              "value": "services_it"
+            },
+            {
+              "name": "takeaway_headline",
+              "value": "The recording link should already know what they care about."
+            },
+            {
+              "name": "takeaway_body",
+              "value": "Sara Alvarez (Meridian Software) suggested pointing no-shows to a timestamp for their specific registration interest rather than the full hour \u2014 \"you mentioned integration challenges when you registered, here's the twelve-minute mark\" \u2014 way higher engagement than the whole recording. [16:45] If you're running this across client accounts at an IT-services or agency shop, Daniel Kim's fourth-layer point ([26:15]) is exactly why we didn't send you one generic recap \u2014 which part is worth your time depends on which client this session was actually for."
+            }
+          ],
+          "customProperties": [
+            {
+              "name": "utm_campaign",
+              "value": "pipeline-after-the-webinar-2026-07-20"
+            },
+            {
+              "name": "utm_content",
+              "value": "no-show-catchup-a"
+            }
+          ]
+        },
+        {
+          "emailId": "no_show-thank-you",
+          "message": {
+            "to": "Laylaz@kestrelit.com",
+            "from": "priya.nair@acmerevenue.example",
+            "sendId": "pipeline-after-the-webinar-2026-07-20-no_show-Laylaz@kestrelit.com"
+          },
+          "contactProperties": [
+            {
+              "name": "firstname",
+              "value": "Layla"
+            },
+            {
+              "name": "company",
+              "value": "KESTREL IT SERVICES"
+            },
+            {
+              "name": "icp_tier",
+              "value": "tier3"
+            },
+            {
+              "name": "function",
+              "value": "marketing"
+            },
+            {
+              "name": "industry_bucket",
+              "value": "other_commercial"
+            },
+            {
+              "name": "takeaway_headline",
+              "value": "The recording link should already know what they care about."
+            },
+            {
+              "name": "takeaway_body",
+              "value": "Sara Alvarez (Meridian Software) suggested pointing no-shows to a timestamp for their specific registration interest rather than the full hour \u2014 \"you mentioned integration challenges when you registered, here's the twelve-minute mark\" \u2014 way higher engagement than the whole recording. [16:45] Per Daniel Kim's fourth-layer point ([26:15]), the six minutes worth your time outside pure enterprise software is the time-to-value-and-pricing section he called out as the real objection for buyers at that size. [26:52]"
+            }
+          ],
+          "customProperties": [
+            {
+              "name": "utm_campaign",
+              "value": "pipeline-after-the-webinar-2026-07-20"
+            },
+            {
+              "name": "utm_content",
+              "value": "no-show-catchup-a"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "segment": "speaker",
+      "to_count": 3,
+      "subject_a": "Your session numbers are in: 82 attendees, 58% avg watch-through",
+      "subject_b": "Thank you, {{first_name}} \u2014 here's how Tuesday's session performed",
+      "utm_campaign": "pipeline-after-the-webinar-2026-07-20",
+      "utm_content_a": "speaker-thank-you-a",
+      "utm_content_b": "speaker-thank-you-b",
+      "template_file": "emails/speaker-thank-you.md",
+      "sample_sends": [
+        {
+          "emailId": "speaker-thank-you",
+          "message": {
+            "to": "priya.nair@acmerevenue.example",
+            "from": "priya.nair@acmerevenue.example",
+            "sendId": "pipeline-after-the-webinar-2026-07-20-speaker-priya.nair@acmerevenue.example"
+          },
+          "contactProperties": [
+            {
+              "name": "firstname",
+              "value": "Priya"
+            },
+            {
+              "name": "company",
+              "value": "ACME Revenue Cloud"
+            },
+            {
+              "name": "top_quote",
+              "value": "Being in the room doesn't tell you the click-through rate on your quote three weeks later."
+            },
+            {
+              "name": "internal_or_external_note",
+              "value": "Since you're on the ACME team, this snapshot is about internal recognition, not relationship maintenance \u2014 it's so Tuesday's numbers don't just live in your head. Forward it to your own leadership as evidence for the next event's budget ask."
+            },
+            {
+              "name": "attendance_count",
+              "value": 82
+            },
+            {
+              "name": "registered_count",
+              "value": 150
+            },
+            {
+              "name": "avg_watch_minutes",
+              "value": 35.8
+            },
+            {
+              "name": "duration_min",
+              "value": 62
+            },
+            {
+              "name": "watch_pct",
+              "value": 58
+            }
+          ],
+          "customProperties": [
+            {
+              "name": "utm_campaign",
+              "value": "pipeline-after-the-webinar-2026-07-20"
+            },
+            {
+              "name": "utm_content",
+              "value": "speaker-thank-you-a"
+            }
+          ]
+        },
+        {
+          "emailId": "speaker-thank-you",
+          "message": {
+            "to": "daniel.kim@northwindanalytics.example",
+            "from": "priya.nair@acmerevenue.example",
+            "sendId": "pipeline-after-the-webinar-2026-07-20-speaker-daniel.kim@northwindanalytics.example"
+          },
+          "contactProperties": [
+            {
+              "name": "firstname",
+              "value": "Daniel"
+            },
+            {
+              "name": "company",
+              "value": "Northwind Analytics"
+            },
+            {
+              "name": "top_quote",
+              "value": "This isn't new content spend, it's yield on content you already produced and mostly let evaporate after the live hour ended."
+            },
+            {
+              "name": "internal_or_external_note",
+              "value": "As an external guest, consider this an open invite to do this again \u2014 and if any of this is useful to reshare with your own network, we'd genuinely welcome it, no ask required."
+            },
+            {
+              "name": "attendance_count",
+              "value": 82
+            },
+            {
+              "name": "registered_count",
+              "value": 150
+            },
+            {
+              "name": "avg_watch_minutes",
+              "value": 35.8
+            },
+            {
+              "name": "duration_min",
+              "value": 62
+            },
+            {
+              "name": "watch_pct",
+              "value": 58
+            }
+          ],
+          "customProperties": [
+            {
+              "name": "utm_campaign",
+              "value": "pipeline-after-the-webinar-2026-07-20"
+            },
+            {
+              "name": "utm_content",
+              "value": "speaker-thank-you-a"
+            }
+          ]
+        },
+        {
+          "emailId": "speaker-thank-you",
+          "message": {
+            "to": "sara.alvarez@meridiansoftware.example",
+            "from": "priya.nair@acmerevenue.example",
+            "sendId": "pipeline-after-the-webinar-2026-07-20-speaker-sara.alvarez@meridiansoftware.example"
+          },
+          "contactProperties": [
+            {
+              "name": "firstname",
+              "value": "Sara"
+            },
+            {
+              "name": "company",
+              "value": "Meridian Software"
+            },
+            {
+              "name": "top_quote",
+              "value": "Attribution is the mirror, not the engine."
+            },
+            {
+              "name": "internal_or_external_note",
+              "value": "As an external guest, this snapshot is as much a thank-you as an open door \u2014 we'd love to have you back, and a reshare to your own network takes this session further than our list alone can."
+            },
+            {
+              "name": "attendance_count",
+              "value": 82
+            },
+            {
+              "name": "registered_count",
+              "value": 150
+            },
+            {
+              "name": "avg_watch_minutes",
+              "value": 35.8
+            },
+            {
+              "name": "duration_min",
+              "value": 62
+            },
+            {
+              "name": "watch_pct",
+              "value": 58
+            }
+          ],
+          "customProperties": [
+            {
+              "name": "utm_campaign",
+              "value": "pipeline-after-the-webinar-2026-07-20"
+            },
+            {
+              "name": "utm_content",
+              "value": "speaker-thank-you-a"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 /Users/kiran/Desktop/Claude GOD/career/postevent-engine/modules/m2-comms/comms.py --live --out out/live-proof/m2 --enriched out/live-proof/m1/hubspot_ready.csv --event /Users/kiran/Desktop/Claude GOD/career/postevent-engine/data/incoming/event.json --transcript /Users/kiran/Desktop/Claude GOD/career/postevent-engine/data/incoming/transcript.md
+exit=0 seconds=794.68
+--- stdout ---
+M2 comms: 3 email variants rendered (153 recipients: 82 attendee, 68 no-show, 3 speaker) -> out/live-proof/m2/emails ; approval_gate=pending_human_approval
+
+--- stderr ---
+[warn] --live speaker.md: attempt 1/3 not parseable (no JSON value found in LLM output); retrying
+

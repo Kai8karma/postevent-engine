@@ -1,0 +1,21 @@
+# internal QA / self-assessment — not part of the submission
+_internal/
+
+# build artefacts
+dist/
+out/vercel-stage/
+
+# scratch runs kept out of the repo (the receipts below are the ones that matter)
+out/judge2/
+out/final2/
+out/ship-check/
+out/webinar2-test/
+out/wf-check-*/
+out/verify-*/
+out/regress-check/
+
+# caches
+__pycache__/
+*.pyc
+.DS_Store
+node_modules/

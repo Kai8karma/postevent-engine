@@ -1,0 +1,2780 @@
+{
+  "events": [
+    {
+      "email": "alice.lin@harborviewsoftware.com",
+      "type": "click",
+      "ts": "2026-08-02T00:55:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "alice.lin@harborviewsoftware.com",
+      "type": "form_fill",
+      "ts": "2026-07-28T02:07:00",
+      "asset": "contact-sales-form"
+    },
+    {
+      "email": "alice.lin@harborviewsoftware.com",
+      "type": "open",
+      "ts": "2026-07-25T09:09:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "alice.lin@harborviewsoftware.com",
+      "type": "pageview",
+      "ts": "2026-07-24T09:26:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "alice.lin@harborviewsoftware.com",
+      "type": "open",
+      "ts": "2026-08-08T10:11:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "alice.lin@harborviewsoftware.com",
+      "type": "open",
+      "ts": "2026-07-29T12:06:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "alice.lin@harborviewsoftware.com",
+      "type": "click",
+      "ts": "2026-08-17T10:16:00",
+      "asset": "recording-link"
+    },
+    {
+      "email": "juliaf@anchorpointsaas.com",
+      "type": "click",
+      "ts": "2026-07-26T07:48:00",
+      "asset": "blog-post-link"
+    },
+    {
+      "email": "juliaf@anchorpointsaas.com",
+      "type": "click",
+      "ts": "2026-08-04T16:48:00",
+      "asset": "recording-link"
+    },
+    {
+      "email": "juliaf@anchorpointsaas.com",
+      "type": "click",
+      "ts": "2026-07-28T01:20:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "juliaf@anchorpointsaas.com",
+      "type": "click",
+      "ts": "2026-07-22T15:01:00",
+      "asset": "blog-post-link"
+    },
+    {
+      "email": "juliaf@anchorpointsaas.com",
+      "type": "click",
+      "ts": "2026-08-18T00:17:00",
+      "asset": "recording-link"
+    },
+    {
+      "email": "juliaf@anchorpointsaas.com",
+      "type": "pageview",
+      "ts": "2026-07-27T17:41:00",
+      "asset": "/case-studies/meridian"
+    },
+    {
+      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-08-02T14:05:00",
+      "asset": "/product/revenue-cloud"
+    },
+    {
+      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "type": "click",
+      "ts": "2026-07-26T04:23:00",
+      "asset": "blog-post-link"
+    },
+    {
+      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "type": "form_fill",
+      "ts": "2026-08-14T07:34:00",
+      "asset": "contact-sales-form"
+    },
+    {
+      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-08-03T01:00:00",
+      "asset": "/product/revenue-cloud"
+    },
+    {
+      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-07-29T20:10:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-07-28T19:16:00",
+      "asset": "/resources/revops-playbook"
+    },
+    {
+      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "type": "click",
+      "ts": "2026-07-31T20:13:00",
+      "asset": "case-study-link"
+    },
+    {
+      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "type": "click",
+      "ts": "2026-07-21T05:47:00",
+      "asset": "recording-link"
+    },
+    {
+      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-07-29T02:25:00",
+      "asset": "/pricing"
+    },
+    {
+      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-08-12T17:17:00",
+      "asset": "/pricing"
+    },
+    {
+      "email": "zmoreau@vectorcloudsystems.com",
+      "type": "pageview",
+      "ts": "2026-08-05T10:56:00",
+      "asset": "/case-studies/meridian"
+    },
+    {
+      "email": "zmoreau@vectorcloudsystems.com",
+      "type": "pageview",
+      "ts": "2026-08-09T08:48:00",
+      "asset": "/case-studies/meridian"
+    },
+    {
+      "email": "zmoreau@vectorcloudsystems.com",
+      "type": "open",
+      "ts": "2026-07-27T21:20:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "zmoreau@vectorcloudsystems.com",
+      "type": "open",
+      "ts": "2026-08-19T19:21:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "zmoreau@vectorcloudsystems.com",
+      "type": "open",
+      "ts": "2026-07-24T20:59:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "zmoreau@vectorcloudsystems.com",
+      "type": "open",
+      "ts": "2026-07-20T00:43:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "zmoreau@vectorcloudsystems.com",
+      "type": "click",
+      "ts": "2026-08-17T22:45:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "zmoreau@vectorcloudsystems.com",
+      "type": "pageview",
+      "ts": "2026-08-06T02:50:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "zmoreau@vectorcloudsystems.com",
+      "type": "pageview",
+      "ts": "2026-08-06T00:57:00",
+      "asset": "/resources/revops-playbook"
+    },
+    {
+      "email": "zmoreau@vectorcloudsystems.com",
+      "type": "form_fill",
+      "ts": "2026-08-10T03:22:00",
+      "asset": "content-download-form"
+    },
+    {
+      "email": "pmalik@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-08-08T11:24:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "pmalik@palmettosaasgroup.com",
+      "type": "click",
+      "ts": "2026-07-20T03:29:00",
+      "asset": "blog-post-link"
+    },
+    {
+      "email": "pmalik@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-08-03T00:14:00",
+      "asset": "/case-studies/meridian"
+    },
+    {
+      "email": "pmalik@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-08-10T22:22:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "pmalik@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-08-09T09:51:00",
+      "asset": "/pricing"
+    },
+    {
+      "email": "pmalik@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-08-04T11:02:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "pmalik@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-08-11T19:13:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "pmalik@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-08-01T03:55:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "pmalik@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-08-04T05:35:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "pmalik@palmettosaasgroup.com",
+      "type": "click",
+      "ts": "2026-08-07T21:43:00",
+      "asset": "blog-post-link"
+    },
+    {
+      "email": "pmalik@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-07-22T18:08:00",
+      "asset": "/pricing"
+    },
+    {
+      "email": "pmalik@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-07-28T18:54:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "jamesb@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-08-14T08:12:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "jamesb@palmettosaasgroup.com",
+      "type": "click",
+      "ts": "2026-08-11T21:34:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "jamesb@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-07-20T13:41:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "jamesb@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-08-16T10:27:00",
+      "asset": "/resources/revops-playbook"
+    },
+    {
+      "email": "jamesb@palmettosaasgroup.com",
+      "type": "click",
+      "ts": "2026-07-28T03:43:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "jamesb@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-07-31T16:48:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "jamesb@palmettosaasgroup.com",
+      "type": "form_fill",
+      "ts": "2026-07-27T01:17:00",
+      "asset": "contact-sales-form"
+    },
+    {
+      "email": "jamesb@palmettosaasgroup.com",
+      "type": "click",
+      "ts": "2026-08-03T10:00:00",
+      "asset": "case-study-link"
+    },
+    {
+      "email": "jamesb@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-07-22T18:51:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "jamesb@palmettosaasgroup.com",
+      "type": "form_fill",
+      "ts": "2026-07-27T22:27:00",
+      "asset": "demo-request-form"
+    },
+    {
+      "email": "jamesb@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-07-26T05:21:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "ninaj@palmettosaasgroup.com",
+      "type": "click",
+      "ts": "2026-07-23T00:30:00",
+      "asset": "recording-link"
+    },
+    {
+      "email": "ninaj@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-08-07T20:59:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "ninaj@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-07-27T03:30:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "ninaj@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-08-15T01:52:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "ninaj@palmettosaasgroup.com",
+      "type": "click",
+      "ts": "2026-08-19T02:49:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "ninaj@palmettosaasgroup.com",
+      "type": "click",
+      "ts": "2026-08-13T03:40:00",
+      "asset": "recording-link"
+    },
+    {
+      "email": "ninaj@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-07-22T01:58:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "ninaj@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-08-17T22:04:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "ninaj@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-08-18T14:03:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "ninaj@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-08-02T02:06:00",
+      "asset": "/product/revenue-cloud"
+    },
+    {
+      "email": "ninaj@palmettosaasgroup.com",
+      "type": "click",
+      "ts": "2026-07-21T09:54:00",
+      "asset": "recording-link"
+    },
+    {
+      "email": "nina.haddad@outlook.com",
+      "type": "pageview",
+      "ts": "2026-08-13T13:14:00",
+      "asset": "/product/revenue-cloud"
+    },
+    {
+      "email": "nina.haddad@outlook.com",
+      "type": "click",
+      "ts": "2026-07-20T14:24:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "nina.haddad@outlook.com",
+      "type": "open",
+      "ts": "2026-08-17T19:39:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "nina.haddad@outlook.com",
+      "type": "open",
+      "ts": "2026-08-19T21:50:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "nina.haddad@outlook.com",
+      "type": "open",
+      "ts": "2026-07-30T18:12:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "nina.haddad@outlook.com",
+      "type": "click",
+      "ts": "2026-08-08T22:04:00",
+      "asset": "blog-post-link"
+    },
+    {
+      "email": "nina.haddad@outlook.com",
+      "type": "click",
+      "ts": "2026-08-17T18:08:00",
+      "asset": "case-study-link"
+    },
+    {
+      "email": "nina.haddad@outlook.com",
+      "type": "pageview",
+      "ts": "2026-07-31T13:30:00",
+      "asset": "/resources/revops-playbook"
+    },
+    {
+      "email": "nina.haddad@outlook.com",
+      "type": "pageview",
+      "ts": "2026-07-25T07:08:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "nina.haddad@outlook.com",
+      "type": "click",
+      "ts": "2026-07-24T09:37:00",
+      "asset": "case-study-link"
+    },
+    {
+      "email": "lingb@truenorthecom.com",
+      "type": "open",
+      "ts": "2026-08-07T17:49:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "lingb@truenorthecom.com",
+      "type": "open",
+      "ts": "2026-07-29T19:21:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "lingb@truenorthecom.com",
+      "type": "pageview",
+      "ts": "2026-08-05T18:42:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "lingb@truenorthecom.com",
+      "type": "pageview",
+      "ts": "2026-07-27T16:52:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "lingb@truenorthecom.com",
+      "type": "form_fill",
+      "ts": "2026-08-02T11:12:00",
+      "asset": "contact-sales-form"
+    },
+    {
+      "email": "lingb@truenorthecom.com",
+      "type": "open",
+      "ts": "2026-08-18T06:50:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "lingb@truenorthecom.com",
+      "type": "pageview",
+      "ts": "2026-08-10T15:44:00",
+      "asset": "/resources/revops-playbook"
+    },
+    {
+      "email": "lingb@truenorthecom.com",
+      "type": "pageview",
+      "ts": "2026-08-08T22:21:00",
+      "asset": "/product/revenue-cloud"
+    },
+    {
+      "email": "nwong@truenorthecom.com",
+      "type": "open",
+      "ts": "2026-08-08T09:26:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "nwong@truenorthecom.com",
+      "type": "open",
+      "ts": "2026-08-03T01:31:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "nwong@truenorthecom.com",
+      "type": "open",
+      "ts": "2026-08-09T07:44:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "nwong@truenorthecom.com",
+      "type": "pageview",
+      "ts": "2026-07-26T07:30:00",
+      "asset": "/case-studies/meridian"
+    },
+    {
+      "email": "nwong@truenorthecom.com",
+      "type": "open",
+      "ts": "2026-08-14T23:24:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "nwong@truenorthecom.com",
+      "type": "open",
+      "ts": "2026-08-15T00:23:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "nwong@truenorthecom.com",
+      "type": "open",
+      "ts": "2026-07-20T17:07:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "nwong@truenorthecom.com",
+      "type": "form_fill",
+      "ts": "2026-07-26T20:37:00",
+      "asset": "content-download-form"
+    },
+    {
+      "email": "marcot@anchorpointsaas.com",
+      "type": "open",
+      "ts": "2026-07-20T06:12:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "marcot@anchorpointsaas.com",
+      "type": "open",
+      "ts": "2026-08-17T08:46:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "marcot@anchorpointsaas.com",
+      "type": "open",
+      "ts": "2026-07-27T05:12:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "marcot@anchorpointsaas.com",
+      "type": "pageview",
+      "ts": "2026-08-18T03:01:00",
+      "asset": "/pricing"
+    },
+    {
+      "email": "marcot@anchorpointsaas.com",
+      "type": "pageview",
+      "ts": "2026-08-01T20:50:00",
+      "asset": "/case-studies/meridian"
+    },
+    {
+      "email": "marcot@anchorpointsaas.com",
+      "type": "click",
+      "ts": "2026-08-18T06:19:00",
+      "asset": "case-study-link"
+    },
+    {
+      "email": "vbello@truenorthecom.com",
+      "type": "form_fill",
+      "ts": "2026-07-31T21:10:00",
+      "asset": "contact-sales-form"
+    },
+    {
+      "email": "vbello@truenorthecom.com",
+      "type": "pageview",
+      "ts": "2026-08-17T13:56:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "vbello@truenorthecom.com",
+      "type": "open",
+      "ts": "2026-07-24T04:50:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "vbello@truenorthecom.com",
+      "type": "open",
+      "ts": "2026-08-01T22:23:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "vbello@truenorthecom.com",
+      "type": "open",
+      "ts": "2026-08-09T07:58:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "vbello@truenorthecom.com",
+      "type": "click",
+      "ts": "2026-08-07T06:54:00",
+      "asset": "blog-post-link"
+    },
+    {
+      "email": "vbello@truenorthecom.com",
+      "type": "click",
+      "ts": "2026-07-30T07:03:00",
+      "asset": "case-study-link"
+    },
+    {
+      "email": "vbello@truenorthecom.com",
+      "type": "click",
+      "ts": "2026-08-16T04:54:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "vbello@truenorthecom.com",
+      "type": "pageview",
+      "ts": "2026-07-26T23:05:00",
+      "asset": "/product/revenue-cloud"
+    },
+    {
+      "email": "vbello@truenorthecom.com",
+      "type": "click",
+      "ts": "2026-07-22T05:32:00",
+      "asset": "case-study-link"
+    },
+    {
+      "email": "vbello@truenorthecom.com",
+      "type": "open",
+      "ts": "2026-08-04T16:29:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "vbello@truenorthecom.com",
+      "type": "click",
+      "ts": "2026-07-31T16:44:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "meib@palmettosaasgroup.com",
+      "type": "click",
+      "ts": "2026-07-28T18:25:00",
+      "asset": "recording-link"
+    },
+    {
+      "email": "meib@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-07-26T07:57:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "meib@palmettosaasgroup.com",
+      "type": "click",
+      "ts": "2026-08-01T06:19:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "meib@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-08-07T05:59:00",
+      "asset": "/case-studies/meridian"
+    },
+    {
+      "email": "meib@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-08-06T02:08:00",
+      "asset": "/case-studies/meridian"
+    },
+    {
+      "email": "meib@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-08-03T16:22:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "meib@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-08-03T16:39:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "meib@palmettosaasgroup.com",
+      "type": "click",
+      "ts": "2026-08-03T13:26:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "meib@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-07-30T08:24:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "aditya.joshi@anchorpointsaas.com",
+      "type": "click",
+      "ts": "2026-07-28T20:04:00",
+      "asset": "recording-link"
+    },
+    {
+      "email": "aditya.joshi@anchorpointsaas.com",
+      "type": "click",
+      "ts": "2026-07-29T16:32:00",
+      "asset": "recording-link"
+    },
+    {
+      "email": "aditya.joshi@anchorpointsaas.com",
+      "type": "open",
+      "ts": "2026-08-14T08:59:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "aditya.joshi@anchorpointsaas.com",
+      "type": "click",
+      "ts": "2026-07-22T11:02:00",
+      "asset": "case-study-link"
+    },
+    {
+      "email": "aditya.joshi@anchorpointsaas.com",
+      "type": "open",
+      "ts": "2026-07-26T21:21:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "aditya.joshi@anchorpointsaas.com",
+      "type": "open",
+      "ts": "2026-08-15T21:54:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "aditya.joshi@anchorpointsaas.com",
+      "type": "pageview",
+      "ts": "2026-08-08T04:54:00",
+      "asset": "/product/revenue-cloud"
+    },
+    {
+      "email": "vmehta@anchorpointsaas.com",
+      "type": "pageview",
+      "ts": "2026-07-20T09:18:00",
+      "asset": "/resources/revops-playbook"
+    },
+    {
+      "email": "vmehta@anchorpointsaas.com",
+      "type": "click",
+      "ts": "2026-08-19T12:52:00",
+      "asset": "recording-link"
+    },
+    {
+      "email": "vmehta@anchorpointsaas.com",
+      "type": "form_fill",
+      "ts": "2026-08-04T20:32:00",
+      "asset": "demo-request-form"
+    },
+    {
+      "email": "vmehta@anchorpointsaas.com",
+      "type": "open",
+      "ts": "2026-08-16T12:14:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "vmehta@anchorpointsaas.com",
+      "type": "click",
+      "ts": "2026-07-26T15:14:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "vmehta@anchorpointsaas.com",
+      "type": "pageview",
+      "ts": "2026-08-12T14:21:00",
+      "asset": "/case-studies/meridian"
+    },
+    {
+      "email": "vmehta@anchorpointsaas.com",
+      "type": "pageview",
+      "ts": "2026-08-16T06:27:00",
+      "asset": "/resources/revops-playbook"
+    },
+    {
+      "email": "vmehta@anchorpointsaas.com",
+      "type": "pageview",
+      "ts": "2026-07-26T14:28:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "laura.patel@yahoo.com",
+      "type": "open",
+      "ts": "2026-07-24T18:55:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "laura.patel@yahoo.com",
+      "type": "pageview",
+      "ts": "2026-07-20T15:51:00",
+      "asset": "/case-studies/meridian"
+    },
+    {
+      "email": "laura.patel@yahoo.com",
+      "type": "click",
+      "ts": "2026-07-30T07:26:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "laura.patel@yahoo.com",
+      "type": "open",
+      "ts": "2026-08-13T22:34:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "laura.patel@yahoo.com",
+      "type": "open",
+      "ts": "2026-07-20T18:50:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "laura.patel@yahoo.com",
+      "type": "click",
+      "ts": "2026-07-24T10:36:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "laura.patel@yahoo.com",
+      "type": "open",
+      "ts": "2026-08-01T06:25:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "laura.patel@yahoo.com",
+      "type": "open",
+      "ts": "2026-07-26T15:06:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "priyanka.marsh@zenithmarketinggroup.com",
+      "type": "open",
+      "ts": "2026-08-17T09:05:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "priyanka.marsh@zenithmarketinggroup.com",
+      "type": "pageview",
+      "ts": "2026-08-06T05:02:00",
+      "asset": "/product/revenue-cloud"
+    },
+    {
+      "email": "priyanka.marsh@zenithmarketinggroup.com",
+      "type": "open",
+      "ts": "2026-08-04T00:11:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "priyanka.marsh@zenithmarketinggroup.com",
+      "type": "open",
+      "ts": "2026-07-29T06:14:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "priyanka.marsh@zenithmarketinggroup.com",
+      "type": "click",
+      "ts": "2026-07-22T14:03:00",
+      "asset": "recording-link"
+    },
+    {
+      "email": "priyanka.marsh@zenithmarketinggroup.com",
+      "type": "form_fill",
+      "ts": "2026-07-25T10:55:00",
+      "asset": "content-download-form"
+    },
+    {
+      "email": "priyanka.marsh@zenithmarketinggroup.com",
+      "type": "click",
+      "ts": "2026-07-25T03:08:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "priyanka.marsh@zenithmarketinggroup.com",
+      "type": "form_fill",
+      "ts": "2026-08-12T02:24:00",
+      "asset": "demo-request-form"
+    },
+    {
+      "email": "priyanka.marsh@zenithmarketinggroup.com",
+      "type": "click",
+      "ts": "2026-07-24T06:19:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "priyanka.marsh@zenithmarketinggroup.com",
+      "type": "form_fill",
+      "ts": "2026-07-25T19:36:00",
+      "asset": "contact-sales-form"
+    },
+    {
+      "email": "priyanka.marsh@zenithmarketinggroup.com",
+      "type": "pageview",
+      "ts": "2026-07-26T16:45:00",
+      "asset": "/case-studies/meridian"
+    },
+    {
+      "email": "nadia.moreau@zenithmarketinggroup.com",
+      "type": "open",
+      "ts": "2026-07-20T04:28:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "nadia.moreau@zenithmarketinggroup.com",
+      "type": "open",
+      "ts": "2026-08-08T07:33:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "nadia.moreau@zenithmarketinggroup.com",
+      "type": "click",
+      "ts": "2026-08-17T15:29:00",
+      "asset": "recording-link"
+    },
+    {
+      "email": "nadia.moreau@zenithmarketinggroup.com",
+      "type": "click",
+      "ts": "2026-08-12T02:18:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "nadia.moreau@zenithmarketinggroup.com",
+      "type": "pageview",
+      "ts": "2026-07-31T22:53:00",
+      "asset": "/case-studies/meridian"
+    },
+    {
+      "email": "nadia.moreau@zenithmarketinggroup.com",
+      "type": "pageview",
+      "ts": "2026-08-01T19:52:00",
+      "asset": "/pricing"
+    },
+    {
+      "email": "nadia.moreau@zenithmarketinggroup.com",
+      "type": "pageview",
+      "ts": "2026-08-02T07:11:00",
+      "asset": "/resources/revops-playbook"
+    },
+    {
+      "email": "hivanova@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-08-01T21:11:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "hivanova@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-08-01T22:02:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "hivanova@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-07-28T20:34:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "hivanova@palmettosaasgroup.com",
+      "type": "form_fill",
+      "ts": "2026-08-11T23:46:00",
+      "asset": "content-download-form"
+    },
+    {
+      "email": "hivanova@palmettosaasgroup.com",
+      "type": "form_fill",
+      "ts": "2026-08-02T17:07:00",
+      "asset": "demo-request-form"
+    },
+    {
+      "email": "hivanova@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-08-13T03:32:00",
+      "asset": "/case-studies/meridian"
+    },
+    {
+      "email": "hivanova@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-08-02T14:10:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "hivanova@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-07-21T14:01:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "hivanova@palmettosaasgroup.com",
+      "type": "click",
+      "ts": "2026-08-10T23:29:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "tomf@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-07-26T12:02:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "tomf@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-08-11T04:20:00",
+      "asset": "/resources/revops-playbook"
+    },
+    {
+      "email": "tomf@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-08-04T14:04:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "tomf@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-07-27T22:28:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "tomf@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-08-15T05:10:00",
+      "asset": "/product/revenue-cloud"
+    },
+    {
+      "email": "tomf@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-07-23T05:18:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "tomf@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-08-01T05:04:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "tomf@palmettosaasgroup.com",
+      "type": "click",
+      "ts": "2026-08-10T08:09:00",
+      "asset": "blog-post-link"
+    },
+    {
+      "email": "tomf@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-07-26T22:02:00",
+      "asset": "/product/revenue-cloud"
+    },
+    {
+      "email": "tomf@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-07-26T14:44:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "tomf@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-08-14T16:41:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "tomf@palmettosaasgroup.com",
+      "type": "click",
+      "ts": "2026-08-01T22:19:00",
+      "asset": "recording-link"
+    },
+    {
+      "email": "sara.reddy@zenithmarketinggroup.com",
+      "type": "open",
+      "ts": "2026-08-13T12:49:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "sara.reddy@zenithmarketinggroup.com",
+      "type": "open",
+      "ts": "2026-07-31T07:12:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "sara.reddy@zenithmarketinggroup.com",
+      "type": "pageview",
+      "ts": "2026-07-20T00:21:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "sara.reddy@zenithmarketinggroup.com",
+      "type": "pageview",
+      "ts": "2026-07-27T03:51:00",
+      "asset": "/pricing"
+    },
+    {
+      "email": "sara.reddy@zenithmarketinggroup.com",
+      "type": "click",
+      "ts": "2026-08-12T05:02:00",
+      "asset": "recording-link"
+    },
+    {
+      "email": "sara.reddy@zenithmarketinggroup.com",
+      "type": "click",
+      "ts": "2026-08-15T10:20:00",
+      "asset": "blog-post-link"
+    },
+    {
+      "email": "zoe.moreau@hotmail.com",
+      "type": "form_fill",
+      "ts": "2026-07-26T17:25:00",
+      "asset": "demo-request-form"
+    },
+    {
+      "email": "zoe.moreau@hotmail.com",
+      "type": "click",
+      "ts": "2026-07-27T06:06:00",
+      "asset": "blog-post-link"
+    },
+    {
+      "email": "zoe.moreau@hotmail.com",
+      "type": "open",
+      "ts": "2026-07-20T12:41:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "zoe.moreau@hotmail.com",
+      "type": "open",
+      "ts": "2026-07-26T14:14:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "zoe.moreau@hotmail.com",
+      "type": "open",
+      "ts": "2026-08-09T19:23:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "zoe.moreau@hotmail.com",
+      "type": "click",
+      "ts": "2026-08-02T09:49:00",
+      "asset": "recording-link"
+    },
+    {
+      "email": "zoe.moreau@hotmail.com",
+      "type": "form_fill",
+      "ts": "2026-08-11T17:50:00",
+      "asset": "contact-sales-form"
+    },
+    {
+      "email": "zoe.moreau@hotmail.com",
+      "type": "click",
+      "ts": "2026-07-25T08:06:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "zoe.moreau@hotmail.com",
+      "type": "open",
+      "ts": "2026-08-10T22:08:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "zoe.moreau@hotmail.com",
+      "type": "form_fill",
+      "ts": "2026-08-13T22:20:00",
+      "asset": "contact-sales-form"
+    },
+    {
+      "email": "victor.bello@truenorthecom.com",
+      "type": "click",
+      "ts": "2026-07-22T10:01:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "victor.bello@truenorthecom.com",
+      "type": "pageview",
+      "ts": "2026-08-01T16:40:00",
+      "asset": "/product/revenue-cloud"
+    },
+    {
+      "email": "victor.bello@truenorthecom.com",
+      "type": "open",
+      "ts": "2026-08-07T22:00:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "victor.bello@truenorthecom.com",
+      "type": "open",
+      "ts": "2026-08-13T03:19:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "victor.bello@truenorthecom.com",
+      "type": "open",
+      "ts": "2026-08-13T07:39:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "victor.bello@truenorthecom.com",
+      "type": "open",
+      "ts": "2026-07-31T15:18:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "victor.bello@truenorthecom.com",
+      "type": "open",
+      "ts": "2026-07-26T20:02:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "victor.bello@truenorthecom.com",
+      "type": "pageview",
+      "ts": "2026-08-08T14:47:00",
+      "asset": "/pricing"
+    },
+    {
+      "email": "victor.bello@truenorthecom.com",
+      "type": "pageview",
+      "ts": "2026-07-28T10:41:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "katie.sato@yahoo.com",
+      "type": "pageview",
+      "ts": "2026-08-14T13:41:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "katie.sato@yahoo.com",
+      "type": "open",
+      "ts": "2026-07-27T23:21:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "katie.sato@yahoo.com",
+      "type": "form_fill",
+      "ts": "2026-08-06T01:58:00",
+      "asset": "demo-request-form"
+    },
+    {
+      "email": "katie.sato@yahoo.com",
+      "type": "pageview",
+      "ts": "2026-08-14T21:44:00",
+      "asset": "/product/revenue-cloud"
+    },
+    {
+      "email": "katie.sato@yahoo.com",
+      "type": "open",
+      "ts": "2026-08-16T12:33:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "katie.sato@yahoo.com",
+      "type": "pageview",
+      "ts": "2026-08-09T00:04:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "katie.sato@yahoo.com",
+      "type": "click",
+      "ts": "2026-08-19T06:03:00",
+      "asset": "blog-post-link"
+    },
+    {
+      "email": "katie.sato@yahoo.com",
+      "type": "open",
+      "ts": "2026-08-19T06:08:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "katie.sato@yahoo.com",
+      "type": "click",
+      "ts": "2026-08-06T06:15:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "katie.sato@yahoo.com",
+      "type": "open",
+      "ts": "2026-08-12T14:19:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "marcob@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-08-02T05:38:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "marcob@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-08-07T14:40:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "marcob@palmettosaasgroup.com",
+      "type": "click",
+      "ts": "2026-07-22T11:25:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "marcob@palmettosaasgroup.com",
+      "type": "click",
+      "ts": "2026-08-03T13:32:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "marcob@palmettosaasgroup.com",
+      "type": "form_fill",
+      "ts": "2026-08-13T04:52:00",
+      "asset": "content-download-form"
+    },
+    {
+      "email": "marcob@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-07-20T12:27:00",
+      "asset": "/case-studies/meridian"
+    },
+    {
+      "email": "marcob@palmettosaasgroup.com",
+      "type": "click",
+      "ts": "2026-08-08T17:09:00",
+      "asset": "blog-post-link"
+    },
+    {
+      "email": "anton.petrov@truenorthecom.com",
+      "type": "click",
+      "ts": "2026-08-01T14:19:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "anton.petrov@truenorthecom.com",
+      "type": "open",
+      "ts": "2026-08-06T19:30:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "anton.petrov@truenorthecom.com",
+      "type": "open",
+      "ts": "2026-08-11T15:12:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "anton.petrov@truenorthecom.com",
+      "type": "click",
+      "ts": "2026-07-20T00:55:00",
+      "asset": "case-study-link"
+    },
+    {
+      "email": "anton.petrov@truenorthecom.com",
+      "type": "click",
+      "ts": "2026-08-04T12:59:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "anton.petrov@truenorthecom.com",
+      "type": "click",
+      "ts": "2026-08-12T11:24:00",
+      "asset": "recording-link"
+    },
+    {
+      "email": "anton.petrov@truenorthecom.com",
+      "type": "open",
+      "ts": "2026-08-02T01:58:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "anton.petrov@truenorthecom.com",
+      "type": "click",
+      "ts": "2026-07-25T06:48:00",
+      "asset": "case-study-link"
+    },
+    {
+      "email": "isabel.mahajan@gmail.com",
+      "type": "click",
+      "ts": "2026-08-18T23:22:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "isabel.mahajan@gmail.com",
+      "type": "pageview",
+      "ts": "2026-08-09T22:23:00",
+      "asset": "/resources/revops-playbook"
+    },
+    {
+      "email": "isabel.mahajan@gmail.com",
+      "type": "open",
+      "ts": "2026-08-18T13:47:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "isabel.mahajan@gmail.com",
+      "type": "pageview",
+      "ts": "2026-07-21T11:40:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "isabel.mahajan@gmail.com",
+      "type": "open",
+      "ts": "2026-08-11T21:41:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "isabel.mahajan@gmail.com",
+      "type": "open",
+      "ts": "2026-08-03T21:09:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "isabel.mahajan@gmail.com",
+      "type": "open",
+      "ts": "2026-08-07T21:53:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "isabel.mahajan@gmail.com",
+      "type": "pageview",
+      "ts": "2026-08-13T02:41:00",
+      "asset": "/resources/revops-playbook"
+    },
+    {
+      "email": "isabel.mahajan@gmail.com",
+      "type": "form_fill",
+      "ts": "2026-08-01T22:37:00",
+      "asset": "demo-request-form"
+    },
+    {
+      "email": "isabel.mahajan@gmail.com",
+      "type": "click",
+      "ts": "2026-08-05T06:56:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "isabel.mahajan@gmail.com",
+      "type": "click",
+      "ts": "2026-07-28T22:19:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "isabel.mahajan@gmail.com",
+      "type": "click",
+      "ts": "2026-08-07T09:46:00",
+      "asset": "recording-link"
+    },
+    {
+      "email": "aditya.bello@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-08-09T18:49:00",
+      "asset": "/pricing"
+    },
+    {
+      "email": "aditya.bello@palmettosaasgroup.com",
+      "type": "form_fill",
+      "ts": "2026-07-28T23:13:00",
+      "asset": "content-download-form"
+    },
+    {
+      "email": "aditya.bello@palmettosaasgroup.com",
+      "type": "form_fill",
+      "ts": "2026-08-11T09:00:00",
+      "asset": "content-download-form"
+    },
+    {
+      "email": "aditya.bello@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-07-20T03:04:00",
+      "asset": "/resources/revops-playbook"
+    },
+    {
+      "email": "aditya.bello@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-08-05T13:41:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "aditya.bello@palmettosaasgroup.com",
+      "type": "open",
+      "ts": "2026-07-25T05:23:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "tomas.haddad@anchorpointsaas.com",
+      "type": "form_fill",
+      "ts": "2026-08-04T05:32:00",
+      "asset": "content-download-form"
+    },
+    {
+      "email": "tomas.haddad@anchorpointsaas.com",
+      "type": "open",
+      "ts": "2026-08-07T06:11:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "tomas.haddad@anchorpointsaas.com",
+      "type": "form_fill",
+      "ts": "2026-07-25T06:16:00",
+      "asset": "content-download-form"
+    },
+    {
+      "email": "tomas.haddad@anchorpointsaas.com",
+      "type": "click",
+      "ts": "2026-08-03T20:58:00",
+      "asset": "blog-post-link"
+    },
+    {
+      "email": "tomas.haddad@anchorpointsaas.com",
+      "type": "click",
+      "ts": "2026-07-22T09:05:00",
+      "asset": "case-study-link"
+    },
+    {
+      "email": "tomas.haddad@anchorpointsaas.com",
+      "type": "click",
+      "ts": "2026-07-22T10:01:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "tomas.haddad@anchorpointsaas.com",
+      "type": "open",
+      "ts": "2026-08-04T21:48:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "antonm@anchorpointsaas.com",
+      "type": "click",
+      "ts": "2026-08-13T00:42:00",
+      "asset": "recording-link"
+    },
+    {
+      "email": "antonm@anchorpointsaas.com",
+      "type": "pageview",
+      "ts": "2026-07-23T06:33:00",
+      "asset": "/resources/revops-playbook"
+    },
+    {
+      "email": "antonm@anchorpointsaas.com",
+      "type": "open",
+      "ts": "2026-08-08T16:48:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "antonm@anchorpointsaas.com",
+      "type": "click",
+      "ts": "2026-08-04T10:38:00",
+      "asset": "case-study-link"
+    },
+    {
+      "email": "antonm@anchorpointsaas.com",
+      "type": "pageview",
+      "ts": "2026-08-10T10:20:00",
+      "asset": "/case-studies/meridian"
+    },
+    {
+      "email": "antonm@anchorpointsaas.com",
+      "type": "click",
+      "ts": "2026-08-10T12:24:00",
+      "asset": "case-study-link"
+    },
+    {
+      "email": "antonm@anchorpointsaas.com",
+      "type": "open",
+      "ts": "2026-08-16T10:51:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "antonm@anchorpointsaas.com",
+      "type": "pageview",
+      "ts": "2026-08-16T22:25:00",
+      "asset": "/pricing"
+    },
+    {
+      "email": "samuel.rao@anchorpointsaas.com",
+      "type": "click",
+      "ts": "2026-08-08T03:55:00",
+      "asset": "blog-post-link"
+    },
+    {
+      "email": "samuel.rao@anchorpointsaas.com",
+      "type": "pageview",
+      "ts": "2026-07-31T14:39:00",
+      "asset": "/resources/revops-playbook"
+    },
+    {
+      "email": "samuel.rao@anchorpointsaas.com",
+      "type": "open",
+      "ts": "2026-08-05T13:42:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "samuel.rao@anchorpointsaas.com",
+      "type": "click",
+      "ts": "2026-08-19T10:01:00",
+      "asset": "recording-link"
+    },
+    {
+      "email": "samuel.rao@anchorpointsaas.com",
+      "type": "pageview",
+      "ts": "2026-08-14T23:20:00",
+      "asset": "/pricing"
+    },
+    {
+      "email": "samuel.rao@anchorpointsaas.com",
+      "type": "pageview",
+      "ts": "2026-08-08T15:25:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "axu@vectorcloudsystems.com",
+      "type": "pageview",
+      "ts": "2026-08-02T15:42:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "axu@vectorcloudsystems.com",
+      "type": "click",
+      "ts": "2026-08-12T12:18:00",
+      "asset": "blog-post-link"
+    },
+    {
+      "email": "axu@vectorcloudsystems.com",
+      "type": "click",
+      "ts": "2026-08-16T16:56:00",
+      "asset": "recording-link"
+    },
+    {
+      "email": "axu@vectorcloudsystems.com",
+      "type": "open",
+      "ts": "2026-07-24T15:50:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "axu@vectorcloudsystems.com",
+      "type": "pageview",
+      "ts": "2026-08-06T14:10:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "axu@vectorcloudsystems.com",
+      "type": "open",
+      "ts": "2026-08-04T21:34:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "axu@vectorcloudsystems.com",
+      "type": "open",
+      "ts": "2026-07-25T21:44:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "axu@vectorcloudsystems.com",
+      "type": "form_fill",
+      "ts": "2026-08-11T00:10:00",
+      "asset": "content-download-form"
+    },
+    {
+      "email": "marcof@harborviewsoftware.com",
+      "type": "pageview",
+      "ts": "2026-08-13T08:14:00",
+      "asset": "/resources/revops-playbook"
+    },
+    {
+      "email": "marcof@harborviewsoftware.com",
+      "type": "pageview",
+      "ts": "2026-08-19T21:07:00",
+      "asset": "/product/revenue-cloud"
+    },
+    {
+      "email": "marcof@harborviewsoftware.com",
+      "type": "open",
+      "ts": "2026-08-09T23:31:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "marcof@harborviewsoftware.com",
+      "type": "click",
+      "ts": "2026-07-30T07:59:00",
+      "asset": "recording-link"
+    },
+    {
+      "email": "marcof@harborviewsoftware.com",
+      "type": "form_fill",
+      "ts": "2026-08-09T10:24:00",
+      "asset": "contact-sales-form"
+    },
+    {
+      "email": "marcof@harborviewsoftware.com",
+      "type": "pageview",
+      "ts": "2026-08-12T23:24:00",
+      "asset": "/product/revenue-cloud"
+    },
+    {
+      "email": "marcof@harborviewsoftware.com",
+      "type": "open",
+      "ts": "2026-08-19T13:51:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "marcof@harborviewsoftware.com",
+      "type": "open",
+      "ts": "2026-07-23T09:05:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "marcof@harborviewsoftware.com",
+      "type": "open",
+      "ts": "2026-08-12T18:59:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "lmenon@bluepeakventures.com",
+      "type": "open",
+      "ts": "2026-07-31T04:54:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "lmenon@bluepeakventures.com",
+      "type": "open",
+      "ts": "2026-08-07T23:00:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "lmenon@bluepeakventures.com",
+      "type": "click",
+      "ts": "2026-08-06T06:54:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "lmenon@bluepeakventures.com",
+      "type": "pageview",
+      "ts": "2026-07-30T11:51:00",
+      "asset": "/pricing"
+    },
+    {
+      "email": "lmenon@bluepeakventures.com",
+      "type": "click",
+      "ts": "2026-08-05T21:38:00",
+      "asset": "recording-link"
+    },
+    {
+      "email": "lmenon@bluepeakventures.com",
+      "type": "pageview",
+      "ts": "2026-08-01T00:34:00",
+      "asset": "/case-studies/meridian"
+    },
+    {
+      "email": "ahmedt@quantarasoftware.com",
+      "type": "open",
+      "ts": "2026-08-15T09:53:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "ahmedt@quantarasoftware.com",
+      "type": "open",
+      "ts": "2026-08-03T04:38:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "ahmedt@quantarasoftware.com",
+      "type": "click",
+      "ts": "2026-08-10T22:02:00",
+      "asset": "case-study-link"
+    },
+    {
+      "email": "VICTORK@QUANTARASOFTWARE.COM",
+      "type": "form_fill",
+      "ts": "2026-08-11T03:17:00",
+      "asset": "contact-sales-form"
+    },
+    {
+      "email": "VICTORK@QUANTARASOFTWARE.COM",
+      "type": "pageview",
+      "ts": "2026-08-07T15:40:00",
+      "asset": "/resources/revops-playbook"
+    },
+    {
+      "email": "VICTORK@QUANTARASOFTWARE.COM",
+      "type": "open",
+      "ts": "2026-07-29T22:24:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "VICTORK@QUANTARASOFTWARE.COM",
+      "type": "pageview",
+      "ts": "2026-07-24T22:13:00",
+      "asset": "/pricing"
+    },
+    {
+      "email": "VICTORK@QUANTARASOFTWARE.COM",
+      "type": "form_fill",
+      "ts": "2026-08-11T23:03:00",
+      "asset": "demo-request-form"
+    },
+    {
+      "email": "VICTORK@QUANTARASOFTWARE.COM",
+      "type": "click",
+      "ts": "2026-08-16T15:46:00",
+      "asset": "blog-post-link"
+    },
+    {
+      "email": "RHADDAD@PINEHOLLOWSOFTWARE.COM",
+      "type": "click",
+      "ts": "2026-08-06T12:21:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "RHADDAD@PINEHOLLOWSOFTWARE.COM",
+      "type": "open",
+      "ts": "2026-07-31T12:25:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "nadial@copperlineit.com",
+      "type": "open",
+      "ts": "2026-07-29T22:59:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "nadial@copperlineit.com",
+      "type": "open",
+      "ts": "2026-08-01T03:08:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "nadial@copperlineit.com",
+      "type": "form_fill",
+      "ts": "2026-08-16T01:54:00",
+      "asset": "content-download-form"
+    },
+    {
+      "email": "nadial@copperlineit.com",
+      "type": "click",
+      "ts": "2026-08-03T20:10:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "diegoi@cascaderevops.com",
+      "type": "open",
+      "ts": "2026-07-29T04:13:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "diegoi@cascaderevops.com",
+      "type": "open",
+      "ts": "2026-07-26T23:41:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "diegoi@cascaderevops.com",
+      "type": "pageview",
+      "ts": "2026-08-16T18:06:00",
+      "asset": "/pricing"
+    },
+    {
+      "email": "diegoi@cascaderevops.com",
+      "type": "pageview",
+      "ts": "2026-08-01T13:43:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "diegoi@cascaderevops.com",
+      "type": "open",
+      "ts": "2026-07-23T11:30:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "rnair@kestrelit.com",
+      "type": "click",
+      "ts": "2026-08-05T20:21:00",
+      "asset": "blog-post-link"
+    },
+    {
+      "email": "rnair@kestrelit.com",
+      "type": "open",
+      "ts": "2026-08-09T23:25:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "wendya@pinehollowsoftware.com",
+      "type": "pageview",
+      "ts": "2026-08-01T15:19:00",
+      "asset": "/pricing"
+    },
+    {
+      "email": "wendya@pinehollowsoftware.com",
+      "type": "pageview",
+      "ts": "2026-08-09T23:24:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "wendya@pinehollowsoftware.com",
+      "type": "pageview",
+      "ts": "2026-08-13T14:55:00",
+      "asset": "/resources/revops-playbook"
+    },
+    {
+      "email": "sbose@ridgelinecommerce.com",
+      "type": "click",
+      "ts": "2026-08-09T20:28:00",
+      "asset": "recording-link"
+    },
+    {
+      "email": "sbose@ridgelinecommerce.com",
+      "type": "click",
+      "ts": "2026-07-23T02:07:00",
+      "asset": "blog-post-link"
+    },
+    {
+      "email": "sbose@ridgelinecommerce.com",
+      "type": "form_fill",
+      "ts": "2026-07-20T18:36:00",
+      "asset": "content-download-form"
+    },
+    {
+      "email": "sbose@ridgelinecommerce.com",
+      "type": "open",
+      "ts": "2026-07-28T22:47:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "divya.verma@clarionanalytics.com",
+      "type": "pageview",
+      "ts": "2026-08-01T15:41:00",
+      "asset": "/case-studies/meridian"
+    },
+    {
+      "email": "divya.verma@clarionanalytics.com",
+      "type": "open",
+      "ts": "2026-08-07T04:06:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "divya.verma@clarionanalytics.com",
+      "type": "click",
+      "ts": "2026-08-18T17:11:00",
+      "asset": "recording-link"
+    },
+    {
+      "email": "elena.kapoor@pinehollowsoftware.com",
+      "type": "pageview",
+      "ts": "2026-08-06T17:50:00",
+      "asset": "/resources/revops-playbook"
+    },
+    {
+      "email": "elena.kapoor@pinehollowsoftware.com",
+      "type": "click",
+      "ts": "2026-07-22T16:53:00",
+      "asset": "recording-link"
+    },
+    {
+      "email": "elena.kapoor@pinehollowsoftware.com",
+      "type": "pageview",
+      "ts": "2026-08-13T06:42:00",
+      "asset": "/pricing"
+    },
+    {
+      "email": "elena.kapoor@pinehollowsoftware.com",
+      "type": "open",
+      "ts": "2026-08-16T19:44:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "elena.kapoor@pinehollowsoftware.com",
+      "type": "open",
+      "ts": "2026-08-03T10:07:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "obose@ridgelinecommerce.com",
+      "type": "click",
+      "ts": "2026-08-09T05:05:00",
+      "asset": "recording-link"
+    },
+    {
+      "email": "obose@ridgelinecommerce.com",
+      "type": "open",
+      "ts": "2026-07-22T03:32:00",
+      "asset": "speaker-recap-email"
+    },
+    {
+      "email": "obose@ridgelinecommerce.com",
+      "type": "open",
+      "ts": "2026-07-25T13:42:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-07-25T17:28:00",
+      "asset": "/pricing"
+    },
+    {
+      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-07-25T18:31:00",
+      "asset": "/case-studies/meridian"
+    },
+    {
+      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-07-25T17:58:00",
+      "asset": "/case-studies/meridian"
+    },
+    {
+      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-07-25T18:34:00",
+      "asset": "/product/revenue-cloud"
+    },
+    {
+      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-07-25T12:44:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-07-25T09:15:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-07-25T12:09:00",
+      "asset": "/case-studies/meridian"
+    },
+    {
+      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-07-25T12:08:00",
+      "asset": "/product/revenue-cloud"
+    },
+    {
+      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-07-25T17:13:00",
+      "asset": "/product/revenue-cloud"
+    },
+    {
+      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-07-25T14:17:00",
+      "asset": "/pricing"
+    },
+    {
+      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-07-25T18:27:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-07-25T17:16:00",
+      "asset": "/case-studies/meridian"
+    },
+    {
+      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-07-25T15:41:00",
+      "asset": "/pricing"
+    },
+    {
+      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-07-25T15:29:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-07-25T13:43:00",
+      "asset": "/resources/revops-playbook"
+    },
+    {
+      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-07-25T11:34:00",
+      "asset": "/pricing"
+    },
+    {
+      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "type": "pageview",
+      "ts": "2026-07-25T10:40:00",
+      "asset": "/case-studies/meridian"
+    },
+    {
+      "email": "lmenon@bluepeakventures.com",
+      "type": "pageview",
+      "ts": "2026-08-07T12:45:00",
+      "asset": "/case-studies/meridian"
+    },
+    {
+      "email": "lmenon@bluepeakventures.com",
+      "type": "pageview",
+      "ts": "2026-08-07T18:42:00",
+      "asset": "/product/revenue-cloud"
+    },
+    {
+      "email": "lmenon@bluepeakventures.com",
+      "type": "pageview",
+      "ts": "2026-08-07T18:10:00",
+      "asset": "/resources/revops-playbook"
+    },
+    {
+      "email": "lmenon@bluepeakventures.com",
+      "type": "pageview",
+      "ts": "2026-08-07T11:20:00",
+      "asset": "/resources/revops-playbook"
+    },
+    {
+      "email": "lmenon@bluepeakventures.com",
+      "type": "pageview",
+      "ts": "2026-08-07T15:01:00",
+      "asset": "/product/revenue-cloud"
+    },
+    {
+      "email": "lmenon@bluepeakventures.com",
+      "type": "pageview",
+      "ts": "2026-08-07T12:04:00",
+      "asset": "/case-studies/meridian"
+    },
+    {
+      "email": "lmenon@bluepeakventures.com",
+      "type": "pageview",
+      "ts": "2026-08-07T10:34:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "lmenon@bluepeakventures.com",
+      "type": "pageview",
+      "ts": "2026-08-07T17:26:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "lmenon@bluepeakventures.com",
+      "type": "pageview",
+      "ts": "2026-08-07T14:40:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "lmenon@bluepeakventures.com",
+      "type": "pageview",
+      "ts": "2026-08-07T14:58:00",
+      "asset": "/case-studies/meridian"
+    },
+    {
+      "email": "lmenon@bluepeakventures.com",
+      "type": "pageview",
+      "ts": "2026-08-07T13:09:00",
+      "asset": "/pricing"
+    },
+    {
+      "email": "lmenon@bluepeakventures.com",
+      "type": "pageview",
+      "ts": "2026-08-07T13:00:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "lmenon@bluepeakventures.com",
+      "type": "pageview",
+      "ts": "2026-08-07T15:14:00",
+      "asset": "/resources/revops-playbook"
+    },
+    {
+      "email": "lmenon@bluepeakventures.com",
+      "type": "pageview",
+      "ts": "2026-08-07T10:50:00",
+      "asset": "/blog/pipeline-after-webinar"
+    },
+    {
+      "email": "lmenon@bluepeakventures.com",
+      "type": "pageview",
+      "ts": "2026-08-07T11:33:00",
+      "asset": "/case-studies/meridian"
+    },
+    {
+      "email": "lmenon@bluepeakventures.com",
+      "type": "pageview",
+      "ts": "2026-08-07T18:52:00",
+      "asset": "/resources/revops-playbook"
+    },
+    {
+      "email": "lmenon@bluepeakventures.com",
+      "type": "pageview",
+      "ts": "2026-08-07T10:33:00",
+      "asset": "/case-studies/meridian"
+    },
+    {
+      "email": "lmenon@bluepeakventures.com",
+      "type": "pageview",
+      "ts": "2026-08-07T18:55:00",
+      "asset": "/case-studies/meridian"
+    },
+    {
+      "email": "lmenon@bluepeakventures.com",
+      "type": "pageview",
+      "ts": "2026-08-07T17:17:00",
+      "asset": "/product/revenue-cloud"
+    },
+    {
+      "email": "lmenon@bluepeakventures.com",
+      "type": "pageview",
+      "ts": "2026-08-07T10:57:00",
+      "asset": "/blog/pipeline-after-webinar"
+    }
+  ],
+  "lifecycle_changes": [
+    {
+      "email": "alice.lin@harborviewsoftware.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-07-24T00:00:00"
+    },
+    {
+      "email": "alice.lin@harborviewsoftware.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-08-04T22:00:00"
+    },
+    {
+      "email": "alice.lin@harborviewsoftware.com",
+      "from": "marketingqualifiedlead",
+      "to": "salesqualifiedlead",
+      "ts": "2026-08-03T21:00:00"
+    },
+    {
+      "email": "juliaf@anchorpointsaas.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-07-25T18:00:00"
+    },
+    {
+      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-22T23:00:00"
+    },
+    {
+      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "from": "marketingqualifiedlead",
+      "to": "salesqualifiedlead",
+      "ts": "2026-08-01T22:00:00"
+    },
+    {
+      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "from": "salesqualifiedlead",
+      "to": "opportunity",
+      "ts": "2026-08-13T07:00:00"
+    },
+    {
+      "email": "zmoreau@vectorcloudsystems.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-27T14:00:00"
+    },
+    {
+      "email": "zmoreau@vectorcloudsystems.com",
+      "from": "marketingqualifiedlead",
+      "to": "salesqualifiedlead",
+      "ts": "2026-07-29T14:00:00"
+    },
+    {
+      "email": "zmoreau@vectorcloudsystems.com",
+      "from": "salesqualifiedlead",
+      "to": "opportunity",
+      "ts": "2026-08-06T14:00:00"
+    },
+    {
+      "email": "pmalik@palmettosaasgroup.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-24T13:00:00"
+    },
+    {
+      "email": "pmalik@palmettosaasgroup.com",
+      "from": "marketingqualifiedlead",
+      "to": "salesqualifiedlead",
+      "ts": "2026-08-04T22:00:00"
+    },
+    {
+      "email": "pmalik@palmettosaasgroup.com",
+      "from": "salesqualifiedlead",
+      "to": "opportunity",
+      "ts": "2026-08-04T09:00:00"
+    },
+    {
+      "email": "jamesb@palmettosaasgroup.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-07-24T13:00:00"
+    },
+    {
+      "email": "jamesb@palmettosaasgroup.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-08-01T02:00:00"
+    },
+    {
+      "email": "jamesb@palmettosaasgroup.com",
+      "from": "marketingqualifiedlead",
+      "to": "salesqualifiedlead",
+      "ts": "2026-08-11T02:00:00"
+    },
+    {
+      "email": "ninaj@palmettosaasgroup.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-07-22T05:00:00"
+    },
+    {
+      "email": "nina.haddad@outlook.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-07-22T23:00:00"
+    },
+    {
+      "email": "nina.haddad@outlook.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-31T17:00:00"
+    },
+    {
+      "email": "nina.haddad@outlook.com",
+      "from": "marketingqualifiedlead",
+      "to": "salesqualifiedlead",
+      "ts": "2026-08-08T00:00:00"
+    },
+    {
+      "email": "lingb@truenorthecom.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-07-25T15:00:00"
+    },
+    {
+      "email": "lingb@truenorthecom.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-08-04T21:00:00"
+    },
+    {
+      "email": "nwong@truenorthecom.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-07-25T00:00:00"
+    },
+    {
+      "email": "nwong@truenorthecom.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-08-05T06:00:00"
+    },
+    {
+      "email": "nwong@truenorthecom.com",
+      "from": "marketingqualifiedlead",
+      "to": "salesqualifiedlead",
+      "ts": "2026-08-12T00:00:00"
+    },
+    {
+      "email": "marcot@anchorpointsaas.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-27T17:00:00"
+    },
+    {
+      "email": "marcot@anchorpointsaas.com",
+      "from": "marketingqualifiedlead",
+      "to": "salesqualifiedlead",
+      "ts": "2026-08-01T07:00:00"
+    },
+    {
+      "email": "marcot@anchorpointsaas.com",
+      "from": "salesqualifiedlead",
+      "to": "opportunity",
+      "ts": "2026-08-12T21:00:00"
+    },
+    {
+      "email": "vbello@truenorthecom.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-07-26T14:00:00"
+    },
+    {
+      "email": "vbello@truenorthecom.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-29T21:00:00"
+    },
+    {
+      "email": "vbello@truenorthecom.com",
+      "from": "marketingqualifiedlead",
+      "to": "salesqualifiedlead",
+      "ts": "2026-08-13T16:00:00"
+    },
+    {
+      "email": "meib@palmettosaasgroup.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-07-22T11:00:00"
+    },
+    {
+      "email": "aditya.joshi@anchorpointsaas.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-22T13:00:00"
+    },
+    {
+      "email": "vmehta@anchorpointsaas.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-23T11:00:00"
+    },
+    {
+      "email": "vmehta@anchorpointsaas.com",
+      "from": "marketingqualifiedlead",
+      "to": "salesqualifiedlead",
+      "ts": "2026-07-28T10:00:00"
+    },
+    {
+      "email": "laura.patel@yahoo.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-07-28T17:00:00"
+    },
+    {
+      "email": "laura.patel@yahoo.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-28T09:00:00"
+    },
+    {
+      "email": "laura.patel@yahoo.com",
+      "from": "marketingqualifiedlead",
+      "to": "salesqualifiedlead",
+      "ts": "2026-08-05T15:00:00"
+    },
+    {
+      "email": "priyanka.marsh@zenithmarketinggroup.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-23T00:00:00"
+    },
+    {
+      "email": "priyanka.marsh@zenithmarketinggroup.com",
+      "from": "marketingqualifiedlead",
+      "to": "salesqualifiedlead",
+      "ts": "2026-08-05T12:00:00"
+    },
+    {
+      "email": "nadia.moreau@zenithmarketinggroup.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-27T16:00:00"
+    },
+    {
+      "email": "hivanova@palmettosaasgroup.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-26T15:00:00"
+    },
+    {
+      "email": "tomf@palmettosaasgroup.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-22T19:00:00"
+    },
+    {
+      "email": "sara.reddy@zenithmarketinggroup.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-24T11:00:00"
+    },
+    {
+      "email": "sara.reddy@zenithmarketinggroup.com",
+      "from": "marketingqualifiedlead",
+      "to": "salesqualifiedlead",
+      "ts": "2026-07-28T00:00:00"
+    },
+    {
+      "email": "zoe.moreau@hotmail.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-07-25T11:00:00"
+    },
+    {
+      "email": "zoe.moreau@hotmail.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-27T03:00:00"
+    },
+    {
+      "email": "victor.bello@truenorthecom.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-23T02:00:00"
+    },
+    {
+      "email": "victor.bello@truenorthecom.com",
+      "from": "marketingqualifiedlead",
+      "to": "salesqualifiedlead",
+      "ts": "2026-08-04T16:00:00"
+    },
+    {
+      "email": "katie.sato@yahoo.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-22T15:00:00"
+    },
+    {
+      "email": "marcob@palmettosaasgroup.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-07-28T21:00:00"
+    },
+    {
+      "email": "anton.petrov@truenorthecom.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-07-25T12:00:00"
+    },
+    {
+      "email": "anton.petrov@truenorthecom.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-08-01T09:00:00"
+    },
+    {
+      "email": "isabel.mahajan@gmail.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-23T17:00:00"
+    },
+    {
+      "email": "isabel.mahajan@gmail.com",
+      "from": "marketingqualifiedlead",
+      "to": "salesqualifiedlead",
+      "ts": "2026-07-31T03:00:00"
+    },
+    {
+      "email": "aditya.bello@palmettosaasgroup.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-23T04:00:00"
+    },
+    {
+      "email": "aditya.bello@palmettosaasgroup.com",
+      "from": "marketingqualifiedlead",
+      "to": "salesqualifiedlead",
+      "ts": "2026-08-01T23:00:00"
+    },
+    {
+      "email": "tomas.haddad@anchorpointsaas.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-07-24T22:00:00"
+    },
+    {
+      "email": "tomas.haddad@anchorpointsaas.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-30T03:00:00"
+    },
+    {
+      "email": "antonm@anchorpointsaas.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-22T04:00:00"
+    },
+    {
+      "email": "samuel.rao@anchorpointsaas.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-27T10:00:00"
+    },
+    {
+      "email": "samuel.rao@anchorpointsaas.com",
+      "from": "marketingqualifiedlead",
+      "to": "salesqualifiedlead",
+      "ts": "2026-07-27T05:00:00"
+    },
+    {
+      "email": "axu@vectorcloudsystems.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-07-25T21:00:00"
+    },
+    {
+      "email": "axu@vectorcloudsystems.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-31T03:00:00"
+    },
+    {
+      "email": "axu@vectorcloudsystems.com",
+      "from": "marketingqualifiedlead",
+      "to": "salesqualifiedlead",
+      "ts": "2026-08-07T15:00:00"
+    },
+    {
+      "email": "marcof@harborviewsoftware.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-28T21:00:00"
+    },
+    {
+      "email": "marcof@harborviewsoftware.com",
+      "from": "marketingqualifiedlead",
+      "to": "salesqualifiedlead",
+      "ts": "2026-07-29T10:00:00"
+    },
+    {
+      "email": "marcof@harborviewsoftware.com",
+      "from": "salesqualifiedlead",
+      "to": "opportunity",
+      "ts": "2026-08-13T12:00:00"
+    },
+    {
+      "email": "VICTORK@QUANTARASOFTWARE.COM",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-23T03:00:00"
+    },
+    {
+      "email": "VICTORK@QUANTARASOFTWARE.COM",
+      "from": "marketingqualifiedlead",
+      "to": "salesqualifiedlead",
+      "ts": "2026-07-28T00:00:00"
+    },
+    {
+      "email": "VICTORK@QUANTARASOFTWARE.COM",
+      "from": "salesqualifiedlead",
+      "to": "opportunity",
+      "ts": "2026-08-03T04:00:00"
+    },
+    {
+      "email": "diegoi@cascaderevops.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-07-28T21:00:00"
+    },
+    {
+      "email": "diegoi@cascaderevops.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-30T01:00:00"
+    },
+    {
+      "email": "rnair@kestrelit.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-25T19:00:00"
+    },
+    {
+      "email": "rnair@kestrelit.com",
+      "from": "marketingqualifiedlead",
+      "to": "salesqualifiedlead",
+      "ts": "2026-07-27T13:00:00"
+    },
+    {
+      "email": "rnair@kestrelit.com",
+      "from": "salesqualifiedlead",
+      "to": "opportunity",
+      "ts": "2026-08-08T09:00:00"
+    },
+    {
+      "email": "obose@ridgelinecommerce.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-22T13:00:00"
+    },
+    {
+      "email": "obose@ridgelinecommerce.com",
+      "from": "marketingqualifiedlead",
+      "to": "salesqualifiedlead",
+      "ts": "2026-07-30T19:00:00"
+    },
+    {
+      "email": "elena.kapoor@pinehollowsoftware.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-07-23T08:00:00"
+    },
+    {
+      "email": "divya.verma@clarionanalytics.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-27T07:00:00"
+    },
+    {
+      "email": "wendya@pinehollowsoftware.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-23T15:00:00"
+    },
+    {
+      "email": "wendya@pinehollowsoftware.com",
+      "from": "marketingqualifiedlead",
+      "to": "salesqualifiedlead",
+      "ts": "2026-07-28T22:00:00"
+    },
+    {
+      "email": "wendya@pinehollowsoftware.com",
+      "from": "salesqualifiedlead",
+      "to": "opportunity",
+      "ts": "2026-08-12T16:00:00"
+    },
+    {
+      "email": "nadial@copperlineit.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-07-23T18:00:00"
+    },
+    {
+      "email": "nadial@copperlineit.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-29T07:00:00"
+    },
+    {
+      "email": "nadial@copperlineit.com",
+      "from": "marketingqualifiedlead",
+      "to": "salesqualifiedlead",
+      "ts": "2026-08-02T04:00:00"
+    },
+    {
+      "email": "RHADDAD@PINEHOLLOWSOFTWARE.COM",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-07-24T06:00:00"
+    },
+    {
+      "email": "RHADDAD@PINEHOLLOWSOFTWARE.COM",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-07-29T13:00:00"
+    },
+    {
+      "email": "ahmedt@quantarasoftware.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-07-22T01:00:00"
+    }
+  ],
+  "_meta": {
+    "hot_accounts": [
+      "harborview software",
+      "palmetto saas group",
+      "zenith marketing group",
+      "truenorth ecommerce",
+      "anchorpoint saas",
+      "vector cloud systems"
+    ],
+    "anomaly_contacts": [
+      "kevin.ivanova@palmettosaasgroup.com",
+      "lmenon@bluepeakventures.com"
+    ]
+  }
+}

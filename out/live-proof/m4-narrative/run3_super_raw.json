@@ -1,0 +1,12 @@
+{
+  "http_status": 200,
+  "elapsed_ms": 17086,
+  "body": {
+    "paragraphs": [
+      "Of the 133 registrants, 74 attended (55.6% attendance), yielding 31 post‑event engaged contacts, of which 12 became MQL+ and 9 progressed to SQL+ (16.2% attendee‑to‑MQL conversion). The webinar engaged 5 buying‑committee accounts. The top‑scoring accounts were Palmetto SaaS Group (9 engaged contacts, 90% committee coverage), Anchorpoint SaaS (7 engaged contacts, 87.5% coverage) and Truenorth Ecommerce (4 engaged contacts, 100% coverage).",
+      "Anomaly detection shows two compressed research sprints: 21 of 26 touches (80.8%) for an unspecified contact at an unspecified company occurred on 2026-08-07 with no lifecycle movement, signaling a stalled hot lead that warrants a manual RevOps review; and 17 of 27 touches (63.0%) for another unspecified contact/company on 2026-07-25, where the lifecycle stage already reflects the activity, suggesting no further action is needed."
+    ],
+    "generated_at": "2026-08-23T14:08:14.158Z",
+    "source": "live"
+  }
+}

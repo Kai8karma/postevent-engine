@@ -1,0 +1,257 @@
+{
+  "name": "Post-Event Engine \u2014 Master [LOCAL DEMO STAND-IN]",
+  "nodes": [
+    {
+      "id": "sticky-local-demo-note",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        160,
+        -40
+      ],
+      "parameters": {
+        "content": "## LOCAL DEMO STAND-IN\nThis workflow shells out to the same Python CLI scripts used by `orchestrator/run_pipeline.py` via Execute Command nodes -- it lets a judge see the pipeline DAG inside n8n's UI with zero credentials.\n\n**It will NOT run on n8n Cloud** (Execute Command requires a self-hosted/queue-mode n8n with shell access) and it is not the production design.\n\nProduction lane: `orchestrator/n8n/cloud/master.json` -- real Webhook trigger, HTTP Request nodes to the webinar platform / Clay / HubSpot, a Code node for payload shaping, a Wait+IF approval gate, and a disabled Telegram notify.",
+        "height": 300,
+        "width": 460,
+        "color": 5
+      }
+    },
+    {
+      "id": "1",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        200,
+        400
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "2",
+      "name": "M1 Enrich",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        440,
+        400
+      ],
+      "parameters": {
+        "command": "python3 modules/m1-enrichment/enrich.py --out out/pipeline/m1"
+      }
+    },
+    {
+      "id": "3",
+      "name": "M2 Comms",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        680,
+        400
+      ],
+      "parameters": {
+        "command": "python3 modules/m2-comms/comms.py --out out/pipeline/m2 --enriched out/pipeline/m1/hubspot_ready.csv"
+      }
+    },
+    {
+      "id": "4",
+      "name": "M3 Repurpose",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        920,
+        400
+      ],
+      "parameters": {
+        "command": "python3 modules/m3-repurpose/repurpose.py --out out/pipeline/m3"
+      }
+    },
+    {
+      "id": "5",
+      "name": "M4 Dashboard",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1160,
+        400
+      ],
+      "parameters": {
+        "command": "python3 modules/m4-dashboard/build_dashboard.py --out out/pipeline/m4 --enriched out/pipeline/m1/hubspot_ready.csv --engagement data/fixtures/engagement.json --segments data/fixtures/segments.json"
+      }
+    },
+    {
+      "id": "6",
+      "name": "Read Approval Gate",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1400,
+        400
+      ],
+      "parameters": {
+        "command": "cat out/pipeline/m2/approval_gate.json"
+      }
+    },
+    {
+      "id": "7",
+      "name": "Approval Gate?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1640,
+        400
+      ],
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json[\"stdout\"]}}",
+              "operation": "contains",
+              "value2": "\"approved\": true"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "8",
+      "name": "HubSpot Send (stub)",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1880,
+        280
+      ],
+      "parameters": {
+        "command": "echo '[stub] approved \u2014 would POST comms batch to HubSpot Marketing Email API here'"
+      }
+    },
+    {
+      "id": "9",
+      "name": "Blocked - Pending Approval",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1880,
+        520
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "10",
+      "name": "Notify Team (disabled stub)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        2120,
+        280
+      ],
+      "disabled": true,
+      "parameters": {
+        "chatId": "REPLACE_WITH_CHAT_ID",
+        "text": "=Post-event engine run complete for {{$node[\"M4 Dashboard\"].json[\"event\"]}}. Dashboard + comms ready for review."
+      }
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "M1 Enrich",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "M1 Enrich": {
+      "main": [
+        [
+          {
+            "node": "M2 Comms",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "M2 Comms": {
+      "main": [
+        [
+          {
+            "node": "M3 Repurpose",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "M3 Repurpose": {
+      "main": [
+        [
+          {
+            "node": "M4 Dashboard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "M4 Dashboard": {
+      "main": [
+        [
+          {
+            "node": "Read Approval Gate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Approval Gate": {
+      "main": [
+        [
+          {
+            "node": "Approval Gate?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approval Gate?": {
+      "main": [
+        [
+          {
+            "node": "HubSpot Send (stub)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Blocked - Pending Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HubSpot Send (stub)": {
+      "main": [
+        [
+          {
+            "node": "Notify Team (disabled stub)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

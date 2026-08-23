@@ -1,0 +1,7 @@
+[live lane] M3 repurpose: invoking OpenRouter (nvidia/nemotron-3-ultra-550b-a55b:free) at runtime for real generation -- use no flag / omit --live to replay cached outputs instead
+[live lane] M4 dashboard: invoking OpenRouter (nvidia/nemotron-3-ultra-550b-a55b:free) at runtime for real generation -- use no flag / omit --live to replay cached outputs instead
+stage         seconds  key output                                          pass/fail
+------------  -------  --------------------------------------------------  ---------
+M3 repurpose  547.67   M3 repurpose (live): 4 assets -> out/live-proof/m3  PASS     
+M4 dashboard  0.05     top_accounts=10 committee_accounts=5 anomalies=2    PASS     
+EXIT=0

@@ -1,0 +1,38 @@
+{
+  "event_tag": "acmerevenue-2026-07-20",
+  "mode": "offline",
+  "assets": {
+    "blog.md": {
+      "path": "out/sample-run/m3/blog.md",
+      "words": 1165
+    },
+    "youtube.md": {
+      "path": "out/sample-run/m3/youtube.md",
+      "words": 411
+    },
+    "infographic.md": {
+      "path": "out/sample-run/m3/infographic.md",
+      "words": 415
+    },
+    "social.md": {
+      "path": "out/sample-run/m3/social.md",
+      "words": 666
+    },
+    "visuals/quote-card-linkedin.png": {
+      "path": "out/sample-run/m3/visuals/quote-card-linkedin.png",
+      "bytes": 64095
+    },
+    "visuals/youtube-thumbnail.png": {
+      "path": "out/sample-run/m3/visuals/youtube-thumbnail.png",
+      "bytes": 53260
+    }
+  },
+  "spec_check": {
+    "blog_words": 1165,
+    "blog_spec": "800-1200",
+    "blog_within_spec": true,
+    "social_posts": 8,
+    "social_spec": "5-10",
+    "social_within_spec": true
+  }
+}

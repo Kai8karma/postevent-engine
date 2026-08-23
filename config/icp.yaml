@@ -1,0 +1,35 @@
+# ICP config — placeholder until hiring company named.
+# Swap this file + data/incoming/ to re-run entire pipeline on their real event.
+company:
+  name: "ACME Revenue Cloud"        # synthetic host company
+  domain: "acmerevenue.example"
+  product: "B2B revenue-operations SaaS"
+icp:
+  tiers:
+    tier1:
+      titles: ["VP Marketing", "Head of Demand Gen", "Director Marketing Ops", "CMO"]
+      company_size: [200, 5000]
+      industries: ["SaaS", "Fintech", "IT Services"]
+    tier2:
+      titles: ["Marketing Manager", "Growth Manager", "RevOps Manager"]
+      company_size: [50, 200]
+      industries: ["SaaS", "Fintech", "IT Services", "Ecommerce"]
+    tier3:
+      titles: ["*"]
+      company_size: [1, 50]
+      industries: ["*"]
+  regions:
+    AMER: ["US", "CA", "BR", "MX"]
+    EMEA: ["UK", "DE", "FR", "AE", "ZA"]
+    APAC: ["IN", "SG", "AU", "JP"]
+  owners:
+    AMER: "sdr.amer@acmerevenue.example"
+    EMEA: "sdr.emea@acmerevenue.example"
+    APAC: "sdr.apac@acmerevenue.example"
+  # No longer applied as a blanket stage (that produced a fake 91.4%
+  # attendee-to-MQL rate -- judge fix #2). enrich.py now derives lifecyclestage
+  # per-row from a pinned rubric (tier1+attended+session>=25min -> MQL;
+  # tier1/tier2 (attended or no-show) -> lead; everyone else -> subscriber),
+  # never demoting a pre-existing HubSpot stage. This key is kept for
+  # backward-compat/documentation only; see enrich.py::lifecycle_target().
+  lifecycle_default: "marketingqualifiedlead_pending"

@@ -1,0 +1,23 @@
+[
+  {
+    "name": "Priya Nair",
+    "title": "VP Marketing",
+    "company": "ACME Revenue Cloud",
+    "linkedin": "https://www.linkedin.com/in/priya-nair-example",
+    "bio": "Priya Nair leads marketing at ACME Revenue Cloud, where she has spent the last five years building the demand engine that feeds its enterprise sales motion. She is best known internally for pushing the team to treat post-event follow-up as a revenue system rather than an afterthought."
+  },
+  {
+    "name": "Daniel Kim",
+    "title": "Head of Demand Gen",
+    "company": "Northwind Analytics",
+    "linkedin": "https://www.linkedin.com/in/daniel-kim-example",
+    "bio": "Daniel Kim runs demand generation at Northwind Analytics, a mid-market analytics platform, where he rebuilt the lead routing and speed-to-lead process from scratch after years of webinar leads going cold. He writes and speaks regularly about the operational side of pipeline generation."
+  },
+  {
+    "name": "Sara Alvarez",
+    "title": "RevOps Lead",
+    "company": "Meridian Software",
+    "linkedin": "https://www.linkedin.com/in/sara-alvarez-example",
+    "bio": "Sara Alvarez leads revenue operations at Meridian Software, where she owns attribution modeling and the handoff between marketing and sales. She has a reputation for being the person in the room who insists every campaign claim be backed by a number that survives an audit."
+  }
+]

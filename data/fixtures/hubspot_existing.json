@@ -1,0 +1,402 @@
+[
+  {
+    "vid": 100001,
+    "email": "juliaf@anchorpointsaas.com",
+    "firstname": "Julia",
+    "lastname": "Fontaine",
+    "jobtitle": "Founder",
+    "company": "Anchorpoint SaaS",
+    "lifecyclestage": "salesqualifiedlead",
+    "hs_lead_status": "NEW"
+  },
+  {
+    "vid": 100002,
+    "email": "alice.cruz@wavecrestit.com",
+    "firstname": "Alice",
+    "lastname": "Cruz",
+    "jobtitle": "Founder",
+    "company": "Wavecrest IT Services",
+    "lifecyclestage": "marketingqualifiedlead",
+    "hs_lead_status": "CONNECTED"
+  },
+  {
+    "vid": 100003,
+    "email": "diegoi@cascaderevops.com",
+    "firstname": "Diego",
+    "lastname": "Ivanov",
+    "jobtitle": "Sales Development Rep",
+    "company": "Cascade RevOps",
+    "lifecyclestage": "subscriber",
+    "hs_lead_status": "NEW"
+  },
+  {
+    "vid": 100004,
+    "email": "maria.bishop@alderwoodfintech.com",
+    "firstname": "Maria",
+    "lastname": "Bishop",
+    "jobtitle": "Sales Development Rep",
+    "company": "Alderwood Fintech",
+    "lifecyclestage": "customer",
+    "hs_lead_status": "OPEN"
+  },
+  {
+    "vid": 100005,
+    "email": "katie.sato@yahoo.com",
+    "firstname": "Katie",
+    "lastname": "Sato",
+    "jobtitle": "RevOps Manager",
+    "company": "Harborview Software",
+    "lifecyclestage": "marketingqualifiedlead",
+    "hs_lead_status": "IN_PROGRESS"
+  },
+  {
+    "vid": 100006,
+    "email": "marcof@harborviewsoftware.com",
+    "firstname": "Marco",
+    "lastname": "Foster",
+    "jobtitle": "Account Executive",
+    "company": "Harborview Software",
+    "lifecyclestage": "marketingqualifiedlead",
+    "hs_lead_status": "CONNECTED"
+  },
+  {
+    "vid": 100007,
+    "email": "ravi.nair@kestrelit.com",
+    "firstname": "Ravi",
+    "lastname": "Nair",
+    "jobtitle": "Customer Success Manager",
+    "company": "Kestrel IT Services",
+    "lifecyclestage": "lead",
+    "hs_lead_status": "UNQUALIFIED"
+  },
+  {
+    "vid": 100008,
+    "email": "vikramk@copperlineit.com",
+    "firstname": "Vikram",
+    "lastname": "Kaur",
+    "jobtitle": "RevOps Manager",
+    "company": "Copperline IT Services",
+    "lifecyclestage": "salesqualifiedlead",
+    "hs_lead_status": "IN_PROGRESS"
+  },
+  {
+    "vid": 100009,
+    "email": "sanjay.novak@ironwoodfintech.com",
+    "firstname": "Sanjay",
+    "lastname": "Novak",
+    "jobtitle": "Sales Development Rep",
+    "company": "Ironwood Fintech",
+    "lifecyclestage": "salesqualifiedlead",
+    "hs_lead_status": "NEW"
+  },
+  {
+    "vid": 100010,
+    "email": "lzhang@kestrelit.com",
+    "firstname": "Layla",
+    "lastname": "Zhang",
+    "jobtitle": "Marketing Intern",
+    "company": "Kestrel IT Services",
+    "lifecyclestage": "salesqualifiedlead",
+    "hs_lead_status": "CONNECTED"
+  },
+  {
+    "vid": 100011,
+    "email": "vivian.nilsson@meridiangrowthpartners.com",
+    "firstname": "Vivian",
+    "lastname": "Nilsson",
+    "jobtitle": "Account Executive",
+    "company": "Meridian Growth Partners",
+    "lifecyclestage": "marketingqualifiedlead",
+    "hs_lead_status": "NEW"
+  },
+  {
+    "vid": 100012,
+    "email": "sanjay.torres@hotmail.com",
+    "firstname": "Sanjay",
+    "lastname": "Torres",
+    "jobtitle": "Product Marketing Manager",
+    "company": "Driftwood SaaS",
+    "lifecyclestage": "marketingqualifiedlead",
+    "hs_lead_status": "NEW"
+  },
+  {
+    "vid": 100013,
+    "email": "victor.krishnan@quantarasoftware.com",
+    "firstname": "Victor",
+    "lastname": "Krishnan",
+    "jobtitle": "RevOps Manager",
+    "company": "Quantara Software",
+    "lifecyclestage": "customer",
+    "hs_lead_status": "NEW"
+  },
+  {
+    "vid": 100014,
+    "email": "rhaddad@pinehollowsoftware.com",
+    "firstname": "Rebecca",
+    "lastname": "Haddad",
+    "jobtitle": "Account Executive",
+    "company": "Pinehollow Software",
+    "lifecyclestage": "subscriber",
+    "hs_lead_status": "IN_PROGRESS"
+  },
+  {
+    "vid": 100015,
+    "email": "victor.bello@truenorthecom.com",
+    "firstname": "Victor",
+    "lastname": "Bello",
+    "jobtitle": "Growth Manager",
+    "company": "Truenorth Ecommerce",
+    "lifecyclestage": "customer",
+    "hs_lead_status": "NEW"
+  },
+  {
+    "vid": 100016,
+    "email": "anjalio@solsticegrowthlabs.com",
+    "firstname": "Anjali",
+    "lastname": "Okafor",
+    "jobtitle": "Marketing Analyst",
+    "company": "Solstice Growth Labs",
+    "lifecyclestage": "customer",
+    "hs_lead_status": "OPEN"
+  },
+  {
+    "vid": 100017,
+    "email": "ling.verma@outlook.com",
+    "firstname": "Ling",
+    "lastname": "Verma",
+    "jobtitle": "Sales Development Rep",
+    "company": "Onyxbridge Fintech",
+    "lifecyclestage": "customer",
+    "hs_lead_status": "OPEN"
+  },
+  {
+    "vid": 100018,
+    "email": "zoe.moreau@hotmail.com",
+    "firstname": "Zoe",
+    "lastname": "Moreau",
+    "jobtitle": "Marketing Coordinator",
+    "company": "Vector Cloud Systems",
+    "lifecyclestage": "opportunity",
+    "hs_lead_status": "OPEN"
+  },
+  {
+    "vid": 100019,
+    "email": "vivian.novak@everlinetech.com",
+    "firstname": "Vivian",
+    "lastname": "Novak",
+    "jobtitle": "Marketing Manager",
+    "company": "Everline Technologies",
+    "lifecyclestage": "customer",
+    "hs_lead_status": "CONNECTED"
+  },
+  {
+    "vid": 100020,
+    "email": "laura.bishop@cascaderevops.com",
+    "firstname": "Laura",
+    "lastname": "Bishop",
+    "jobtitle": "Marketing Coordinator",
+    "company": "Cascade RevOps",
+    "lifecyclestage": "subscriber",
+    "hs_lead_status": "IN_PROGRESS"
+  },
+  {
+    "vid": 100021,
+    "email": "ingrid.iyer@cascaderevops.com",
+    "firstname": "Ingrid",
+    "lastname": "Iyer",
+    "jobtitle": "RevOps Manager",
+    "company": "Cascade RevOps",
+    "lifecyclestage": "marketingqualifiedlead",
+    "hs_lead_status": "CONNECTED"
+  },
+  {
+    "vid": 100022,
+    "email": "kevin.wong@quantarasoftware.com",
+    "firstname": "Kevin",
+    "lastname": "Wong",
+    "jobtitle": "Marketing Manager",
+    "company": "Quantara Software",
+    "lifecyclestage": "customer",
+    "hs_lead_status": "CONNECTED"
+  },
+  {
+    "vid": 100023,
+    "email": "elena.moreau@driftwoodsaas.com",
+    "firstname": "Elena",
+    "lastname": "Moreau",
+    "jobtitle": "Customer Success Manager",
+    "company": "Driftwood SaaS",
+    "lifecyclestage": "subscriber",
+    "hs_lead_status": "NEW"
+  },
+  {
+    "vid": 100024,
+    "email": "aiko.farid@vectorcloudsystems.com",
+    "firstname": "Aiko",
+    "lastname": "Farid",
+    "jobtitle": "Customer Success Manager",
+    "company": "Vector Cloud Systems",
+    "lifecyclestage": "lead",
+    "hs_lead_status": "CONNECTED"
+  },
+  {
+    "vid": 100025,
+    "email": "sanjay.nair@solsticegrowthlabs.com",
+    "firstname": "Sanjay",
+    "lastname": "Nair",
+    "jobtitle": "Founder",
+    "company": "Solstice Growth Labs",
+    "lifecyclestage": "subscriber",
+    "hs_lead_status": "IN_PROGRESS"
+  },
+  {
+    "vid": 100026,
+    "email": "nora.weber@wavecrestit.com",
+    "firstname": "Nora",
+    "lastname": "Weber",
+    "jobtitle": "Digital Marketing Specialist",
+    "company": "Wavecrest IT Services",
+    "lifecyclestage": "salesqualifiedlead",
+    "hs_lead_status": "UNQUALIFIED"
+  },
+  {
+    "vid": 100027,
+    "email": "simran.ivanova@anchorpointsaas.com",
+    "firstname": "Simran",
+    "lastname": "Ivanova",
+    "jobtitle": "Digital Marketing Specialist",
+    "company": "Anchorpoint SaaS",
+    "lifecyclestage": "salesqualifiedlead",
+    "hs_lead_status": "IN_PROGRESS"
+  },
+  {
+    "vid": 100028,
+    "email": "nina.popescu@fernwooddata.com",
+    "firstname": "Nina",
+    "lastname": "Popescu",
+    "jobtitle": "Product Marketing Manager",
+    "company": "Fernwood Data Systems",
+    "lifecyclestage": "customer",
+    "hs_lead_status": "CONNECTED"
+  },
+  {
+    "vid": 100029,
+    "email": "nadia.patel@sableridgeanalytics.com",
+    "firstname": "Nadia",
+    "lastname": "Patel",
+    "jobtitle": "Product Marketing Manager",
+    "company": "Sable Ridge Analytics",
+    "lifecyclestage": "customer",
+    "hs_lead_status": "CONNECTED"
+  },
+  {
+    "vid": 100030,
+    "email": "hannah.neumann@driftwoodsaas.com",
+    "firstname": "Hannah",
+    "lastname": "Neumann",
+    "jobtitle": "Growth Manager",
+    "company": "Driftwood SaaS",
+    "lifecyclestage": "lead",
+    "hs_lead_status": "UNQUALIFIED"
+  },
+  {
+    "vid": 100031,
+    "email": "pedro.bauer@ridgelinecommerce.com",
+    "firstname": "Pedro",
+    "lastname": "Bauer",
+    "jobtitle": "Product Marketing Manager",
+    "company": "Ridgeline Commerce",
+    "lifecyclestage": "customer",
+    "hs_lead_status": "CONNECTED"
+  },
+  {
+    "vid": 100032,
+    "email": "priya.adams@ridgelinecommerce.com",
+    "firstname": "Priya",
+    "lastname": "Adams",
+    "jobtitle": "Digital Marketing Specialist",
+    "company": "Ridgeline Commerce",
+    "lifecyclestage": "opportunity",
+    "hs_lead_status": "NEW"
+  },
+  {
+    "vid": 100033,
+    "email": "emma.demir@redshiftcommerce.com",
+    "firstname": "Emma",
+    "lastname": "Demir",
+    "jobtitle": "RevOps Manager",
+    "company": "Redshift Commerce",
+    "lifecyclestage": "salesqualifiedlead",
+    "hs_lead_status": "CONNECTED"
+  },
+  {
+    "vid": 100034,
+    "email": "james.rao@vectorcloudsystems.com",
+    "firstname": "James",
+    "lastname": "Rao",
+    "jobtitle": "Growth Manager",
+    "company": "Vector Cloud Systems",
+    "lifecyclestage": "opportunity",
+    "hs_lead_status": "IN_PROGRESS"
+  },
+  {
+    "vid": 100035,
+    "email": "sanjay.kapoor@copperlineit.com",
+    "firstname": "Sanjay",
+    "lastname": "Kapoor",
+    "jobtitle": "CMO",
+    "company": "Copperline IT Services",
+    "lifecyclestage": "opportunity",
+    "hs_lead_status": "CONNECTED"
+  },
+  {
+    "vid": 100036,
+    "email": "divya.smith@quantarasoftware.com",
+    "firstname": "Divya",
+    "lastname": "Smith",
+    "jobtitle": "CMO",
+    "company": "Quantara Software",
+    "lifecyclestage": "marketingqualifiedlead",
+    "hs_lead_status": "UNQUALIFIED"
+  },
+  {
+    "vid": 100037,
+    "email": "aisha.nilsson@everlinetech.com",
+    "firstname": "Aisha",
+    "lastname": "Nilsson",
+    "jobtitle": "Head of Demand Gen",
+    "company": "Everline Technologies",
+    "lifecyclestage": "opportunity",
+    "hs_lead_status": "OPEN"
+  },
+  {
+    "vid": 100038,
+    "email": "suresh.haddad@quantarasoftware.com",
+    "firstname": "Suresh",
+    "lastname": "Haddad",
+    "jobtitle": "Marketing Intern",
+    "company": "Quantara Software",
+    "lifecyclestage": "marketingqualifiedlead",
+    "hs_lead_status": "IN_PROGRESS"
+  },
+  {
+    "vid": 100039,
+    "email": "alice.wong@everlinetech.com",
+    "firstname": "Alice",
+    "lastname": "Wong",
+    "jobtitle": "Sales Development Rep",
+    "company": "Everline Technologies",
+    "lifecyclestage": "salesqualifiedlead",
+    "hs_lead_status": "NEW"
+  },
+  {
+    "vid": 100040,
+    "email": "lucas.demir@clarionanalytics.com",
+    "firstname": "Lucas",
+    "lastname": "Demir",
+    "jobtitle": "Marketing Manager",
+    "company": "Clarion Analytics",
+    "lifecyclestage": "lead",
+    "hs_lead_status": "UNQUALIFIED"
+  }
+]

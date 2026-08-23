@@ -1,0 +1,42 @@
+{
+  "event": "Pipeline After the Webinar: Turning Event Engagement into Revenue",
+  "host_company": "ACME Revenue Cloud",
+  "kpis": {
+    "total_registrants": 133,
+    "total_attendees": 74,
+    "attendance_rate_pct": 55.6,
+    "engaged_post_event": 31,
+    "mql_plus": 12,
+    "sql_plus": 9,
+    "attendee_to_mql_pct": 16.2,
+    "avg_contact_completeness_pct": 100.0,
+    "avg_company_completeness_pct": 99.5,
+    "buying_committee_accounts": 5,
+    "speaker_count": 3
+  },
+  "top_accounts": [
+    {
+      "account": "Palmetto SaaS Group",
+      "score": 201.5,
+      "engaged_contact_count": 9,
+      "committee_coverage_pct": 90.0
+    },
+    {
+      "account": "Anchorpoint SaaS",
+      "score": 107.0,
+      "engaged_contact_count": 7,
+      "committee_coverage_pct": 87.5
+    },
+    {
+      "account": "Truenorth Ecommerce",
+      "score": 83.5,
+      "engaged_contact_count": 4,
+      "committee_coverage_pct": 100.0
+    }
+  ],
+  "committee_account_count": 5,
+  "anomalies": [
+    "21 of 26 touches landed in a single day (2026-08-07) -- a compressed research sprint (80.8% of all their activity). Lifecycle stage never moved -- a stalled hot lead worth a manual RevOps check.",
+    "17 of 27 touches landed in a single day (2026-07-25) -- a compressed research sprint (63.0% of all their activity). Lifecycle stage already reflects it."
+  ]
+}

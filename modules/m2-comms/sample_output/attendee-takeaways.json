@@ -1,0 +1,36 @@
+{
+  "_comment": "Cached output of prompts/attendee.md — one `claude -p` call per event, reused for every attendee regardless of list size. --live regenerates this file; offline mode reads it as-is. Every quote is timestamp-attributable to data/incoming/transcript.md.",
+  "by_function": {
+    "marketing": {
+      "headline": "Subject lines aren't a rounding error.",
+      "body": "Daniel Kim (Northwind Analytics) A/B tested two attendee thank-you subject lines — one led with the speaker's name, one led with a specific stat — and the stat-led version won by about 14 percentage points on open rate. [18:15]"
+    },
+    "revops": {
+      "headline": "Multi-threading is already happening — most teams just don't see it.",
+      "body": "Sara Alvarez (Meridian Software) flagged that accounts with three or more attendees on the same webinar convert to opportunity at almost double the rate of single-attendee accounts — worth checking your own account list for this event. [25:04]"
+    },
+    "sales": {
+      "headline": "Context wins the first call.",
+      "body": "Sara Alvarez (Meridian Software) described hot-attendee tasks getting routed to reps with real context attached — e.g. \"attended the full session, asked about integration timelines\" — rather than a bare list. That context is what changes how a rep opens the conversation. [13:50]"
+    },
+    "executive": {
+      "headline": "The number that gets budget approved.",
+      "body": "Sara Alvarez (Meridian Software) shared a directional range of 11–14x return on fully-loaded event cost within two quarters, counting both direct and repurposed-content pipeline — though she was clear it's a mature-program number, not a first-event expectation. [51:48]"
+    },
+    "customer_success": {
+      "headline": "Every draft still gets a human set of eyes.",
+      "body": "Daniel Kim (Northwind Analytics) was explicit in Q&A: \"AI drafts, human approves, every single time\" — no generated follow-up or repurposed asset goes out unreviewed. [58:28]"
+    },
+    "general": {
+      "headline": "Segmentation alone triples click-through.",
+      "body": "Sara Alvarez (Meridian Software) shared that moving from one blanket post-webinar email to attendee/no-show/speaker segmentation — plus role-based variants — took overall click-through from about 6% to just over 17%, without changing send timing at all. [28:20]"
+    }
+  },
+  "by_industry": {
+    "saas": "Daniel Kim's point about a fourth personalization layer, industry and company size, is worth applying literally here: he described leading enterprise-tier takeaways with integration and security rather than pricing, since that's usually the actual blocker on a software deal. [26:52]",
+    "services_it": "If you're reading this from an IT-services or agency seat, Daniel Kim's fourth-layer point ([26:15]) is the reason this doesn't read like a generic recap — the same transcript is meant to land differently depending on which of your own client accounts it's relevant to.",
+    "other_commercial": "Per Daniel Kim's fourth-layer point ([26:15]), the version of this worth your attention outside pure enterprise software leads with time-to-value and pricing rather than integration depth — that's the objection he flagged as the real one at smaller or less software-native shops. [26:52]"
+  },
+  "subject_a": "The 3.2x stat from today's session (and your takeaways)",
+  "subject_b": "Priya, Daniel & Sara's follow-up: your recording + 3 takeaways"
+}
