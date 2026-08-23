@@ -94,6 +94,14 @@ def main() -> int:
         "headers": [{"key": "Content-Type", "value": "text/plain; charset=utf-8"}],
     }]
     (STAGE / "vercel.json").write_text(json.dumps(vercel_cfg, indent=2))
+    # n8n workflow JSONs, served so n8n's "Import from URL" can pull them directly
+    n8n_dst = STAGE / "n8n"
+    n8n_dst.mkdir(exist_ok=True)
+    for lane, src in (("cloud-master.json", ROOT / "orchestrator" / "n8n" / "cloud" / "master.json"),
+                      ("local-demo-master.json", ROOT / "orchestrator" / "n8n" / "local-demo" / "master.json")):
+        if src.exists():
+            shutil.copy2(src, n8n_dst / lane)
+
     # Browsable module outputs
     staged = []
     for name in DEMO_DIRS:

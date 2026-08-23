@@ -44,12 +44,11 @@
         460,
         400
       ],
-      "notes": "Stand-in webinar-platform endpoint (no real Zoom/GoTo/ON24 account in this demo) -- in production this is your platform's registrants API. On error the run continues: the demo webhook payload carries the registrant rows itself, and every node downstream reads from the webhook/wait payloads, so the lane stays executable end to end.",
+      "notes": "Stand-in webinar-platform endpoint (no Zoom/GoTo/ON24 account in this demo), auth deliberately left unset so the lane executes without a credential a reviewer has to supply: the call fails, onError=continueRegularOutput carries the run forward, and every downstream node reads the registrant rows straight off the webhook payload. In production this is your platform's registrants API with header auth.",
       "parameters": {
         "method": "GET",
         "url": "=https://api.webinar-platform.example/v2/webinars/{{ $json.body.webinar_id }}/registrants",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "httpHeaderAuth",
+        "authentication": "none",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -60,12 +59,6 @@
           ]
         },
         "options": {}
-      },
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "PLACEHOLDER_WEBINAR_PLATFORM_CRED",
-          "name": "Webinar Platform API (placeholder)"
-        }
       },
       "onError": "continueRegularOutput",
       "alwaysOutputData": true
