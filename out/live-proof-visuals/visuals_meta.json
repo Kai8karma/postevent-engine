@@ -1,0 +1,91 @@
+{
+  "event": "acmerevenue-2026-07-20",
+  "event_name": "Pipeline After the Webinar: Turning Event Engagement into Revenue",
+  "source_files": [
+    "out/live-proof/m3/youtube.md",
+    "out/live-proof/m3/infographic.md"
+  ],
+  "primary_provider_attempted": {
+    "provider": "Higgsfield MCP",
+    "server": "mcp__437d362b-b498-46a0-a290-3664528fa0b8",
+    "balance_check": {
+      "tool": "balance",
+      "result": { "credits": 0, "subscription_plan_type": "free" }
+    },
+    "unlim_allowance_check": {
+      "tool": "models_explore",
+      "result": { "available": false, "remaining": null, "expires_at": null }
+    },
+    "model_selected": "nano_banana",
+    "model_selection_reason": "cheapest listed image model (1 credit per generate_image get_cost preflight)",
+    "cost_preflight": { "credits": 1, "credits_exact": 1 },
+    "generation_attempt": {
+      "tool": "generate_image",
+      "params": { "model": "nano_banana", "aspect_ratio": "16:9", "use_unlim": false },
+      "status": "failed",
+      "exact_error": "Error starting generation: Requires basic plan or higher."
+    },
+    "conclusion": "Higgsfield account for this session has 0 credits and no free-trial unlim allowance (free plan). Real generation via Higgsfield is not possible right now. Not substituted with a hand-drawn SVG per instructions."
+  },
+  "fallback_provider_used": {
+    "provider": "OpenRouter (direct HTTP chat completions API, image output modality)",
+    "reason": "OPENROUTER_API_KEY is already configured for this repo (~/.config/postevent/llm.env, read by modules/m3-repurpose/repurpose.py's --live path) and OpenRouter exposes real image-generation-capable models over the same key. Since Higgsfield genuinely could not generate (0 credits), this is a real, working, non-fabricated image-generation call on infrastructure already provisioned for this project -- not a hand-drawn/SVG substitute.",
+    "endpoint": "https://openrouter.ai/api/v1/chat/completions",
+    "model": "google/gemini-2.5-flash-image",
+    "request_shape": {
+      "model": "google/gemini-2.5-flash-image",
+      "messages": [{ "role": "user", "content": "<prompt, see generations[].prompt below>" }],
+      "modalities": ["image", "text"]
+    },
+    "account_usage_usd": {
+      "before": 0.0387421,
+      "after": 0.1163891,
+      "spent_this_run": 0.077647,
+      "note": "OpenRouter for this key is metered/postpaid usage (total_credits: 0 is normal for a metered key, not an error) -- 'before' captured via GET /api/v1/credits immediately before the two deliverable calls below; a separate $0.0387161 discovery/connectivity test call (prompt: 'a red circle on white background', not a deliverable) was made earlier in this session and is included in the pre-existing total_usage baseline, not in spent_this_run."
+    }
+  },
+  "known_limitations_observed_on_visual_inspection": [
+    "youtube_thumbnail: the requested headline text overlay ('3.2x Reply Rate in 4 Hours' / '11-14x Event ROI - 60% Faster MQLs') did not render as clean legible text -- the model placed only small illegible caption-style text under the panelist photos instead. The photographic composition, split-frame layout, and navy-to-teal gradient came through correctly; the text overlay did not. A usable thumbnail would need a text-overlay pass (e.g. compositing real typography on top of this base image) before publishing.",
+    "infographic_hero: renders correctly overall (headline, all 6 stats, teal/coral color system, panel layout, footer CTA all present and legible) but has 3 model-generated text typos: 'piseline' (pipeline) in the subhead, 'AFORE' (AFTER) in one before/after bar, and 'REPUROSED' (REPURPOSED) in the repurposing panel label. Flagged here rather than silently shipped as clean."
+  ],
+  "generations": [
+    {
+      "asset": "youtube_thumbnail",
+      "filename": "youtube-thumbnail-acmerevenue-2026-07-20.png",
+      "generation_id": "gen-1787494352-RheGZnXTiZqBCDABEHq7",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt_sent": "YouTube thumbnail, 16:9 aspect ratio, high-contrast B2B webinar recap thumbnail.\n\nComposition: split-frame layout. Left half: a confident woman VP of Marketing (host), centered, slight turn toward camera, professional attire, warm confident expression, studio lighting. Right half: two other professionals (a man and a woman) side-by-side in a virtual panel arrangement, both mid-speech gesture, engaged expressions, as if on a video call panel.\n\nBackground: clean diagonal gradient from deep navy (#0B1D3A) on the left fading to deep teal (#006D77) at the edges. Small abstract geometric logo mark top-left corner (invented abstract mark, not a real company logo). Two small subtle abstract logo marks bottom-right corner.\n\nText overlay baked into the image: large bold white headline reading \"3.2x Reply Rate in 4 Hours\". Below it, smaller text in bright accent teal (#00D4AA) reading \"11-14x Event ROI - 60% Faster MQLs\".\n\nStyle: sharp modern sans-serif typography, high contrast, professional corporate webinar/podcast thumbnail aesthetic, crisp studio lighting, 4K quality, YouTube thumbnail composition with clear focal hierarchy.\n",
+      "prompt_grounded_in": "out/live-proof/m3/youtube.md '## Thumbnail Brief' section (composition, text overlay copy, and hex colors copied verbatim from the live-generated brief)",
+      "raw_model_output_dimensions": "1024x1024",
+      "final_dimensions": "1024x576",
+      "post_process": "center-cropped from the model's native 1024x1024 square output to a true 16:9 (1024x576) frame with Pillow -- the chat-completions image API does not accept an aspect_ratio/size parameter, it always returns 1024x1024, so 16:9 was enforced by crop, not by generation. Logged here rather than silently presented as native 16:9.",
+      "file_size_bytes": 637827,
+      "openrouter_usage": {
+        "prompt_tokens": 266,
+        "completion_tokens": 1300,
+        "image_tokens": 1290,
+        "cost_usd": 0.0388048
+      },
+      "generation_seconds": 35.98
+    },
+    {
+      "asset": "infographic_hero",
+      "filename": "infographic-hero-acmerevenue-2026-07-20.png",
+      "generation_id": "gen-1787494388-Lxay1NztBanFFiK8Gujk",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt_sent": "Marketing infographic hero graphic, portrait orientation (2:3 aspect ratio), flat vector illustration style, clean modern B2B data-visualization design.\n\nHeadline banner at the top, in deep teal text on white: \"3.2x Replies, 11x ROI: The Post-Webinar Pipeline Playbook\". Small subhead beneath it in charcoal: \"Four speakers, six numbers that changed how we turn attendance into pipeline.\"\n\nTwo-tone color system throughout: deep teal (#0D6E6E) for primary stats, headers and icons; warm coral (#E86C4A) for accent callouts and before/after deltas; neutral charcoal (#2D2D2D) for body text; white background. No other colors.\n\nTop-to-bottom panel flow:\n1. Speed-to-Lead panel (upper left): a giant bold \"3.2x\" numeral in teal with label \"Reply rate lift at 4 hrs vs next-day\" in charcoal beneath it. Below that, a horizontal before/after bar chart showing \"18 hrs\" shrinking to \"<2 hrs\" for internal routing speed, with a coral \"41%\" lift badge.\n2. Segmentation panel (upper right): a split-circle diagram with two semicircles labeled \"1 attendee\" and \"3+ attendees\", joined by a coral arrow labeled \"~2x opportunity conversion\". Below it, a vertical before/after bar rising from \"6%\" to \"17%\" CTR, with a coral \"3x\" multiplier badge.\n3. Repurposing panel (bottom band, full width): a stacked area chart sketch comparing a thin teal band labeled \"live session\" against a much thicker coral band (2.4x taller) labeled \"repurposed content\", captioned \"2.4x pipeline touches\". Beside it, a giant teal numeral \"11-14x\" captioned \"ROI on fully-loaded event cost, two quarters\".\n4. Footer CTA strip: full-width teal background bar with white text \"Steal the playbook\" and a coral hashtag pill \"#PipelineAfterWebinar\".\n\nStyle: crisp geometric icons, generous whitespace, grid-aligned panels, professional SaaS marketing infographic aesthetic, sharp vector shapes, legible bold sans-serif numerals, high resolution.\n",
+      "prompt_grounded_in": "out/live-proof/m3/infographic.md '## Data Points' (all six stats, exact figures) and '## Layout' (color system hex codes, panel structure, chart-type summary) sections",
+      "raw_model_output_dimensions": "1024x1024",
+      "final_dimensions": "1024x1024",
+      "post_process": "none -- native square output satisfies the 'portrait or square' requirement as-is",
+      "file_size_bytes": 885495,
+      "openrouter_usage": {
+        "prompt_tokens": 474,
+        "completion_tokens": 1290,
+        "image_tokens": 1290,
+        "cost_usd": 0.0388422
+      },
+      "generation_seconds": 13.75
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "provider": "Sarvam AI",
+  "model": "saaras:v3",
+  "mode": "transcribe",
+  "language_code": "en-IN",
+  "endpoint": "https://api.sarvam.ai/speech-to-text (via mcp__sarvam__sarvam_tools_stt_transcribe, sync, 30s cap per call)",
+  "audio_file": "acmerevenue-2026-07-20_segment.wav",
+  "audio_duration_sec": 85.31,
+  "audio_channels": 1,
+  "audio_sample_rate_hz": 16000,
+  "n_chunks": 3,
+  "chunk_plan_sec": [
+    [
+      0.0,
+      28.0
+    ],
+    [
+      28.0,
+      56.0
+    ],
+    [
+      56.0,
+      85.31
+    ]
+  ],
+  "word_count": 254,
+  "similarity_ratio_vs_source_segment": 0.9216,
+  "reference_file": "source_segment.txt",
+  "cost": "not reported by Sarvam MCP tool response",
+  "request_ids": [
+    "20260823_02dc9914-76bd-479e-8953-a26f4a15a6c5 (25s validation clip, not part of final transcript)",
+    "20260823_756da34c-ec3f-4565-9a86-4cea08263cb2 (chunk 1)",
+    "20260823_481eb582-2a24-42ed-a365-18507bb4ffbd (chunk 2)",
+    "20260823_15e77ff1-7b8b-4fcf-8327-066fb06d279d (chunk 3)"
+  ],
+  "known_provider_issue": "mcp__sarvam__sarvam_tools_stt_batch_submit (the async /speech-to-text/job/init path, meant for >30s audio) reported job_state=Completed / file state=Success on this same 85.3s file but returned transcript:null and download_urls:null on two separate attempts (job_ids 20260823_db1903ba-51a7-47dd-9cc3-efb81bfd55e6 and 20260823_dc07e063-b74d-4d54-804b-80b188139893). That path is broken (or its MCP wrapper is) as of 2026-08-23 and was abandoned in favor of chunking the audio into <=30s pieces and calling the working sync endpoint per chunk \u2014 still a real API call per chunk, just not the batch endpoint Sarvam's own docs recommend for long audio.",
+  "tts_provider_issue": "mcp__sarvam__sarvam_tools_tts_speak (model bulbul:v3) rejected every call with 'Pitch and loudness parameters are currently not supported for the Bulbul V3 model' even when pitch/loudness were omitted entirely from the request \u2014 the MCP wrapper appears to inject its own defaults for those fields regardless of caller input. Fell back to macOS 'say' (per the task's stated fallback option) for the stand-in recording; STT was still run against a real third-party API (Sarvam saaras:v3).",
+  "generated_at_utc": "2026-08-23T14:15:13Z"
+}

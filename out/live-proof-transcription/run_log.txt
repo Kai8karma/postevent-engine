@@ -1,0 +1,77 @@
+Transcription lane — live proof run log
+Event tag: acmerevenue-2026-07-20
+Run date (UTC): 2026-08-23
+
+1) SOURCE SEGMENT
+   Selected 4 turns (Daniel Kim x2, Sara Alvarez x2) from data/incoming/transcript.md,
+   lines 19, 21, 31, 35 (timestamps 02:20, 02:48, 05:10, 05:42 in the source doc).
+   Saved verbatim to source_segment.txt. This is the "known good" reference text
+   used later for the accuracy/similarity check.
+
+2) TEXT-TO-SPEECH (stand-in recording)
+   Attempted: mcp__sarvam__sarvam_tools_tts_speak (model bulbul:v3), speaker=aditya
+   then default. FAILED both times:
+     "Pitch and loudness parameters are currently not supported for the Bulbul V3
+     model. Please do not pass these values." — occurred even when pitch/loudness
+     were omitted from the call entirely, so this is a real, reproducible defect
+     in the Sarvam MCP TTS wrapper as of this session, not a bad input on our end.
+   Fallback used (per task instructions): macOS `say` command.
+     say -v Daniel   -o daniel.aiff  -f daniel.txt    (Daniel Kim's lines, en_GB male)
+     say -v Samantha -o sara.aiff    -f sara.txt      (Sara Alvarez's lines, en_US female)
+     afconvert -f WAVE -d LEI16@24000 -c 1 <aiff> <wav>   (x4, one per turn)
+     ffmpeg concat (4 turns + 0.4s silence between each) -> webinar_segment_source.wav
+     ffmpeg -ar 16000 -ac 1 -c:a pcm_s16le -> acmerevenue-2026-07-20_segment.wav
+   Result: acmerevenue-2026-07-20_segment.wav, 85.31s, mono, 16kHz, PCM16.
+   Producer: macOS `say` (NOT Sarvam TTS — that path failed and is documented above).
+
+3) SPEECH-TO-TEXT (real API call)
+   Attempted first: mcp__sarvam__sarvam_tools_stt_batch_submit (async
+   /speech-to-text/job/init path, Sarvam's own documented route for audio >30s).
+   Two full submissions (job_ids 20260823_db1903ba-51a7-47dd-9cc3-efb81bfd55e6 and
+   20260823_dc07e063-b74d-4d54-804b-80b188139893) both returned
+   job_state="Completed", job_details[0].state="Success", but transcript:null and
+   download_urls:null. Confirmed via a follow-up sarvam_tools_stt_batch_status
+   poll on the first job_id — still transcript:null despite "Completed". This is
+   a real provider/wrapper defect, not a fabricated failure.
+
+   Workaround (still a real API, not a simulation): split the 85.31s WAV into
+   three <=30s chunks with ffmpeg (0.0-28.0s, 28.0-56.0s, 56.0-85.31s) and called
+   the SYNC endpoint (mcp__sarvam__sarvam_tools_stt_transcribe, model=saaras:v3,
+   mode=transcribe, language_code=en-IN) on each chunk. All three succeeded with
+   genuine transcript text and request_ids/latency_ms in the response:
+     chunk 1: request_id 20260823_756da34c-ec3f-4565-9a86-4cea08263cb2, 9301.7ms
+     chunk 2: request_id 20260823_481eb582-2a24-42ed-a365-18507bb4ffbd, 4970.8ms
+     chunk 3: request_id 20260823_15e77ff1-7b8b-4fcf-8327-066fb06d279d, 3253.4ms
+   (A prior 25s validation clip, request_id 20260823_02dc9914-76bd-479e-8953-a26f4a15a6c5,
+   4726.8ms, confirmed the sync endpoint works before the full run — not part of
+   the final transcript.)
+
+   Concatenated the 3 chunk transcripts in order -> transcript.md, 254 words.
+
+4) ACCURACY CHECK
+   difflib.SequenceMatcher(None, source_segment.txt.split(), transcript.split()).ratio()
+   = 0.9216 (word-level). Recorded in transcription_meta.json. Divergences are
+   the expected kind for TTS->STT round-trips: "72" vs "seventy-two", "3.2x" vs
+   "three point two x", "Sarah Alvarez" vs "Sara Alvarez" (homophone), and one
+   dropped connector word ("where") introduced at a chunk boundary cut mid-phrase.
+
+5) CLI (modules/m3-repurpose/transcribe.py)
+   Built as a standalone stdlib-only script implementing the same real call
+   (urllib.request POST to https://api.sarvam.ai/speech-to-text, multipart body,
+   api-subscription-key header) so a reviewer can re-run this lane against their
+   own recording without any MCP tool. Verified in this session:
+     --dry-run against the final audio file: printed the correct request plan
+       (4 chunks at chunk_seconds=28, endpoint, model, language, api-key-env
+       status) with zero network calls. Exit 0.
+     No-API-key path: SARVAM_API_KEY is not present in this shell environment
+       (only the Sarvam MCP server holds it, internally, and never exposes it
+       to us). Ran with the var unset -> exact fail-loud message, exit 1, no
+       transcript written, no fallback to a fixture. This is by design.
+   Because the raw REST key isn't available to this session outside the MCP,
+   the live-proof transcript above (steps 2-4) was produced by calling the
+   Sarvam STT MCP tool directly, which does make real authenticated network
+   calls (evidenced by the request_ids and latency_ms above) — transcribe.py's
+   own REST path was verified for its dry-run and fail-loud behavior but not
+   exercised end-to-end over the network in this session. A reviewer with
+   SARVAM_API_KEY exported can run it directly; see README "Transcription lane"
+   section for the exact command.
