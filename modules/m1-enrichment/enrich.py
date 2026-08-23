@@ -280,12 +280,59 @@ def synthetic_company_size(seed: str) -> int:
         return 200 + span      # 200-~4999
 
 
+# Webinar platforms export the country column inconsistently: Zoom writes the
+# full name ("India"), GoTo writes ISO-2 ("IN"), ON24 sometimes writes ISO-3 or
+# a display string ("United States"). config/icp.yaml lists ISO-2, so normalise
+# first -- without this a real registrant export routes straight to UNASSIGNED,
+# which is what happened the first time this ran on someone else's file.
+COUNTRY_ALIASES = {
+    "united states": "US", "united states of america": "US", "usa": "US", "u.s.": "US", "u.s.a.": "US", "america": "US",
+    "canada": "CA", "brazil": "BR", "brasil": "BR", "mexico": "MX", "méxico": "MX",
+    "united kingdom": "UK", "great britain": "UK", "england": "UK", "scotland": "UK", "wales": "UK",
+    "gb": "UK", "gbr": "UK", "germany": "DE", "deutschland": "DE", "deu": "DE",
+    "france": "FR", "fra": "FR", "spain": "ES", "españa": "ES", "esp": "ES",
+    "netherlands": "NL", "the netherlands": "NL", "nld": "NL", "ireland": "IE", "irl": "IE",
+    "italy": "IT", "ita": "IT", "sweden": "SE", "poland": "PL", "portugal": "PT",
+    "switzerland": "CH", "belgium": "BE", "denmark": "DK", "norway": "NO", "finland": "FI",
+    "austria": "AT", "united arab emirates": "AE", "uae": "AE", "are": "AE",
+    "saudi arabia": "SA", "israel": "IL", "turkey": "TR", "türkiye": "TR",
+    "south africa": "ZA", "zaf": "ZA", "nigeria": "NG", "kenya": "KE", "egypt": "EG",
+    "india": "IN", "ind": "IN", "singapore": "SG", "sgp": "SG",
+    "australia": "AU", "aus": "AU", "new zealand": "NZ", "japan": "JP", "jpn": "JP",
+    "china": "CN", "hong kong": "HK", "south korea": "KR", "korea": "KR",
+    "indonesia": "ID", "malaysia": "MY", "philippines": "PH", "thailand": "TH", "vietnam": "VN",
+}
+
+# Fallback so a country we recognise but nobody listed still routes somewhere
+# sensible instead of UNASSIGNED.
+REGION_BY_COUNTRY = {
+    **{c: "AMER" for c in ("US", "CA", "BR", "MX", "AR", "CL", "CO", "PE")},
+    **{c: "EMEA" for c in ("UK", "DE", "FR", "ES", "NL", "IE", "IT", "SE", "PL", "PT", "CH",
+                            "BE", "DK", "NO", "FI", "AT", "AE", "SA", "IL", "TR", "ZA", "NG", "KE", "EG")},
+    **{c: "APAC" for c in ("IN", "SG", "AU", "NZ", "JP", "CN", "HK", "KR", "ID", "MY", "PH", "TH", "VN")},
+}
+
+
+def normalise_country(country: str) -> str:
+    """Map whatever the export wrote into the ISO-2 code config/icp.yaml uses."""
+    raw = (country or "").strip()
+    if not raw:
+        return ""
+    if len(raw) == 2:
+        return raw.upper()
+    return COUNTRY_ALIASES.get(raw.lower(), raw.upper())
+
+
 def region_for_country(cfg: dict, country: str):
     regions = cfg.get("icp", {}).get("regions", {})
     owners = cfg.get("icp", {}).get("owners", {})
+    code = normalise_country(country)
     for region, codes in regions.items():
-        if country.upper() in [c.upper() for c in codes]:
+        if code in [c.upper() for c in codes]:
             return region, owners.get(region, "")
+    fallback_region = REGION_BY_COUNTRY.get(code)
+    if fallback_region:
+        return fallback_region, owners.get(fallback_region, "")
     return "UNASSIGNED", owners.get("AMER", "")  # deterministic fallback owner
 
 

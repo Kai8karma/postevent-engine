@@ -1,0 +1,6 @@
+# No third-party dependencies. api/run.py and every modules/*/**.py script
+# it invokes are stdlib-only by design (see modules/*/README.md).
+#
+# This file exists so Vercel's build detects a Python runtime for api/run.py
+# (a Python function directory needs a requirements.txt present at the repo
+# root even when it is empty of packages) -- see api/vercel-api-notes.md.

@@ -57,13 +57,24 @@ Loop used: builders run in parallel and self-verify → a critic pass per module
   1.5 credits); HubSpot sandbox push live 2026-08-23 ~16:45–17:00 IST
   (30 companies / 133 contacts / 120 associations, zero errors); LLM live
   proof 2026-08-23 17:00–18:30 IST via OpenRouter (`out/live-proof/`; M1 121 s,
-  M3 548 s, M2 see `run-m2.log`)
-- Looms: scripts in `docs/loom-scripts.md`; recorded by Kai after this pass
-  (links go into the submission email if done before send — if not, the
-  control room + zip stand on their own)
+  M2 795 s, M3 548 s)
+- Second live wave, same evening: Sarvam speech-to-text (3 live calls on a
+  synthesised stand-in recording, `out/live-proof-transcription/`); image
+  generation for M3's visual assets (Higgsfield plan-gated, real fallback to
+  `google/gemini-2.5-flash-image`, `out/live-proof-visuals/`); shared-drive
+  upload (7 files, `out/live-proof-drive/`); M4's narrative endpoint executed
+  3× against real computed metrics (`out/live-proof/m4-narrative/`); M1's
+  spec-scoped completeness math (99.8% contact / 97.2% company) landed and
+  verified. All four are scored, with their stand-in caveats, in the control
+  room's ["Scored against the brief"](index.html#scorecard) table.
+- No Loom walkthroughs were recorded — `docs/loom-scripts.md` holds the
+  scripts as text (useful as a guided-tour transcript) but no video exists
+  for this submission. The reviewer instead gets the thing the scripts would
+  have narrated: a working build at the site root they drive themselves,
+  plus this control room as the evidence trail.
 - Final ship: 2026-08-23 (target was ~14:00 IST; actual close-out ran to the
-  evening because the live HubSpot/LLM lanes were prioritised over an early
-  send)
+  evening because the live HubSpot/LLM/transcription/image/Drive lanes were
+  prioritised over an early send)
 
 ## Token spend
 
@@ -97,17 +108,25 @@ gate baked into M2:
   and workflow import via UI.
 - M2 approval gate: stays `approved:false` until Kai flips it — email
   engagements are logged to HubSpot only after that.
-- Pre-submission: Kai reviews all four modules + this control room before
-  recording Looms and sending `submission_email.md`.
+- Pre-submission: Kai reviews all four modules + this control room, then
+  sends `submission_email.md`.
 
 ## What's real vs. simulated
 
 - Real: the code, the prompts, the offline pipeline run, the n8n workflow
-  JSON (cloud lane imported into a live n8n Cloud instance), the architecture
-  and economics reasoning, the live Clay enrichment run on real domains, the
-  live HubSpot push into a provisioned sandbox (private app, 15 scopes), and
-  the live LLM proof run in `out/live-proof/`.
-- Simulated: the webinar itself (synthetic transcript/speakers/registrants —
-  see `PLAN.md` punch list item 1). The HubSpot portal is a sandbox, not a
-  customer's; Clay ran on three real domains only (credit-capped), the
-  fixture's synthetic domains return nothing from Clay by construction.
+  JSON (cloud lane imported into a live n8n Cloud instance, webhook trigger
+  fired), the architecture and economics reasoning, the live Clay enrichment
+  run on real domains, the live HubSpot push into a provisioned sandbox
+  (private app, 15 scopes), the live LLM proof run in `out/live-proof/`, the
+  3 live Sarvam transcription calls, the 2 live OpenRouter image generations,
+  the live Google Drive upload, and the 3 live M4 narrative endpoint calls.
+- Simulated or stood-in, named plainly: the webinar itself (synthetic
+  transcript/speakers/registrants — see `PLAN.md` punch list item 1) and,
+  downstream of that, the audio fed to Sarvam (macOS `say`-synthesised, since
+  no real recording exists — the transcription API call against it was real).
+  The HubSpot portal is a sandbox, not a customer's; Clay ran on three real
+  domains only (credit-capped), the fixture's synthetic domains return
+  nothing from Clay by construction. The n8n cloud lane's trigger fired live
+  but its HubSpot leg still needs a credential the reviewer supplies. Full
+  strict scorecard, item by item: control room
+  ["Scored against the brief"](index.html#scorecard).

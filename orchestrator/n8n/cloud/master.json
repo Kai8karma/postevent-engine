@@ -94,10 +94,11 @@
         400
       ],
       "webhookId": "clay-enrichment-callback-placeholder-0001",
-      "notes": "Clay enrichment (clay_title_inferred, clay_company_name, clay_company_size, clay_industry, clay_icp_tier) runs async after 'Push to Clay Table' fires -- without this pause, 'Shape M1 Payload' would read clay_* fields before Clay finished writing them. Pauses the execution until Clay calls back. Clay-side wiring: on the target Clay table, add a webhook output (Clay UI -> table -> Settings -> Webhooks, table-level 'run complete' trigger -- NOT a per-column one, so partial/in-progress rows are never posted) pointed at this node's resume-webhook URL (n8n shows the exact URL here once the workflow is active, same pattern as 'Wait for Human Approval' downstream). Clay's callback body must post the enriched rows in the same shape 'Shape M1 Payload' expects (body.rows[], each with clay_* fields) since that node reads $input.first().json.body?.rows straight off this node's resume payload.",
+      "notes": "Clay enrichment (clay_title_inferred, clay_company_name, clay_company_size, clay_industry, clay_icp_tier) runs async after 'Push to Clay Table' fires -- without this pause, 'Shape M1 Payload' would read clay_* fields before Clay finished writing them. Pauses the execution until Clay calls back. Clay-side wiring: on the target Clay table, add a webhook output (Clay UI -> table -> Settings -> Webhooks, table-level 'run complete' trigger -- NOT a per-column one, so partial/in-progress rows are never posted) pointed at this node's resume-webhook URL (n8n shows the exact URL here once the workflow is active, same pattern as 'Wait for Human Approval' downstream). Clay's callback body must post the enriched rows in the same shape 'Shape M1 Payload' expects (body.rows[], each with clay_* fields) since that node reads $input.first().json.body?.rows straight off this node's resume payload. Resume webhook accepts POST: the caller (Clay's HTTP-API column, or the approval UI) posts a JSON body, and downstream nodes read it off $json.body. With the default GET the body could never arrive and the Approved? branch would always evaluate false \u2014 found by actually executing the lane.",
       "parameters": {
         "resume": "webhook",
-        "options": {}
+        "options": {},
+        "httpMethod": "POST"
       }
     },
     {
@@ -206,10 +207,11 @@
         400
       ],
       "webhookId": "approve-send-placeholder-0001",
-      "notes": "Pauses the execution. Resumes when a human POSTs the approval decision to this node's resume-webhook URL (n8n shows the exact URL on the node once the workflow is active) -- e.g. from the M2 approval_gate.json review step.",
+      "notes": "Pauses the execution. Resumes when a human POSTs the approval decision to this node's resume-webhook URL (n8n shows the exact URL on the node once the workflow is active) -- e.g. from the M2 approval_gate.json review step. Resume webhook accepts POST: the caller (Clay's HTTP-API column, or the approval UI) posts a JSON body, and downstream nodes read it off $json.body. With the default GET the body could never arrive and the Approved? branch would always evaluate false \u2014 found by actually executing the lane.",
       "parameters": {
         "resume": "webhook",
-        "options": {}
+        "options": {},
+        "httpMethod": "POST"
       }
     },
     {

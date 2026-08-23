@@ -2,7 +2,8 @@
 """Assemble the static Vercel site for the judge control room.
 
 Layout produced under out/vercel-stage/postevent-engine/ (deploy that dir):
-  /                      docs/index.html (control room) + docs/*.md
+  /                      web/index.html -- the console app a reviewer drives
+  /control-room/         docs/index.html (the written build report) + docs/*.md
   /modules/<m>/README.md module READMEs the control room links to
   /dashboard/            M4 dashboard (live-proof build if present, else sample-run)
   /api/narrative.js      M4 narrative serverless function (+ vercel.json)
@@ -67,11 +68,19 @@ def main() -> int:
         shutil.rmtree(STAGE)
     STAGE.mkdir(parents=True)
     docs = ROOT / "docs"
-    shutil.copy2(docs / "index.html", STAGE / "index.html")
+    console = ROOT / "web" / "index.html"
+    if not console.exists():
+        print("error: web/index.html (the console app) is missing", file=sys.stderr)
+        return 1
+    shutil.copy2(console, STAGE / "index.html")          # root = the app
+    control = STAGE / "control-room"
+    control.mkdir()
+    shutil.copy2(docs / "index.html", control / "index.html")  # the written report
     for md in docs.glob("*.md"):
         if md.name == "submission_email.md":  # recruiter-addressed draft, not a judge page
             continue
-        shutil.copy2(md, STAGE / md.name)
+        shutil.copy2(md, control / md.name)
+        shutil.copy2(md, STAGE / md.name)    # keep the old flat paths alive; links already shipped
     for m in ("m1-enrichment", "m2-comms", "m3-repurpose", "m4-dashboard"):
         mdir = STAGE / "modules" / m
         mdir.mkdir(parents=True, exist_ok=True)
@@ -88,7 +97,18 @@ def main() -> int:
     shutil.copy2(dash_src, STAGE / "dashboard" / "index.html")
     (STAGE / "api").mkdir()
     shutil.copy2(ROOT / "modules" / "m4-dashboard" / "api" / "narrative.js", STAGE / "api" / "narrative.js")
+    # The Python module runner, plus everything it shells out to. api/run.py
+    # resolves the repo root by walking up for modules/m1-enrichment/enrich.py,
+    # so these three trees must sit beside it in the deployment.
+    shutil.copy2(ROOT / "api" / "run.py", STAGE / "api" / "run.py")
+    if (ROOT / "requirements.txt").exists():
+        shutil.copy2(ROOT / "requirements.txt", STAGE / "requirements.txt")
+    for tree in ("modules", "config", "data"):
+        src = ROOT / tree
+        if src.exists():
+            copy_tree(src, STAGE / tree)
     vercel_cfg = json.loads((ROOT / "modules" / "m4-dashboard" / "vercel.json").read_text())
+    vercel_cfg.setdefault("functions", {})["api/run.py"] = {"maxDuration": 60}
     vercel_cfg["headers"] = [{
         "source": "/(.*)\\.(md|csv|txt|log|sh|yaml|yml)",
         "headers": [{"key": "Content-Type", "value": "text/plain; charset=utf-8"}],
