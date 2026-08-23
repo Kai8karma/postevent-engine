@@ -39,6 +39,9 @@ import time
 import urllib.error
 import urllib.request
 from pathlib import Path
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
+
+import verify_grounding
 
 MODULE_DIR = Path(__file__).resolve().parent
 REPO_ROOT = MODULE_DIR.parent.parent
@@ -111,6 +114,92 @@ def event_tag(event: dict) -> str:
     return f"{domain}-{date}".strip("-")
 
 
+# --- UTM tagging (see README.md for the full table) ---
+# slugify() / campaign_slug() are a byte-for-byte mirror of
+# modules/m2-comms/comms.py's functions of the same name -- M3 doesn't
+# import M2 (kept independent per the module boundary) but must produce the
+# identical campaign slug so both modules' links roll into the same
+# HubSpot/analytics campaign. If M2's slugging logic ever changes, update
+# both. with_utm() generalizes M2's version (which hardcodes
+# source=webinar/medium=email, M2's only channel) to accept source/medium
+# per channel -- same four utm_* keys, same campaign format, not a second
+# scheme.
+CHANNEL_UTM = {
+    "blog.md": {"utm_source": "blog", "utm_medium": "content"},
+    "youtube.md": {"utm_source": "youtube", "utm_medium": "video"},
+}
+SOCIAL_PLATFORM_UTM = {
+    "linkedin": {"utm_source": "linkedin", "utm_medium": "social"},
+    "x": {"utm_source": "x", "utm_medium": "social"},
+}
+
+
+def slugify(text: str) -> str:
+    text = re.sub(r"[^a-zA-Z0-9]+", "-", text.strip().lower())
+    return re.sub(r"-{2,}", "-", text).strip("-")
+
+
+def campaign_slug(event: dict) -> str:
+    name = event["event_name"].split(":", 1)[0]
+    return f"{slugify(name)}-{event['date']}"
+
+
+def with_utm(url: str, utm_source: str, utm_medium: str, campaign: str, content: str) -> str:
+    parts = urlparse(url)
+    q = dict(parse_qsl(parts.query))
+    q.update({
+        "utm_source": utm_source,
+        "utm_medium": utm_medium,
+        "utm_campaign": campaign,
+        "utm_content": content,
+    })
+    return urlunparse(parts._replace(query=urlencode(q)))
+
+
+SOCIAL_POST_RE = re.compile(r"### Post (\d+).*?(?=### Post \d+|\Z)", re.S)
+SOCIAL_PLATFORM_LINE_RE = re.compile(r"\*\*Platform:\*\*\s*(\S+)")
+
+
+def _tag_social(text: str, campaign: str, recording_url: str) -> str:
+    """Every social post ends its copy with the placeholder link token
+    `[link]` (prompts/social.md's output contract) -- swap each one for a
+    tracked link, per-post utm_content, platform-specific utm_source."""
+    def replace_block(m: "re.Match") -> str:
+        block = m.group(0)
+        post_num = m.group(1)
+        pm = SOCIAL_PLATFORM_LINE_RE.search(block)
+        platform = (pm.group(1) if pm else "linkedin").strip().lower()
+        utm = SOCIAL_PLATFORM_UTM.get(platform, SOCIAL_PLATFORM_UTM["linkedin"])
+        tagged = with_utm(recording_url, utm["utm_source"], utm["utm_medium"], campaign, f"social-post-{post_num}")
+        return block.replace("[link]", f"[recording]({tagged})")
+    return SOCIAL_POST_RE.sub(replace_block, text)
+
+
+def add_utm_links(name: str, text: str, event: dict) -> str:
+    """Tags every outbound link in blog.md / youtube.md / social.md with UTM
+    params matching M2's taxonomy. infographic.md carries no real outbound
+    link (its CTA text is a design mockup, not a publishable link) and is
+    left untouched. No-op if the event has no recording_url to tag."""
+    recording_url = event.get("recording_url", "")
+    if not recording_url:
+        return text
+    campaign = campaign_slug(event)
+    if name == "blog.md":
+        utm = CHANNEL_UTM["blog.md"]
+        tagged = with_utm(recording_url, utm["utm_source"], utm["utm_medium"], campaign, "blog")
+        return re.sub(r"\(" + re.escape(recording_url) + r"\)", f"({tagged})", text)
+    if name == "youtube.md":
+        utm = CHANNEL_UTM["youtube.md"]
+        tagged = with_utm(recording_url, utm["utm_source"], utm["utm_medium"], campaign, "youtube-description")
+        marker = f"**Recording link:** [Watch the full session]({tagged})"
+        if "## Thumbnail Brief" in text:
+            return text.replace("## Thumbnail Brief", marker + "\n\n## Thumbnail Brief", 1)
+        return text.rstrip("\n") + "\n\n" + marker + "\n"
+    if name == "social.md":
+        return _tag_social(text, campaign, recording_url)
+    return text
+
+
 def word_count(text: str) -> int:
     return len(text.split())
 
@@ -124,7 +213,7 @@ def run_offline(event: dict, out_dir: Path) -> dict:
     tag = event_tag(event)
     manifest = {"event_tag": tag, "mode": "offline", "assets": {}}
     for name in ASSETS:
-        text = (SAMPLE_DIR / name).read_text()
+        text = add_utm_links(name, (SAMPLE_DIR / name).read_text(), event)
         (out_dir / name).write_text(stamp(text, tag, "offline-sample"))
         manifest["assets"][name] = {"path": str(out_dir / name), "words": word_count(text)}
     # Rendered visual assets (thumbnail, quote card) ride along when present;
@@ -342,9 +431,14 @@ def run_live(transcript_text: str, event: dict, out_dir: Path) -> dict:
     manifest = {"event_tag": tag, "mode": "live", "assets": {}}
     for name in ASSETS:
         prompt = fill((PROMPTS_DIR / name).read_text(), transcript_text, event_json, extraction_raw)
-        text = call_claude(prompt)
+        text = add_utm_links(name, call_claude(prompt), event)
         (out_dir / name).write_text(stamp(text, tag, f"live-{os.environ.get('LLM_BACKEND', 'auto').strip().lower() or 'auto'}"))
         manifest["assets"][name] = {"path": str(out_dir / name), "words": word_count(text)}
+    # Live-signal receipt (api/run.py's P0 fix): reaching this line means the
+    # extraction call plus every asset call above already succeeded --
+    # call_claude() fails loud (RuntimeError) on any backend problem, so
+    # there is no silent-fallback count to worry about here.
+    manifest["llm_calls_made"] = 1 + len(ASSETS)
     return manifest
 
 
@@ -382,6 +476,38 @@ def run_live_dry_run(transcript_text: str, event: dict, out_dir: Path) -> dict:
     return manifest
 
 
+def run_grounding_check(args, event: dict, transcript_text: str) -> dict:
+    """Runs after generation in both lanes (offline replay and --live) --
+    verify_grounding checks every timestamp/quote/speaker-attribution claim
+    in the 4 written assets against the transcript, writes
+    grounding_report.json, and annotates any asset that failed with a
+    visible flag (see verify_grounding.annotate_text). The default is to
+    annotate and warn loudly rather than fail the run: this is a
+    human-reviewed content pipeline (a blog draft, social copy) headed for
+    a review queue, not an automated publish -- a flagged claim should stop
+    a reviewer's eye, not silently block the whole batch from ever reaching
+    them. --strict-grounding is there for a CI/publish gate that wants the
+    harder failure instead."""
+    asset_texts = {}
+    for name in ASSETS:
+        p = args.out / name
+        if p.exists():
+            asset_texts[name] = p.read_text()
+    if not asset_texts:
+        return {}
+    report = verify_grounding.check_assets(transcript_text, event, asset_texts)
+    (args.out / "grounding_report.json").write_text(json.dumps(report, indent=2))
+    for name, text in asset_texts.items():
+        annotated = verify_grounding.annotate_text(text, report["assets"].get(name))
+        if annotated != text:
+            (args.out / name).write_text(annotated)
+    t = report["totals"]
+    status = "PASS" if report["overall_pass"] else "FLAGGED"
+    print(f"M3 grounding check ({status}): {t['verified']}/{t['claims_checked']} claims verified, "
+          f"{t['failed']} failed -> {args.out / 'grounding_report.json'}")
+    return report
+
+
 def run(args) -> int:
     if not args.event.exists():
         raise RuntimeError(f"event.json not found: {args.event}")
@@ -389,10 +515,11 @@ def run(args) -> int:
 
     args.out.mkdir(parents=True, exist_ok=True)
 
-    if args.live or args.live_dry_run:
-        if not args.transcript.exists():
-            raise RuntimeError(f"transcript not found: {args.transcript}")
+    transcript_text = None
+    if args.transcript.exists():
         transcript_text = args.transcript.read_text()
+    elif args.live or args.live_dry_run:
+        raise RuntimeError(f"transcript not found: {args.transcript}")
 
     if args.live_dry_run:
         manifest = run_live_dry_run(transcript_text, event, args.out)
@@ -420,8 +547,28 @@ def run(args) -> int:
         "blog_words": blog_words, "blog_spec": "800-1200", "blog_within_spec": 800 <= blog_words <= 1200,
         "social_posts": social_posts, "social_spec": "5-10", "social_within_spec": 5 <= social_posts <= 10,
     }
+
+    if transcript_text is not None:
+        grounding_report = run_grounding_check(args, event, transcript_text)
+        if grounding_report:
+            manifest["grounding_check"] = {
+                "overall_pass": grounding_report["overall_pass"],
+                "totals": grounding_report["totals"],
+                "report": str(args.out / "grounding_report.json"),
+            }
+    else:
+        grounding_report = {}
+        print("M3 grounding check: SKIPPED -- no transcript available to verify assets against "
+              f"({args.transcript} not found)", file=sys.stderr)
+
     manifest_path = args.out / "manifest.json"
     manifest_path.write_text(json.dumps(manifest, indent=2))
+
+    if args.strict_grounding and grounding_report and not grounding_report["overall_pass"]:
+        raise RuntimeError(
+            f"--strict-grounding: {grounding_report['totals']['failed']} claim(s) failed grounding "
+            f"verification -- see {args.out / 'grounding_report.json'}"
+        )
 
     flags = "" if (manifest["spec_check"]["blog_within_spec"] and manifest["spec_check"]["social_within_spec"]) \
         else " [spec_check: see manifest.json]"
@@ -443,6 +590,10 @@ def main():
     parser.add_argument("--allow-stale", action="store_true", dest="allow_stale",
                          help="Bypass the fingerprint check and replay sample_output "
                               "against the current transcript/event anyway.")
+    parser.add_argument("--strict-grounding", action="store_true", dest="strict_grounding",
+                         help="Fail the run (exit 1) if any generated claim fails grounding "
+                              "verification, instead of the default: annotate the flagged "
+                              "asset(s) and keep going. Use in CI / a publish gate.")
     args = parser.parse_args()
 
     try:

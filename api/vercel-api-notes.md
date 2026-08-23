@@ -8,15 +8,68 @@ For the main thread wiring `orchestrator/stage_vercel.py` / `vercel.json`.
 (the Vercel Python runtime's contract for a serverless function). Vercel maps
 it to:
 
-- `GET  /api/run` -- service status: `{ok, service, live_available, model_chain, modules}`.
-  `live_available` is `true` iff an OpenRouter key is present in this
-  deployment's environment (`OPENROUTER_API_KEY`) -- lets the UI grey out the
-  "live" toggle before the reviewer ever clicks Run.
+- `GET  /api/run` -- service status: `{ok, repo_root_ok, service, live_available, model_chain, modules, error?, llm_liveness_probe?}`.
+  `ok` **is** `repo_root_ok` -- it reflects whether this deployment actually
+  bundled `modules/`/`config`/`data` next to `api/run.py` (see "What must
+  ship next to this function" below), not a constant. `error` (the
+  `REPO_ROOT_ERROR` string) is only present when `repo_root_ok` is false.
+  `ok` is deliberately NOT downgraded by a bad/exhausted OpenRouter key --
+  the offline lane works with no key at all, so a down LLM provider is not a
+  broken deployment. `live_available` is `true` iff an OpenRouter key is
+  present in this deployment's environment (`OPENROUTER_API_KEY`) -- lets the
+  UI grey out the "live" toggle before the reviewer ever clicks Run. Pass
+  `?probe=1` to also get `llm_liveness_probe: {ok, model, detail,
+  checked_at}` -- a real 1-token OpenRouter completion call that surfaces the
+  provider's own error text verbatim (e.g. a 429 body). This is opt-in *and*
+  cached process-wide for `PROBE_CACHE_TTL_S` (300s) so repeated status polls
+  never re-burn quota; every plain `GET` (no `probe` param) makes zero
+  outbound calls. See "Live vs degraded lane" below for why this probe is the
+  only place that provider text is recoverable at all.
 - `POST /api/run` -- runs one module (or the full chain). Request/response
   JSON shape is specified in full in the workstream brief this file's sibling
   code was built against; not repeated here to avoid drift -- read
   `api/run.py`'s module docstring and `handle_run()` if you need the exact
-  contract, it is the single source of truth.
+  contract, it is the single source of truth. One field is called out here
+  because it is the P0 fix this file documents: the response's `"lane"` is
+  one of `"live" | "offline" | "degraded"`, set from evidence the module
+  itself emitted (its own report file / stderr), never from the module's
+  exit code alone. See "Live vs degraded lane" below.
+
+## Live vs degraded lane (P0 fix)
+
+Before this fix, `"lane"` was set purely from whether `live:true` was
+requested -- if `enrich.py --live` silently fell back to the rule-table
+result (its own preflight `check_llm_health()` found no usable backend, one
+buried `[warn]` stderr line, exit 0 regardless), `api/run.py` still reported
+`lane:"live"`. That is precisely the "fake AI" failure mode this build
+exists to avoid, so it's now a third lane value:
+
+- `"offline"` -- `live:false` (or no key present, downgraded before running).
+- `"live"` -- `live:true`, and the module's own evidence proves real model
+  output landed (m1: `live_inference_report.json` shows patched rows against
+  attempted batches; m2/m3: the module exited 0 at all, since both fail loud
+  -- `RuntimeError`, non-zero exit -- on any backend problem, see
+  `comms.py`'s `_llm_call` / `repurpose.py`'s `call_llm` docstrings, so there
+  is no silent-fallback path to misreport there).
+- `"degraded"` -- `live:true` was requested, the module ran (exit 0), but no
+  model output actually landed: zero rows patched with batches attempted, a
+  parse-failure count equal to the batch count, or an explicit no-backend
+  warning in stderr (m1's only failure mode today); or the module has no live
+  capability at all (m4, which has no `--live` flag).
+
+A degraded response's `notes` array carries the module's own verbatim
+evidence, a plain-English gloss, and what the reviewer can do next (supply
+their own key, or read `out/live-proof/`) -- see `degraded_note()` in
+`api/run.py`. If an `OPENROUTER_API_KEY` is present, it also runs the
+`probe_openrouter_liveness()` ping described above and appends the
+provider's real error text, since `enrich.py`'s internal preflight discards
+that detail before it ever reaches stderr.
+
+Every `POST` response's `summary` also carries `llm_calls_made` (m1: LLM
+batches attempted; m2: 3 iff all three segment caches regenerated live, else
+0; m3: `1 + len(ASSETS)` iff extraction + every asset call succeeded, else
+0) and, for m1, `llm_rows_patched` -- so the live claim is a number, not just
+a status word.
 
 ## vercel.json requirement
 

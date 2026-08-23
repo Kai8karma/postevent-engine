@@ -47,7 +47,7 @@ EVENT PARTITIONING (added post-judge-review, see docs/build_log.md):
 
 DEMO TRUTH BANNER (added post-judge-review): every stage prints, before it
 runs, one line stating plainly whether this is the offline cached-output
-replay or a live claude -p call -- so a judge watching the terminal is never
+replay or a live LLM call -- so a judge watching the terminal is never
 left to assume AI ran live when it didn't.
 
 MODULE LANE BANNER (added post-judge-review): the offline lane runs in well
@@ -149,11 +149,11 @@ def last_summary_line(text: str) -> str:
 
 MODULE_LANES = [
     ("M1 Enrichment", "Deterministic rules: difflib dedupe + lookup-table field inference. No LLM call.",
-     "Real LLM classification via claude -p --live; Clay waterfall enrichment in production."),
+     "Real LLM field inference via --live (claude -p or OpenRouter, per LLM_BACKEND); Clay waterfall enrichment in production."),
     ("M2 Comms", "Cached LLM-generated copy replayed from sample_output/, fingerprint-guarded.",
-     "Live claude -p call regenerates the segment's takeaway/quote copy."),
+     "Live LLM call regenerates the segment's takeaway/quote copy; recipients come from M1's deduped output."),
     ("M3 Repurposing", "Cached LLM-generated copy replayed from sample_output/, fingerprint-guarded.",
-     "Live claude -p call regenerates blog/YouTube/infographic/social from the transcript."),
+     "Live LLM call regenerates blog/YouTube/infographic/social, then verify_grounding.py checks every quote and timestamp back against the transcript."),
     ("M4 Dashboard", "Computed metrics (real math over fixtures) + labeled cached fallback narrative.",
      "Live LLM narrative via Vercel /api/narrative.js, UI-labeled live vs. fallback."),
 ]

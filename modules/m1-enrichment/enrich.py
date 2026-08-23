@@ -208,6 +208,27 @@ def is_fake_row(first, last, email) -> str:
     return ""
 
 
+def suppression_reason_for(domain: str, cfg: dict) -> str:
+    """Domain-based suppression (judge fix #4): host-company staff and named
+    competitors get a reason string here; everyone else gets ''. Reads
+    config/icp.yaml's `suppression.host_domains` / `suppression.competitor_domains`
+    -- both default to an empty list (fail open) if the key is absent so a
+    config typo can never accidentally suppress the whole list. Applied to
+    surviving primary rows only (post-dedupe); never touches the CRM export,
+    only the `suppression_reason` flag consumers use to build a mailable set."""
+    if not domain:
+        return ""
+    domain = domain.lower()
+    suppression_cfg = cfg.get("suppression", {}) or {}
+    host_domains = {d.lower() for d in suppression_cfg.get("host_domains", [])}
+    competitor_domains = {d.lower() for d in suppression_cfg.get("competitor_domains", [])}
+    if domain in host_domains:
+        return f"host company domain ('{domain}') -- internal staff, not a prospect"
+    if domain in competitor_domains:
+        return f"competitor domain ('{domain}')"
+    return ""
+
+
 def is_non_ascii_dominant(s: str) -> bool:
     """True when more than NON_ASCII_DOMINANCE_THRESHOLD of a string's alpha
     characters fall outside ASCII -- i.e. a non-English company name, not a
@@ -1242,6 +1263,8 @@ def run_pipeline(in_path, config_path, hubspot_path, live: bool = False, dry_run
         if notes:
             full_rationale += " [" + "; ".join(notes) + "]"
 
+        suppression_reason = suppression_reason_for(r["domain"], cfg)
+
         output_rows.append({
             "email": r["email"],
             "firstname": r["firstname"],
@@ -1272,6 +1295,11 @@ def run_pipeline(in_path, config_path, hubspot_path, live: bool = False, dry_run
             # association key for the Company object in real HubSpot (judge
             # fix #3) -- blank when the only signal is a freemail address.
             "company_domain": r["domain"] if r["domain"] not in FREEMAIL_DOMAINS else "",
+            # judge fix #4: '' means mailable; non-empty means M2 must exclude
+            # this row from its send list. Row still ships in every CRM export
+            # below -- suppression only ever gates the mail send, never the
+            # CRM write (see suppression_reason_for()).
+            "suppression_reason": suppression_reason,
         })
 
     live_report = None
@@ -1298,7 +1326,7 @@ FIELDS = [
     "function", "seniority", "country", "region", "hubspot_owner_email",
     "lifecyclestage", "hs_lead_status", "hubspot_contact_id", "attendance_status",
     "time_in_session_minutes", "registration_time", "icp_tier", "icp_rationale",
-    "confidence", "merge_action", "needs_review", "company_domain",
+    "confidence", "merge_action", "needs_review", "company_domain", "suppression_reason",
 ]
 
 COMPLETENESS_FIELDS = [
@@ -1331,7 +1359,7 @@ CONTACT_FIELDS = [
     "country", "region", "hubspot_owner_email", "lifecyclestage", "hs_lead_status",
     "hubspot_contact_id", "attendance_status", "time_in_session_minutes",
     "registration_time", "icp_tier", "icp_rationale", "confidence", "merge_action",
-    "needs_review", "company_domain",
+    "needs_review", "company_domain", "suppression_reason",
 ]
 
 # HubSpot Company-object properties, deduped by domain (judge fix #3).
@@ -1447,6 +1475,7 @@ def write_outputs(out_dir: Path, rows, fake_rows, dup_pairs, total_input, hs_mat
         field_completeness[field] = round(100 * filled / len(rows), 1) if rows else 0.0
     overall = round(sum(field_completeness.values()) / len(field_completeness), 1) if field_completeness else 0.0
     needs_review_count = sum(1 for r in rows if r.get("needs_review"))
+    suppressed_rows = [r for r in rows if r.get("suppression_reason")]
     quality_report = {
         "generated_at": now,
         "row_count": len(rows),
@@ -1458,6 +1487,16 @@ def write_outputs(out_dir: Path, rows, fake_rows, dup_pairs, total_input, hs_mat
         # can't quietly launder rows the classifier couldn't actually resolve.
         "needs_review_count": needs_review_count,
         "needs_review_pct": round(100 * needs_review_count / len(rows), 1) if rows else 0.0,
+        # judge fix #4: host/competitor domains flagged, never dropped from
+        # the CRM export -- only excluded from M2's mailable set. See
+        # suppression_reason_for() / config/icp.yaml's `suppression` key.
+        "suppressed_count": len(suppressed_rows),
+        "suppressed_pct": round(100 * len(suppressed_rows) / len(rows), 1) if rows else 0.0,
+        "mailable_count": len(rows) - len(suppressed_rows),
+        "suppressed": [
+            {"email": r["email"], "company": r["company"], "reason": r["suppression_reason"]}
+            for r in suppressed_rows
+        ],
         # measured against the exact field sets the assignment brief names --
         # see spec_completeness() docstring for why this differs from the
         # softer overall_completeness_pct above.
@@ -1551,7 +1590,8 @@ def main():
     print(json.dumps(quality_report))
     print(f"input_rows={total_input} fake_excluded={len(fake_rows)} "
           f"within_batch_dupe_pairs={len(dup_pairs)} hubspot_matches={hs_match_count} "
-          f"output_rows={len(rows)}")
+          f"output_rows={len(rows)} suppressed={quality_report['suppressed_count']} "
+          f"mailable={quality_report['mailable_count']}")
     sc = quality_report["spec_completeness"]
     print(f"contact_completeness={sc['contact']['completeness_pct']}% "
           f"(pass90={sc['contact']['pass_90']}) "

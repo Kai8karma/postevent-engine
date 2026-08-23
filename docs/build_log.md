@@ -130,3 +130,46 @@ gate baked into M2:
   but its HubSpot leg still needs a credential the reviewer supplies. Full
   strict scorecard, item by item: control room
   ["Scored against the brief"](index.html#scorecard).
+
+## Post-ship documentation pass (2026-08-24)
+
+A RevOps review of the shipped build found the substance was outrunning the
+presentation: the control room narrated plumbing before value, the data
+contract was scattered across four files, and there was nothing on
+operating cadence. Fixed, docs-only (no module code touched):
+
+- **Data contract**: [`docs/data-contract.md`](data-contract.md) — every
+  field the engine writes, its source, type/enum, derivation, and
+  missing-value behavior, pulled from `dedupe_report.json`'s stated formula,
+  `modules/m1-enrichment/HUBSPOT_PUSH.md`'s two HubSpot gotchas,
+  `enrich.py::lifecycle_target()`'s rubric, and `config/icp.yaml`'s
+  region/owner map — one page instead of four.
+- **Operating cadence**: [`docs/operating-cadence.md`](operating-cadence.md)
+  — the weekly run cycle, who owns the M1/M2 review queues, the same-day SDR
+  handoff SLA the brief names, and a plain statement that a cross-event
+  contact ledger and send-fatigue suppression do not exist yet (both needed
+  at ~40 events/year, neither built).
+- **Control room restructured**: the outcome numbers (attendee→MQL,
+  contacts/completeness vs. the 90% bar, top accounts, cost/event) now sit
+  immediately after the hero, ahead of the thesis prose and lanes table that
+  used to open the page — sections moved, none rewritten.
+- **Depth ranking made explicit**, in both the control room's honesty
+  section and this repo's README: M1 deepest, M3 next, M2 strong-but-
+  gated, M4 best-engineered-thinnest-AI-by-choice.
+- **Fingerprint-limit disclosure**: `compute_fingerprint()` in
+  `modules/m2-comms/comms.py` hashes the transcript + event name — that
+  proves the cached copy isn't stale for this event, not that a model
+  authored it. Stated in the control room's honesty section. Not yet
+  mirrored into `modules/m2-comms/README.md` — that file wasn't in this
+  pass's file allowlist (module code/docs was other agents' territory this
+  session); flagged for a follow-up pass.
+
+One claim was verified rather than assumed: the depth-ranking brief for this
+pass characterized M3 as having "a grounding verifier" beyond its
+extraction-to-asset chain. `modules/m3-repurpose/` was grepped for
+`grounding`/`verifier` twice during this pass — absent on the first check,
+present on the second (`verify_grounding.py`, landed mid-session by the
+agent working M3 concurrently). The ranking above was written only after
+reading that file and confirming what it actually checks (timestamp/quote/
+speaker-attribution claims against the transcript, `grounding_report.json`
+output) — not from the brief's description of it.

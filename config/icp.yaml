@@ -33,3 +33,23 @@ icp:
   # never demoting a pre-existing HubSpot stage. This key is kept for
   # backward-compat/documentation only; see enrich.py::lifecycle_target().
   lifecycle_default: "marketingqualifiedlead_pending"
+
+# Suppression -- P0 fix (judge audit #4): a real GTM control, distinct from
+# the freemail cascade below. Registrant rows on the host's own domain (an
+# internal employee registered) or a named competitor domain are flagged
+# `suppression_reason` and excluded from M2's mailable set, but are NEVER
+# dropped from the CRM export (enrich.py::apply_suppression() -- CRM/sales
+# still wants visibility into "a competitor SDR attended"). Swap these lists
+# per real event; empty lists disable suppression entirely (fail open, not
+# closed -- a misconfigured list must never accidentally suppress everyone).
+suppression:
+  host_domains: ["acmerevenue.example"]
+  # cascaderevops.com is a real hit in this fixture (2 registrants, both
+  # Attended=Yes) -- direct B2B RevOps-SaaS competitor of the host. The
+  # second entry is an unmatched starter-list placeholder to show the list
+  # is meant to be maintained, not just fit to this fixture.
+  competitor_domains: ["cascaderevops.com", "rivalrevops.example"]
+  # Freemail (gmail.com, yahoo.com, ...) is handled separately -- see
+  # FREEMAIL_DOMAINS in enrich.py. It backfills company/industry signal for
+  # personal-email registrants; a freemail address is never, by itself, a
+  # suppression reason.

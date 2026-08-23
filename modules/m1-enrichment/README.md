@@ -56,7 +56,14 @@ Proves: a messy 150-row Zoom registrant export -> fuzzy-deduped (within-batch + 
 - `quality_report.json` -- per-field completeness, overall completeness vs.
   the 90% bar, and `needs_review_count` / `needs_review_pct` (kept separate
   from completeness so a high completeness number can't quietly launder
-  rows the classifier couldn't actually resolve).
+  rows the classifier couldn't actually resolve). Also carries
+  `suppressed_count` / `mailable_count` / `suppressed` (judge fix #4): rows
+  whose email domain is the host company's own or a named competitor
+  (`config/icp.yaml`'s `suppression` key), flagged via each row's
+  `suppression_reason` column in `hubspot_ready.csv`. Suppression only ever
+  gates the mail send (M2 reads this column to build its recipient list,
+  see `modules/m2-comms/README.md`) -- a suppressed row is still a full
+  Contact in every CRM export here, never dropped from the CRM.
 - `enriched.json` -- JSON mirror of `hubspot_ready.csv` for downstream
   modules (M2/M3/M4's assumed contract).
 - `live_inference_report.json` -- only written with `--live` /

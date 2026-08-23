@@ -23,8 +23,11 @@ import sys
 import tempfile
 import time
 import traceback
+import urllib.error
+import urllib.request
 from http.server import BaseHTTPRequestHandler
 from pathlib import Path
+from urllib.parse import parse_qs, urlparse
 
 # --------------------------------------------------------------------------
 # Repo root resolution -- must work both locally (repo root two levels above
@@ -131,6 +134,113 @@ def get_openrouter_key() -> str:
 
 def openrouter_key_present() -> bool:
     return bool(get_openrouter_key())
+
+
+# --------------------------------------------------------------------------
+# Live-vs-degraded lane classification (P0 fix: a --live request whose
+# module silently fell back to the rule-table result must never be reported
+# as lane:"live" -- see the workstream brief this file was built against).
+# Every decision here reads evidence the module itself emitted (its own
+# report file, its own stderr) -- never the module's exit code alone, which
+# is 0 in both the real-generation and silent-fallback cases.
+OPENROUTER_PING_URL = "https://openrouter.ai/api/v1/chat/completions"
+_PROBE_CACHE = {"ts": 0.0, "result": None}
+PROBE_CACHE_TTL_S = 300  # see build_get_response()'s probe= doc: opt-in AND cached
+
+
+def probe_openrouter_liveness(key: str) -> dict:
+    """Minimal 1-token completion ping against the first model in
+    FAST_MODEL_CHAIN. This is the only place in the whole request path that
+    surfaces the provider's own error text (e.g. a 429 body) -- enrich.py's
+    internal preflight (check_llm_health) deliberately swallows that detail
+    before it ever reaches stderr, so it cannot be recovered from a module's
+    log after the fact. Never raises -- a probe failure must never break the
+    response it's enriching."""
+    now = time.time()
+    cached = _PROBE_CACHE["result"]
+    if cached is not None and (now - _PROBE_CACHE["ts"]) < PROBE_CACHE_TTL_S:
+        return cached
+    model = FAST_MODEL_CHAIN.split(",")[0]
+    result = {"ok": False, "model": model, "detail": "", "checked_at": now}
+    if not key:
+        result["detail"] = "no OPENROUTER_API_KEY present -- nothing to probe"
+        _PROBE_CACHE["ts"], _PROBE_CACHE["result"] = now, result
+        return result
+    body = json.dumps({
+        "model": model, "messages": [{"role": "user", "content": "ping"}], "max_tokens": 1,
+    }).encode("utf-8")
+    req = urllib.request.Request(
+        OPENROUTER_PING_URL, data=body, method="POST",
+        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            raw = resp.read().decode("utf-8")
+        data = json.loads(raw)
+        if isinstance(data, dict) and data.get("error"):
+            err = data["error"] or {}
+            result["detail"] = f"{err.get('code')} {str(err.get('message'))[:300]}".strip()
+        else:
+            result["ok"] = True
+            result["detail"] = "model responded"
+    except urllib.error.HTTPError as exc:
+        detail = exc.read().decode("utf-8", "replace")[:300]
+        result["detail"] = f"HTTP {exc.code} {exc.reason}: {detail}"
+    except urllib.error.URLError as exc:
+        result["detail"] = f"request failed: {exc.reason}"
+    except Exception as exc:  # noqa: BLE001 -- a probe must never crash the response it's enriching
+        result["detail"] = f"{type(exc).__name__}: {exc}"
+    _PROBE_CACHE["ts"], _PROBE_CACHE["result"] = now, result
+    return result
+
+
+NO_BACKEND_RE = re.compile(r"batch parse failed \((.+)\);")
+
+
+def classify_m1_lane(stderr: str, out_dir: Path):
+    """Returns (lane, reason) for an m1 --live request. lane is 'live' or
+    'degraded'; reason is None (lane=='live') or a string quoting the
+    module's own evidence for why it wasn't. Never trusts the exit code --
+    enrich.py exits 0 on a silent rule-table fallback (see this workstream's
+    evidence: a buried stderr warning, not a failure)."""
+    report_path = out_dir / "live_inference_report.json"
+    if not report_path.exists():
+        return "degraded", "m1 produced no live_inference_report.json for a live request"
+    lr = json.loads(report_path.read_text(encoding="utf-8"))
+    batches = lr.get("inference_batches", 0) + lr.get("icp_batches", 0)
+    patched = lr.get("inference_rows_patched", 0) + lr.get("icp_rows_annotated", 0)
+    parse_failures = lr.get("inference_parse_failures", 0) + lr.get("icp_parse_failures", 0)
+    m = NO_BACKEND_RE.search(stderr or "")
+    if m and "no LLM backend available" in m.group(1):
+        return "degraded", m.group(1)
+    if batches > 0 and (patched == 0 or parse_failures >= batches):
+        return "degraded", (
+            f"m1 attempted {batches} live batch(es) but landed 0 real model output "
+            f"({parse_failures} parse failure(s), {patched} row(s) patched) -- see log for the "
+            "module's own [warn] line"
+        )
+    return "live", None
+
+
+def degraded_note(module: str, reason: str, key_present: bool) -> str:
+    """Builds the notes-array entry for a degraded lane: the module's own
+    verbatim evidence, a plain-English gloss, and what the reviewer can do
+    next -- never just a bare status flip."""
+    note = (
+        f"live:true was requested for {module} and the module exited 0, but no real model output "
+        f"actually landed -- it silently fell back to the deterministic rule-table result. This "
+        f"response is labelled lane:'degraded' (not 'live') because of that. Module's own evidence: "
+        f"{reason}."
+    )
+    if key_present:
+        probe = probe_openrouter_liveness(get_openrouter_key())
+        note += f" Direct OpenRouter probe just now: {probe['detail']}."
+    note += (
+        " To see a real live run: supply your own OPENROUTER_API_KEY (this deployment's free-tier "
+        "quota is exhausted as of this run), or inspect the pre-computed real live run committed at "
+        "out/live-proof/."
+    )
+    return note
 
 
 # --------------------------------------------------------------------------
@@ -249,12 +359,12 @@ def summarize_m1(out_dir: Path):
                 t = (row.get("icp_tier") or "").strip()
                 if t in tiers:
                     tiers[t] += 1
-    llm_batches = 0
+    llm_calls_made = 0
     llm_rows_patched = 0
     live_report_path = out_dir / "live_inference_report.json"
     if live_report_path.exists():
         lr = json.loads(live_report_path.read_text(encoding="utf-8"))
-        llm_batches = lr.get("inference_batches", 0) + lr.get("icp_batches", 0)
+        llm_calls_made = lr.get("inference_batches", 0) + lr.get("icp_batches", 0)
         llm_rows_patched = lr.get("inference_rows_patched", 0) + lr.get("icp_rows_annotated", 0)
     counts = dedupe["counts"]
     return {
@@ -265,7 +375,7 @@ def summarize_m1(out_dir: Path):
         "contact_completeness_pct": sc["contact"]["completeness_pct"],
         "company_completeness_pct": sc["company"]["completeness_pct"],
         "tier1": tiers["tier1"], "tier2": tiers["tier2"], "tier3": tiers["tier3"],
-        "llm_batches": llm_batches, "llm_rows_patched": llm_rows_patched,
+        "llm_calls_made": llm_calls_made, "llm_rows_patched": llm_rows_patched,
     }
 
 
@@ -294,6 +404,9 @@ def summarize_m2(out_dir: Path):
         "subject_variants": subject_variants,
         "utm_campaign": comms.get("campaign", ""),
         "approval_status": approval_status,
+        # comms.py only sets this key on its --live path (see comms.py's
+        # manifest literal) -- .get(..., 0) keeps offline/legacy runs honest.
+        "llm_calls_made": comms.get("llm_calls_made", 0),
     }
 
 
@@ -323,6 +436,9 @@ def summarize_m3(out_dir: Path):
         "assets": len(manifest.get("assets", {})),
         "blog_within_spec": spec_check.get("blog_within_spec", False),
         "social_within_spec": spec_check.get("social_within_spec", False),
+        # repurpose.py only sets this key on its --live path (see run_live())
+        # -- .get(..., 0) keeps offline/legacy runs honest.
+        "llm_calls_made": manifest.get("llm_calls_made", 0),
     }
 
 
@@ -568,15 +684,29 @@ def handle_run(payload: dict) -> dict:
 
         out_dir = out_root / module
         model = FAST_MODEL_CHAIN.split(",")[0] if live_requested else None
+        # Default lane assumption; each branch below can only ever downgrade
+        # this from evidence the module itself emitted -- never upgrade it,
+        # and never trust exit code 0 alone as proof a model actually ran
+        # (see classify_m1_lane's docstring for why that assumption is false
+        # for m1 today).
+        lane = "live" if live_requested else "offline"
         try:
             if module == "m1":
-                stage_m1(out_dir, reg_path, live_requested, log)
+                m1_result = stage_m1(out_dir, reg_path, live_requested, log)
                 summary = summarize_m1(out_dir)
                 artifacts = collect_artifacts(out_dir, M1_ARTIFACT_SPECS)
+                if live_requested:
+                    lane, reason = classify_m1_lane(m1_result["stderr"], out_dir)
+                    if lane == "degraded":
+                        notes.append(degraded_note("m1", reason, key_present))
             elif module == "m2":
                 stage_m2(out_dir, None, ev_path, tr_path, live_requested, log)
                 summary = summarize_m2(out_dir)
                 artifacts = collect_artifacts(out_dir, m2_artifact_specs(out_dir))
+                # m2's --live path fails loud on any backend problem (see
+                # comms.py's _llm_call docstring) -- there is no silent
+                # rule-table fallback to detect here, so reaching this line
+                # with live_requested already proves real generation landed.
                 if custom_inputs and not live_requested:
                     notes.append("offline lane replays cached sample copy fingerprinted to the bundled fixture "
                                   "-- it does not regenerate from your transcript. Pass live:true to see real "
@@ -585,6 +715,7 @@ def handle_run(payload: dict) -> dict:
                 stage_m3(out_dir, ev_path, tr_path, live_requested, log)
                 summary = summarize_m3(out_dir)
                 artifacts = collect_artifacts(out_dir, M3_ARTIFACT_SPECS)
+                # same fail-loud guarantee as m2 -- see call_llm in repurpose.py.
                 if custom_inputs and not live_requested:
                     notes.append("offline lane replays cached sample copy fingerprinted to the bundled fixture "
                                   "-- it does not regenerate from your transcript. Pass live:true to see real "
@@ -598,30 +729,49 @@ def handle_run(payload: dict) -> dict:
                 summary = summarize_m4(result["stdout"])
                 artifacts = collect_artifacts(out_dir, M4_ARTIFACT_SPECS)
                 if live_requested:
+                    # live was requested but this module has zero capacity to honor
+                    # it -- that is exactly the definition of "degraded", not "live".
+                    lane = "degraded"
                     notes.append("build_dashboard.py has no --live flag -- it is pure computation over M1's "
                                   "output plus engagement/segments fixtures. Ran M1 offline to feed it (M1 "
                                   "itself has no LLM dependency for the fields M4 reads). The dashboard's live "
                                   "narrative call is client-side (modules/m4-dashboard/api/narrative.js), not "
-                                  "invoked by this endpoint.")
+                                  "invoked by this endpoint. This response is labelled lane:'degraded' because "
+                                  "live:true was requested but no model call was ever possible for m4.")
                     model = None
         except ModuleFailure as fail:
             return {"ok": False, "module": fail.module, "error": fail.error, "hint": fail.hint, "log": fail.log}
 
-        return {"ok": True, "module": module, "lane": "live" if live_requested else "offline",
+        return {"ok": True, "module": module, "lane": lane,
                 "seconds": round(time.perf_counter() - start, 2), "model": model,
                 "summary": summary, "artifacts": artifacts, "log": log, "notes": notes}
     finally:
         shutil.rmtree(tmp_dir, ignore_errors=True)
 
 
-def build_get_response() -> dict:
-    return {
-        "ok": True,
+def build_get_response(probe: bool = False) -> dict:
+    """ok reflects real deployment health (repo_root_ok) only -- it is
+    deliberately NOT downgraded by a failed LLM probe, since the offline
+    lane works perfectly well with no OpenRouter key at all and a down
+    provider is not a broken deployment. See api/vercel-api-notes.md for
+    the probe= contract (opt-in query param, cached) this documents."""
+    repo_root_ok = REPO_ROOT is not None
+    key_present = openrouter_key_present() if repo_root_ok else False
+    resp = {
+        "ok": repo_root_ok,
+        "repo_root_ok": repo_root_ok,
         "service": "post-event engine module runner",
-        "live_available": openrouter_key_present() if REPO_ROOT is not None else False,
+        "live_available": key_present,
         "model_chain": FAST_MODEL_CHAIN.split(","),
         "modules": ["m1", "m2", "m3", "m4", "chain"],
     }
+    if not repo_root_ok:
+        resp["error"] = REPO_ROOT_ERROR
+    if probe:
+        resp["llm_liveness_probe"] = probe_openrouter_liveness(get_openrouter_key()) if key_present else {
+            "ok": False, "detail": "no OPENROUTER_API_KEY present -- nothing to probe",
+        }
+    return resp
 
 
 # --------------------------------------------------------------------------
@@ -636,7 +786,13 @@ class handler(BaseHTTPRequestHandler):
         self.wfile.write(payload)
 
     def do_GET(self):
-        self._send_json(200, build_get_response())
+        # probe=1 opts into a live 1-token OpenRouter ping (see
+        # probe_openrouter_liveness) instead of running one on every status
+        # call -- also cached PROBE_CACHE_TTL_S regardless, so a reviewer
+        # rapidly refreshing the status page can't repeatedly burn quota.
+        query = parse_qs(urlparse(self.path).query)
+        want_probe = query.get("probe", ["0"])[0].lower() in ("1", "true", "yes")
+        self._send_json(200, build_get_response(probe=want_probe))
 
     def do_POST(self):
         try:

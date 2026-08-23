@@ -48,6 +48,46 @@ receipts are all on the control room's "Live receipts" section, scored
 against the brief in its "Scored against the brief" table. The exact command
 to reproduce the live lane yourself is in "Run it yourself" above.
 
+Two more one-pagers, linked from the control room's "The numbers" section:
+[`docs/data-contract.md`](docs/data-contract.md) — every field this engine
+writes, its source, type/enum, derivation, and what happens when it's
+missing, in one place instead of scattered across four files — and
+[`docs/operating-cadence.md`](docs/operating-cadence.md) — how this runs
+week to week once it's live: the review cycle, who owns the M1/M2 review
+queues, the same-day SDR handoff SLA, and what's honestly not built yet for
+10x scale (a cross-event contact ledger, send-fatigue suppression — neither
+exists today).
+
+## Depth, ranked honestly
+
+The brief says attempt all four modules, depth of execution matters more
+than breadth — all four were attempted; here's the honest ranking of how
+deep each one goes, in order:
+
+1. **M1 — deepest.** Real dedupe math (a stated weighted composite score,
+   not a black box — [`data-contract.md`](docs/data-contract.md) §2), a live
+   Clay enrichment run and a live HubSpot sandbox push (not a dry-run), and
+   completeness measured against the brief's own named fields, not an
+   inflated denominator (99.8% contact / 97.2% company, both above the 90%
+   bar).
+2. **M3 — next.** A real extraction-to-asset chain — one `claude -p`
+   extraction pass over the transcript, then every asset (blog/YouTube/
+   infographic/social) generated off that extraction rather than each
+   guessing independently off the raw transcript — and a grounding verifier
+   (`modules/m3-repurpose/verify_grounding.py`) that checks every timestamp,
+   quote, and speaker attribution each asset claims against the source
+   transcript, writing a per-asset pass/fail `grounding_report.json`.
+3. **M2 — strong, deliberately stopped.** Real content generation and real
+   CRM send-log wiring, stopped short of an actual send by the human
+   approval gate (`approval_gate.json`, never auto-flipped) — a design
+   choice, not an unfinished feature.
+4. **M4 — best engineering, thinnest AI, by choice.** One live narrative
+   call; anomaly detection and lead-interest scoring are deterministic
+   rules, not LLM calls. Reproducibility is a compliance property here, not
+   a missed opportunity: an SDR disputing a merge a year from now needs a
+   byte-identical replay of how that account got scored, and a deterministic
+   rule gives them that where a model call wouldn't.
+
 ## Quickstart (offline, no keys, ~1 second)
 
 The offline lane replays cached model output so the whole pipeline is

@@ -16,6 +16,43 @@ Transcript in, multi-format content package out: blog draft, YouTube chapters/de
 
 **Image-gen slots in production, not here.** This module ships specs, never pixels: `youtube.md`'s Thumbnail Brief (composition/text overlay/colors) and `social.md`'s quote-card posts are both handoffs to an image-generation step downstream — thumbnail art and branded quote-card graphics respectively. Production wiring: an n8n node reads that brief/quote text and calls an image API (e.g. `generate_image`), writes the asset back to the shared drive next to the markdown, and a human approves before publish — same judgment-gate discipline as M2's sends.
 
+## Grounding verification
+
+`prompts/extraction.md` and the asset prompts all demand grounding — verbatim quotes, real `[MM:SS]` timestamps, correct speaker attribution — but until now nothing checked it. `verify_grounding.py` does, and `repurpose.py` runs it automatically after every generation, in **both** lanes (offline replay and `--live`):
+
+- every `[MM:SS]` / `[H:MM:SS]` timestamp cited (including bare leading timestamps in `youtube.md`'s `## Chapters` list, and both ends of a `[MM:SS-MM:SS]` range) must be a real turn-start time in the transcript, or one of the transcript's own declared segment boundaries;
+- where a citation pairs a name with a timestamp (`Daniel Kim, Northwind Analytics [05:10]`), the transcript speaker who actually has the turn at that moment must match;
+- every quoted string above `MIN_QUOTE_CHARS` (25 chars) that's attributed to a named speaker must fuzzy-match (`difflib.SequenceMatcher` ratio ≥ 0.90) some transcript window — the same primitive `modules/m1-enrichment/enrich.py`'s dedupe already uses;
+- every `— Name, Title, Company` attribution must name someone in the event's actual speaker list.
+
+Output is `<out>/grounding_report.json`: per-asset claims checked/verified/failed, each failure with the offending text, best-matching transcript window, and its ratio.
+
+**Annotate, don't block, by default.** This is a human-reviewed content pipeline — a blog draft and social copy headed for a review queue, not an automated publish. The default behavior is to prepend a visible `> GROUNDING CHECK FLAGGED ...` banner to any asset that failed (naming each failed claim) and print a one-line summary to stdout — loud enough that a reviewer can't miss it, without blocking the whole batch from ever reaching them over one bad quote. Pass `--strict-grounding` to instead fail the run (exit 1) — for a CI check or a publish gate that wants the harder failure.
+
+```bash
+python3 repurpose.py --out out/m3                    # generates + auto-verifies + annotates
+python3 repurpose.py --out out/m3 --strict-grounding  # same, but exit 1 on any failed claim
+python3 verify_grounding.py --transcript data/incoming/transcript.md \
+    --event data/incoming/event.json --assets-dir out/m3 --strict  # standalone, e.g. re-check an existing --out
+```
+
+**Real result against the live-generated assets** (`out/live-proof/m3/`, real `claude -p` output, checked against `data/incoming/transcript.md`; see `out/live-proof-grounding/grounding_report.json`): 66/68 claims verified. Two failed, both genuine near-misses rather than fabrications — no invented quote, timestamp, or speaker attribution was found:
+- `blog.md`: a pull-quote attributed to Sara Alvarez ("That number reflects a program we've iterated on for a while. A first webinar with none of that infrastructure in place is going to see a much smaller multiple, and that's fine.") silently drops a middle clause and softens the ending versus the real line at `[54:50]` — best ratio 0.746, below the verbatim bar.
+- `social.md`: a rhetorical aside ("Most teams treat \"follow up within 24 hours\" as a win") sits close enough to a Daniel Kim mention to register as an attributed quote-claim; it isn't actually presented as something he said, so this is a heuristic false positive, not a real quality issue.
+
+## UTM tagging
+
+Every outbound link in `blog.md`, `youtube.md`, and `social.md` (not `infographic.md` — its CTA text is a design mockup, not a publishable link) carries a UTM query string. `campaign_slug()` / `slugify()` in `repurpose.py` are a byte-for-byte mirror of `modules/m2-comms/comms.py`'s functions of the same name, so M3's campaign slug is identical to M2's and both modules' links roll into the same campaign in HubSpot/analytics — verified against a real M2 run: `pipeline-after-the-webinar-2026-08-19`. `with_utm()` generalizes M2's version (which hardcodes `utm_source=webinar`/`utm_medium=email`, M2's only channel) to accept a per-channel source/medium — same four `utm_*` keys, same campaign format, not a second scheme.
+
+| Asset | Link tagged | `utm_source` | `utm_medium` | `utm_campaign` | `utm_content` |
+|---|---|---|---|---|---|
+| `blog.md` | closing CTA → recording | `blog` | `content` | `<event-name-slug>-<date>` | `blog` |
+| `youtube.md` | inserted description link → recording | `youtube` | `video` | `<event-name-slug>-<date>` | `youtube-description` |
+| `social.md`, LinkedIn posts | each post's `[link]` token → recording | `linkedin` | `social` | `<event-name-slug>-<date>` | `social-post-<N>` |
+| `social.md`, X posts | each post's `[link]` token → recording | `x` | `social` | `<event-name-slug>-<date>` | `social-post-<N>` |
+
+`social.md`'s `[link]` placeholder token (mandated by `prompts/social.md`'s output contract, present in both the offline sample and every live generation) is what gets replaced — one tagged link per post, so a closed deal three months out can be traced to the exact post, not just "something webinar-related."
+
 ## Transcription lane
 
 The assignment's tool list for M3 is "Transcription API, LLM for generation, n8n for the pipeline, image generation for visual assets" — but `repurpose.py` only ever consumed a pre-written `transcript.md`. `transcribe.py` closes that gap: real audio in, real STT transcript out.

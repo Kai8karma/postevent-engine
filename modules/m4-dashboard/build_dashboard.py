@@ -22,17 +22,40 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 MODULE_DIR = Path(__file__).resolve().parent
+REPO_ROOT = MODULE_DIR.parent.parent
 
-# --- fixed identities (shared across all build units, do not derive) ---
-EVENT_NAME = "Pipeline After the Webinar: Turning Event Engagement into Revenue"
-EVENT_DATE = "2026-08-19"
-HOST_COMPANY = "ACME Revenue Cloud"
-HOST_DOMAIN = "acmerevenue.example"
-SPEAKERS = [
-    {"name": "Priya Nair", "title": "VP Marketing", "company": "ACME Revenue Cloud (host)"},
-    {"name": "Daniel Kim", "title": "Head of Demand Gen", "company": "Northwind Analytics"},
-    {"name": "Sara Alvarez", "title": "RevOps Lead", "company": "Meridian Software"},
-]
+# judge fix #2 (event-date drift): event identity used to be a hardcoded
+# constant block here, independent of data/incoming/event.json -- it had
+# drifted to EVENT_DATE = "2026-08-19" (actually the *last engagement
+# timestamp*, ~30 days after the real 2026-07-20 event; looks like a
+# copy/paste from `as_of` below). Single source of truth is now
+# event.json -- see load_event_identity(). DEFAULT_EVENT only supplies the
+# path; every value comes from the file's contents, not from constants here.
+DEFAULT_EVENT = REPO_ROOT / "data" / "incoming" / "event.json"
+
+
+def load_event_identity(event_path: Path) -> dict:
+    """event.json is the only source of truth for name/date/host/speakers
+    (M1 and M2 already read it directly). Cosmetic "(host)" suffix on the
+    host company's own speaker is derived here, matching the previous
+    hardcoded constant's display -- not stored in event.json itself."""
+    event = json.loads(Path(event_path).read_text(encoding="utf-8"))
+    host_company = event["host_company"]
+    speakers = [
+        {
+            "name": sp["name"],
+            "title": sp["title"],
+            "company": sp["company"] + " (host)" if sp["company"] == host_company else sp["company"],
+        }
+        for sp in event.get("speakers", [])
+    ]
+    return {
+        "name": event["event_name"],
+        "date": event["date"],
+        "host_company": host_company,
+        "host_domain": event["host_domain"],
+        "speakers": speakers,
+    }
 
 WEIGHTS = {"form_fill": 10, "click": 3, "pageview": 1, "open": 0.5}
 
@@ -194,11 +217,12 @@ def load_fallback_narrative():
     }
 
 
-def build(enriched_path, engagement_path, segments_path):
+def build(enriched_path, engagement_path, segments_path, event_path):
     enriched_rows = load_enriched(enriched_path)
     engagement = load_json(engagement_path)
     segments = load_json(segments_path)
     quality_report = load_quality_report(enriched_path)
+    event_identity = load_event_identity(event_path)
 
     contacts = {r["email"]: r for r in enriched_rows}
 
@@ -418,13 +442,7 @@ def build(enriched_path, engagement_path, segments_path):
     data = {
         "generated_at": datetime.now().isoformat(),
         "as_of": as_of.isoformat(),
-        "event": {
-            "name": EVENT_NAME,
-            "date": EVENT_DATE,
-            "host_company": HOST_COMPANY,
-            "host_domain": HOST_DOMAIN,
-            "speakers": SPEAKERS,
-        },
+        "event": event_identity,
         "kpis": kpis,
         "funnel": funnel,
         "top_accounts": top_accounts,
@@ -453,15 +471,22 @@ def main():
     ap.add_argument("--enriched", required=True, help="M1 hubspot_ready.csv")
     ap.add_argument("--engagement", required=True, help="engagement.json")
     ap.add_argument("--segments", required=True, help="segments.json")
+    # Not passed by orchestrator/run_pipeline.py today -- defaults to the
+    # same data/incoming/event.json M1 and M2 already read, so the date
+    # can't drift between modules without a matching real-input change.
+    ap.add_argument("--event", default=str(DEFAULT_EVENT), help="event.json (event name/date/host/speakers)")
     ap.add_argument("--out", required=True, help="output directory")
     args = ap.parse_args()
 
-    for label, p in (("--enriched", args.enriched), ("--engagement", args.engagement), ("--segments", args.segments)):
+    for label, p in (
+        ("--enriched", args.enriched), ("--engagement", args.engagement),
+        ("--segments", args.segments), ("--event", args.event),
+    ):
         if not Path(p).exists():
             print(f"error: {label} path not found: {p}", file=sys.stderr)
             sys.exit(1)
 
-    data = build(args.enriched, args.engagement, args.segments)
+    data = build(args.enriched, args.engagement, args.segments, args.event)
 
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)

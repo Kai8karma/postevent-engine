@@ -1,20 +1,100 @@
 {
-  "name": "Post-Event Engine \u2014 Cloud Production",
+  "name": "Post-Event Engine — Cloud Production",
   "nodes": [
     {
-      "id": "sticky-cloud-note",
-      "name": "Sticky Note",
+      "id": "sticky-lane",
+      "name": "Sticky Note: Lane Overview",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
         -60,
-        -360
+        -680
       ],
       "parameters": {
-        "content": "## PRODUCTION LANE\nReal trigger + real HTTP calls -- no Execute Command anywhere, so this runs unmodified on n8n Cloud.\n\nBefore running: wire the 4 credential placeholders below (Webinar Platform header auth, HubSpot private-app token, Telegram bot token) and point the Webhook node's production URL at your webinar platform's \"session ended\" callback (Zoom/GoTo/ON24 webhook config, done outside n8n).\n\nLocal-demo lane (Execute Command, offline, zero creds): `orchestrator/n8n/local-demo/master.json`.",
+        "content": "## PRODUCTION LANE (rebuilt)\nReal trigger + real HTTP/native calls -- no Execute Command anywhere, so this runs unmodified on n8n Cloud.\n\nShape: webinar ends -> idempotency guard -> enrich (Clay) -> CRM write (HubSpot, batched) -> associate -> human approval -> send -> notify.\n\nEvery network node has retryOnFail + an explicit onError. The 5 nodes that write real state (idempotency search, both HubSpot batch upserts, the associations call, the single-send) use onError=continueErrorOutput and feed the failure branch at the bottom of the canvas -- see the Error Handling sticky. settings.errorWorkflow also points at error-handler.json for execution-level (not just node-level) failures.\n\nLocal-demo lane (Execute Command, offline, zero creds): `orchestrator/n8n/local-demo/master.json`.",
         "height": 320,
         "width": 480,
         "color": 4
+      }
+    },
+    {
+      "id": "sticky-creds",
+      "name": "Sticky Note: Credentials Needed",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        460,
+        -680
+      ],
+      "parameters": {
+        "content": "## CREDENTIALS TO WIRE BEFORE RUNNING\n1. Fetch Registrants -- none wired on purpose (stand-in webinar-platform endpoint, see its notes). Point at your platform's registrants API + header auth when you have a real account.\n2. Check Already Processed (HubSpot Search) -- HubSpot credential PLACEHOLDER_HUBSPOT_HEADER_AUTH or a native HubSpot App Token credential.\n3. HubSpot Upsert Companies / HubSpot Upsert Contacts / Associate Contacts to Companies / HubSpot Single Send -- all reuse PLACEHOLDER_HUBSPOT_HEADER_AUTH (generic Header Auth: 'Authorization: Bearer <private-app token>').\n4. Push to Clay Table -- PLACEHOLDER_CLAY_TABLE_WEBHOOK_ID in the URL, swap for your Clay table's webhook source id.\n5. Notify Team of Failure (Slack, disabled) -- PLACEHOLDER_SLACK_CRED, channel id.\n6. Notify Team (Telegram, disabled) -- PLACEHOLDER_TELEGRAM_BOT_CRED, chat id.\n7. settings.errorWorkflow -- placeholder workflow id, repoint at your imported copy of error-handler.json (see its own sticky note).",
+        "height": 360,
+        "width": 600,
+        "color": 5
+      }
+    },
+    {
+      "id": "sticky-clay",
+      "name": "Sticky Note: Clay Callback Contract",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1100,
+        -680
+      ],
+      "parameters": {
+        "content": "## CLAY CALLBACK CONTRACT\n'Push to Clay Table' ships `callback_url: $execution.resumeUrl` in its body. Wire your Clay table's HTTP-API enrichment column to POST its output rows to that URL when the row finishes enriching (table-level 'run complete' webhook, Clay UI -> table -> Settings -> Webhooks -- NOT a per-column trigger, so partial rows never resume the Wait early).\n\nThe resume webhook only accepts POST -- a GET request has no body, so the Wait would resume with nothing to read and every downstream node would see empty data. Found by actually executing this lane.\n\nBody shape Clay must post back: `{ rows: [...], event_id, event_slug }` -- 'Shape M1 Payload' reads `$json.body.rows` off the Wait node's resume payload.",
+        "height": 320,
+        "width": 520,
+        "color": 3
+      }
+    },
+    {
+      "id": "sticky-batch",
+      "name": "Sticky Note: Batching + Idempotency",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1660,
+        -680
+      ],
+      "parameters": {
+        "content": "## BATCHING + IDEMPOTENCY\nHubSpot's batch endpoints cap at 100 records/request. This event has 133 contacts and 30 companies -- Split*ToItems turns the arrays into individual n8n items, Batch*(100) loops them in chunks of 100 via splitInBatches (real loop-back connection, see the two lanes below), so 133 contacts = 2 requests, 30 companies = 1, not 133+30.\n\nAssociations need HubSpot's internal object ids, which only exist after the upserts return -- so 'Build Association Pairs' waits for BOTH lanes (via the Merge node) and matches each contact's email domain against each company's domain from the two upsert RESPONSES, then that pair list is itself batched into chunks of 100 before the v4 associations call.\n\nIDEMPOTENCY: 'Check Already Processed' searches HubSpot for a contact already tagged with this run's event_tag before ANY write happens. A hit routes to 'Already Processed - Skipping' (no Clay push, no HubSpot write, no send) instead of double-processing a re-delivered webhook. The engine's own Python injector is idempotent by design (see orchestrator/run_pipeline.py + modules/m1-enrichment/push_to_hubspot.py) -- this guard gives the n8n lane the same property, since the webhook itself has no built-in de-dupe.",
+        "height": 380,
+        "width": 600,
+        "color": 3
+      }
+    },
+    {
+      "id": "sticky-approval",
+      "name": "Sticky Note: Approval Gate Is Honest",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2300,
+        -680
+      ],
+      "parameters": {
+        "content": "## APPROVAL GATE\nNo mail is dispatched until a human POSTs approval. 'Wait for Human Approval' pauses on a resume webhook that only accepts POST (a GET can't carry the approval body -- found by actually executing this lane). 'Approved?' reads `$json.body.approved` off that POST. If it's not true, the run goes to 'Blocked - Not Approved (Structured)', which shapes and logs a real reason instead of vanishing into a bare NoOp.",
+        "height": 320,
+        "width": 520,
+        "color": 3
+      }
+    },
+    {
+      "id": "sticky-error",
+      "name": "Sticky Note: Error Handling",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2860,
+        -680
+      ],
+      "parameters": {
+        "content": "## ERROR HANDLING\nEvery network node (httpRequest + the native HubSpot node) has retryOnFail with maxTries/waitBetweenTries. The 5 nodes that write real CRM/send state -- Check Already Processed, both HubSpot batch upserts, Associate Contacts to Companies, HubSpot Single Send -- use onError=continueErrorOutput so a hard failure (after retries) is routed, not swallowed: their error outputs converge on 'Shape Error Payload' -> 'Notify Team of Failure' (Slack, disabled by default so it can't fire unwired) -> 'Stop with Clear Error', which fails the execution with a readable message.\n\nThe two stand-in nodes (Fetch Registrants, Push to Clay Table) keep onError=continueRegularOutput on purpose -- see their own notes -- so the demo lane still runs end-to-end without those two accounts wired.\n\nsettings.errorWorkflow also points at a placeholder id for error-handler.json, so a failure anywhere in the execution (not just the 5 nodes above) still reaches a human. Repoint that id at your imported copy -- see error-handler.json's own sticky note.",
+        "height": 380,
+        "width": 600,
+        "color": 5
       }
     },
     {
@@ -26,14 +106,14 @@
         200,
         400
       ],
-      "webhookId": "webinar-ended-placeholder-0001",
       "parameters": {
         "httpMethod": "POST",
         "path": "webinar-ended",
         "responseMode": "onReceived",
         "responseData": "{\"status\": \"accepted\"}",
         "options": {}
-      }
+      },
+      "webhookId": "webinar-ended-placeholder-0001"
     },
     {
       "id": "2",
@@ -44,7 +124,6 @@
         460,
         400
       ],
-      "notes": "Stand-in webinar-platform endpoint (no Zoom/GoTo/ON24 account in this demo), auth deliberately left unset so the lane executes without a credential a reviewer has to supply: the call fails, onError=continueRegularOutput carries the run forward, and every downstream node reads the registrant rows straight off the webhook payload. In production this is your platform's registrants API with header auth.",
       "parameters": {
         "method": "GET",
         "url": "=https://api.webinar-platform.example/v2/webinars/{{ $json.body.webinar_id }}/registrants",
@@ -60,8 +139,101 @@
         },
         "options": {}
       },
+      "notes": "Stand-in webinar-platform endpoint (no Zoom/GoTo/ON24 account in this demo), auth deliberately left unset so the lane executes without a credential a reviewer has to supply: the call fails, onError=continueRegularOutput carries the run forward, and every downstream node reads the registrant rows straight off the webhook payload. retryOnFail is included for design-bar consistency (every network node gets one) but is moot here -- 2 retries at an unauthenticated URL still fail, that's the point. In production this is your platform's registrants API with header auth.",
       "onError": "continueRegularOutput",
-      "alwaysOutputData": true
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 2000
+    },
+    {
+      "id": "13",
+      "name": "Check Already Processed (HubSpot Search)",
+      "type": "n8n-nodes-base.hubspot",
+      "typeVersion": 2,
+      "position": [
+        700,
+        400
+      ],
+      "parameters": {
+        "resource": "contact",
+        "operation": "search",
+        "filterGroupsUi": {
+          "filterGroupsValues": [
+            {
+              "filtersUi": {
+                "filterValues": [
+                  {
+                    "propertyName": "postevent_engine_event_tag",
+                    "operator": "EQ",
+                    "value": "={{ $json.body.event_tag || $json.body.event_slug || $json.body.event_id }}"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "limit": 1,
+        "options": {}
+      },
+      "notes": "Native HubSpot node, not httpRequest -- CRM contact search-by-property is exactly what n8n's HubSpot node exists for. Idempotency guard: searches for a contact already carrying this run's event_tag on custom property postevent_engine_event_tag (create it once in the target portal -- Settings > Properties -- or point this at an existing property). alwaysOutputData=true so a zero-match (the normal case) still emits one item for 'Already Processed?' to read, instead of the branch silently dead-ending on empty output (n8n's default: a node that would output 0 items simply doesn't run its downstream connections). onError=continueErrorOutput on purpose: if the search call itself fails, that must NOT be treated as 'not yet processed' -- doing so risks a duplicate CRM write and duplicate send -- so a failed check routes to the failure branch instead of falling through. Uncertain: exact filterGroupsUi key names for this n8n version -- reviewer may need to reselect resource=Contact, operation=Search in the node UI and re-add the property filter by hand; the search intent and idempotency logic are correct regardless of the exact UI schema.\nCredential: HubSpot App Token (private app, sandbox portal 247135551), same as every other HubSpot node in this workflow.",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "PLACEHOLDER_HUBSPOT_HEADER_AUTH",
+          "name": "HubSpot Sandbox (Header Auth: Authorization: Bearer <private-app token>)"
+        }
+      },
+      "onError": "continueErrorOutput",
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 2000
+    },
+    {
+      "id": "14",
+      "name": "Already Processed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        940,
+        400
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "cond-already",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "notes": "True branch = the search actually matched a contact (`$json.id` is a real HubSpot object id) -> this event_tag has already run. False branch = alwaysOutputData's empty placeholder item (`$json.id` is undefined) -> not yet processed, proceed."
+    },
+    {
+      "id": "15",
+      "name": "Already Processed - Skipping",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        940,
+        650
+      ],
+      "parameters": {},
+      "notes": "Idempotency guard tripped: a contact tagged with this event_tag already exists in HubSpot, so this run stops here on purpose -- no Clay push, no HubSpot write, no send. Re-delivered or replayed webhooks (webinar platforms commonly retry a 'session ended' callback) land here instead of double-processing the event."
     },
     {
       "id": "3",
@@ -69,10 +241,9 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        700,
+        1180,
         400
       ],
-      "notes": "PLACEHOLDER Clay table webhook id -- wire your Clay table's webhook source here. The body already ships the resume callback_url so Clay's HTTP-API column can call the Wait node back with enriched rows. On error (placeholder id) the run continues to the Wait, which a demo driver resumes with enriched rows -- same contract Clay would use.",
       "parameters": {
         "method": "POST",
         "url": "https://api.clay.com/v3/sources/webhook/PLACEHOLDER_CLAY_TABLE_WEBHOOK_ID",
@@ -81,8 +252,12 @@
         "jsonBody": "={{ { \"rows\": $('Webinar Ended (webhook)').item.json.body.registrants, \"event_id\": $('Webinar Ended (webhook)').item.json.body.event_id, \"callback_url\": $execution.resumeUrl } }}",
         "options": {}
       },
+      "notes": "PLACEHOLDER Clay table webhook id -- wire your Clay table's webhook source here. The body ships the resume callback_url so Clay's HTTP-API column can call the Wait node back with enriched rows -- see the Clay Callback Contract sticky note. retryOnFail added for transient network faults; onError stays continueRegularOutput (not continueErrorOutput) because with the placeholder id this call is EXPECTED to fail in an unwired review, and the run should still reach the Wait node so a demo driver can resume it with enriched rows -- same contract Clay would use once wired.",
       "onError": "continueRegularOutput",
-      "alwaysOutputData": true
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000
     },
     {
       "id": "3b",
@@ -90,16 +265,16 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        940,
+        1420,
         400
       ],
-      "webhookId": "clay-enrichment-callback-placeholder-0001",
-      "notes": "Clay enrichment (clay_title_inferred, clay_company_name, clay_company_size, clay_industry, clay_icp_tier) runs async after 'Push to Clay Table' fires -- without this pause, 'Shape M1 Payload' would read clay_* fields before Clay finished writing them. Pauses the execution until Clay calls back. Clay-side wiring: on the target Clay table, add a webhook output (Clay UI -> table -> Settings -> Webhooks, table-level 'run complete' trigger -- NOT a per-column one, so partial/in-progress rows are never posted) pointed at this node's resume-webhook URL (n8n shows the exact URL here once the workflow is active, same pattern as 'Wait for Human Approval' downstream). Clay's callback body must post the enriched rows in the same shape 'Shape M1 Payload' expects (body.rows[], each with clay_* fields) since that node reads $input.first().json.body?.rows straight off this node's resume payload. Resume webhook accepts POST: the caller (Clay's HTTP-API column, or the approval UI) posts a JSON body, and downstream nodes read it off $json.body. With the default GET the body could never arrive and the Approved? branch would always evaluate false \u2014 found by actually executing the lane.",
       "parameters": {
         "resume": "webhook",
         "options": {},
         "httpMethod": "POST"
-      }
+      },
+      "notes": "Clay enrichment (clay_title_inferred, clay_company_name, clay_company_size, clay_industry, clay_icp_tier) runs async after 'Push to Clay Table' fires -- without this pause, 'Shape M1 Payload' would read clay_* fields before Clay finished writing them. Clay-side wiring: on the target Clay table, add a webhook output (Clay UI -> table -> Settings -> Webhooks, table-level 'run complete' trigger -- NOT a per-column one) pointed at this node's resume-webhook URL (n8n shows the exact URL once the workflow is active). Resume webhook only accepts POST -- see the Clay Callback Contract sticky note; with a GET the body could never arrive.",
+      "webhookId": "clay-enrichment-callback-placeholder-0001"
     },
     {
       "id": "4",
@@ -107,41 +282,59 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1180,
+        1660,
         400
       ],
-      "notes": "JS payload shaping per M1 contract (see modules/m1-enrichment/enrich.py hubspot_ready.csv columns). Clay's enrichment columns land on each row under item.json.clay_* -- mapped here to HubSpot property names. Runs only after 'Wait for Clay Enrichment Callback' resumes, so clay_* fields are guaranteed present by the time this code executes.",
       "parameters": {
         "language": "javaScript",
-        "jsCode": "const rows = $input.first().json.rows || $input.first().json.body?.rows || [];\n\nconst contacts = [];\nconst companies = [];\n\nfor (const row of rows) {\n  const email = (row.email || '').trim().toLowerCase();\n  if (!email) continue;\n\n  contacts.push({\n    idProperty: 'email',\n    id: email,\n    properties: {\n      email,\n      firstname: row.firstname || row.first_name || '',\n      lastname: row.lastname || row.last_name || '',\n      jobtitle: row.jobtitle || row.clay_title_inferred || '',\n      company: row.company || row.clay_company_name || '',\n      hs_lead_status: row.hs_lead_status || 'NEW',\n      lifecyclestage: row.lifecyclestage || 'marketingqualifiedlead',\n      icp_tier: row.icp_tier || row.clay_icp_tier || 'unscored',\n      hubspot_owner_email: row.hubspot_owner_email || ''\n    }\n  });\n\n  const companyDomain = email.split('@')[1] || '';\n  if (companyDomain) {\n    companies.push({\n      idProperty: 'domain',\n      id: companyDomain,\n      properties: {\n        domain: companyDomain,\n        name: row.company || row.clay_company_name || '',\n        numberofemployees: row.clay_company_size || '',\n        industry: row.clay_industry || ''\n      }\n    });\n  }\n}\n\n// de-dupe companies by domain (many contacts share one company row)\nconst seenDomains = new Set();\nconst uniqueCompanies = companies.filter(c => {\n  if (seenDomains.has(c.id)) return false;\n  seenDomains.add(c.id);\n  return true;\n});\n\nreturn [{\n  json: {\n    contactsBatch: { inputs: contacts },\n    companiesBatch: { inputs: uniqueCompanies },\n    eventSlug: $('Webinar Ended (webhook)').item.json.body.event_slug || 'unknown-event'\n  }\n}];"
-      }
+        "jsCode": "const rows = $input.first().json.rows || $input.first().json.body?.rows || [];\n\nconst contacts = [];\nconst companies = [];\nconst seenDomains = new Set();\n\nfor (const row of rows) {\n  const email = (row.email || '').trim().toLowerCase();\n  if (!email) continue;\n\n  contacts.push({\n    email,\n    firstname: row.firstname || row.first_name || '',\n    lastname: row.lastname || row.last_name || '',\n    jobtitle: row.jobtitle || row.clay_title_inferred || '',\n    company: row.company || row.clay_company_name || '',\n    hs_lead_status: row.hs_lead_status || 'NEW',\n    lifecyclestage: row.lifecyclestage || 'marketingqualifiedlead',\n    icp_tier: row.icp_tier || row.clay_icp_tier || 'unscored',\n    hubspot_owner_email: row.hubspot_owner_email || ''\n  });\n\n  const domain = email.split('@')[1] || '';\n  if (domain && !seenDomains.has(domain)) {\n    seenDomains.add(domain);\n    companies.push({\n      domain,\n      name: row.company || row.clay_company_name || '',\n      numberofemployees: row.clay_company_size || '',\n      industry: row.clay_industry || ''\n    });\n  }\n}\n\nconst eventSlug = $('Webinar Ended (webhook)').item.json.body.event_slug || 'unknown-event';\nconst eventTag = $('Webinar Ended (webhook)').item.json.body.event_tag || eventSlug;\n\nreturn [{ json: { contacts, companies, eventSlug, eventTag } }];"
+      },
+      "notes": "JS payload shaping per M1 contract (see modules/m1-enrichment/enrich.py hubspot_ready.csv columns). Clay's enrichment columns land on each row under item.json.clay_* -- mapped here to HubSpot property names. Runs only after 'Wait for Clay Enrichment Callback' resumes, so clay_* fields are guaranteed present. Companies are de-duped by domain here (one row per company, not one per contact) so the companies batch below doesn't upsert 133 near-duplicate rows for 30 real companies. Output is ONE item holding both arrays -- 'Split Companies to Items' and 'Split Contacts to Items' each turn their array into individual n8n items so splitInBatches can chunk them."
     },
     {
-      "id": "5",
-      "name": "HubSpot Upsert Contacts",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
+      "id": "16",
+      "name": "Split Companies to Items",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
-        1420,
-        280
+        1900,
+        220
       ],
       "parameters": {
-        "method": "POST",
-        "url": "https://api.hubapi.com/crm/v3/objects/contacts/batch/upsert",
-        "authentication": "genericCredentialType",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ $json.contactsBatch }}",
-        "options": {},
-        "genericAuthType": "httpHeaderAuth"
+        "language": "javaScript",
+        "jsCode": "const companies = $json.companies || [];\nif (companies.length === 0) return [{ json: { _empty: true } }];\nreturn companies.map(c => ({ json: c }));"
       },
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "PLACEHOLDER_HUBSPOT_HEADER_AUTH",
-          "name": "HubSpot Sandbox (Header Auth: Authorization: Bearer <private-app token>)"
-        }
+      "notes": "Turns the deduped companies array (one item, N fields) into N individual n8n items so splitInBatches can chunk them by item count. alwaysOutputData-style guard: if there are zero companies, emits one sentinel item instead of zero, so 'Batch Companies (100)' still runs and its 'done' output still fires (an n8n node given 0 input items simply never executes, which would otherwise dead-end the Merge node downstream forever)."
+    },
+    {
+      "id": "17",
+      "name": "Batch Companies (100)",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2140,
+        220
+      ],
+      "parameters": {
+        "batchSize": 100,
+        "options": {}
       },
-      "notes": "Generic HTTP over n8n's native HubSpot node, deliberately: the native node has no v3 batch/upsert, so 133 contacts would be 133 requests instead of 2 (100/batch). Native HubSpot node is the right call for single-record ops; batch ingestion wants the raw endpoint. Credential: HubSpot App Token (private app, sandbox portal 247135551). Auth: generic Header Auth credential -- header 'Authorization', value 'Bearer <HubSpot private-app token>' (portable across n8n versions; the dedicated HubSpot credential types are for the native node)."
+      "notes": "Loops the company items in chunks of 100 -- HubSpot's batch/upsert cap. This event has 30 companies = 1 batch/1 request; a larger event with, say, 240 companies would take 3. Output 0 = done (fires once the whole queue is drained, carrying every item that was looped back in via the 'Flatten Company Results' connection below). Output 1 = loop (the current batch)."
+    },
+    {
+      "id": "18",
+      "name": "Build Companies Batch Body",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2380,
+        140
+      ],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const rows = $input.all().map(i => i.json).filter(r => !r._empty);\nreturn [{ json: { inputs: rows.map(r => ({\n  idProperty: 'domain',\n  id: r.domain,\n  properties: { domain: r.domain, name: r.name, numberofemployees: r.numberofemployees, industry: r.industry }\n})) } }];"
+      },
+      "notes": "Wraps the current batch's items (up to 100) into the v3 batch/upsert request shape."
     },
     {
       "id": "6",
@@ -149,8 +342,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1420,
-        520
+        2620,
+        140
       ],
       "parameters": {
         "method": "POST",
@@ -158,17 +351,189 @@
         "authentication": "genericCredentialType",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ $('Shape M1 Payload').item.json.companiesBatch }}",
+        "jsonBody": "={{ { inputs: $json.inputs } }}",
         "options": {},
         "genericAuthType": "httpHeaderAuth"
       },
+      "notes": "Generic HTTP over n8n's native HubSpot node, deliberately: the native node has no v3 batch/upsert, so this batch of companies would be one request per company instead of one request per 100. Native HubSpot node is the right call for single-record ops and the idempotency search above; batch ingestion wants the raw endpoint. Note from the live push: HubSpot does not unique-index company domain -- further production hardening is search-by-domain then update/create (implemented in modules/m1-enrichment/push_to_hubspot.py). retryOnFail tolerates transient 429/5xx; onError=continueErrorOutput routes a hard failure (after retries) to the shared failure branch instead of silently losing this batch's writes.",
       "credentials": {
         "httpHeaderAuth": {
           "id": "PLACEHOLDER_HUBSPOT_HEADER_AUTH",
           "name": "HubSpot Sandbox (Header Auth: Authorization: Bearer <private-app token>)"
         }
       },
-      "notes": "Same batch-endpoint rationale as contacts. Note from the live push: HubSpot does not unique-index company domain -- production hardening is search-by-domain then batch update/create (implemented in modules/m1-enrichment/push_to_hubspot.py). Auth: generic Header Auth credential -- header 'Authorization', value 'Bearer <HubSpot private-app token>' (portable across n8n versions; the dedicated HubSpot credential types are for the native node)."
+      "onError": "continueErrorOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000
+    },
+    {
+      "id": "19",
+      "name": "Flatten Company Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2860,
+        140
+      ],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const results = $json.results || [];\nreturn results.map(r => ({ json: r }));"
+      },
+      "notes": "Splits the batch/upsert response's results[] (one HubSpot object per element, each carrying its real internal id plus whatever properties -- including domain -- were sent) into individual items, then loops back into 'Batch Companies (100)' so the 'done' output accumulates every company across every batch, not just the last one."
+    },
+    {
+      "id": "20",
+      "name": "Split Contacts to Items",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1900,
+        620
+      ],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const contacts = $json.contacts || [];\nif (contacts.length === 0) return [{ json: { _empty: true } }];\nreturn contacts.map(c => ({ json: c }));"
+      },
+      "notes": "Turns the contacts array (one item, N fields) into N individual n8n items so splitInBatches can chunk them by item count. Same zero-item guard as 'Split Companies to Items'."
+    },
+    {
+      "id": "21",
+      "name": "Batch Contacts (100)",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2140,
+        620
+      ],
+      "parameters": {
+        "batchSize": 100,
+        "options": {}
+      },
+      "notes": "Loops the contact items in chunks of 100. This event's 133 contacts become 2 batches (100 + 33) = 2 requests, not 133 -- the loop-back connection from 'Flatten Contact Results' below is what makes this a real loop instead of a single pass. Output 0 = done (all 133, accumulated across both batches). Output 1 = loop (the current batch)."
+    },
+    {
+      "id": "22",
+      "name": "Build Contacts Batch Body",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2380,
+        700
+      ],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const rows = $input.all().map(i => i.json).filter(r => !r._empty);\nreturn [{ json: { inputs: rows.map(r => ({\n  idProperty: 'email',\n  id: r.email,\n  properties: {\n    email: r.email, firstname: r.firstname, lastname: r.lastname, jobtitle: r.jobtitle,\n    company: r.company, hs_lead_status: r.hs_lead_status, lifecyclestage: r.lifecyclestage,\n    icp_tier: r.icp_tier, hubspot_owner_email: r.hubspot_owner_email\n  }\n})) } }];"
+      },
+      "notes": "Wraps the current batch's items (up to 100) into the v3 batch/upsert request shape."
+    },
+    {
+      "id": "5",
+      "name": "HubSpot Upsert Contacts",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2620,
+        700
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.hubapi.com/crm/v3/objects/contacts/batch/upsert",
+        "authentication": "genericCredentialType",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { inputs: $json.inputs } }}",
+        "options": {},
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "notes": "Generic HTTP over n8n's native HubSpot node, deliberately: the native node has no v3 batch/upsert, so 133 contacts would be 133 requests instead of 2 (100/batch). Native HubSpot node is the right call for single-record ops and the idempotency search above; batch ingestion wants the raw endpoint. retryOnFail tolerates transient 429/5xx; onError=continueErrorOutput routes a hard failure (after retries) to the shared failure branch instead of silently losing this batch's writes.",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "PLACEHOLDER_HUBSPOT_HEADER_AUTH",
+          "name": "HubSpot Sandbox (Header Auth: Authorization: Bearer <private-app token>)"
+        }
+      },
+      "onError": "continueErrorOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000
+    },
+    {
+      "id": "23",
+      "name": "Flatten Contact Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2860,
+        700
+      ],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const results = $json.results || [];\nreturn results.map(r => ({ json: r }));"
+      },
+      "notes": "Splits the batch/upsert response's results[] into individual items (each with its real internal id plus properties.email), then loops back into 'Batch Contacts (100)' so the 'done' output accumulates every contact across every batch."
+    },
+    {
+      "id": "24",
+      "name": "Merge Contact + Company Results",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        3100,
+        400
+      ],
+      "parameters": {
+        "mode": "append",
+        "numberInputs": 2,
+        "options": {}
+      },
+      "notes": "Append mode, 2 inputs -- waits for BOTH the companies lane's 'done' output (input 0) and the contacts lane's 'done' output (input 1) before running, then concatenates all accumulated results into one list. This is what sequences association-building to happen only after every batch in both lanes has completed -- the association pairs need real HubSpot ids from both sides."
+    },
+    {
+      "id": "25",
+      "name": "Build Association Pairs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3340,
+        400
+      ],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const items = $input.all().map(i => i.json);\nconst contactResults = items.filter(i => i.properties && i.properties.email);\nconst companyResults = items.filter(i => i.properties && i.properties.domain);\n\nconst idByDomain = {};\nfor (const co of companyResults) idByDomain[co.properties.domain] = co.id;\n\nconst pairs = [];\nfor (const c of contactResults) {\n  const domain = (c.properties.email.split('@')[1] || '').toLowerCase();\n  const companyId = idByDomain[domain];\n  if (companyId) pairs.push({ from: { id: c.id }, to: { id: companyId } });\n}\n\nif (pairs.length === 0) return [{ json: { _empty: true } }];\nreturn pairs.map(p => ({ json: p }));"
+      },
+      "notes": "Matches each upserted contact's email domain against each upserted company's domain -- both come straight off the batch/upsert RESPONSES (results[].properties echoes back whatever was sent, including the idProperty field), so this only runs after real HubSpot ids exist for both sides. Emits one item per pair (not one item holding an array) so the next splitInBatches can chunk them directly. alwaysOutputData + the _empty sentinel guard against the edge case where no contact resolves to a company (e.g. every registrant used a free-mail domain) -- documented gap: 'Build Associations Batch Body' below filters the sentinel but does not currently skip posting an empty inputs:[] batch to HubSpot in that all-empty case; harmless (HubSpot accepts/no-ops an empty batch) but worth a follow-up guard if this ever fires in practice.",
+      "alwaysOutputData": true
+    },
+    {
+      "id": "26",
+      "name": "Batch Associations (100)",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        3580,
+        400
+      ],
+      "parameters": {
+        "batchSize": 100,
+        "options": {}
+      },
+      "notes": "Loops the association pairs in chunks of 100 -- HubSpot's v4 batch association cap. ~120-130 pairs here = 2 requests. Output 0 = done -> Wait for Human Approval. Output 1 = loop -> builds and sends the current batch, then loops back."
+    },
+    {
+      "id": "27",
+      "name": "Build Associations Batch Body",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3820,
+        280
+      ],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const rows = $input.all().map(i => i.json).filter(r => !r._empty);\nreturn [{ json: { inputs: rows } }];"
+      },
+      "notes": "Wraps the current batch's pairs (up to 100) into the v4 batch associations request shape."
     },
     {
       "id": "7",
@@ -176,26 +541,30 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1660,
-        400
+        4060,
+        280
       ],
-      "notes": "v4 batch associations endpoint -- also absent from the native HubSpot node. 120 associations = 2 requests. Auth: generic Header Auth credential -- header 'Authorization', value 'Bearer <HubSpot private-app token>' (portable across n8n versions; the dedicated HubSpot credential types are for the native node).",
       "parameters": {
         "method": "POST",
         "url": "https://api.hubapi.com/crm/v4/associations/contacts/companies/batch/create/default",
         "authentication": "genericCredentialType",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ { \"inputs\": $json.associationPairs || [] } }}",
+        "jsonBody": "={{ { inputs: $json.inputs } }}",
         "options": {},
         "genericAuthType": "httpHeaderAuth"
       },
+      "notes": "v4 batch associations endpoint -- also absent from the native HubSpot node, which has no batch-association operation. ~120-130 associations = 2 requests instead of 120-130. retryOnFail tolerates transient 429/5xx; onError=continueErrorOutput routes a hard failure to the shared failure branch.",
       "credentials": {
         "httpHeaderAuth": {
           "id": "PLACEHOLDER_HUBSPOT_HEADER_AUTH",
           "name": "HubSpot Sandbox (Header Auth: Authorization: Bearer <private-app token>)"
         }
-      }
+      },
+      "onError": "continueErrorOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000
     },
     {
       "id": "8",
@@ -203,16 +572,16 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        1900,
+        4300,
         400
       ],
-      "webhookId": "approve-send-placeholder-0001",
-      "notes": "Pauses the execution. Resumes when a human POSTs the approval decision to this node's resume-webhook URL (n8n shows the exact URL on the node once the workflow is active) -- e.g. from the M2 approval_gate.json review step. Resume webhook accepts POST: the caller (Clay's HTTP-API column, or the approval UI) posts a JSON body, and downstream nodes read it off $json.body. With the default GET the body could never arrive and the Approved? branch would always evaluate false \u2014 found by actually executing the lane.",
       "parameters": {
         "resume": "webhook",
         "options": {},
         "httpMethod": "POST"
-      }
+      },
+      "notes": "Pauses the execution. Resumes when a human POSTs the approval decision to this node's resume-webhook URL (n8n shows the exact URL on the node once the workflow is active) -- e.g. from the M2 approval_gate.json review step. Resume webhook only accepts POST -- see the Approval Gate sticky note; with the default GET the body could never arrive and 'Approved?' would always evaluate false. No mail is dispatched until this happens -- found by actually executing this lane.",
+      "webhookId": "approve-send-placeholder-0001"
     },
     {
       "id": "9",
@@ -220,7 +589,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        2140,
+        4540,
         400
       ],
       "parameters": {
@@ -253,10 +622,9 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2380,
+        4780,
         280
       ],
-      "notes": "HubSpot Single-Send API (transactional/marketing single sends via a published email + token). emailId placeholder must match a published Marketing Email in the target portal. Auth: generic Header Auth credential -- header 'Authorization', value 'Bearer <HubSpot private-app token>' (portable across n8n versions; the dedicated HubSpot credential types are for the native node).",
       "parameters": {
         "method": "POST",
         "url": "https://api.hubapi.com/marketing/v3/transactional/single-email/send",
@@ -267,23 +635,32 @@
         "options": {},
         "genericAuthType": "httpHeaderAuth"
       },
+      "notes": "HubSpot Single-Send API (transactional/marketing single sends via a published email + token). emailId placeholder must match a published Marketing Email in the target portal. retryOnFail tolerates transient 429/5xx; onError=continueErrorOutput routes a hard failure to the shared failure branch -- a silently-failed send is the worst possible failure mode in this whole lane.",
       "credentials": {
         "httpHeaderAuth": {
           "id": "PLACEHOLDER_HUBSPOT_HEADER_AUTH",
           "name": "HubSpot Sandbox (Header Auth: Authorization: Bearer <private-app token>)"
         }
-      }
+      },
+      "onError": "continueErrorOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000
     },
     {
       "id": "11",
-      "name": "Blocked - Not Approved",
-      "type": "n8n-nodes-base.noOp",
-      "typeVersion": 1,
+      "name": "Blocked - Not Approved (Structured)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
-        2380,
+        4780,
         520
       ],
-      "parameters": {}
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "return [{ json: {\n  status: 'blocked',\n  reason: 'human approval was not granted (body.approved was not true)',\n  event_slug: $('Shape M1 Payload').item.json.eventSlug,\n  event_tag: $('Shape M1 Payload').item.json.eventTag,\n  blocked_at: new Date().toISOString()\n} }];"
+      },
+      "notes": "Replaces the original bare NoOp. Shapes a structured, legible reason so the execution log shows exactly why nothing was sent, instead of an empty no-op node a reviewer has to guess about. Deliberately does not error/stop -- 'not approved' is an expected outcome, not a failure."
     },
     {
       "id": "12",
@@ -291,10 +668,9 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        2620,
+        5020,
         280
       ],
-      "disabled": true,
       "parameters": {
         "chatId": "REPLACE_WITH_CHAT_ID",
         "text": "=Post-event engine run complete for {{ $('Shape M1 Payload').item.json.eventSlug }}. Comms sent, dashboard ready for review.",
@@ -305,7 +681,67 @@
           "id": "PLACEHOLDER_TELEGRAM_BOT_CRED",
           "name": "Telegram Bot (placeholder)"
         }
-      }
+      },
+      "disabled": true
+    },
+    {
+      "id": "28",
+      "name": "Shape Error Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2620,
+        980
+      ],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const item = $input.first();\nconst err = item.json.error || item.json;\nreturn [{ json: {\n  status: 'error',\n  failing_node: $prevNode?.name || 'unknown',\n  message: (err && (err.message || err.description)) || JSON.stringify(err).slice(0, 500),\n  event_slug: ($('Shape M1 Payload').first()?.json?.eventSlug) || 'unknown-event',\n  execution_id: $execution.id,\n  failed_at: new Date().toISOString()\n} }];"
+      },
+      "notes": "Fan-in point for every node's error output (Check Already Processed, both HubSpot batch upserts, Associate Contacts to Companies, HubSpot Single Send). Shapes a single structured error object regardless of which node failed, so 'Notify Team of Failure' and 'Stop with Clear Error' don't need per-node branching logic."
+    },
+    {
+      "id": "29",
+      "name": "Notify Team of Failure",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.2,
+      "position": [
+        2860,
+        980
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "post",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "PLACEHOLDER_SLACK_CHANNEL_ID",
+          "mode": "id"
+        },
+        "text": "=Post-event engine FAILED on {{ $json.failing_node }} for {{ $json.event_slug }}: {{ $json.message }} (execution {{ $json.execution_id }})",
+        "otherOptions": {}
+      },
+      "notes": "Disabled by default so it cannot fire unwired -- enable once PLACEHOLDER_SLACK_CRED and the channel id are wired. Slack chosen over Gmail as the lower-latency channel for an on-call GTM engineer; swap for n8n-nodes-base.gmail if the team prefers email.",
+      "credentials": {
+        "slackApi": {
+          "id": "PLACEHOLDER_SLACK_CRED",
+          "name": "Slack Bot (placeholder)"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "id": "30",
+      "name": "Stop with Clear Error",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        3100,
+        980
+      ],
+      "parameters": {
+        "errorMessage": "=Post-event engine failed on {{ $json.failing_node }} for {{ $json.event_slug }}: {{ $json.message }}"
+      },
+      "notes": "Fails the execution with a human-readable message (visible in the n8n executions list and picked up by error-handler.json via settings.errorWorkflow) instead of the run quietly ending after the Slack notify. This is the terminal node of the failure branch."
     }
   ],
   "connections": {
@@ -324,7 +760,43 @@
       "main": [
         [
           {
+            "node": "Check Already Processed (HubSpot Search)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Already Processed (HubSpot Search)": {
+      "main": [
+        [
+          {
+            "node": "Already Processed?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Shape Error Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Already Processed?": {
+      "main": [
+        [
+          {
             "node": "Push to Clay Table",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Already Processed - Skipping",
             "type": "main",
             "index": 0
           }
@@ -357,12 +829,121 @@
       "main": [
         [
           {
-            "node": "HubSpot Upsert Contacts",
+            "node": "Split Companies to Items",
             "type": "main",
             "index": 0
           },
           {
+            "node": "Split Contacts to Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Companies to Items": {
+      "main": [
+        [
+          {
+            "node": "Batch Companies (100)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Batch Companies (100)": {
+      "main": [
+        [
+          {
+            "node": "Merge Contact + Company Results",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Companies Batch Body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Companies Batch Body": {
+      "main": [
+        [
+          {
             "node": "HubSpot Upsert Companies",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HubSpot Upsert Companies": {
+      "main": [
+        [
+          {
+            "node": "Flatten Company Results",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Shape Error Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Flatten Company Results": {
+      "main": [
+        [
+          {
+            "node": "Batch Companies (100)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Contacts to Items": {
+      "main": [
+        [
+          {
+            "node": "Batch Contacts (100)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Batch Contacts (100)": {
+      "main": [
+        [
+          {
+            "node": "Merge Contact + Company Results",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "Build Contacts Batch Body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Contacts Batch Body": {
+      "main": [
+        [
+          {
+            "node": "HubSpot Upsert Contacts",
             "type": "main",
             "index": 0
           }
@@ -373,14 +954,72 @@
       "main": [
         [
           {
-            "node": "Associate Contacts to Companies",
+            "node": "Flatten Contact Results",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Shape Error Payload",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "HubSpot Upsert Companies": {
+    "Flatten Contact Results": {
+      "main": [
+        [
+          {
+            "node": "Batch Contacts (100)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Contact + Company Results": {
+      "main": [
+        [
+          {
+            "node": "Build Association Pairs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Association Pairs": {
+      "main": [
+        [
+          {
+            "node": "Batch Associations (100)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Batch Associations (100)": {
+      "main": [
+        [
+          {
+            "node": "Wait for Human Approval",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Associations Batch Body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Associations Batch Body": {
       "main": [
         [
           {
@@ -395,7 +1034,14 @@
       "main": [
         [
           {
-            "node": "Wait for Human Approval",
+            "node": "Batch Associations (100)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Shape Error Payload",
             "type": "main",
             "index": 0
           }
@@ -424,7 +1070,7 @@
         ],
         [
           {
-            "node": "Blocked - Not Approved",
+            "node": "Blocked - Not Approved (Structured)",
             "type": "main",
             "index": 0
           }
@@ -439,11 +1085,41 @@
             "type": "main",
             "index": 0
           }
+        ],
+        [
+          {
+            "node": "Shape Error Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Shape Error Payload": {
+      "main": [
+        [
+          {
+            "node": "Notify Team of Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Team of Failure": {
+      "main": [
+        [
+          {
+            "node": "Stop with Clear Error",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     }
   },
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "errorWorkflow": "PLACEHOLDER_ERROR_HANDLER_WORKFLOW_ID"
   }
 }

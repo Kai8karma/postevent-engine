@@ -112,7 +112,7 @@
         920,
         400
       ],
-      "notes": "Generic HTTP: the engine's public API has no native n8n node. GET returns {ok, live_available, model_chain, modules} per api/run.py's build_get_response(). onError=continueErrorOutput so a fully-down deployment (DNS/connect/timeout failure) routes to the StopAndError branch below with a legible message instead of the whole execution just red-X'ing with a raw HTTP-node error.",
+      "notes": "Generic HTTP: the engine's public API has no native n8n node. GET returns {ok, repo_root_ok, live_available, model_chain, modules, error?} per api/run.py's build_get_response() -- ok now equals repo_root_ok (real deployment health), not a hardcoded true; error is only present when repo_root_ok is false. Does not pass ?probe=1 -- that opts into a live OpenRouter ping and this health check should stay free/cheap on every run. onError=continueErrorOutput so a fully-down deployment (DNS/connect/timeout failure) routes to the StopAndError branch below with a legible message instead of the whole execution just red-X'ing with a raw HTTP-node error.",
       "parameters": {
         "method": "GET",
         "url": "https://postevent-engine.vercel.app/api/run",
@@ -134,7 +134,7 @@
         1160,
         400
       ],
-      "notes": "Gates on ok only, deliberately not on live_available too: live_available reflects whether the deployment has an OPENROUTER_API_KEY configured, which this demo lane doesn't need -- every module call below is sent with live:false-by-default and api/run.py itself falls back to the offline lane gracefully even if live:true is requested without a key. Gating on live_available would fail a perfectly healthy, correctly-running demo deployment. live_available is still surfaced in the final response (see 'Merge Module Summaries') for a reviewer's visibility.",
+      "notes": "Gates on ok only, deliberately not on live_available too: live_available reflects whether the deployment has an OPENROUTER_API_KEY configured, which this demo lane doesn't need -- every module call below is sent with live:false-by-default and api/run.py itself falls back to the offline lane gracefully even if live:true is requested without a key. Gating on live_available would fail a perfectly healthy, correctly-running demo deployment. live_available is still surfaced in the final response (see 'Merge Module Summaries') for a reviewer's visibility. The false branch below is reachable now (api/run.py's build_get_response() previously hardcoded ok:true unconditionally, which made this a dead branch even under REPO_ROOT_ERROR -- fixed: ok is now repo_root_ok, i.e. real deployment health, not a constant). See the new repo_root_ok / error fields on this same response for the detail behind a false.",
       "parameters": {
         "conditions": {
           "options": {
@@ -183,7 +183,7 @@
         1400,
         400
       ],
-      "notes": "Generic HTTP: engine's public API has no native n8n node. Summary keys per api/run.py summarize_m1(): input_rows, output_rows, duplicates_merged, excluded_rows, contact_completeness_pct, company_completeness_pct, tier1/2/3, llm_batches, llm_rows_patched. onError=continueErrorOutput catches transport-level failure only -- a graceful API-level failure (HTTP 200, body ok:false) lands on THIS node's success output instead and is caught later in 'Merge Module Summaries', since api/run.py always answers 200.",
+      "notes": "Generic HTTP: engine's public API has no native n8n node. Summary keys per api/run.py summarize_m1(): input_rows, output_rows, duplicates_merged, excluded_rows, contact_completeness_pct, company_completeness_pct, tier1/2/3, llm_calls_made, llm_rows_patched. This request always sends live:false-by-default (see jsonBody) for this demo lane, so the top-level 'lane' field on the response is always 'offline' here -- api/run.py's live/degraded distinction (lane:'live' vs lane:'degraded' when a --live request silently fell back to the rule table) only applies when a caller sets live:true, which the production lane (master.json) exercises, not this demo lane. onError=continueErrorOutput catches transport-level failure only -- a graceful API-level failure (HTTP 200, body ok:false) lands on THIS node's success output instead and is caught later in 'Merge Module Summaries', since api/run.py always answers 200.",
       "parameters": {
         "method": "POST",
         "url": "https://postevent-engine.vercel.app/api/run",
@@ -208,7 +208,7 @@
         1640,
         400
       ],
-      "notes": "Expresses the brief's own acceptance bar (contact_completeness_pct >= 90) as a workflow branch, not just a number buried in a report. Both branches reconverge on M2 -- this flags a below-bar run for a reviewer without dead-ending the demo (the workflow's whole point is to complete green end to end).",
+      "notes": "Expresses the brief's own acceptance bar (contact_completeness_pct >= 90) as a workflow branch, not just a number buried in a report. Both branches reconverge on M2 -- this flags a below-bar run for a reviewer without dead-ending the demo (the workflow's whole point is to complete green end to end). Guarded: M1's success output also carries a graceful {ok:false} body (HTTP 200, no summary key -- see 'M1 — Enrichment' node's notes), and reading .contact_completeness_pct off a missing summary would throw and red out the whole execution. The expression below falls back to -1 (always < 90) in that case, so an M1-level failure routes to the same below-bar branch instead of crashing the node -- 'Flag: Below SDR-Handoff Bar' downstream is guarded the same way and reports the real error/hint text when summary is missing.",
       "parameters": {
         "conditions": {
           "options": {
@@ -219,7 +219,7 @@
           "conditions": [
             {
               "id": "cond-completeness",
-              "leftValue": "={{ $json.summary.contact_completeness_pct }}",
+              "leftValue": "={{ $json.summary ? $json.summary.contact_completeness_pct : -1 }}",
               "rightValue": 90,
               "operator": {
                 "type": "number",
@@ -241,7 +241,7 @@
         1880,
         700
       ],
-      "notes": "Purely a visual/log flag for this execution path -- the actual pass/fail number the final response reports is recomputed independently from M1's own summary in 'Merge Module Summaries', so this branch never needs to be read back downstream.",
+      "notes": "Purely a visual/log flag for this execution path -- the actual pass/fail number the final response reports is recomputed independently from M1's own summary in 'Merge Module Summaries', so this branch never needs to be read back downstream. Guarded the same way as the IF node upstream: reads $json.error/.hint instead of $json.summary.contact_completeness_pct when M1 returned a graceful {ok:false} (no summary key), so an M1 failure produces a legible flag message instead of throwing here.",
       "parameters": {
         "mode": "manual",
         "assignments": {
@@ -250,7 +250,7 @@
               "id": "a-flag",
               "name": "handoff_flag",
               "type": "string",
-              "value": "={{ 'below 90% SDR-handoff bar: ' + $json.summary.contact_completeness_pct + '% contact completeness (see M1 summary in the final response)' }}"
+              "value": "={{ $json.summary ? ('below 90% SDR-handoff bar: ' + $json.summary.contact_completeness_pct + '% contact completeness (see M1 summary in the final response)') : ('m1 reported ok:false -- ' + ($json.error || 'unknown error') + ' (see hint in the final response)') }}"
             }
           ]
         },
@@ -346,7 +346,7 @@
       "notes": "Shared handler for all four module HTTP nodes' error outputs (transport-level failures only -- network error, timeout, non-2xx; api/run.py's own graceful ok:false failures land on the SUCCESS output instead and are caught in 'Merge Module Summaries'). $prevNode.name identifies which of the four calls actually failed, since only one of the four connections into this node fires per execution.",
       "parameters": {
         "language": "javaScript",
-        "jsCode": "const raw = $input.item.json;\nconst NODE_TO_MODULE = {\n  'M1 — Enrichment': 'm1',\n  'M2 — Comms': 'm2',\n  'M3 — Repurpose': 'm3',\n  'M4 — Dashboard': 'm4',\n};\nconst failedModule = NODE_TO_MODULE[$prevNode.name] || $prevNode.name;\nconst errMsg = (typeof raw.error === 'string')\n  ? raw.error\n  : (raw.error && raw.error.message) || raw.message || JSON.stringify(raw).slice(0, 300);\n\nreturn [{\n  json: {\n    ok: false,\n    module: failedModule,\n    error: errMsg,\n    hint: `HTTP-level failure calling POST ${'https://postevent-engine.vercel.app/api/run'} for module=${failedModule} `\n      + '(network error, timeout, or non-2xx). retryOnFail already retried before this fired.',\n    log: [],\n    run_key: $('Derive Run Key').item.json.run_key,\n    event_name: $('Derive Run Key').item.json.event_name,\n  }\n}];"
+        "jsCode": "const raw = $input.item.json;\nconst NODE_TO_MODULE = {\n  'M1 — Enrichment': 'm1',\n  'M2 — Comms': 'm2',\n  'M3 — Repurpose': 'm3',\n  'M4 — Dashboard': 'm4',\n};\nconst failedModule = NODE_TO_MODULE[$prevNode.name] || $prevNode.name;\nconst errMsg = (typeof raw.error === 'string')\n  ? raw.error\n  : (raw.error && raw.error.message) || raw.message || JSON.stringify(raw).slice(0, 300);\n\nreturn [{\n  json: {\n    ok: false,\n    module: failedModule,\n    error: errMsg,\n    hint: 'HTTP-level failure calling POST https://postevent-engine.vercel.app/api/run for module=' + failedModule\n      + ' (network error, timeout, or non-2xx). retryOnFail already retried before this fired.',\n    log: [],\n    run_key: $('Derive Run Key').item.json.run_key,\n    event_name: $('Derive Run Key').item.json.event_name,\n  }\n}];"
       }
     },
     {
