@@ -110,7 +110,21 @@ function extractParagraphsFromText(text) {
       if (Array.isArray(parsed.paragraphs) && parsed.paragraphs.length) {
         return parsed.paragraphs.map((p) => String(p).trim()).filter(Boolean);
       }
-    } catch (e) { /* fall through to plain-text split */ }
+    } catch (e) { /* fall through to truncation salvage, then plain-text split */ }
+  }
+  // Truncation salvage: a completion cut off at max_tokens leaves unclosed
+  // JSON that the strict parse above rejects. If the text still declares a
+  // "paragraphs" array, recover its complete string literals instead of
+  // rendering the raw JSON blob as narrative text (observed live 2026-08-24).
+  if (text.includes('"paragraphs"')) {
+    const salvaged = [];
+    const re = /"((?:[^"\\]|\\.){80,})"/g;
+    let m;
+    while ((m = re.exec(text)) !== null) {
+      try { salvaged.push(JSON.parse('"' + m[1] + '"').trim()); }
+      catch (e) { /* skip literals with bad escapes */ }
+    }
+    if (salvaged.length) return salvaged;
   }
   const paras = text.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
   if (!paras.length) throw new Error("could not parse narrative paragraphs");
@@ -130,14 +144,12 @@ function callOpenRouterModel(apiKey, model, content) {
     model: model,
     messages: [{ role: "user", content: content }],
     temperature: 0.2,
-    // Matches callAnthropic's own budget (700) with a little headroom for
-    // JSON-wrapping overhead -- was 4000, which is a lot more than a
-    // two-paragraph answer ever needs. Found live: OpenRouter rejects the
-    // whole request with a 402 if the account can't afford max_tokens even
-    // when it clearly has SOME balance ("requested up to 4000 tokens, but
-    // can only afford 1672"), so an oversized ceiling here can fail a call
-    // the account could otherwise easily pay for.
-    max_tokens: 800,
+    // Was 4000 (402-risk: OpenRouter rejects requests the account can't
+    // afford at max_tokens, observed at 1672 affordable), then 800 — which
+    // the free nemotron chain overflowed live on 2026-08-24, truncating the
+    // JSON mid-paragraph and breaking the strict parse. 1600 fits two
+    // paragraphs + JSON overhead and stays under the observed afford line.
+    max_tokens: 1600,
   });
 
   const options = {
