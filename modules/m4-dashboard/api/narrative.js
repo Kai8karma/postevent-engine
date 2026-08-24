@@ -139,7 +139,7 @@ function extractParagraphs(anthropicResponse) {
 
 // --- OpenRouter fallback (used when ANTHROPIC_API_KEY is unset) ---
 
-function callOpenRouterModel(apiKey, model, content) {
+function callOpenRouterModel(apiKey, model, content, maxTokens) {
   const payload = JSON.stringify({
     model: model,
     messages: [{ role: "user", content: content }],
@@ -149,7 +149,9 @@ function callOpenRouterModel(apiKey, model, content) {
     // the free nemotron chain overflowed live on 2026-08-24, truncating the
     // JSON mid-paragraph and breaking the strict parse. 1600 fits two
     // paragraphs + JSON overhead and stays under the observed afford line.
-    max_tokens: 1600,
+    // callOpenRouter may retry once with a smaller, affordability-clamped
+    // value parsed from a 402 body ("can only afford N") — see below.
+    max_tokens: maxTokens || 1600,
   });
 
   const options = {
@@ -211,17 +213,75 @@ function openrouterModelsToTry() {
   return OPENROUTER_MODEL_FALLBACKS.slice();
 }
 
+// A 402 body states exactly how many tokens the account can still afford
+// ("You requested up to 1600 tokens, but can only afford 285"). Below
+// MIN_USEFUL_TOKENS a two-paragraph answer would truncate into unparseable
+// JSON, so we don't bother retrying under that floor.
+const MIN_USEFUL_TOKENS = 450;
+
+function affordableFrom402(message) {
+  const m = /can only afford (\d+)/.exec(String(message || ""));
+  return m ? parseInt(m[1], 10) : null;
+}
+
 async function callOpenRouter(apiKey, content) {
   let lastErr = null;
   for (const model of openrouterModelsToTry()) {
     try {
       return await callOpenRouterModel(apiKey, model, content);
     } catch (e) {
-      if (e.isModelError) { lastErr = e; continue; }
+      // Quota-aware retry: a 402 names the affordable token count. If it's
+      // still enough for a real answer, retry this model once with the
+      // clamped ceiling instead of failing the whole chain.
+      const affordable = affordableFrom402(e && e.message);
+      if (affordable !== null && affordable - 64 >= MIN_USEFUL_TOKENS) {
+        try {
+          return await callOpenRouterModel(apiKey, model, content, affordable - 64);
+        } catch (e2) {
+          lastErr = e2;
+          continue;
+        }
+      }
+      if (e.isModelError || affordable !== null) { lastErr = e; continue; }
       throw e;
     }
   }
   throw lastErr || new Error("openrouter: no candidate models available");
+}
+
+// --- Deterministic fallback: composed from the caller's own numbers, no
+// model involved. Runs when every LLM lane fails (quota, network, parse).
+// Honest by construction: every figure comes straight from the payload the
+// dashboard sent, and the client labels the result as deterministic.
+
+function deterministicNarrative(stats) {
+  const s = (stats && (stats.summary || stats)) || {};
+  const sentences1 = [];
+  if (s.total_attendees !== undefined && s.attendee_to_mql_pct !== undefined) {
+    sentences1.push("Of " + s.total_attendees + " attendees, " + s.attendee_to_mql_pct + "% have converted to MQL or beyond.");
+  } else if (s.total_attendees !== undefined) {
+    sentences1.push(s.total_attendees + " attendees are being tracked for this event.");
+  }
+  const w = s.windows || {};
+  const windowKeys = Object.keys(w);
+  if (windowKeys.length) {
+    const parts = windowKeys.sort((a, b) => Number(a) - Number(b)).map((k) => w[k] + " within " + k + " days");
+    sentences1.push("Lifecycle movement: " + parts.join(", ") + ".");
+  }
+  const sentences2 = [];
+  const anomalies = (stats && stats.anomalies) || [];
+  if (anomalies.length) {
+    sentences2.push(anomalies.length + " engagement anomal" + (anomalies.length === 1 ? "y" : "ies") + " flagged by the deterministic detector — see the anomaly cards above for the specifics.");
+  } else {
+    sentences2.push("No engagement anomalies are flagged in the current data.");
+  }
+  const tops = (stats && stats.top_accounts) || [];
+  if (tops.length) {
+    sentences2.push("Top engaged accounts are listed in the table above; review the highest-scored rows for buying-committee coverage.");
+  }
+  sentences2.push("This summary was composed deterministically from the dashboard's own figures because the live AI lane was unavailable at load time.");
+  const p1 = sentences1.join(" ") || "Dashboard figures are shown above; no summary statistics were included in this request.";
+  return [p1, sentences2.join(" ")];
 }
 
 module.exports = async (req, res) => {
@@ -237,8 +297,9 @@ module.exports = async (req, res) => {
     return;
   }
 
+  let stats = {};
   try {
-    const stats = req.method === "POST" ? await readBody(req) : (req.query || {});
+    stats = req.method === "POST" ? await readBody(req) : (req.query || {});
     const prompt = "Dashboard stats:\n" + JSON.stringify(stats, null, 2);
     let paragraphs;
     if (apiKey) {
@@ -254,6 +315,17 @@ module.exports = async (req, res) => {
       source: "live",
     });
   } catch (err) {
-    res.status(502).json({ error: String((err && err.message) || err) });
+    // Every LLM lane failed (quota 402s, network, unparseable output).
+    // Respond 200 with a deterministic summary built from the caller's own
+    // numbers rather than 502-ing the page into a stale baked cache: the
+    // figures stay current even when no model is reachable, and the client
+    // shows a distinct "deterministic" badge. llm_error keeps the real
+    // failure visible for anyone who curls the endpoint.
+    res.status(200).json({
+      paragraphs: deterministicNarrative(stats),
+      generated_at: new Date().toISOString(),
+      source: "deterministic",
+      llm_error: String((err && err.message) || err).slice(0, 300),
+    });
   }
 };

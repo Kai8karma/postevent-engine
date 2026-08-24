@@ -147,6 +147,7 @@
   }
   .source-badge .dot{width:6px;height:6px;border-radius:50%;}
   .source-badge.live .dot{background:var(--good);}
+  .source-badge.deterministic .dot{background:var(--accent);}
   .source-badge.cached .dot{background:var(--warn);}
   .source-badge.loading .dot{background:var(--text-muted);}
   .narrative-body p{font-size:14px;line-height:1.65;margin:0 0 12px;}
@@ -472,8 +473,9 @@
     var badge = document.getElementById('narrative-badge');
     var text = document.getElementById('narrative-badge-text');
     badge.className = 'source-badge ' + source;
-    text.textContent = (source === 'live' ? 'Live narrative' : 'Cached narrative') +
-      ' · ' + fmtDate(generatedAt);
+    text.textContent = (source === 'live' ? 'Live narrative'
+      : source === 'deterministic' ? 'Deterministic summary (AI lane unavailable)'
+      : 'Cached narrative') + ' · ' + fmtDate(generatedAt);
   }
 
   function summaryPayload(){
@@ -542,7 +544,7 @@
       })
       .then(function(json){
         if(!json || !json.paragraphs || !json.paragraphs.length){ throw new Error('empty narrative response'); }
-        renderNarrative(json.paragraphs, 'live', json.generated_at || new Date().toISOString());
+        renderNarrative(json.paragraphs, json.source === 'deterministic' ? 'deterministic' : 'live', json.generated_at || new Date().toISOString());
       })
       .catch(function(err){
         clearTimeout(timer);

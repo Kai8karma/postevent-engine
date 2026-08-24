@@ -147,6 +147,7 @@
   }
   .source-badge .dot{width:6px;height:6px;border-radius:50%;}
   .source-badge.live .dot{background:var(--good);}
+  .source-badge.deterministic .dot{background:var(--accent);}
   .source-badge.cached .dot{background:var(--warn);}
   .source-badge.loading .dot{background:var(--text-muted);}
   .narrative-body p{font-size:14px;line-height:1.65;margin:0 0 12px;}
@@ -258,7 +259,7 @@
 <footer id="source-footer">Post-Event Engine &middot; Module 4</footer>
 
 <script type="application/json" id="dashboard-data">{
-  "generated_at": "2026-08-24T23:53:02.569619",
+  "generated_at": "2026-08-25T01:22:55.746443",
   "as_of": "2026-08-19T21:50:00",
   "event": {
     "name": "Pipeline After the Webinar: Turning Event Engagement into Revenue",
@@ -682,16 +683,16 @@
       "score": 29.0
     },
     {
-      "email": "hivanova@palmettosaasgroup.com",
-      "name": "Hannah Ivanova",
-      "title": "VP Marketing",
+      "email": "isabel.mahajan@gmail.com",
+      "name": "Isabel Mahajan",
+      "title": "Marketing Manager",
       "lifecyclestage": "subscriber",
       "score": 27.0
     },
     {
-      "email": "isabel.mahajan@gmail.com",
-      "name": "Isabel Mahajan",
-      "title": "Marketing Manager",
+      "email": "hivanova@palmettosaasgroup.com",
+      "name": "Hannah Ivanova",
+      "title": "VP Marketing",
       "lifecyclestage": "subscriber",
       "score": 27.0
     },
@@ -1301,8 +1302,9 @@
     var badge = document.getElementById('narrative-badge');
     var text = document.getElementById('narrative-badge-text');
     badge.className = 'source-badge ' + source;
-    text.textContent = (source === 'live' ? 'Live narrative' : 'Cached narrative') +
-      ' · ' + fmtDate(generatedAt);
+    text.textContent = (source === 'live' ? 'Live narrative'
+      : source === 'deterministic' ? 'Deterministic summary (AI lane unavailable)'
+      : 'Cached narrative') + ' · ' + fmtDate(generatedAt);
   }
 
   function summaryPayload(){
@@ -1371,7 +1373,7 @@
       })
       .then(function(json){
         if(!json || !json.paragraphs || !json.paragraphs.length){ throw new Error('empty narrative response'); }
-        renderNarrative(json.paragraphs, 'live', json.generated_at || new Date().toISOString());
+        renderNarrative(json.paragraphs, json.source === 'deterministic' ? 'deterministic' : 'live', json.generated_at || new Date().toISOString());
       })
       .catch(function(err){
         clearTimeout(timer);
