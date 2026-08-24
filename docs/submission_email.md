@@ -1,5 +1,12 @@
 ---
-status: pending_human_approval
+status: sent
+sent_at: 2026-08-23
+correction: >-
+  2026-08-24: one claim in this email is wrong and is corrected here rather than
+  by a follow-up. The closing line said this email was drafted by Module 2's own
+  comms pipeline — it was not; it was hand-written. Module 2's generate-then-approve
+  pattern is real for the three webinar segments it actually covers (attendee,
+  no-show, speaker), and nothing else in the repo claims otherwise.
 to: "Mehndi Zaveri (Darwinbox) — reply in-thread to her assignment email"
 subject: "Working prototype — AI-led post-event automation (Kshitij Mishra)"
 ---

@@ -165,20 +165,28 @@ blank `company_domain`, just with no Company object to associate to.
 ## 8. UTM taxonomy
 
 Canonical parameter set, defined once in `with_utm()`
-([`modules/m2-comms/comms.py`](../modules/m2-comms/comms.py) line 348) and
-applied to every M2 email link today. **As of this write-up, M3's asset
-links (recording URL, resource links in blog/social/YouTube copy) do not
-yet call `with_utm()`** — `modules/m3-repurpose/repurpose.py` has no
-`utm_` references. The parameter set below is the one M3 should adopt when
-that lands, so a click on a repurposed asset attributes back through the
-same UTM shape M2's emails use rather than a parallel scheme; check
-`repurpose.py` directly before relying on M3 emitting these today:
+([`shared/utm.py`](../shared/utm.py)) and imported by both M2
+(`modules/m2-comms/comms.py`) and M3 (`modules/m3-repurpose/repurpose.py`)
+— unified 2026-08-24; each module previously carried its own copy (M2's
+hardcoded `utm_source=webinar`/`utm_medium=email`, M3's already took
+explicit args) and had drifted into two signatures. Both modules now call
+the same function with explicit `utm_source`/`utm_medium` per call site —
+M2 always passes `webinar`/`email` (its only channel, defined as
+`UTM_SOURCE`/`UTM_MEDIUM` constants in `comms.py`); M3 varies them per
+asset/channel (`CHANNEL_UTM` for blog/YouTube, `SOCIAL_PLATFORM_UTM` per
+social platform — see `modules/m3-repurpose/README.md`'s UTM table for the
+full per-asset breakdown). `repurpose.py` has 20+ `utm_`-related lines
+(`with_utm` import, `add_utm_links()`, `_tag_social()`) — M3's asset links
+(recording URL, resource links in blog/social/YouTube copy) call
+`with_utm()` on every run, `--live` and offline alike; `infographic.md` is
+the one asset deliberately left untagged (its CTA is a design mockup, not a
+publishable link).
 
 | Param | Value | Notes |
 |---|---|---|
-| `utm_source` | `webinar` | fixed |
-| `utm_medium` | `email` | fixed — set even on non-email assets, since the link originates from the webinar's comms/content package, not paid/organic |
-| `utm_campaign` | `campaign_slug(event)` — `{slugified event name}-{date}`, e.g. `pipeline-after-the-webinar-2026-07-20` | one campaign per event |
+| `utm_source` | `webinar` for every M2 email; per-asset for M3 (`blog`, `youtube`, `linkedin`, `x`) | fixed per module/channel, not globally fixed |
+| `utm_medium` | `email` for M2; per-asset for M3 (`content`, `video`, `social`) | same — fixed per channel, not globally fixed |
+| `utm_campaign` | `campaign_slug(event)` — `{slugified event name}-{date}`, e.g. `pipeline-after-the-webinar-2026-07-20` | one campaign per event, identical slug logic in both modules so M2 and M3 links roll into the same campaign |
 | `utm_content` | segment/variant identifier, e.g. `speaker-a`/`speaker-b` for A/B subject lines, or an asset-specific slug for M3 content | distinguishes which specific send/asset a click came from |
 
 ## 9. What's not covered here

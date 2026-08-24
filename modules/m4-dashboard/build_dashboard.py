@@ -7,10 +7,14 @@ committee map, 7/14/30-day lifecycle movement, and two anomaly callouts.
 Embeds the computed data as a JSON block into template.html and writes the
 result as index.html in --out.
 
-Python 3 stdlib only. Zero network calls by default -- optional exception is
---hubspot, which reads live contacts from HubSpot instead of --enriched's CSV
-(same Bearer-token idiom as modules/m1-enrichment/push_to_hubspot.py), and
-degrades to the CSV on any failure. See load_contacts_from_hubspot() below.
+Python 3 stdlib only. Zero network calls by default -- optional exceptions are
+--hubspot, which reads live contacts from HubSpot instead of --enriched's CSV,
+and --hubspot-engagement, which reads live email/note/meeting engagement
+events from HubSpot instead of --engagement's fixture (same Bearer-token
+idiom as modules/m1-enrichment/push_to_hubspot.py); both degrade to the local
+file on any failure. See resolve_contacts() / resolve_engagement() below.
+The output JSON's `engagement_source` field ("hubspot_live" | "fixture")
+records which one actually produced a given build's engagement events.
 
 AI BOUNDARY (read this before changing anomaly/scoring math): every number
 in this file -- funnel counts, completeness percentages, account/contact
@@ -32,6 +36,8 @@ Usage:
         --engagement engagement.json --segments segments.json --out dist/
     python3 build_dashboard.py --hubspot --enriched hubspot_ready.csv \
         --engagement engagement.json --segments segments.json --out dist/
+    python3 build_dashboard.py --hubspot --hubspot-engagement --enriched hubspot_ready.csv \
+        --engagement engagement.json --segments segments.json --out dist/
 """
 import argparse
 import csv
@@ -43,7 +49,7 @@ import sys
 import urllib.error
 import urllib.request
 from collections import Counter, defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 MODULE_DIR = Path(__file__).resolve().parent
@@ -395,6 +401,235 @@ def resolve_contacts(enriched_path, event_identity, fixture_rows):
 
 
 # --------------------------------------------------------------------------
+# --hubspot-engagement: live post-event activity read-back (opt-in; zero
+# network by default). Only replaces engagement.json's `events` array --
+# `lifecycle_changes` always comes from --engagement (real lifecycle-stage
+# history is a CRM property-history read, a different, unbuilt feature; see
+# resolve_engagement()'s docstring). Falls back to the --engagement fixture
+# on no token, network error, or zero results -- same contract as
+# resolve_contacts() above.
+# --------------------------------------------------------------------------
+
+# Properties this pipeline actually writes/reads per engagement object.
+# emails: push_to_hubspot.py's run_log_emails() only ever creates
+# hs_email_status=SENT (no real send/open/click tracking API is called --
+# see modules/m2-comms/hubspot_wiring.md §0/§5), so a live email engagement
+# always maps to type "sent", never "open"/"click"/"pageview"/"form_fill" --
+# WEIGHTS.get("sent", 0) below correctly scores that as 0 rather than
+# fabricating a click/open that never happened. notes/meetings are read too
+# (nothing in this repo creates them today, so they will be empty in
+# practice, but the read path is real and not a stub).
+HUBSPOT_ENGAGEMENT_TYPES = {
+    "emails": ["hs_timestamp", "hs_email_subject", "hs_email_status"],
+    "notes": ["hs_timestamp", "hs_note_body"],
+    "meetings": ["hs_timestamp", "hs_meeting_title", "hs_meeting_start_time"],
+}
+HUBSPOT_ASSOC_CHUNK = 100
+HUBSPOT_BATCH_READ_CHUNK = 100
+
+
+def hubspot_batch_read(token, obj_type, ids, properties):
+    """POST /crm/v3/objects/{obj_type}/batch/read, chunked. Returns
+    (id -> properties dict, error_or_None)."""
+    out = {}
+    for i in range(0, len(ids), HUBSPOT_BATCH_READ_CHUNK):
+        chunk = ids[i:i + HUBSPOT_BATCH_READ_CHUNK]
+        body = {"properties": properties, "inputs": [{"id": oid} for oid in chunk]}
+        req = urllib.request.Request(
+            f"{HUBSPOT_API_BASE}/crm/v3/objects/{obj_type}/batch/read",
+            data=json.dumps(body).encode("utf-8"), method="POST",
+            headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                parsed = json.loads(resp.read())
+        except urllib.error.HTTPError as e:
+            return None, f"HubSpot {obj_type} batch/read HTTP {e.code}: {e.read().decode('utf-8', 'replace')[:300]}"
+        except urllib.error.URLError as e:
+            return None, f"HubSpot {obj_type} batch/read network error: {e}"
+        for result in parsed.get("results", []):
+            out[result["id"]] = result.get("properties", {}) or {}
+    return out, None
+
+
+def hubspot_associated_ids(token, contact_ids, to_object_type):
+    """POST /crm/v4/associations/contacts/{to_object_type}/batch/read,
+    chunked. Returns (contact_id -> [associated_object_id, ...], error)."""
+    out = {}
+    for i in range(0, len(contact_ids), HUBSPOT_ASSOC_CHUNK):
+        chunk = contact_ids[i:i + HUBSPOT_ASSOC_CHUNK]
+        body = {"inputs": [{"id": cid} for cid in chunk]}
+        req = urllib.request.Request(
+            f"{HUBSPOT_API_BASE}/crm/v4/associations/contacts/{to_object_type}/batch/read",
+            data=json.dumps(body).encode("utf-8"), method="POST",
+            headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                parsed = json.loads(resp.read())
+        except urllib.error.HTTPError as e:
+            return None, f"HubSpot contacts->{to_object_type} associations HTTP {e.code}: {e.read().decode('utf-8', 'replace')[:300]}"
+        except urllib.error.URLError as e:
+            return None, f"HubSpot contacts->{to_object_type} associations network error: {e}"
+        for result in parsed.get("results", []):
+            from_id = result.get("from", {}).get("id")
+            to_ids = [t.get("toObjectId") or t.get("id") for t in result.get("to", [])]
+            if from_id:
+                out.setdefault(from_id, []).extend(str(t) for t in to_ids if t)
+    return out, None
+
+
+def normalize_hubspot_ts(ts: str) -> str:
+    """HubSpot's hs_timestamp/hs_meeting_start_time properties come back as
+    offset-aware ISO 8601 (millisecond precision, trailing 'Z'/UTC);
+    engagement.json's fixture timestamps are offset-naive, second-precision
+    local-format strings. build()'s parse_ts()/max(all_ts) mixes whatever
+    this returns with fixture timestamps in the same list -- comparing an
+    aware and a naive datetime raises TypeError (observed live), so this
+    normalizes to the fixture's naive/second-precision shape (UTC, tzinfo
+    stripped) before anything downstream ever sees it."""
+    try:
+        dt = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+        if dt.tzinfo is not None:
+            dt = dt.astimezone(timezone.utc).replace(tzinfo=None)
+        return dt.isoformat(timespec="seconds")
+    except ValueError:
+        return ts
+
+
+def emails_to_events(email_props: dict) -> list:
+    events = []
+    for props in email_props.values():
+        ts = props.get("hs_timestamp")
+        if not ts:
+            continue
+        status = (props.get("hs_email_status") or "sent").lower()
+        subject = props.get("hs_email_subject") or "(email)"
+        events.append({"type": status, "ts": normalize_hubspot_ts(ts), "asset": subject})
+    return events
+
+
+def notes_to_events(note_props: dict) -> list:
+    events = []
+    for props in note_props.values():
+        ts = props.get("hs_timestamp")
+        if not ts:
+            continue
+        body = (props.get("hs_note_body") or "(note)").strip()
+        events.append({"type": "note", "ts": normalize_hubspot_ts(ts), "asset": body[:60]})
+    return events
+
+
+def meetings_to_events(meeting_props: dict) -> list:
+    events = []
+    for props in meeting_props.values():
+        ts = props.get("hs_meeting_start_time") or props.get("hs_timestamp")
+        if not ts:
+            continue
+        title = props.get("hs_meeting_title") or "(meeting)"
+        events.append({"type": "meeting", "ts": normalize_hubspot_ts(ts), "asset": title})
+    return events
+
+
+def hubspot_fetch_engagement_events(token, event_tag):
+    """Live --hubspot-engagement source: resolves this event's contact ids
+    (same event_tag search hubspot_search_contacts() above uses), then for
+    each of emails/notes/meetings reads the objects associated to those
+    contacts and converts them into engagement.json's `events` shape
+    (email/asset/type/ts). Returns (events_per_email: list, error_or_None)."""
+    id_rows, err = hubspot_search_contacts(token, event_tag)
+    if err:
+        return None, err
+    contact_email_by_id = {}
+    body = {
+        "filterGroups": [{"filters": [
+            {"propertyName": "event_tag", "operator": "EQ", "value": event_tag}
+        ]}],
+        "properties": ["email"],
+        "limit": HUBSPOT_PAGE_SIZE,
+    }
+    after = None
+    while True:
+        if after:
+            body["after"] = after
+        req = urllib.request.Request(
+            f"{HUBSPOT_API_BASE}/crm/v3/objects/contacts/search",
+            data=json.dumps(body).encode("utf-8"), method="POST",
+            headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                parsed = json.loads(resp.read())
+        except urllib.error.HTTPError as e:
+            return None, f"HubSpot contact id lookup HTTP {e.code}: {e.read().decode('utf-8', 'replace')[:300]}"
+        except urllib.error.URLError as e:
+            return None, f"HubSpot contact id lookup network error: {e}"
+        for result in parsed.get("results", []):
+            email = ((result.get("properties") or {}).get("email") or "").lower()
+            if email:
+                contact_email_by_id[result["id"]] = email
+        after = (parsed.get("paging", {}) or {}).get("next", {}).get("after")
+        if not after:
+            break
+
+    if not contact_email_by_id:
+        return [], None
+
+    contact_ids = list(contact_email_by_id.keys())
+    events = []
+    for obj_type, properties in HUBSPOT_ENGAGEMENT_TYPES.items():
+        assoc, err = hubspot_associated_ids(token, contact_ids, obj_type)
+        if err:
+            return None, err
+        engagement_ids = sorted({eid for ids in assoc.values() for eid in ids})
+        if not engagement_ids:
+            continue
+        props_by_id, err = hubspot_batch_read(token, obj_type, engagement_ids, properties)
+        if err:
+            return None, err
+        converter = {"emails": emails_to_events, "notes": notes_to_events, "meetings": meetings_to_events}[obj_type]
+        for contact_id, eids in assoc.items():
+            email = contact_email_by_id.get(contact_id)
+            if not email:
+                continue
+            own_props = {eid: props_by_id[eid] for eid in eids if eid in props_by_id}
+            for ev in converter(own_props):
+                events.append({"email": email, **ev})
+    return events, None
+
+
+def resolve_engagement(engagement_path, event_identity, enriched_path):
+    """--hubspot-engagement entry point. Always loads the --engagement
+    fixture first (lifecycle_changes always comes from it -- see the module
+    docstring above); on success, only the `events` array is swapped for a
+    live HubSpot read. Degrades to the fixture's own events on no token,
+    network error, or zero results -- mirrors resolve_contacts()'s contract.
+    Returns (engagement_dict, source: 'hubspot_live' | 'fixture')."""
+    engagement = load_json(engagement_path)
+    token = resolve_hubspot_token()
+    if not token:
+        print(f"note: --hubspot-engagement set but no HUBSPOT_TOKEN found (env or {HUBSPOT_ENV_PATH}) "
+              "-- falling back to --engagement fixture.", file=sys.stderr)
+        return engagement, "fixture"
+
+    event_tag = resolve_event_tag_for_hubspot(enriched_path, event_identity)
+    events, err = hubspot_fetch_engagement_events(token, event_tag)
+    if err:
+        print(f"note: --hubspot-engagement fetch failed ({err}) -- falling back to --engagement fixture.",
+              file=sys.stderr)
+        return engagement, "fixture"
+    if not events:
+        print(f"note: --hubspot-engagement fetch for event_tag={event_tag!r} returned 0 events "
+              "-- falling back to --engagement fixture.", file=sys.stderr)
+        return engagement, "fixture"
+
+    print(f"[hubspot] read {len(events)} live engagement events from HubSpot (event_tag={event_tag!r})")
+    live_engagement = dict(engagement)
+    live_engagement["events"] = events
+    return live_engagement, "hubspot_live"
+
+
+# --------------------------------------------------------------------------
 # anomaly threshold -- statistical model, not a hardcoded guess
 # --------------------------------------------------------------------------
 
@@ -448,9 +683,9 @@ def compute_anomaly_threshold(events_by_contact):
 
 
 def build(enriched_path, engagement_path, segments_path, event_path,
-          contact_rows=None, source=None):
+          contact_rows=None, source=None, engagement_data=None, engagement_source=None):
     enriched_rows = contact_rows if contact_rows is not None else load_enriched(enriched_path)
-    engagement = load_json(engagement_path)
+    engagement = engagement_data if engagement_data is not None else load_json(engagement_path)
     segments = load_json(segments_path)
     quality_report = load_quality_report(enriched_path)
     event_identity = load_event_identity(event_path)
@@ -680,6 +915,12 @@ def build(enriched_path, engagement_path, segments_path, event_path,
             "contacts": "fixture",
             "detail": f"local CSV -- {Path(enriched_path).name} (M1 pipeline output, offline)",
         },
+        # Provenance for the `events` half of engagement.json specifically --
+        # separate from `source.contacts` above because the two lanes
+        # (--hubspot / --hubspot-engagement) are independent flags. See
+        # resolve_engagement()'s docstring for what "hubspot_live" does and
+        # does not cover (events only, not lifecycle_changes).
+        "engagement_source": engagement_source or "fixture",
         "kpis": kpis,
         "funnel": funnel,
         "top_accounts": top_accounts,
@@ -724,6 +965,12 @@ def main():
                           "--enriched's CSV. Falls back to --enriched on no token, network error, or "
                           "zero results -- see resolve_contacts(). --enriched is still required: its "
                           "directory is also where dedupe_report.json / quality_report.json live.")
+    ap.add_argument("--hubspot-engagement", action="store_true", dest="hubspot_engagement",
+                     help="Read the engagement `events` array live from HubSpot (email/note/meeting "
+                          "engagements associated to this event's contacts) instead of --engagement's "
+                          "fixture. lifecycle_changes always comes from --engagement regardless -- see "
+                          "resolve_engagement(). Falls back to --engagement on no token, network error, "
+                          "or zero results. Sets data.engagement_source to 'hubspot_live' or 'fixture'.")
     args = ap.parse_args()
 
     for label, p in (
@@ -734,14 +981,22 @@ def main():
             print(f"error: {label} path not found: {p}", file=sys.stderr)
             sys.exit(1)
 
+    event_identity = None
+    if args.hubspot or args.hubspot_engagement:
+        event_identity = load_event_identity(Path(args.event))
+
     contact_rows, source = None, None
     if args.hubspot:
-        event_identity = load_event_identity(Path(args.event))
         fixture_rows = load_enriched(args.enriched)
         contact_rows, source = resolve_contacts(args.enriched, event_identity, fixture_rows)
 
+    engagement_data, engagement_source = None, None
+    if args.hubspot_engagement:
+        engagement_data, engagement_source = resolve_engagement(args.engagement, event_identity, args.enriched)
+
     data = build(args.enriched, args.engagement, args.segments, args.event,
-                 contact_rows=contact_rows, source=source)
+                 contact_rows=contact_rows, source=source,
+                 engagement_data=engagement_data, engagement_source=engagement_source)
 
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -751,6 +1006,7 @@ def main():
 
     print(f"wrote {out_path}")
     print(f"  source.contacts={data['source']['contacts']} ({data['source']['detail']})")
+    print(f"  engagement_source={data['engagement_source']}")
     print(f"  registrants={data['kpis']['total_registrants']} attendees={data['kpis']['total_attendees']} "
           f"engaged={data['kpis']['engaged_post_event']} mql_plus={data['kpis']['mql_plus']} "
           f"attendee_to_mql_pct={data['kpis']['attendee_to_mql_pct']}")

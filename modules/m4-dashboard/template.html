@@ -169,7 +169,8 @@
     </div>
     <div class="gen-meta">
       Dashboard built <code id="generated-at">—</code><br>
-      Engagement as of <code id="as-of">—</code>
+      Engagement as of <code id="as-of">—</code><br>
+      Engagement source <code id="engagement-source">—</code>
     </div>
   </div>
 </header>
@@ -276,6 +277,7 @@
     DATA.event.host_company + " (" + DATA.event.host_domain + ") · " + DATA.event.date;
   document.getElementById('generated-at').textContent = fmtDate(DATA.generated_at);
   document.getElementById('as-of').textContent = fmtDate(DATA.as_of);
+  document.getElementById('engagement-source').textContent = DATA.engagement_source || 'fixture';
   (function renderSourceFooter(){
     var src = DATA.source || {contacts: 'fixture', detail: 'local CSV (offline)'};
     var label = src.contacts === 'hubspot' ? 'contacts read live from HubSpot' : 'contacts from local CSV fixture';

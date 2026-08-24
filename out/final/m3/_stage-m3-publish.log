@@ -1,0 +1,9 @@
+$ /opt/homebrew/opt/python@3.14/bin/python3.14 /Users/kiran/Desktop/Claude GOD/career/postevent-engine/scripts/publish_deliverables.py --m3-out out/final/m3 --out /Users/kiran/Desktop/Claude GOD/career/postevent-engine/out/shared-drive --drive-token-env GOOGLE_DRIVE_ACCESS_TOKEN
+exit=0 seconds=0.11
+--- stdout ---
+local shared drive: 8 file(s) -> /Users/kiran/Desktop/Claude GOD/career/postevent-engine/out/shared-drive/acmerevenue-2026-07-20
+Google Drive: SKIPPED -- no OAuth access token in $GOOGLE_DRIVE_ACCESS_TOKEN -- Drive lane not attempted (local shared-drive copy above is the real, working deliverable)
+publish manifest -> out/final/m3/publish_manifest.json
+
+--- stderr ---
+

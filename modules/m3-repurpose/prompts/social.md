@@ -14,8 +14,13 @@ like the same sentence chopped up differently.
 
 ## Output contract
 
-Markdown, one `###` block per post, 8 blocks total, each containing these
-fields in order:
+Markdown, one `###` block per post, 8 blocks total. The heading itself must
+be exactly `### Post <N>` (e.g. `### Post 1`, `### Post 2`, ... `### Post
+8`) — the parser that counts posts matches on that literal heading text, so
+folding the platform/hook-style into the heading instead (e.g. `### Platform:
+LinkedIn`) will read as zero posts even though the content is fine. Each
+block then contains these fields in order, on their own lines below the
+heading:
 
 - `Platform:` LinkedIn or X
 - `Hook style:` one of exactly these 8, each used **exactly once** across
@@ -38,3 +43,7 @@ Requirements:
   comparison number (not a single flat stat).
 - Vary which speaker each post centers — do not center the same speaker in
   more than 3 of the 8 posts.
+- Never put quotation marks around a hook or line that is not a verbatim
+  `{{EXTRACTION}}.quotes` entry (e.g. a rhetorical strawman like "follow up
+  within 24 hours") — quote marks are read as a claim that a speaker said
+  those exact words; write hooks and paraphrase in plain prose instead.

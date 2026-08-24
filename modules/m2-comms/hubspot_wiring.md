@@ -65,6 +65,15 @@ maps directly to:
   engagement body), that's still a single CRM batch update per segment, unbuilt.
 - `{{unsubscribe_link}}` is left untouched deliberately — HubSpot injects its own
   native subscription-management token; do not override it.
+- `{{recording_cta}}` / `{{recording_cta_timestamped}}`, `{{recording_link}}`,
+  and (no-show template only) `{{event_time_since_close}}` and
+  `{{function_relevant_segment}}` are **not** HubSpot tokens at all —
+  `comms.py::run()` resolves each to plain text (UTM-tagged link, elapsed
+  days since `event.json`'s date, and the timestamp `resolve_takeaway()`'s
+  `general`-function takeaway cites) before the template is ever written to
+  `emails/*.md`. Nothing needs a matching custom property for these; if you
+  see one of these four tokens still literal in a rendered `.md`, that's a
+  bug in `comms.py`, not a missing HubSpot property.
 
 ## 3. What actually fires after `approval_gate.json` flips (traced against the real code)
 
@@ -153,32 +162,50 @@ boundary; this section is the mechanism.
 
 ## 6. Known gap — speaker segment never gets logged in a live run
 
-Verified against a real M1 run on 2026-08-24 (`out/verify-m2/m1/hubspot_contacts.csv`,
-gitignored scratch — reproduce with the commands in §7): **none of the 3 speaker
-emails appear in `hubspot_contacts.csv`.** M1's `enrich.py` only ever processes
-`registrants.csv` (attendees + no-shows); speakers are a separate, hand-curated
-list in `data/fixtures/segments.json` that M1 never reads (see `README.md`'s
-"Who gets mailed," last paragraph — this was already documented as a
-segmentation fact, just not traced through to its `--log-emails` consequence
-until now).
+**Update (2026-08-24, M1 lane): both fixes below are now built.** `enrich.py`
+folds `segments.json`'s speakers into `hubspot_contacts.csv` by default (commit
+`05a826f`, `load_speakers()`), and `push_to_hubspot.py --include-speakers` now
+also upserts the 3 speakers directly from `data/incoming/speakers.json` +
+`data/fixtures/segments.json` as a belt-and-suspenders path for `--in` dirs
+generated before that commit (see `HUBSPOT_PUSH.md`). The `out/verify-m2/`
+run below was generated against a working-tree state that predated
+`05a826f` reaching this checkout, which is why it shows the gap; a fresh run
+against current `HEAD` does not (`out/pipeline-after-the-webinar-.../m1/hubspot_contacts.csv`
+already has 138 rows, all 3 speakers included). **This closes the *wiring*
+gap** — `push_to_hubspot.py`'s `email_id_map` now gets a real upsert attempt
+for all 3 speaker emails either way, not zero.
 
-Consequence: `push_to_hubspot.py`'s `email_id_map` (built from *this run's own*
-contact-upsert responses) has no entry for any speaker email, so all 3 speaker
-`sample_sends` entries resolve to `skipped_no_contact_id` in a **live** run —
-they silently do not get logged, even though the gate is open and the wiring
-otherwise works. `--dry-run` cannot surface this: dry-run mode uses the raw
-email string as a placeholder contact ID (`contact_id = email if dry_run else
-email_id_map.get(email)`), so the dry-run receipt in §3 shows all 134 entries
-as "planned" — 131 of those are real, 3 are not.
+**It does not close the gap end to end, though** — `push_to_hubspot.py`'s own
+`salvage_failed_chunk()` docstring documents a live-observed fact that no
+contact-upsert code path can work around: HubSpot rejects the 3 speakers'
+`.example`-TLD addresses as `INVALID_EMAIL`. So on a real live push these 3
+contacts still never get an id, and `--log-emails` will still report them
+under `skipped_no_contact_id` — now surfaced by name with HubSpot's own
+rejection reason (`contact_rejected`) instead of silently dropped, but not
+actually logged. That is a HubSpot-side validation call, not a
+missing-contact-record bug — the only real fix is a non-`.example` speaker
+address; `skipped_no_contact_id=3` stays the *known-good* live outcome (see §7).
 
-This is flagged in the sends_log itself (`comms.py`'s speaker batch carries a
+Original finding, kept for the record (verified against a real M1 run on
+2026-08-24, `out/verify-m2/m1/hubspot_contacts.csv`, gitignored scratch,
+reproduce with the commands in §7, run against a working-tree state that
+predated `05a826f`): **none of the 3 speaker emails appeared in
+`hubspot_contacts.csv`** at that point, because `enrich.py` had not yet been
+extended to read `segments.json`'s speaker list.
+
+Consequence (as it stood before the M1-lane fixes above): `push_to_hubspot.py`'s
+`email_id_map` (built from *this run's own* contact-upsert responses) had no
+entry for any speaker email, so all 3 speaker `sample_sends` entries resolved
+to `skipped_no_contact_id` in a **live** run — they silently did not get
+logged, even though the gate was open and the wiring otherwise worked.
+`--dry-run` could not surface this: dry-run mode uses the raw email string as
+a placeholder contact ID (`contact_id = email if dry_run else
+email_id_map.get(email)`), so the dry-run receipt in §3 showed all 134
+entries as "planned" — 131 of those were real, 3 were not.
+
+This was flagged in the sends_log itself (`comms.py`'s speaker batch carries a
 `hubspot_log_emails_note` field explaining this, an extra key `push_to_hubspot.py`
-ignores) rather than left silent. **Fix is out of this module's file ownership**
-(`push_to_hubspot.py` and `enrich.py` both belong to M1) — reported to the M1
-lane / Kai: either `enrich.py` should fold `segments.json`'s speakers into
-`hubspot_contacts.csv` (they're real people who should be CRM contacts
-regardless of comms), or `push_to_hubspot.py` should upsert the 3 speaker
-contacts from M2's own data before running `--log-emails`.
+ignores) rather than left silent.
 
 ## 7. Handoff — exact commands for Kai (needs the live token; not run by this pass)
 

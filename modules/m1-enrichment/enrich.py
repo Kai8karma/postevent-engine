@@ -580,6 +580,148 @@ def dedupe_within_batch(records):
     return clusters, pairs, gray_pairs
 
 
+HUBSPOT_ENV_PATH = Path.home() / ".config" / "postevent" / "hubspot.env"
+HUBSPOT_API_BASE = "https://api.hubapi.com"
+# Properties dedupe_against_hubspot()/pair_score() actually read off a
+# candidate record (h["vid"]/h["email"]/h.get("firstname")/etc.) -- kept
+# minimal on purpose, this is a dedupe lookup, not a contact export.
+HUBSPOT_DEDUPE_PROPERTIES = ["email", "firstname", "lastname", "jobtitle", "company",
+                              "lifecyclestage", "hs_lead_status"]
+HUBSPOT_DEDUPE_PAGE_SIZE = 100
+HUBSPOT_DEDUPE_FILTER_CHUNK = 100  # HubSpot's search IN operator has a practical list-length cap
+
+
+def resolve_hubspot_token():
+    """Mirrors modules/m1-enrichment/push_to_hubspot.py::resolve_token /
+    modules/m4-dashboard/build_dashboard.py::resolve_hubspot_token (read-only
+    reference -- not imported, so this module's HubSpot code stays
+    independent of the other two lanes' files, same convention those two
+    already use). Token is never printed, logged, or written to any output
+    file."""
+    token = os.environ.get("HUBSPOT_TOKEN")
+    if token:
+        return token.strip()
+    if HUBSPOT_ENV_PATH.exists():
+        for line in HUBSPOT_ENV_PATH.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, value = line.partition("=")
+            if key.strip() == "HUBSPOT_TOKEN":
+                return value.strip().strip('"').strip("'")
+    return None
+
+
+def hubspot_dedupe_search(token, filter_groups):
+    """POST /crm/v3/objects/contacts/search, paginated via 'after' -- same
+    idiom as push_to_hubspot.py's http_call() / build_dashboard.py's
+    hubspot_search_contacts(). Returns (results, error_or_None)."""
+    results = []
+    after = None
+    while True:
+        body = {"filterGroups": filter_groups, "properties": HUBSPOT_DEDUPE_PROPERTIES,
+                 "limit": HUBSPOT_DEDUPE_PAGE_SIZE}
+        if after:
+            body["after"] = after
+        req = urllib.request.Request(
+            f"{HUBSPOT_API_BASE}/crm/v3/objects/contacts/search",
+            data=json.dumps(body).encode("utf-8"), method="POST",
+            headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                parsed = json.loads(resp.read())
+        except urllib.error.HTTPError as e:
+            return None, f"HubSpot search HTTP {e.code}: {e.read().decode('utf-8', 'replace')[:300]}"
+        except urllib.error.URLError as e:
+            return None, f"HubSpot search network error: {e}"
+        results.extend(parsed.get("results", []))
+        after = (parsed.get("paging", {}) or {}).get("next", {}).get("after")
+        if not after:
+            break
+    return results, None
+
+
+def hubspot_contact_to_candidate(result):
+    """Reshapes one live HubSpot contact search result into the exact dict
+    shape data/fixtures/hubspot_existing.json entries already have (vid/
+    email/firstname/lastname/jobtitle/company/lifecyclestage/hs_lead_status)
+    -- dedupe_against_hubspot() and pair_score() read only these keys, so a
+    live candidate is indistinguishable from a fixture one to that code."""
+    props = result.get("properties", {}) or {}
+    return {
+        "vid": result.get("id", ""),
+        "email": (props.get("email") or "").strip(),
+        "firstname": props.get("firstname") or "",
+        "lastname": props.get("lastname") or "",
+        "jobtitle": props.get("jobtitle") or "",
+        "company": props.get("company") or "",
+        "lifecyclestage": props.get("lifecyclestage") or "",
+        "hs_lead_status": props.get("hs_lead_status") or "",
+    }
+
+
+def fetch_hubspot_dedupe_candidates(token, records):
+    """Live candidate pool for --hubspot-dedupe: CRM v3 contacts search
+    scoped to *this batch's own emails and lastnames*, not a full portal
+    dump -- dedupe_against_hubspot()'s pair_score() only ever needs
+    candidates that could plausibly match one of these rows (same rationale
+    as FIRSTNAME_GATE there: cheap to over-fetch a little, wasteful and slow
+    to fetch the whole portal). Two targeted filters, chunked at
+    HUBSPOT_DEDUPE_FILTER_CHUNK: email IN [...] (an exact-address match) and
+    lastname IN [...] (the name+company fuzzy candidates pair_score()
+    actually scores against). Deduped by contact id before scoring. Returns
+    (candidates, error_or_None)."""
+    emails = sorted({r["email"] for r in records if r.get("email")})
+    lastnames = sorted({r["lastname"] for r in records if r.get("lastname")})
+    seen_ids = set()
+    candidates = []
+
+    for prop, values in (("email", emails), ("lastname", lastnames)):
+        for i in range(0, len(values), HUBSPOT_DEDUPE_FILTER_CHUNK):
+            chunk = values[i:i + HUBSPOT_DEDUPE_FILTER_CHUNK]
+            if not chunk:
+                continue
+            filter_groups = [{"filters": [{"propertyName": prop, "operator": "IN", "values": chunk}]}]
+            results, err = hubspot_dedupe_search(token, filter_groups)
+            if err:
+                return None, err
+            for result in results:
+                cid = result.get("id")
+                if cid and cid not in seen_ids:
+                    seen_ids.add(cid)
+                    candidates.append(hubspot_contact_to_candidate(result))
+    return candidates, None
+
+
+def resolve_hubspot_dedupe_source(records, fixture_hubspot, use_live: bool):
+    """--hubspot-dedupe entry point. Degrades to fixture_hubspot (already
+    loaded from --hubspot's data/fixtures/hubspot_existing.json) on no
+    token, network error, or zero results -- mirrors push_to_hubspot.py's /
+    build_dashboard.py's resolve_*() fallback contract exactly. The fuzzy
+    scoring code (composite_score/pair_score/dedupe_against_hubspot) never
+    changes -- only this function's return value (the candidate record
+    list) does. Returns (candidates, source: 'live' | 'fixture')."""
+    if not use_live:
+        return fixture_hubspot, "fixture"
+    token = resolve_hubspot_token()
+    if not token:
+        print(f"note: --hubspot-dedupe set but no HUBSPOT_TOKEN found (env or {HUBSPOT_ENV_PATH}) "
+              "-- falling back to the hubspot_existing.json fixture.", file=sys.stderr)
+        return fixture_hubspot, "fixture"
+    candidates, err = fetch_hubspot_dedupe_candidates(token, records)
+    if err:
+        print(f"note: --hubspot-dedupe search failed ({err}) -- falling back to the "
+              "hubspot_existing.json fixture.", file=sys.stderr)
+        return fixture_hubspot, "fixture"
+    if not candidates:
+        print("note: --hubspot-dedupe search returned 0 live candidates -- falling back to the "
+              "hubspot_existing.json fixture.", file=sys.stderr)
+        return fixture_hubspot, "fixture"
+    print(f"[hubspot] read {len(candidates)} live contact(s) as --hubspot-dedupe candidates")
+    return candidates, "live"
+
+
 def dedupe_against_hubspot(records, hubspot):
     """Also surfaces `gray_pairs` -- the best-scoring HubSpot candidate for a
     row when that best score lands in [GRAY_ZONE_LOW, DEDUPE_THRESHOLD)
@@ -1496,7 +1638,8 @@ def canonicalize_companies(prepped):
 
 def run_pipeline(in_path, config_path, hubspot_path, live: bool = False, dry_run: bool = False,
                   clay_max: int = 0, clay_dry_run: bool = False, clay_bin: str = "clay",
-                  speakers_path: Path = DEFAULT_SPEAKERS, segments_path: Path = DEFAULT_SEGMENTS):
+                  speakers_path: Path = DEFAULT_SPEAKERS, segments_path: Path = DEFAULT_SEGMENTS,
+                  hubspot_dedupe: bool = False):
     cfg = parse_yaml(config_path.read_text(encoding="utf-8"))
     raw_rows = load_registrants(in_path)
     hubspot = load_hubspot(hubspot_path)
@@ -1552,7 +1695,8 @@ def run_pipeline(in_path, config_path, hubspot_path, live: bool = False, dry_run
     dup_map, dup_pairs, within_gray = dedupe_within_batch(prepped)
     primaries = [r for r in prepped if not r.get("_merged_away")]
 
-    hs_matches, hubspot_gray = dedupe_against_hubspot(primaries, hubspot)
+    hubspot_candidates, hubspot_source = resolve_hubspot_dedupe_source(primaries, hubspot, hubspot_dedupe)
+    hs_matches, hubspot_gray = dedupe_against_hubspot(primaries, hubspot_candidates)
 
     # Gray-zone dedupe adjudication (--live / --live-dry-run only): pairs in
     # [GRAY_ZONE_LOW, DEDUPE_THRESHOLD) that the rule engine above left
@@ -1748,7 +1892,7 @@ def run_pipeline(in_path, config_path, hubspot_path, live: bool = False, dry_run
 
     return (
         output_rows, fake_rows, dup_pairs, len(raw_rows), live_report, clay_report,
-        dedupe_adjudication_report, len(speakers),
+        dedupe_adjudication_report, len(speakers), hubspot_source, len(hubspot_candidates),
     )
 
 
@@ -1858,7 +2002,8 @@ def build_company_rows(rows):
 
 
 def write_outputs(out_dir: Path, rows, fake_rows, dup_pairs, total_input, hs_match_count, clay_report=None,
-                   dedupe_adjudication_report=None, speaker_count=0):
+                   dedupe_adjudication_report=None, speaker_count=0,
+                   hubspot_source: str = "fixture", hubspot_candidate_count: int = 0):
     out_dir.mkdir(parents=True, exist_ok=True)
     now = datetime.now(timezone.utc).isoformat()
 
@@ -1893,11 +2038,19 @@ def write_outputs(out_dir: Path, rows, fake_rows, dup_pairs, total_input, hs_mat
             f"{LOCAL_WEIGHT}*ratio(email localpart) + {IDENT_WEIGHT}*ratio(firstname+lastname+company); "
             f"matched at combined >= {DEDUPE_THRESHOLD}"
         ),
+        # --hubspot-dedupe provenance: 'live' (CRM v3 contacts search, see
+        # resolve_hubspot_dedupe_source()) or 'fixture' (default -- reads
+        # data/fixtures/hubspot_existing.json, or --hubspot-dedupe degraded
+        # to it on no token/network error/zero results). The fuzzy-match
+        # scoring itself never changes between the two -- only where the
+        # candidate records came from.
+        "hubspot_source": hubspot_source,
         "counts": {
             "total_input_rows": total_input,
             "fake_rows_excluded": len(fake_rows),
             "within_batch_duplicate_pairs": len(dup_pairs),
             "hubspot_matches": hs_match_count,
+            "hubspot_candidate_pool_size": hubspot_candidate_count,
             "net_new_contacts": len(rows) - hs_match_count,
             "output_rows": len(rows),
             # speakers.json x segments.json -- see load_speakers(). Included
@@ -1993,6 +2146,13 @@ def main():
     parser.add_argument("--clay-dry-run", dest="clay_dry_run", action="store_true",
                          help="Print which domains --clay-max would enrich and exit 0 -- zero Clay calls, "
                               "zero credits spent, no clay CLI required.")
+    parser.add_argument("--hubspot-dedupe", dest="hubspot_dedupe", action="store_true",
+                         help="Dedupe this batch against live HubSpot CRM contacts (CRM v3 search scoped "
+                              "to this batch's own emails/lastnames) instead of --hubspot's "
+                              "hubspot_existing.json fixture. Falls back to the fixture on no "
+                              "HUBSPOT_TOKEN, network error, or zero live candidates. Fuzzy-match scoring "
+                              "is unchanged either way -- only the candidate record source differs; see "
+                              "resolve_hubspot_dedupe_source(). Does not change offline (no-flag) output.")
     args = parser.parse_args()
 
     for label, p in (("--in", args.in_path), ("--config", args.config_path), ("--hubspot", args.hubspot_path)):
@@ -2005,15 +2165,17 @@ def main():
     clay_bin = os.environ.get("CLAY_BIN") or "clay"
 
     (rows, fake_rows, dup_pairs, total_input, live_report, clay_report,
-     dedupe_adjudication_report, speaker_count) = run_pipeline(
+     dedupe_adjudication_report, speaker_count, hubspot_source, hubspot_candidate_count) = run_pipeline(
         Path(args.in_path), Path(args.config_path), Path(args.hubspot_path), live=live, dry_run=dry_run,
         clay_max=args.clay_max, clay_dry_run=args.clay_dry_run, clay_bin=clay_bin,
         speakers_path=Path(args.speakers_path), segments_path=Path(args.segments_path),
+        hubspot_dedupe=args.hubspot_dedupe,
     )
     hs_match_count = sum(1 for r in rows if r["merge_action"].startswith("update_existing"))
     dedupe_report, quality_report = write_outputs(
         Path(args.out_dir), rows, fake_rows, dup_pairs, total_input, hs_match_count, clay_report=clay_report,
         dedupe_adjudication_report=dedupe_adjudication_report, speaker_count=speaker_count,
+        hubspot_source=hubspot_source, hubspot_candidate_count=hubspot_candidate_count,
     )
 
     if live_report is not None:
@@ -2060,6 +2222,7 @@ def main():
           f"within_batch_dupe_pairs={len(dup_pairs)} hubspot_matches={hs_match_count} "
           f"output_rows={len(rows)} suppressed={quality_report['suppressed_count']} "
           f"mailable={quality_report['mailable_count']} speakers_loaded={speaker_count}")
+    print(f"hubspot_dedupe_source={hubspot_source} hubspot_candidate_pool_size={hubspot_candidate_count}")
     sc = quality_report["spec_completeness"]
     print(f"contact_completeness={sc['contact']['completeness_pct']}% "
           f"(pass90={sc['contact']['pass_90']}) "

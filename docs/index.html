@@ -1130,7 +1130,7 @@
           <tr><td><span class="card-tag tag-m4">M4</span> Top engaged accounts/contacts, buying committees</td><td>Ranked by a real engagement-weight formula; buying committee = every engaged contact per account</td><td>Dashboard <code class="mono">top_accounts</code> (10) / <code class="mono">committee_accounts</code> (5)</td><td>Met</td></tr>
           <tr><td><span class="card-tag tag-m4">M4</span> Lifecycle stage movement across 7/14/30 days</td><td>Three real time-windowed views over the same lifecycle data</td><td>Dashboard "Last 7 days" / "Last 14 days" / "Last 30 days" panels</td><td>Met</td></tr>
           <tr><td><span class="card-tag tag-m4">M4</span> Detect engagement anomalies, score lead interest</td><td>Deterministic rules, not LLM calls — same-day concentration ≥15 touches for anomalies; tier × attendance × engagement weights for scoring. Named as rule-based here on purpose: the spec calls these AI's job, and this build's honest answer is "auditable rules, not a model," with the LLM's role confined to narrating what the rules found</td><td><code class="mono">modules/m4-dashboard/build_dashboard.py</code> — anomaly/scoring functions; dashboard shows 2 live anomalies</td><td>Met</td></tr>
-          <tr><td><span class="card-tag tag-m4">M4</span> One AI-generated narrative summary, refreshed on load</td><td>Live LLM call on every page load, real computed metrics passed in, not fixture text; the model named in the task spec is too slow for the client's 25s timeout, a faster model comfortably fits it</td><td><a href="#receipts">M4 narrative receipt</a> — 3 live runs, <code class="mono">source:"live"</code> on every one</td><td>Met with a stand-in — proven live 3×, but the hosted deployment needs one environment variable set (<code class="mono">OPENROUTER_MODEL</code>) before it's live-on-load for a reviewer, not a code change</td></tr>
+          <tr><td><span class="card-tag tag-m4">M4</span> One AI-generated narrative summary, refreshed on load</td><td>Live LLM call on every page load, real computed metrics passed in, not fixture text; the model named in the task spec is too slow for the client's 25s timeout, a faster model comfortably fits it</td><td><a href="#receipts">M4 narrative receipt</a> — 3 live runs, <code class="mono">source:"live"</code> on every one</td><td>Met with a stand-in — proven live 3×, but the hosted deployment currently has no API key configured at all (<code class="mono">/api/narrative</code> 500s: "ANTHROPIC_API_KEY not configured"); needs <code class="mono">OPENROUTER_API_KEY</code> (and optionally <code class="mono">OPENROUTER_MODEL</code>) set in the Vercel env before it's live-on-load for a reviewer, not a code change</td></tr>
           <tr><td><span class="card-tag tag-m4">M4</span> n8n sync (Tools)</td><td>Standalone n8n workflow JSON mirrors the M4 DAG, schema-verified</td><td><code class="mono">orchestrator/n8n/local-demo/m4-dashboard.json</code></td><td>Met with a stand-in — validated by inspection, not imported into a running n8n instance</td></tr>
         </tbody>
       </table>
@@ -1250,9 +1250,12 @@
       <p>
         Everything above ran on a synthetic-but-realistic stand-in webinar because your real event
         wasn't named before the deadline — the pipeline itself doesn't know the difference. Swapping in
-        your actual webinar is two edits: drop your registrant export, transcript, and speaker/event
-        metadata into <code class="inline">data/incoming/</code>, and point <code class="inline">config/icp.yaml</code>
-        at your real ICP tiers, regions, and owner routing. No code changes, no re-architecture.
+        your actual webinar is five files: drop your registrant export, transcript, and speaker/event
+        metadata into the four files under <code class="inline">data/incoming/</code>
+        (<code class="inline">event.json</code>, <code class="inline">registrants.csv</code>,
+        <code class="inline">speakers.json</code>, <code class="inline">transcript.md</code>), and point
+        <code class="inline">config/icp.yaml</code> at your real ICP tiers, regions, and owner routing.
+        No code changes, no re-architecture.
       </p>
       <p>
         <span class="swap-cta">That means we can point this at your next webinar Monday morning</span> —

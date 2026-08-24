@@ -30,3 +30,7 @@ speaker attributions.
   `event.recording_url` from `{{EVENT_JSON}}` as the link target.
 - No invented case studies, no filler transitions ("In today's fast-paced
   world..."). Every sentence should trace to something actually said.
+- Never wrap quotation marks around a phrase that is not one of the verbatim
+  `{{EXTRACTION}}.quotes` used in a pull-quote — quotation marks are read as
+  a claim that someone said those exact words; write rhetorical asides,
+  hypotheticals, or paraphrase in plain prose or italics instead.

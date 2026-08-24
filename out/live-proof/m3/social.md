@@ -1,103 +1,83 @@
-<!-- event: acmerevenue-2026-07-20 | generated: live-claude -->
+<!-- event: acmerevenue-2026-07-20 | generated: live-openrouter -->
 ### Post 1
-**Platform:** LinkedIn
-**Hook style:** contrarian stat
-**Segment:** Segment 1 — Speed-to-Lead [08:10–24:00]
-**Post:** Most teams treat "follow up within 24 hours" as a win. Daniel Kim's data says you've already lost the cliff.
-
-Northwind tracked reply rates across 12 webinars: follow-up within 4 hours delivers a **3.2x lift** vs. next-day. By 24 hours, that lift collapses to 1.4x. By 48 hours, you're at baseline — no better than sending at hour 96.
-
-The prospect just spent an hour with your topic. Their tab is still open. A day later, they're fighting fires and your webinar is memory #41 in their inbox.
-
-Speed isn't a nice-to-have. It's the difference between a conversation and a cold outreach.
-
-[link]
+Platform: LinkedIn
+Hook style: contrarian stat
+Segment: Segment 1 — Speed-to-Lead [15:44–16:23]
+Post:
+Conventional wisdom says attendees are your hottest leads.  
+Our data flips that script: the no‑show follow‑up email outperforms the attendee thank‑you in 6 out of 8 webinars, delivering a higher click‑through rate.  
+Why? No‑shows haven’t consumed the content yet, so they’re eager for the recording and a crisp, relevant summary.  
+Rethink your “dead” leads — they might be your hidden gold.  
+[recording](https://drive.example/rec/pipeline-after-webinar.mp4?utm_source=linkedin&utm_medium=social&utm_campaign=pipeline-after-the-webinar-2026-07-20&utm_content=social-post-1)
 
 ### Post 2
-**Platform:** LinkedIn
-**Hook style:** story
-**Segment:** Opening [00:00–03:44]
-**Post:** Priya Nair opened this session with a confession that should sound familiar:
-
-"For years our own team ran webinars, got great attendance, felt good about ourselves, and then just... let the leads sit. Like, sit for days."
-
-ACME Revenue Cloud had the registrations. They had the attendance. They had the ego boost. What they didn't have was a process that moved in the same timeframe as buyer intent.
-
-This entire 62-minute playbook — speed-to-lead, segmentation, repurposing, attribution — was built because they did it wrong first. The numbers (3.2x reply lift, 41% opportunity jump, 11-14x ROI) came from fixing the gap between "webinar went well" and "pipeline actually moved."
-
-The best frameworks are usually just scar tissue documented.
-
-[link]
+Platform: LinkedIn
+Hook style: story
+Segment: Segment 2 — Segmentation [20:45–22:28]
+Post:
+I’ll never forget the moment I realized we’d been ignoring our own internal speakers.  
+We’d thank them with a generic “thanks for your time” and move on, assuming they already knew how it went.  
+Then we saw the impact: when we started sending a real performance snapshot — attendance, engagement, a standout quote — those speakers reshared the recording to their networks without being asked.  
+A simple change turned internal presenters into our biggest amplifiers.  
+[recording](https://drive.example/rec/pipeline-after-webinar.mp4?utm_source=linkedin&utm_medium=social&utm_campaign=pipeline-after-the-webinar-2026-07-20&utm_content=social-post-2)
 
 ### Post 3
-**Platform:** LinkedIn
-**Hook style:** listicle
-**Segment:** Segment 3 — Content Repurposing ROI [36:05–48:00]
-**Post:** One 60-minute webinar. Here's what Northwind turns it into — systematically, within 48 hours:
-
-1. **Blog post** (800–1,200 words) — core argument + top 2–3 quotes
-2. **YouTube chapter markers** — jump-to timestamps, description, thumbnail brief
-3. **Infographic outline** — 6–10 citable data points ranked by surprise factor, designer finishes in a day
-4. **8–10 social posts** — each a distinct angle: bold quote, contrarian take, data-as-question, behind-the-scenes audience moment
-
-The unlock isn't the format list. It's the source: transcript → LLM extraction → human review → publish. No intern rewatching at 2x speed. No two-week lag.
-
-Result: **2.4x the pipeline-influenced touches** of the live session itself, averaged across 6 events. The live event touches 400 people once. The repurposed assets touch a wider audience repeatedly for a month.
-
-[link]
+Platform: X
+Hook style: listicle
+Segment: Segment 3 — Content Repurposing ROI [38:35–39:38]
+Post:
+3 reasons repurposing a webinar beats creating new content from scratch:
+1️⃣ It yields 2.4× the pipeline‑influenced touches of the live session.
+2️⃣ The content is still fresh when published within 48 h.
+3️⃣ You already paid for the raw material — the transcript and recording.
+Stop letting your event evaporate.
+[recording](https://drive.example/rec/pipeline-after-webinar.mp4?utm_source=linkedin&utm_medium=social&utm_campaign=pipeline-after-the-webinar-2026-07-20&utm_content=social-post-3)
 
 ### Post 4
-**Platform:** X
-**Hook style:** quote card
-**Segment:** Segment 4 — Attribution [48:05–55:40]
-**Post:** "Attribution is the mirror, not the engine." — Sara Alvarez, RevOps Lead @ Meridian Software
-
-It measures value. It doesn't create it. The value comes from speed, segmentation, and follow-up discipline. [link]
+Platform: LinkedIn
+Hook style: quote card
+Segment: Segment 4 — Attribution [54:15–54:22]
+Post:
+“Attribution is the mirror, not the engine.”
+— Sara Alvarez, RevOps Lead, Meridian Software
+[recording](https://drive.example/rec/pipeline-after-webinar.mp4?utm_source=linkedin&utm_medium=social&utm_campaign=pipeline-after-the-webinar-2026-07-20&utm_content=social-post-4)
 
 ### Post 5
-**Platform:** X
-**Hook style:** question
-**Segment:** Segment 1 — Speed-to-Lead [15:35–16:45]
-**Post:** Why do no-show follow-ups (recording + 3-bullet summary) beat attendee follow-ups in click-through rate 6 of the last 8 webinars? @danielkim @NorthwindAnalytics [link]
+Platform: X
+Hook style: question
+Segment: Segment 1 — Speed-to-Lead [05:10–05:32]
+Post:
+What if you could triple your reply rate just by moving your follow‑up from next day to within 4 hours?  
+That’s exactly what we saw: follow‑up within 4 hours lifts reply rate 3.2× versus next‑day.
+[recording](https://drive.example/rec/pipeline-after-webinar.mp4?utm_source=linkedin&utm_medium=social&utm_campaign=pipeline-after-the-webinar-2026-07-20&utm_content=social-post-5)
 
 ### Post 6
-**Platform:** LinkedIn
-**Hook style:** hot take
-**Segment:** Segment 4 — Attribution [53:15–54:22]
-**Post:** Hot take: Your attribution model is a distraction if your follow-up goes out three days late to an unsegmented list.
-
-Daniel Kim put it bluntly: "Attribution doesn't create value, it just measures value that was created by doing the earlier steps well. You can have a perfect attribution model and still get a bad number."
-
-Sara Alvarez echoed it: "Attribution is the mirror, not the engine."
-
-The 11–14x ROI Meridian sees? Only appears when speed-to-lead (4-hour window), segmentation (3x CTR lift), and repurposing (2.4x touches) are already working. Attribution just proves it happened.
-
-Stop polishing the mirror. Fix the engine.
-
-[link]
+Platform: LinkedIn
+Hook style: hot take
+Segment: Segment 2 — Segmentation [28:20–28:56]
+Post:
+Hot take: Segmentation isn’t a nice‑to‑have — it’s the lever that can triple your click‑through rate.  
+We moved from a single blanket post‑webinar email to a three‑way segmentation (attendee, no‑show, speaker) with role‑based variants, and CTR jumped from ~6% to >17%.  
+If you’re still blasting one email to everyone, you’re leaving money on the table.  
+[recording](https://drive.example/rec/pipeline-after-webinar.mp4?utm_source=linkedin&utm_medium=social&utm_campaign=pipeline-after-the-webinar-2026-07-20&utm_content=social-post-6)
 
 ### Post 7
-**Platform:** LinkedIn
-**Hook style:** data viz callout
-**Segment:** Segment 2 — Segmentation [24:05–36:00]
-**Post:** Same list. Same timing. Only change: segmentation.
-
-Meridian moved from a single blanket post-webinar email → three-way split (attendee / no-show / speaker) with role-based variants layered in.
-
-**Click-through rate: ~6% → ~17% (3x lift).**
-
-Timing was held constant in the test to isolate the variable. The triple wasn't from sending faster — it was from sending *relevant*.
-
-Layer 1: Attendee vs. no-show vs. speaker  
-Layer 2: Role & seniority (VP gets different takeaways than IC)  
-Layer 3: Account context (3+ attendees from one company = ~2x opportunity conversion)
-
-Most teams stop at Layer 0: one email, everyone.
-
-[link]
+Platform: X
+Hook style: data viz callout
+Segment: Segment 1 — Speed-to-Lead [11:30–12:07]
+Post:
+Before: average internal routing delay ≈18 hours.  
+After: cut to under 2 hours.  
+Result: webinar‑sourced opportunity creation rate ↑ 41% (same leads, same list).  
+Sometimes the biggest wins come from fixing the handoff, not the message.
+[recording](https://drive.example/rec/pipeline-after-webinar.mp4?utm_source=linkedin&utm_medium=social&utm_campaign=pipeline-after-the-webinar-2026-07-20&utm_content=social-post-7)
 
 ### Post 8
-**Platform:** X
-**Hook style:** speaker spotlight
-**Segment:** Segment 3 — Content Repurposing ROI [38:35–39:38]
-**Post:** Daniel Kim (Head of Demand Gen, @NorthwindAnalytics): Repurposed content from one webinar drives 2.4x the pipeline touches of the live event itself. "This isn't new content spend — it's yield on content you already produced." [link]
+Platform: LinkedIn
+Hook style: speaker spotlight
+Segment: Segment 1 — Speed-to-Lead [04:30–05:10]
+Post:
+Speaker spotlight: Daniel Kim, Head of Demand Gen @ Northwind Analytics  
+Daniel’s obsession? Fixing what happens in the 72 hours after someone registers for or attends an event.  
+His first project proved that compressing the follow‑up window isn’t just possible — it’s a revenue multiplier.
+[recording](https://drive.example/rec/pipeline-after-webinar.mp4?utm_source=linkedin&utm_medium=social&utm_campaign=pipeline-after-the-webinar-2026-07-20&utm_content=social-post-8)

@@ -1,0 +1,52 @@
+{
+  "event_tag": "acmerevenue-2026-07-20",
+  "event_name": "Pipeline After the Webinar: Turning Event Engagement into Revenue",
+  "event_date": "2026-07-20",
+  "published_at": "2026-08-24T12:55:39Z",
+  "source_m3_out": "out/live-proof/m3",
+  "local": {
+    "status": "ok",
+    "folder": "out/verify-drive-401/acmerevenue-2026-07-20",
+    "files": [
+      {
+        "name": "acmerevenue-2026-07-20 -- blog.md",
+        "source": "out/live-proof/m3/blog.md",
+        "bytes": 8448
+      },
+      {
+        "name": "acmerevenue-2026-07-20 -- youtube.md",
+        "source": "out/live-proof/m3/youtube.md",
+        "bytes": 3123
+      },
+      {
+        "name": "acmerevenue-2026-07-20 -- infographic.md",
+        "source": "out/live-proof/m3/infographic.md",
+        "bytes": 3562
+      },
+      {
+        "name": "acmerevenue-2026-07-20 -- social.md",
+        "source": "out/live-proof/m3/social.md",
+        "bytes": 5208
+      },
+      {
+        "name": "acmerevenue-2026-07-20 -- extraction.json",
+        "source": "out/live-proof/m3/extraction.json",
+        "bytes": 8635
+      },
+      {
+        "name": "acmerevenue-2026-07-20 -- manifest.json",
+        "source": "out/live-proof/m3/manifest.json",
+        "bytes": 636
+      },
+      {
+        "name": "INDEX.md",
+        "source": "composed (not a repo file)",
+        "bytes": 404
+      }
+    ]
+  },
+  "drive": {
+    "status": "failed",
+    "error": "Drive API HTTP 401 for GET https://www.googleapis.com/drive/v3/files?q=name%3D%27Post-Event+Engine+--+acmerevenue-2026-07-20%27+and+mimeType%3D%27application%2Fvnd.google-apps.folder%27+and+trashed%3Dfalse&fields=files%28id%2Cname%2CwebViewLink%29: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.\",\n    \"errors\": [\n      {\n        \"message\": \"Invalid Credentials\",\n        \"domain\": \"global\",\n        \"reason\": \"authError\",\n        \"location\": \"Authorization\",\n        \"locationType\": \"header\"\n      }\n    ],\n    \"status\": \"UNAUTHENTICATED\""
+  }
+}

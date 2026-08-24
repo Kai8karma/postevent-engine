@@ -33,10 +33,14 @@ import urllib.request
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
-from urllib.parse import urlencode, urlparse, parse_qsl, urlunparse
 
 MODULE_DIR = Path(__file__).resolve().parent
 REPO_ROOT = MODULE_DIR.parent.parent
+SHARED_DIR = REPO_ROOT / "shared"
+if str(SHARED_DIR) not in sys.path:
+    sys.path.insert(0, str(SHARED_DIR))
+from utm import with_utm  # shared/utm.py -- canonical impl, see its docstring  # noqa: E402
+
 FINGERPRINT_PATH = MODULE_DIR / "sample_output" / ".fingerprint.json"
 
 # --- OpenRouter fallback backend for --live (see LLM_BACKEND below) ---
@@ -372,16 +376,11 @@ def campaign_slug(event: dict) -> str:
     return f"{slugify(name)}-{event['date']}"
 
 
-def with_utm(url: str, campaign: str, content: str) -> str:
-    parts = urlparse(url)
-    q = dict(parse_qsl(parts.query))
-    q.update({
-        "utm_source": "webinar",
-        "utm_medium": "email",
-        "utm_campaign": campaign,
-        "utm_content": content,
-    })
-    return urlunparse(parts._replace(query=urlencode(q)))
+# M2's only channel is email off a webinar campaign -- utm_source/utm_medium
+# are fixed at every call site below (see shared/utm.py for the one
+# implementation this and M3's repurpose.py both import).
+UTM_SOURCE = "webinar"
+UTM_MEDIUM = "email"
 
 
 FRONTMATTER_RE = re.compile(r"^---\s*\n(.*?)\n---\s*\n?(.*)$", re.S)
@@ -421,6 +420,39 @@ def resolve_takeaway(cache: dict, function: str, industry_bucket: str) -> dict:
     angle = by_industry.get(industry_bucket) or by_industry.get("other_commercial", "")
     body = f'{tk["body"]} {angle}'.strip() if angle else tk["body"]
     return {"headline": tk["headline"], "body": body, "industry_angle": angle}
+
+
+TIMESTAMP_IN_BODY_RE = re.compile(r"\[(\d{1,2}:\d{2})\]")
+
+
+def event_time_since_close(event: dict, now: datetime) -> str:
+    """{{event_time_since_close}} (no_show.md's prompt contract: "filled by
+    comms.py from event.json date + send time"). event.json only carries a
+    calendar date, no time-of-day, so this is whole days elapsed between
+    that date and generation time -- the coarsest true claim the input
+    supports, not an invented hour-level number."""
+    try:
+        event_date = datetime.strptime(event["date"], "%Y-%m-%d").replace(tzinfo=timezone.utc)
+    except (KeyError, ValueError, TypeError):
+        return "sent shortly after this session"
+    days = (now.date() - event_date.date()).days
+    if days <= 0:
+        return "sent the same day as this session"
+    if days == 1:
+        return "sent 1 day after this session"
+    return f"sent {days} days after this session"
+
+
+def function_relevant_segment(cache: dict) -> str:
+    """{{function_relevant_segment}} -- the timestamp resolve_takeaway's own
+    `general` function takeaway already cites. comms.py renders one no-show
+    template shared across every function (per-recipient personalization is
+    takeaway_headline/body's job, resolved by HubSpot per contact from
+    contactProperties -- see hubspot_wiring.md §2), so this token points to
+    the same segment the shared body's fallback takeaway already grounds."""
+    body = cache["by_function"].get("general", {}).get("body", "")
+    m = TIMESTAMP_IN_BODY_RE.search(body)
+    return f"[{m.group(1)}]" if m else "the most relevant part of the recording"
 
 
 def personalization_preview(contacts: list, cache: dict) -> str:
@@ -898,6 +930,7 @@ def run(args) -> int:
         "segments": {},
     }
     sends_log_batches = []
+    generation_time = datetime.now(timezone.utc)
 
     for seg_key, contacts, cache in (
         ("attendee", attendee_contacts, attendee_cache),
@@ -907,12 +940,18 @@ def run(args) -> int:
         fm, body = parse_template(template_path)
         utm_content_a = fm.get("utm_content_a", f"{seg_key}-a")
         utm_content_b = fm.get("utm_content_b", f"{seg_key}-b")
-        recording_url_a = with_utm(event["recording_url"], campaign, utm_content_a)
-        recording_url_b = with_utm(event["recording_url"], campaign, utm_content_b)
+        recording_url_a = with_utm(event["recording_url"], UTM_SOURCE, UTM_MEDIUM, campaign, utm_content_a)
+        recording_url_b = with_utm(event["recording_url"], UTM_SOURCE, UTM_MEDIUM, campaign, utm_content_b)
 
         cta_token = "{{recording_cta}}" if seg_key == "attendee" else "{{recording_cta_timestamped}}"
         rendered_body = body.replace(cta_token, f"[Watch the recording →]({recording_url_a})")
         rendered_body = rendered_body.replace("{{recording_link}}", recording_url_a)
+        # no_show.md-only tokens (no-op .replace() on attendee, which doesn't
+        # reference either) -- both resolved directly here rather than left
+        # as HubSpot merge fields, see event_time_since_close()/
+        # function_relevant_segment() docstrings for why.
+        rendered_body = rendered_body.replace("{{event_time_since_close}}", event_time_since_close(event, generation_time))
+        rendered_body = rendered_body.replace("{{function_relevant_segment}}", function_relevant_segment(cache))
         rendered_body += personalization_preview(contacts, cache)
 
         new_fm = {
@@ -963,7 +1002,7 @@ def run(args) -> int:
     fm, body = parse_template(template_path)
     utm_content_a = fm.get("utm_content_a", "speaker-a")
     utm_content_b = fm.get("utm_content_b", "speaker-b")
-    recording_url_a = with_utm(event["recording_url"], campaign, utm_content_a)
+    recording_url_a = with_utm(event["recording_url"], UTM_SOURCE, UTM_MEDIUM, campaign, utm_content_a)
 
     base_body = (
         body.replace("{{attendance_count}}", str(attendance_count))

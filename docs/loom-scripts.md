@@ -31,7 +31,7 @@ data, not a spinner."
 it lands: a live dashboard built from what the pipeline just produced."
 
 **1:20 — screen: back to `docs/index.html`, scroll to "Swap to your real event"**
-"Swapping this onto a real webinar is two file edits, no code changes. That's
+"Swapping this onto a real webinar is five files, no code changes. That's
 the whole pitch — this isn't a demo you'd throw away, it's the actual engine."
 
 ---

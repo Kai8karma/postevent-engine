@@ -47,12 +47,16 @@ import time
 import urllib.error
 import urllib.request
 from pathlib import Path
-from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 import verify_grounding
 
 MODULE_DIR = Path(__file__).resolve().parent
 REPO_ROOT = MODULE_DIR.parent.parent
+SHARED_DIR = REPO_ROOT / "shared"
+if str(SHARED_DIR) not in sys.path:
+    sys.path.insert(0, str(SHARED_DIR))
+from utm import with_utm  # shared/utm.py -- canonical impl, see its docstring  # noqa: E402
+
 DEFAULT_TRANSCRIPT = REPO_ROOT / "data" / "incoming" / "transcript.md"
 DEFAULT_EVENT = REPO_ROOT / "data" / "incoming" / "event.json"
 SAMPLE_DIR = MODULE_DIR / "sample_output"
@@ -128,10 +132,11 @@ def event_tag(event: dict) -> str:
 # import M2 (kept independent per the module boundary) but must produce the
 # identical campaign slug so both modules' links roll into the same
 # HubSpot/analytics campaign. If M2's slugging logic ever changes, update
-# both. with_utm() generalizes M2's version (which hardcodes
-# source=webinar/medium=email, M2's only channel) to accept source/medium
-# per channel -- same four utm_* keys, same campaign format, not a second
-# scheme.
+# both. with_utm() itself (imported from shared/utm.py above) IS shared
+# with M2 now -- same four utm_* keys, explicit source/medium per call, one
+# implementation. M3 varies source/medium per channel (CHANNEL_UTM /
+# SOCIAL_PLATFORM_UTM below); M2's only channel is source=webinar/
+# medium=email.
 CHANNEL_UTM = {
     "blog.md": {"utm_source": "blog", "utm_medium": "content"},
     "youtube.md": {"utm_source": "youtube", "utm_medium": "video"},
@@ -150,18 +155,6 @@ def slugify(text: str) -> str:
 def campaign_slug(event: dict) -> str:
     name = event["event_name"].split(":", 1)[0]
     return f"{slugify(name)}-{event['date']}"
-
-
-def with_utm(url: str, utm_source: str, utm_medium: str, campaign: str, content: str) -> str:
-    parts = urlparse(url)
-    q = dict(parse_qsl(parts.query))
-    q.update({
-        "utm_source": utm_source,
-        "utm_medium": utm_medium,
-        "utm_campaign": campaign,
-        "utm_content": content,
-    })
-    return urlunparse(parts._replace(query=urlencode(q)))
 
 
 SOCIAL_POST_RE = re.compile(r"### Post (\d+).*?(?=### Post \d+|\Z)", re.S)

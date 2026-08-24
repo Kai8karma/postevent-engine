@@ -75,7 +75,12 @@ deep each one goes, in order:
    Clay enrichment run and a live HubSpot sandbox push (not a dry-run), and
    completeness measured against the brief's own named fields, not an
    inflated denominator (99.8% contact / 97.2% company, both above the 90%
-   bar).
+   bar). Caveat on the Clay run: it was proven live on 3 reference domains
+   (hubspot.com/clay.com/n8n.io) via a separate manual invocation of
+   `modules/m1-enrichment/tools/clay_enrich.py`, not on the fixture's own 150
+   synthetic registrant domains and not through M1's own pipeline run — the
+   fixture's domains return nothing from Clay by construction (see the
+   control room's scorecard for the same caveat).
 2. **M3 — next.** A real extraction-to-asset chain — one `claude -p`
    extraction pass over the transcript, then every asset (blog/YouTube/
    infographic/social) generated off that extraction rather than each
@@ -113,6 +118,24 @@ output) but not the final path — `<event-slug>` is `event.json`'s
 that's `out/pipeline-after-the-webinar-turning-event-engagement-into-revenue/`
 (verified by running it). `docs/index.html` is the judge control room:
 per-module demo links, architecture diagram, economics table, build log.
+
+## Synthetic fixture disclosure
+
+The bundled demo event is entirely fictional: host domain
+`acmerevenue.example`, its speakers, and its registrant companies are
+invented, not drawn from a real webinar. The transcript
+(`data/incoming/transcript.md`) is authored, not a transcription of a real
+recording. `data/fixtures/engagement.json` — the post-event activity log M4
+scores — is hand-authored, including its `_meta` block, which pre-selects
+which accounts surface as "hot accounts" and which contacts trigger the
+anomaly detector, so the dashboard has something real to show on every run.
+All fixture dates were shifted -30 days by the one-off `_internal/shift_dates.py`
+so the event sits at a realistic ~5-week distance from whatever day a
+reviewer opens this, rather than aging visibly stale. This is deliberate
+demo design, not a shortcut: synthetic data avoids shipping a real company's
+registrant list and PII, and hand-authored fixtures make every run
+byte-reproducible for review. The "Run it on your own webinar" path below is
+unaffected — swap in real data and the same code runs on it.
 
 ## Live mode
 

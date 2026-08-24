@@ -1,0 +1,60 @@
+{
+  "event": "Pipeline After the Webinar: Turning Event Engagement into Revenue",
+  "date": "2026-07-20",
+  "campaign": "pipeline-after-the-webinar-2026-07-20",
+  "mode": "offline",
+  "llm_calls_made": 0,
+  "enriched_source": "out/final/m1/hubspot_ready.csv",
+  "recipient_pipeline": {
+    "segmentation_source": "M1 enriched output (out/final/m1/hubspot_ready.csv)",
+    "registrant_pool_rows": 153,
+    "unique_attendee_no_show_contacts": 138,
+    "suppressed_count": 3,
+    "suppressed": [
+      {
+        "email": "diegoi@cascaderevops.com",
+        "attendance_status": "attended",
+        "reason": "competitor domain ('cascaderevops.com')"
+      },
+      {
+        "email": "lucas.alsayed@cascaderevops.com",
+        "attendance_status": "attended",
+        "reason": "competitor domain ('cascaderevops.com')"
+      },
+      {
+        "email": "priya.nair@acmerevenue.example",
+        "attendance_status": "attended",
+        "reason": "host company domain ('acmerevenue.example') -- internal staff, not a prospect"
+      }
+    ],
+    "mailable_attendee_no_show": 135
+  },
+  "segments": {
+    "attendee": {
+      "to_count": 76,
+      "subject_a": "The 3.2x stat from today's session (and your takeaways)",
+      "subject_b": "Priya, Daniel & Sara's follow-up: your recording + 3 takeaways",
+      "utm_content_a": "attendee-thank-you-a",
+      "utm_content_b": "attendee-thank-you-b",
+      "file": "emails/attendee-thank-you.md"
+    },
+    "no_show": {
+      "to_count": 59,
+      "subject_a": "You registered for a reason \u2014 here's the 6-minute version",
+      "subject_b": "Sorry we missed you (recording + the part that's about you)",
+      "utm_content_a": "no-show-catchup-a",
+      "utm_content_b": "no-show-catchup-b",
+      "file": "emails/no-show-catchup.md"
+    },
+    "speaker": {
+      "to_count": 3,
+      "subject_a": "Your session numbers are in: 82 attendees, 58% avg watch-through",
+      "subject_b": "Thank you, {{first_name}} \u2014 here's how Tuesday's session performed",
+      "attendance_count": 82,
+      "registered_count": 150,
+      "avg_watch_minutes": 35.8,
+      "watch_pct": 58,
+      "file": "emails/speaker-thank-you.md"
+    }
+  }
+}

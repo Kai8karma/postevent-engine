@@ -1,41 +1,15 @@
-{
-  "key_moments": [
-    {"timestamp": "01:52", "speaker": "Priya Nair", "summary": "Priya admits ACME's own team used to let webinar leads sit for days despite good attendance, framing the session as lessons from doing it wrong."},
-    {"timestamp": "05:10", "speaker": "Daniel Kim", "summary": "Daniel reveals the 3.2x reply rate stat for 4-hour follow-up vs next-day, which was the number that secured budget for their process rebuild."},
-    {"timestamp": "06:20", "speaker": "Sara Alvarez", "summary": "Sara shares the multi-threading insight: accounts with 3+ attendees convert to opportunity at nearly double the rate of single-attendee accounts."},
-    {"timestamp": "11:25", "speaker": "Sara Alvarez", "summary": "Sara introduces the internal routing speed problem, revealing that cutting routing delay from 18 hours to under 2 hours lifted opportunity creation by 41%."},
-    {"timestamp": "15:44", "speaker": "Daniel Kim", "summary": "Daniel reveals no-show follow-up emails with a 3-bullet summary outperform attendee follow-ups in click-through rate in 6 of the last 8 webinars."},
-    {"timestamp": "28:52", "speaker": "Sara Alvarez", "summary": "Sara shares the segmentation lift data: moving from blanket sends to three-way segmentation tripled click-through rates from ~6% to ~17%."},
-    {"timestamp": "38:42", "speaker": "Daniel Kim", "summary": "Daniel discloses that repurposed content generates 2.4x the pipeline-influenced touches of the original live session across six events."},
-    {"timestamp": "51:48", "speaker": "Sara Alvarez", "summary": "Sara states the fully-attributed ROI range of 11-14x on fully-loaded event cost within two quarters, counting both direct and repurposed-content-sourced pipeline."},
-    {"timestamp": "54:22", "speaker": "Sara Alvarez", "summary": "Sara delivers the line 'Attribution is the mirror, not the engine,' reframing attribution as measurement rather than a value-creation lever."},
-    {"timestamp": "59:18", "speaker": "Daniel Kim", "summary": "Daniel identifies the single biggest mistake: treating every attendee identically with one email and send time regardless of engagement depth."}
-  ],
-  "quotes": [
-    {"timestamp": "01:52", "speaker": "Priya Nair", "quote": "for years our own team ran webinars, got great attendance, felt good about ourselves, and then just... let the leads sit. Like, sit for days.", "topic": "the problem"},
-    {"timestamp": "06:48", "speaker": "Sara Alvarez", "quote": "accounts with three or more attendees on the same webinar convert to opportunity at almost double the rate of single-attendee accounts. Multi-threading basically happens by accident at a webinar and most teams don't even notice it's happening.", "topic": "multi-threading"},
-    {"timestamp": "09:24", "speaker": "Daniel Kim", "quote": "the person just spent an hour thinking about your topic, it's fresh, they might still have the tab open. A day later they're back in their actual job, dealing with their actual fires, and your webinar is a distant memory competing with forty other emails in their inbox.", "topic": "speed-to-lead rationale"},
-    {"timestamp": "11:30", "speaker": "Sara Alvarez", "quote": "when we cut the internal routing delay from an average of about eighteen hours down to under two hours, our webinar-sourced opportunity creation rate went up by forty-one percent over the following quarter. Same leads, same list quality, just faster internal handoff.", "topic": "internal routing impact"},
-    {"timestamp": "15:35", "speaker": "Sara Alvarez", "quote": "even an imperfect score beats no score. The alternative most teams have is literally alphabetical order or whoever registered first gets called first, which has zero correlation with actual interest.", "topic": "lead scoring"},
-    {"timestamp": "19:06", "speaker": "Sara Alvarez", "quote": "The speaker thank-you — especially when it's an external speaker like Daniel today, or like me — should not just be a generic 'thanks for joining.' It should include an actual performance snapshot.", "topic": "speaker follow-up"},
-    {"timestamp": "30:40", "speaker": "Sara Alvarez", "quote": "A lot of this is small details, honestly, that's kind of the theme of the whole talk. None of these individually feel revolutionary, it's the compounding of a dozen small correct decisions instead of a dozen small default ones.", "topic": "compounding small wins"},
-    {"timestamp": "39:55", "speaker": "Sara Alvarez", "quote": "Repurposing without attribution is just content marketing theater.", "topic": "attribution necessity"},
-    {"timestamp": "43:22", "speaker": "Daniel Kim", "quote": "If you try to summarize the whole event in every post you get ten posts that all feel like the same press release.", "topic": "social content strategy"},
-    {"timestamp": "53:15", "speaker": "Daniel Kim", "quote": "Attribution doesn't create value, it just measures value that was created by doing the earlier steps well.", "topic": "attribution role"},
-    {"timestamp": "54:22", "speaker": "Sara Alvarez", "quote": "Attribution is the mirror, not the engine.", "topic": "attribution metaphor"},
-    {"timestamp": "59:50", "speaker": "Sara Alvarez", "quote": "doing the work of timing and segmentation well, and then not tagging any of it, so three months later nobody can prove any of it mattered and the whole program gets deprioritized in the next budget cycle for something that looks flashier but actually performs worse. Tag everything, from day one, even if the tracking feels tedious in the moment.", "topic": "tagging discipline"}
-  ],
-  "data_points": [
-    {"timestamp": "05:10", "speaker": "Daniel Kim", "stat": "3.2x reply rate", "context": "Follow-up within 4 hours lifts reply rate 3.2x compared to next-day follow-up; this stat secured budget for the process rebuild."},
-    {"timestamp": "06:20", "speaker": "Sara Alvarez", "stat": "~2x opportunity conversion", "context": "Accounts with 3+ attendees on the same webinar convert to opportunity at nearly double the rate of single-attendee accounts."},
-    {"timestamp": "08:35", "speaker": "Daniel Kim", "stat": "Reply rate decay curve: 1hr=best, 4hr=3.2x, 24hr=1.4x, 48hr=baseline", "context": "Follow-up within 1 hour has best reply rates; within 4 hours still 3.2x vs next-day; by 24 hours drops to 1.4x; by 48 hours at baseline (no lift vs 96 hours)."},
-    {"timestamp": "11:30", "speaker": "Sara Alvarez", "stat": "41% increase in opportunity creation rate", "context": "Cutting internal routing delay from ~18 hours average to under 2 hours increased webinar-sourced opportunity creation by 41% over the following quarter with same leads and list quality."},
-    {"timestamp": "16:23", "speaker": "Daniel Kim", "stat": "6 of 8 webinars", "context": "No-show follow-up email (recording + 3-bullet summary) achieved better click-through rate than attendee follow-up in 6 of the last 8 webinars."},
-    {"timestamp": "18:15", "speaker": "Daniel Kim", "stat": "~14% higher open rate", "context": "Stat-led subject line outperformed speaker-name-led subject line by approximately 14 percentage points in open rate on attendee thank-you send."},
-    {"timestamp": "28:52", "speaker": "Sara Alvarez", "stat": "CTR from ~6% to ~17% (3x)", "context": "Moving from single blanket post-webinar email to three-way segmentation (attendee, no-show, speaker) with role-based variants tripled overall click-through rate across the full post-event send."},
-    {"timestamp": "38:42", "speaker": "Daniel Kim", "stat": "2.4x pipeline-influenced touches", "context": "Repurposed content (blog, social, infographic) from a single 60-minute webinar generated 2.4x the pipeline-influenced touches of the original live session, averaged across the last 6 events."},
-    {"timestamp": "44:40", "speaker": "Sara Alvarez", "stat": "~40% higher engagement", "context": "Quote posts (single bold quote + speaker name) get approximately 40% higher engagement than summary-style posts in their testing."},
-    {"timestamp": "48:56", "speaker": "Sara Alvarez", "stat": "60% faster time-to-MQL", "context": "Attendees who received segmented follow-up within the critical window reached MQL status about 60% faster (measured in days) than attendees who got generic delayed follow-up."},
-    {"timestamp": "51:48", "speaker": "Sara Alvarez", "stat": "11-14x ROI on fully-loaded event cost", "context": "Across fully-attributed events at Meridian, return on fully-loaded event cost (including follow-up and repurposing effort) ranges 11-14x within two quarters, counting both direct attendee pipeline and secondary pipeline from repurposed content."}
+[
+    {"timestamp": "01:15", "speaker": "Priya Nair", "summary": "Priya reveals the motivation for the session: their own team historically let webinar leads sit unused."},
+    {"timestamp": "05:10", "speaker": "Daniel Kim", "summary": "Daniel shares the pivotal stat that follow-up within 4 hours lifts reply rate 3.2x vs next-day, securing budget."},
+    {"timestamp": "06:20", "speaker": "Sara Alvarez", "summary": "Sara reveals that accounts with 3+ attendees convert to opportunity at nearly double the rate of single-attendee accounts."},
+    {"timestamp": "10:18", "speaker": "Daniel Kim", "summary": "Daniel explains the unlock: using transcript + registration data to auto-generate first-draft follow-ups for scale."},
+    {"timestamp": "11:30", "speaker": "Sara Alvarez", "summary": "Sara shares that cutting internal routing delay from 18h to <2h boosted webinar-sourced opportunity creation by 41%."},
+    {"timestamp": "24:05", "speaker": "Priya Nair", "summary": "Transition to segmentation section, introducing the three-layer framework."},
+    {"timestamp": "28:20", "speaker": "Sara Alvarez", "summary": "Sara reports moving from blanket to segmented emails lifted click-through from ~6% to >17% (≈3x)."},
+    {"timestamp": "36:05", "speaker": "Priya Nair", "summary": "Transition to content repurposing segment, acknowledging her prior skepticism."},
+    {"timestamp": "38:42", "speaker": "Daniel Kim", "summary": "Daniel reveals repurposed content generated 2.4x the pipeline-influenced touches of the live session."},
+    {"timestamp": "41:32", "speaker": "Sara Alvarez", "summary": "Sara mandates every repurposed asset needs its own UTM tied to the original event for attribution."},
+    {"timestamp": "48:14", "speaker": "Sara Alvarez", "summary": "Transition to attribution section, outlining three layers of measurement."},
+    {"timestamp": "51:48", "speaker": "Sara Alvarez", "summary": "Sara shares end-to-end ROI of 11-14x on fully-loaded event cost within two quarters."},
+    {"timestamp": "55:45", "speaker": "Priya Nair", "summary": "Transition to live audience Q&A."}
   ]
-}

@@ -10,7 +10,7 @@ Daniel Kim and Sara Alvarez spent the next hour on four things: how fast you mov
 
 The framing came early and stuck. "The value of a lead decays, like, aggressively, from the moment the event ends," Daniel said. "It's not linear either, it's closer to a cliff."
 
-> "Follow-up sent within the first hour after the session ends — best reply rates we see, full stop. Within four hours, still strong — three point two x versus next-day follow-up. By twenty-four hours, you've lost most of that lift."
+> "Follow-up sent within the first hour after the session ends — best reply rates we see, full stop. Within four hours, still strong, that's the three point two x number versus next-day I mentioned. By twenty-four hours, you've lost most of that lift, reply rate drops to something like one point four x versus next-day, and by forty-eight hours you're basically at baseline."
 > — Daniel Kim, Head of Demand Gen, Northwind Analytics
 
 The unlock isn't a bigger SDR team — nobody is hand-writing four hundred personalized emails by 6pm on a Tuesday. It's using the transcript and registration data together to draft segment-specific follow-up automatically, with a human reviewing and hitting send rather than writing from scratch.

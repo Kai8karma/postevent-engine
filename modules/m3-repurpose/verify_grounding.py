@@ -224,12 +224,34 @@ def find_timestamp_claims(text: str, check_chapters: bool) -> list:
 
 
 def find_speaker_attributions(text: str) -> list:
+    """Same "creative-copy sections aren't claims" skip find_quotes() uses
+    (SKIP_QUOTE_HEADING_RE) -- a Headline Options bullet like "Speed,
+    Segmentation, ROI: ..." (capitalized word + comma at line start)
+    otherwise misreads as a "-- Name," attribution line."""
     names = []
-    for m in DASH_ATTR_LINE_RE.finditer(text):
-        names.append(m.group(1).strip())
-    for m in DASH_ATTR_INLINE_RE.finditer(text):
-        names.append(m.group(1).strip())
+    for rx in (DASH_ATTR_LINE_RE, DASH_ATTR_INLINE_RE):
+        for m in rx.finditer(text):
+            heading = _heading_before(text, m.start())
+            if heading and SKIP_QUOTE_HEADING_RE.search(heading):
+                continue
+            names.append(m.group(1).strip())
     return names
+
+
+STAT_REF_RE = re.compile(r"\bStat\s+(\d+)\b")
+
+
+def find_undefined_stat_refs(text: str) -> list:
+    """infographic.md only: every "Stat N" the Layout section cites by
+    ordinal must exist as a Data Points entry -- catches a Layout describing
+    a stat number no Data Points bullet defines (shipped defect, 2026-08:
+    Layout referenced "Stat 7" with only 6 Data Points)."""
+    dp_m = re.search(r"^##\s*Data Points\s*$", text, re.MULTILINE)
+    layout_m = re.search(r"^##\s*Layout\s*$", text, re.MULTILINE)
+    if not dp_m or not layout_m or layout_m.start() <= dp_m.end():
+        return []
+    n_points = len(re.findall(r"^\s*(?:\d+\.\s*)?\*\*", text[dp_m.end():layout_m.start()], re.MULTILINE))
+    return sorted({n for n in map(int, STAT_REF_RE.findall(text[layout_m.end():])) if n > n_points})
 
 
 def match_speaker(name: str, speaker_names: list):
@@ -284,6 +306,14 @@ def verify_asset(name: str, text: str, turns: list, windows: list, valid_ts_seco
         if not ok:
             claim["reason"] = f"no transcript window matched at ratio >= {QUOTE_RATIO_THRESHOLD} (best {ratio:.3f})"
         claims.append(claim)
+
+    if name == "infographic.md":
+        for n in find_undefined_stat_refs(text):
+            claims.append({
+                "type": "structural", "text": f"Stat {n}",
+                "context": "## Layout", "verified": False,
+                "reason": f'## Layout references "Stat {n}" but ## Data Points has no entry {n}',
+            })
 
     for nm in find_speaker_attributions(text):
         matched_speaker, ratio = match_speaker(nm, speaker_names)
