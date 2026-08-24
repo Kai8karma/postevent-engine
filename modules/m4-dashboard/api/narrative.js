@@ -281,17 +281,36 @@ function httpsJson(hostname, path, headers, payloadObj) {
 }
 
 async function callGemini(apiKey, content) {
-  const model = (process.env.GEMINI_MODEL || "gemini-2.0-flash").trim();
-  const out = await httpsJson(
-    "generativelanguage.googleapis.com",
-    "/v1beta/models/" + model + ":generateContent",
-    { "x-goog-api-key": apiKey },
-    { contents: [{ parts: [{ text: content }] }], generationConfig: { temperature: 0.2, maxOutputTokens: 1600 } }
-  );
-  const parts = (((out.candidates || [])[0] || {}).content || {}).parts || [];
-  const text = parts.map((p) => p.text || "").join("").trim();
-  if (!text) throw new Error("gemini: empty completion");
-  return text;
+  // Google retires model ids on a fast cycle (gemini-2.0-flash 404'd
+  // "no longer available" live on 2026-08-25) — try candidates in order
+  // and fall through on model-level 404s. GEMINI_MODEL env pins the first.
+  const candidates = [];
+  if ((process.env.GEMINI_MODEL || "").trim()) candidates.push(process.env.GEMINI_MODEL.trim());
+  for (const m of ["gemini-2.5-flash", "gemini-flash-latest", "gemini-2.5-flash-lite"]) {
+    if (!candidates.includes(m)) candidates.push(m);
+  }
+  let lastErr = null;
+  for (const model of candidates) {
+    try {
+      const out = await httpsJson(
+        "generativelanguage.googleapis.com",
+        "/v1beta/models/" + model + ":generateContent",
+        { "x-goog-api-key": apiKey },
+        { contents: [{ parts: [{ text: content }] }], generationConfig: { temperature: 0.2, maxOutputTokens: 1600 } }
+      );
+      const parts = (((out.candidates || [])[0] || {}).content || {}).parts || [];
+      const text = parts.map((p) => p.text || "").join("").trim();
+      if (!text) throw new Error("gemini " + model + ": empty completion");
+      return text;
+    } catch (e) {
+      lastErr = e;
+      const msg = String((e && e.message) || e);
+      // Only model-availability failures fall through to the next id;
+      // auth/quota errors abort the whole provider immediately.
+      if (!/status 404|not found|no longer available/i.test(msg)) throw e;
+    }
+  }
+  throw lastErr || new Error("gemini: no candidate models available");
 }
 
 async function callOpenAICompatible(hostname, path, apiKey, model, content) {
