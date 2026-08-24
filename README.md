@@ -25,12 +25,18 @@ nothing pretends a cached sample is a live call.
   ```
   python3 orchestrator/run_pipeline.py
   ```
-- **Live, real LLM calls (needs an OpenRouter key):**
+- **Live, real LLM calls, at no cost (needs a free OpenRouter key):**
   ```
   LLM_BACKEND=openrouter \
-  OPENROUTER_MODEL="nvidia/nemotron-3.5-lightning:free,nvidia/nemotron-3-super-120b-a12b:free,nvidia/nemotron-3-ultra-550b-a55b:free" \
+  OPENROUTER_MODEL="nvidia/nemotron-3-super-120b-a12b:free,nvidia/nemotron-3-ultra-550b-a55b:free" \
+  OPENROUTER_MAX_TOKENS=4000 \
     python3 orchestrator/run_pipeline.py --live --out out/my-live-run
   ```
+  Every model in that chain is a `:free` slug, so a live run costs nothing.
+  Measured 2026-08-24: M1 finishes in ~2m20s and adjudicates all 9 dedupe
+  gray-zone pairs with no parse failures. `nemotron-3.5-lightning:free` is
+  faster still but returns JSON that does not match the batch schema, so it
+  is deliberately not first in the chain.
 - **Clone it:**
   ```
   git clone https://github.com/Kai8karma/postevent-engine && cd postevent-engine
@@ -157,6 +163,23 @@ trailing sentence, and sometimes spend the whole completion budget thinking —
 the modules' JSON extraction, timeouts, retries and shape validation are sized
 for exactly that, so expect a live run to take minutes, not seconds, and read
 `out/<run>/<module>/_stage.log` if a stage fails.
+
+**`OPENROUTER_MAX_TOKENS` is worth setting.** The default is 12000, sized for
+reasoning models that think before emitting JSON. On OpenRouter that ceiling
+costs wall-clock even when the answer is short — measured against
+`nemotron-3.5-lightning:free`, an identical two-token reply took **50.7s at
+12000, 29.4s at 6000, and 8.0s at 1500**. Latency tracks the ceiling, not the
+response. 4000 is the sweet spot for the free models above: enough headroom
+for a 30-row JSON batch, several times faster than the default. It also
+matters on a low balance — OpenRouter checks affordability against the
+ceiling rather than actual usage, returning `402 ... can only afford N` on a
+request that would have cost a fraction of that. `enrich.py` retries smaller
+on a 402 rather than reporting the run as out of credits.
+
+Two `--live` backends exist and `LLM_BACKEND=auto` (the default) prefers the
+first: an authenticated `claude` CLI, or OpenRouter. If you have a Claude
+subscription, `claude login` is the higher-quality path and costs nothing
+extra.
 
 ## Module map
 
