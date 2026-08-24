@@ -380,11 +380,41 @@ def build_association_inputs(contact_rows: list, domain_id_map: dict, email_id_m
 # step runner (shared by ensure-properties / upsert-companies / upsert-contacts / associate)
 # --------------------------------------------------------------------------
 
+def salvage_failed_chunk(step_name: str, endpoint: str, chunk: list, token, chunk_label: str):
+    """A HubSpot batch is all-or-nothing: one invalid record 400s the whole
+    request and the response carries no ids, so every valid record in that
+    chunk silently loses its id too. Observed live -- 3 RFC-2606 `.example`
+    speaker addresses (rejected as INVALID_EMAIL) cost the other 35 contacts
+    in their chunk their ids, which then skipped 39 email engagements at
+    --log-emails time.
+
+    Re-sends the chunk one record at a time so the valid ones still land.
+    Returns (responses, rejected) where rejected is a list of
+    (record, reason) for genuinely bad records -- surfaced, never silently
+    dropped."""
+    responses, rejected = [], []
+    print(f"[salvage] {step_name} {chunk_label}: re-sending {len(chunk)} record(s) individually "
+          f"so valid rows are not lost to the batch rejection", file=sys.stderr)
+    for record in chunk:
+        status, parsed, err = http_call("POST", endpoint, token, {"inputs": [record]})
+        if status in (200, 201):
+            responses.append(parsed)
+        else:
+            ident = (record.get("id")
+                     or (record.get("properties") or {}).get("email")
+                     or (record.get("properties") or {}).get("domain")
+                     or "<unidentified>")
+            rejected.append((ident, f"{status}: {str(err)[:160]}"))
+        time.sleep(RATE_LIMIT_SLEEP)
+    return responses, rejected
+
+
 def run_batch_step(step_name: str, endpoint: str, chunks: list, token, dry_run: bool, strict: bool):
     """chunks: list of list-of-input-dicts, each already shaped for a
-    batch/upsert or batch/create body. Returns (ok, fail, sample_body, responses)."""
+    batch/upsert or batch/create body. Returns
+    (ok, fail, sample_body, responses, rejected)."""
     ok, fail = 0, 0
-    responses = []
+    responses, rejected = [], []
     sample_body = truncate_body({"inputs": chunks[0]}) if chunks else "(no inputs)"
     for i, chunk in enumerate(chunks):
         body = {"inputs": chunk}
@@ -399,8 +429,21 @@ def run_batch_step(step_name: str, endpoint: str, chunks: list, token, dry_run: 
             print(f"[warn] {step_name} chunk {i + 1}/{len(chunks)} -> {status}: {err}", file=sys.stderr)
             if strict:
                 raise StepHardFail(f"{step_name} hard-failed on chunk {i + 1}/{len(chunks)}: {status}")
+            # 4xx means HubSpot rejected the payload, so retrying the same body
+            # is pointless -- but the chunk is usually mostly valid. Salvage it
+            # record by record. 5xx/network errors are not salvaged here: the
+            # whole request is worth retrying, not splitting.
+            if 400 <= status < 500 and len(chunk) > 1:
+                salvaged, bad = salvage_failed_chunk(
+                    step_name, endpoint, chunk, token, f"chunk {i + 1}/{len(chunks)}")
+                responses.extend(salvaged)
+                rejected.extend(bad)
+                if salvaged:
+                    print(f"[salvage] {step_name} chunk {i + 1}/{len(chunks)}: recovered "
+                          f"{len(salvaged)} of {len(chunk)} record(s); {len(bad)} genuinely rejected",
+                          file=sys.stderr)
         time.sleep(RATE_LIMIT_SLEEP)
-    return ok, fail, sample_body, responses
+    return ok, fail, sample_body, responses, rejected
 
 
 def run_company_sync(company_inputs: list, token, dry_run: bool, strict: bool):
@@ -702,12 +745,21 @@ def main():
               "to HubSpot in this sandbox pass (no matching owners) -- see HUBSPOT_PUSH.md.")
         contact_inputs, contact_skipped = build_contact_inputs(contact_rows, event_tag)
         contact_chunks = chunked(contact_inputs, BATCH_SIZE)
-        k_ok, k_fail, k_sample, contact_responses = run_batch_step(
+        k_ok, k_fail, k_sample, contact_responses, contact_rejected = run_batch_step(
             "upsert-contacts", "/crm/v3/objects/contacts/batch/upsert", contact_chunks, token, args.dry_run, args.strict)
+        contact_note = f"skipped_no_email={contact_skipped}"
+        if contact_rejected:
+            contact_note += f"; rejected_by_hubspot={len(contact_rejected)}"
+            print(f"[warn] upsert-contacts: {len(contact_rejected)} record(s) rejected by HubSpot after "
+                  f"individual retry -- these have no contact id, so any email engagement for them "
+                  f"cannot be logged:", file=sys.stderr)
+            for ident, reason in contact_rejected:
+                print(f"       {ident} -> {reason}", file=sys.stderr)
         receipts.append({
             "step": "upsert-contacts", "requests": len(contact_chunks), "records": len(contact_inputs),
-            "status": "planned" if args.dry_run else ("ok" if k_fail == 0 else ("partial" if k_ok else "failed")),
-            "note": f"skipped_no_email={contact_skipped}", "sample": k_sample,
+            "status": "planned" if args.dry_run else ("ok" if (k_fail == 0 and not contact_rejected)
+                                                       else ("partial" if (k_ok or contact_responses) else "failed")),
+            "note": contact_note, "sample": k_sample,
         })
 
         # Step 4: associate
@@ -715,7 +767,7 @@ def main():
         email_id_map = {} if args.dry_run else extract_id_map(contact_responses, "email")
         assoc_inputs, assoc_skipped = build_association_inputs(contact_rows, domain_id_map, email_id_map, args.dry_run)
         assoc_chunks = chunked(assoc_inputs, BATCH_SIZE)
-        a_ok, a_fail, a_sample, _ = run_batch_step(
+        a_ok, a_fail, a_sample, _, _ = run_batch_step(
             "associate", "/crm/v4/associations/contacts/companies/batch/create", assoc_chunks, token, args.dry_run, args.strict)
         receipts.append({
             "step": "associate", "requests": len(assoc_chunks), "records": len(assoc_inputs),
