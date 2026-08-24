@@ -14,7 +14,22 @@ Transcript in, multi-format content package out: blog draft, YouTube chapters/de
 
 `--live` LLM backend: `LLM_BACKEND` env selects `auto` (default, tries `claude -p` then falls back to OpenRouter if a key exists), `claude`, or `openrouter`. OpenRouter key comes from `OPENROUTER_API_KEY` env, else a `OPENROUTER_API_KEY=...` line in `~/.config/postevent/llm.env` (never printed). `OPENROUTER_MODEL` overrides the default model id (falls back through `anthropic/claude-sonnet-5` → `4.6` → `4.5` on 400/404 model errors).
 
-**Image-gen slots in production, not here.** This module ships specs, never pixels: `youtube.md`'s Thumbnail Brief (composition/text overlay/colors) and `social.md`'s quote-card posts are both handoffs to an image-generation step downstream — thumbnail art and branded quote-card graphics respectively. Production wiring: an n8n node reads that brief/quote text and calls an image API (e.g. `generate_image`), writes the asset back to the shared drive next to the markdown, and a human approves before publish — same judgment-gate discipline as M2's sends.
+**`repurpose.py` itself ships specs, not pixels.** `youtube.md`'s Thumbnail Brief (composition/text overlay/colors) and `infographic.md`'s Data Points + Layout are handoffs to an image-generation step downstream, not something this script renders. That downstream step is real code, though — `gen_visuals.py` (see "Visual assets" below), wired into `orchestrator/run_pipeline.py` as an optional post-M3 stage (`--gen-visuals`) — not left as a future n8n plan.
+
+## Spec gate (word counts, post counts, required sections)
+
+Every asset is checked against `check_asset_spec()` **before** it's written to disk: `blog.md` 800–1200 words, `social.md` 5–10 `### Post` blocks, `youtube.md`/`infographic.md` their fixed 3-section output contracts (`## Chapters`/`## Description`/`## Thumbnail Brief` and `## Headline Options`/`## Data Points`/`## Layout` respectively). This used to be measured *after* the asset already hit disk and just annotated — real defect: a live-generated `blog.md` shipped at 1,277 words against the 800–1,200 cap, with `blog_within_spec: false` recorded and nothing else done about it (`out/live-proof/m3/manifest.json`).
+
+`--live` now regenerates on a failed check: the specific failure ("blog draft was 1277 words -- spec requires 800-1200 -- cut 77+ words") is appended to the retry prompt and the whole asset is rewritten, up to 3 attempts. Still out of spec after 3 → ships anyway (never blocks a human-reviewed content pipeline), but loudly: a stderr warning at generation time, plus `manifest.json`'s `spec_check.gate.<asset>` records `attempts` and `within_spec` per asset so nothing is silently swallowed. Offline mode checks the same way but can't regenerate (zero LLM calls by design) — a spec violation there means `sample_output/*.md` itself needs editing.
+
+```json
+"spec_check": {
+  "blog_words": 1165, "blog_spec": "800-1200", "blog_within_spec": true,
+  "social_posts": 8, "social_spec": "5-10", "social_within_spec": true,
+  "youtube_sections_ok": true, "infographic_sections_ok": true,
+  "gate": { "blog.md": {"attempts": 1, "within_spec": true, "detail": ""}, ... }
+}
+```
 
 ## Grounding verification
 
@@ -57,6 +72,8 @@ Every outbound link in `blog.md`, `youtube.md`, and `social.md` (not `infographi
 
 The assignment's tool list for M3 is "Transcription API, LLM for generation, n8n for the pipeline, image generation for visual assets" — but `repurpose.py` only ever consumed a pre-written `transcript.md`. `transcribe.py` closes that gap: real audio in, real STT transcript out.
 
+**Wired into the pipeline, not a side-lane.** `orchestrator/run_pipeline.py --modules m3` runs this as a genuine optional stage ("M3 transcribe (proof)"): auto-discovers `<event-dir>/recording.wav` (or `--transcribe-audio <file.wav>` to point elsewhere), and SKIPs — a receipt status distinct from FAIL, never a fabricated call — with the exact reason when no audio exists (true for every fixture event in this repo today). `--transcribe-live` opts into the real Sarvam network call (needs a real `SARVAM_API_KEY`); the default is `--dry-run` (zero cost) even when an audio file is found.
+
 **Command** (against a real recording):
 
 ```bash
@@ -76,6 +93,8 @@ python3 transcribe.py --audio your_recording.wav --out out/live-proof-transcript
 
 The assignment's M3 tool list also names "image generation for visual assets," and `youtube.md`'s Thumbnail Brief / `infographic.md`'s Data Points + Layout were, until now, specs only — no pixels. `gen_visuals.py` closes that: it reads the live `youtube.md` and `infographic.md`, builds a grounded image-generation prompt from each (brief text, exact stats, hex colors — nothing invented), and produces a YouTube thumbnail (16:9) and an infographic hero image (portrait/square).
 
+**Wired into the pipeline, not a side-lane.** `orchestrator/run_pipeline.py --modules m3 --gen-visuals` runs this as a genuine optional stage ("M3 visuals") right after M3 completes, pointed at that run's own `youtube.md`/`infographic.md`. Off by default (real generation spends real OpenRouter credits, ~$0.04–0.08 for 2 images per the `out/live-proof-visuals/` receipt below); `--gen-visuals` alone still only writes `image_prompts.json` (`--dry-run`, zero cost) — `--live-visuals` opts into the real spend, and the pipeline prints the cost estimate before it runs.
+
 **Command:**
 
 ```bash
@@ -89,3 +108,17 @@ python3 gen_visuals.py --youtube out/live-proof/m3/youtube.md \
 **This script is genuinely executable end to end, not a prompt-only stub.** It calls a real direct HTTP image API — OpenRouter's chat-completions endpoint with image output modality, model `google/gemini-2.5-flash-image` — using the same `OPENROUTER_API_KEY` already wired for this module's `--live` text path. The Higgsfield MCP tool named in the build brief for interactive sessions isn't callable from a plain script (MCP tools only exist inside a Claude session), so this is the fallback branch described in that brief, not the primary one; it was chosen because it verified working in this environment. It fails loud — HTTP error, `{"error":...}` payload, or a response with no image data all raise and exit 1 — no placeholder or SVG is ever substituted for a failed generation.
 
 **Live proof:** `out/live-proof-visuals/` — `youtube-thumbnail-acmerevenue-2026-07-20.png` (1024×576, cropped from the model's native 1024×1024 output to true 16:9) and `infographic-hero-acmerevenue-2026-07-20.png` (1024×1024). `visuals_meta.json` records both the Higgsfield MCP attempt (0 credits on the free plan, no unlim allowance, `generate_image` call failed with the exact error `"Error starting generation: Requires basic plan or higher."`) and the OpenRouter generations actually used instead: model, full prompt sent, generation ID, dimensions, file size, and OpenRouter account usage (USD) before/after. It also logs known quality gaps found on inspection — the thumbnail's requested headline text didn't render legibly, and the infographic has three model-generated text typos (documented rather than silently shipped as clean).
+
+## Publishing (shared drive, tagged by event)
+
+SPEC.md's M3 output line ends "Saved to shared drive, tagged by event." A real Google Drive upload happened (`out/live-proof-drive/`) but by hand, through an interactive MCP session — no repo code did it. `../../scripts/publish_deliverables.py` does, in two lanes:
+
+1. **Local shared drive** — always runs, zero network, zero credentials. Copies the run's deliverables into `out/shared-drive/<event_tag>/<event_tag> — <filename>`, tagged by event, with a composed `INDEX.md`. Genuinely works every time, which is why it's the default rather than the Drive lane.
+2. **Google Drive** — only when `GOOGLE_DRIVE_ACCESS_TOKEN` (or `--drive-token-env NAME`) holds a real OAuth access token: folder-lookup-or-create, then a multipart upload per file, exact shape documented in `../../scripts/publish_to_drive.md`. No token → skipped with a labelled reason in `publish_manifest.json`, never faked. Verified against the real endpoint with a deliberately-invalid token: a genuine `HTTP 401` from `googleapis.com`, proving the wiring reaches Google for real without needing a working credential to prove it (same pattern as `modules/m1-enrichment/push_to_hubspot.py`'s dry-run-plus-401-path proof).
+
+```bash
+python3 scripts/publish_deliverables.py --m3-out out/<slug>/m3               # local only (no token set)
+GOOGLE_DRIVE_ACCESS_TOKEN=... python3 scripts/publish_deliverables.py --m3-out out/<slug>/m3   # + real Drive upload
+```
+
+**Wired into the pipeline, not a side-lane.** `orchestrator/run_pipeline.py --modules m3` runs this automatically right after a passing M3 ("M3 publish") — free, so no opt-in flag needed; `--no-publish` skips it. Neither lane ever calls Drive's `permissions.create` — nothing this pipeline publishes is ever made public.

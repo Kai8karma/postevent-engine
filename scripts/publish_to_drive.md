@@ -1,12 +1,29 @@
-# Publishing M3 deliverables to Google Drive — production runbook
+# Publishing M3 deliverables to a shared drive — production runbook
 
-This is deliberately not a stub script. Tonight's actual upload
-(`out/live-proof-drive/`) was done through the Google Drive MCP connector
-(an authenticated session, not raw HTTP), which is the right tool for a
-one-off interactive proof but not something `repurpose.py` should shell out
-to in production. Below is the real mechanism `repurpose.py` would call.
+**This is now real code, not just a runbook**: `scripts/publish_deliverables.py`
+implements both lanes below. Run it after any M3 run:
 
-## What `repurpose.py` would do, after it writes the 6 local files
+```bash
+python3 scripts/publish_deliverables.py --m3-out out/<slug>/m3
+```
+
+It always copies the run's deliverables into a real local "shared drive"
+(`out/shared-drive/<event_tag>/`, tagged by event, with an `INDEX.md` —
+zero network, zero credentials, genuinely works every time) and additionally
+uploads to Google Drive via the exact mechanism documented below whenever
+`GOOGLE_DRIVE_ACCESS_TOKEN` (or `--drive-token-env NAME`) holds a live OAuth
+access token — see the README's "Google Drive handoff" for how to mint one.
+No token → the Drive lane is skipped with a labelled reason in
+`publish_manifest.json`, never faked. This document remains the reference
+for the exact Drive API shape that code calls.
+
+Tonight's actual first Drive upload (`out/live-proof-drive/`) was done
+through the Google Drive MCP connector (an authenticated session, not raw
+HTTP), which was the right tool for a one-off interactive proof before this
+script existed but not something a script should shell out to in
+production. Below is the real mechanism `publish_deliverables.py` calls.
+
+## What `publish_deliverables.py` does, after M3 writes the 6 local files
 
 ```
 for each event run:

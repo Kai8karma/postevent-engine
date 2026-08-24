@@ -15,6 +15,14 @@ type (blog/youtube/infographic/social) using prompts/<asset>.md with
 (missing binary, timeout, non-zero exit incl. auth) fails loud -- clear
 stderr message, exit 1 -- rather than silently writing nothing.
 
+Every asset is checked against check_asset_spec() BEFORE it is written to
+disk (blog: 800-1200 words, social: 5-10 posts, youtube/infographic: their
+fixed 3-section contracts). A failure regenerates with the specific reason
+appended to the prompt ("blog was 1277 words, cap is 1200 -- cut 77+
+words"), up to 3 attempts; if still out of spec after 3, the asset ships
+anyway with a loud stderr warning and manifest.json's spec_check block
+flags it -- never silently.
+
 --live-dry-run: builds all 5 real prompts (extraction + 4 assets) with real
 transcript/event data substituted in and writes them to <out>/dry-run/, but
 never calls claude -p. Zero network calls -- use to verify the --live path
@@ -209,13 +217,70 @@ def stamp(text: str, tag: str, mode: str) -> str:
     return f"<!-- event: {tag} | generated: {mode} -->\n" + text
 
 
+# --- Spec gate (SPEC.md M3: blog 800-1200 words, 5-10 social posts, and the
+# fixed 3-section output contracts prompts/youtube.md and prompts/
+# infographic.md both mandate). check_asset_spec() is the single source of
+# truth both run_live()'s regenerate loop and run()'s manifest["spec_check"]
+# report from -- one definition, so "what counts as in spec" can't drift
+# between the gate and the report. ---
+MAX_SPEC_ATTEMPTS = 3
+REQUIRED_SECTIONS = {
+    "youtube.md": ["## Chapters", "## Description", "## Thumbnail Brief"],
+    "infographic.md": ["## Headline Options", "## Data Points", "## Layout"],
+}
+
+
+def check_asset_spec(name: str, text: str) -> tuple:
+    """Structural/numeric spec check for one generated asset's body text
+    (post-UTM, pre-stamp). Returns (ok, detail) -- detail is a SPECIFIC,
+    human-readable description of the failure (exact overage/shortfall,
+    named missing sections), not a generic "out of spec" -- it gets fed
+    verbatim into the --live regenerate prompt so the model has something
+    actionable to fix, and into manifest.json for a human reviewer.
+    detail == "" when ok is True."""
+    if name == "blog.md":
+        n = word_count(text)
+        if n < 800:
+            return False, f"blog draft was {n} words -- spec requires 800-1200 -- add {800 - n}+ words"
+        if n > 1200:
+            return False, f"blog draft was {n} words -- spec requires 800-1200 -- cut {n - 1200}+ words"
+        return True, ""
+    if name == "social.md":
+        n = sum(1 for line in text.splitlines() if line.startswith("### Post"))
+        if n < 5:
+            return False, f"social.md had {n} post(s) -- spec requires 5-10 -- add {5 - n} more post(s)"
+        if n > 10:
+            return False, f"social.md had {n} post(s) -- spec requires 5-10 -- cut {n - 10} post(s)"
+        return True, ""
+    required = REQUIRED_SECTIONS.get(name)
+    if required:
+        missing = [h for h in required if h not in text]
+        if missing:
+            return False, f"{name} is missing required section(s): {', '.join(missing)}"
+        return True, ""
+    return True, ""
+
+
 def run_offline(event: dict, out_dir: Path) -> dict:
     tag = event_tag(event)
     manifest = {"event_tag": tag, "mode": "offline", "assets": {}}
+    spec_gate = {}
     for name in ASSETS:
         text = add_utm_links(name, (SAMPLE_DIR / name).read_text(), event)
+        ok, detail = check_asset_spec(name, text)
+        if not ok:
+            # Offline mode makes zero LLM calls by design (see module
+            # docstring) -- there is nothing to regenerate against, so a
+            # spec violation here means sample_output/<name> itself needs
+            # editing. Fail loud on stderr rather than silently shipping a
+            # canned sample that's out of spec.
+            print(f"[spec gate] {name}: offline sample violates spec ({detail}) -- "
+                  f"cannot regenerate (offline mode is a fixed replay, zero LLM calls) -- "
+                  f"edit sample_output/{name} or run --live", file=sys.stderr)
         (out_dir / name).write_text(stamp(text, tag, "offline-sample"))
         manifest["assets"][name] = {"path": str(out_dir / name), "words": word_count(text)}
+        spec_gate[name] = {"attempts": 1, "within_spec": ok, "detail": detail}
+    manifest["_spec_gate"] = spec_gate
     # Rendered visual assets (thumbnail, quote card) ride along when present;
     # produced by tools/render_visuals.py from the thumbnail brief in youtube.md.
     visuals_dir = SAMPLE_DIR / "visuals"
@@ -423,22 +488,56 @@ def fill(template: str, transcript: str, event_json: str, extraction: str = "") 
 def run_live(transcript_text: str, event: dict, out_dir: Path) -> dict:
     tag = event_tag(event)
     event_json = json.dumps(event, indent=2)
+    mode_label = f"live-{os.environ.get('LLM_BACKEND', 'auto').strip().lower() or 'auto'}"
 
     extraction_prompt = fill((PROMPTS_DIR / "extraction.md").read_text(), transcript_text, event_json)
     extraction_raw = _strip_json_fence(call_claude(extraction_prompt))
     (out_dir / "extraction.json").write_text(extraction_raw)
+    llm_calls = 1
 
     manifest = {"event_tag": tag, "mode": "live", "assets": {}}
+    spec_gate = {}
     for name in ASSETS:
-        prompt = fill((PROMPTS_DIR / name).read_text(), transcript_text, event_json, extraction_raw)
-        text = add_utm_links(name, call_claude(prompt), event)
-        (out_dir / name).write_text(stamp(text, tag, f"live-{os.environ.get('LLM_BACKEND', 'auto').strip().lower() or 'auto'}"))
+        base_prompt = fill((PROMPTS_DIR / name).read_text(), transcript_text, event_json, extraction_raw)
+        prompt = base_prompt
+        text, ok, detail, attempt = None, False, "", 0
+        # Gate BEFORE the asset ever reaches disk: generate, check against
+        # check_asset_spec(), and on failure regenerate with the specific
+        # failure appended to the prompt (e.g. "blog was 1277 words, cap is
+        # 1200 -- cut 77+ words") rather than a bare retry. Bounded at
+        # MAX_SPEC_ATTEMPTS (3) -- see PLAN.md punch-list: the word-count
+        # gate used to annotate a spec violation after the file was already
+        # written, never regenerating.
+        for attempt in range(1, MAX_SPEC_ATTEMPTS + 1):
+            raw = call_claude(prompt)
+            llm_calls += 1
+            text = add_utm_links(name, raw, event)
+            ok, detail = check_asset_spec(name, text)
+            if ok:
+                break
+            if attempt < MAX_SPEC_ATTEMPTS:
+                print(f"[spec gate] {name} attempt {attempt}/{MAX_SPEC_ATTEMPTS} failed: {detail} "
+                      f"-- regenerating", file=sys.stderr)
+                prompt = base_prompt + (
+                    f"\n\n---\nREGENERATION NOTE (attempt {attempt} rejected by the spec gate): "
+                    f"{detail}. Rewrite the ENTIRE asset from scratch honoring the output contract "
+                    "above -- do not just trim or pad the previous draft; produce a coherent full "
+                    "replacement that satisfies both the contract and this note.\n"
+                )
+        if not ok:
+            print(f"[spec gate] {name}: FAILED spec check after {MAX_SPEC_ATTEMPTS} attempts "
+                  f"({detail}) -- shipping anyway, flagged loudly in manifest.json spec_check "
+                  "rather than silently", file=sys.stderr)
+        (out_dir / name).write_text(stamp(text, tag, mode_label))
         manifest["assets"][name] = {"path": str(out_dir / name), "words": word_count(text)}
+        spec_gate[name] = {"attempts": attempt, "within_spec": ok, "detail": detail}
+    manifest["_spec_gate"] = spec_gate
     # Live-signal receipt (api/run.py's P0 fix): reaching this line means the
     # extraction call plus every asset call above already succeeded --
     # call_claude() fails loud (RuntimeError) on any backend problem, so
-    # there is no silent-fallback count to worry about here.
-    manifest["llm_calls_made"] = 1 + len(ASSETS)
+    # there is no silent-fallback count to worry about here. llm_calls_made
+    # includes every regeneration attempt, not just one-per-asset.
+    manifest["llm_calls_made"] = llm_calls
     return manifest
 
 
@@ -537,15 +636,29 @@ def run(args) -> int:
         check_fingerprint(args.transcript, args.event, args.allow_stale)
         manifest = run_offline(event, args.out)
 
-    # Spec numerics, measured (SPEC.md M3: blog 800-1200 words, 5-10 social
-    # posts). Recorded as numbers + a within_spec flag rather than asserted,
-    # so an over-long live generation is visible in the manifest, not hidden.
+    # Spec numerics, gated (SPEC.md M3: blog 800-1200 words, 5-10 social
+    # posts, plus youtube.md/infographic.md's fixed 3-section contracts).
+    # spec_gate was computed BEFORE each asset was written (run_live()
+    # regenerates on failure, up to MAX_SPEC_ATTEMPTS, before ever touching
+    # disk; run_offline() checks the fixed sample before writing it since
+    # there's no LLM to regenerate against offline). This block folds that
+    # gate result into the manifest -- numbers + a within_spec flag per
+    # asset, so a violation that survived every attempt is visible here, not
+    # hidden.
+    spec_gate = manifest.pop("_spec_gate", {})
     blog_words = manifest["assets"].get("blog.md", {}).get("words", 0)
     social_text = (args.out / "social.md").read_text() if (args.out / "social.md").exists() else ""
     social_posts = sum(1 for line in social_text.splitlines() if line.startswith("### Post"))
+    blog_gate = spec_gate.get("blog.md", {})
+    social_gate = spec_gate.get("social.md", {})
     manifest["spec_check"] = {
-        "blog_words": blog_words, "blog_spec": "800-1200", "blog_within_spec": 800 <= blog_words <= 1200,
-        "social_posts": social_posts, "social_spec": "5-10", "social_within_spec": 5 <= social_posts <= 10,
+        "blog_words": blog_words, "blog_spec": "800-1200",
+        "blog_within_spec": blog_gate.get("within_spec", 800 <= blog_words <= 1200),
+        "social_posts": social_posts, "social_spec": "5-10",
+        "social_within_spec": social_gate.get("within_spec", 5 <= social_posts <= 10),
+        "youtube_sections_ok": spec_gate.get("youtube.md", {}).get("within_spec"),
+        "infographic_sections_ok": spec_gate.get("infographic.md", {}).get("within_spec"),
+        "gate": spec_gate,  # per-asset attempts + specific failure detail, see check_asset_spec()
     }
 
     if transcript_text is not None:
@@ -570,10 +683,14 @@ def run(args) -> int:
             f"verification -- see {args.out / 'grounding_report.json'}"
         )
 
-    flags = "" if (manifest["spec_check"]["blog_within_spec"] and manifest["spec_check"]["social_within_spec"]) \
-        else " [spec_check: see manifest.json]"
+    sc = manifest["spec_check"]
+    in_spec = (sc["blog_within_spec"] and sc["social_within_spec"]
+               and sc["youtube_sections_ok"] is not False and sc["infographic_sections_ok"] is not False)
+    flags = "" if in_spec else " [spec_check: see manifest.json]"
+    regenerated = {n: g["attempts"] for n, g in spec_gate.items() if g["attempts"] > 1}
+    regen_note = f" (regenerated: {regenerated})" if regenerated else ""
     print(f"M3 repurpose ({manifest['mode']}): 4 assets -> {args.out} "
-          f"(blog {blog_words}w, {social_posts} social posts, event_tag={manifest['event_tag']}){flags}")
+          f"(blog {blog_words}w, {social_posts} social posts, event_tag={manifest['event_tag']}){flags}{regen_note}")
     return 0
 
 
