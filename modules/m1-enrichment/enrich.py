@@ -142,6 +142,31 @@ OPENROUTER_MODEL_FALLBACKS = [
 # working around the affordability check.
 OPENROUTER_MIN_MAX_TOKENS = 1500
 
+# Default completion ceiling. 12000 buys headroom for reasoning models, which
+# spend completion tokens thinking before they emit the JSON. It is the wrong
+# default for a fast non-reasoning model: measured against
+# nvidia/nemotron-3.5-lightning:free, a two-token answer took 50.7s at 12000,
+# 29.4s at 6000 and 8.0s at 1500 -- latency tracks the ceiling, not the
+# response. Override per run with OPENROUTER_MAX_TOKENS; ~4000 is the sweet
+# spot for the free non-reasoning models (enough for a 30-row batch of JSON,
+# roughly 6x faster than the reasoning-model default).
+OPENROUTER_DEFAULT_MAX_TOKENS = 12000
+
+
+def get_openrouter_max_tokens() -> int:
+    """OPENROUTER_MAX_TOKENS env override, else the reasoning-model default.
+    A non-positive or unparseable value falls back rather than erroring --
+    a bad env var should not take the whole --live lane down."""
+    raw = (os.environ.get("OPENROUTER_MAX_TOKENS") or "").strip()
+    if raw:
+        try:
+            val = int(raw)
+            if val > 0:
+                return val
+        except ValueError:
+            pass
+    return OPENROUTER_DEFAULT_MAX_TOKENS
+
 ALLOWED_FUNCTIONS = {"executive", "revops", "customer_success", "sales", "marketing", "general"}
 ALLOWED_SENIORITY = {
     "c_suite", "vp", "head", "director", "manager", "intern", "individual_contributor", "unknown",
@@ -632,7 +657,7 @@ def get_openrouter_model() -> str:
     return os.environ.get("OPENROUTER_MODEL") or OPENROUTER_MODEL_FALLBACKS[0]
 
 
-def call_openrouter(prompt: str, key: str = "", max_tokens: int = 12000) -> str:
+def call_openrouter(prompt: str, key: str = "", max_tokens: int = 0) -> str:
     """POSTs one chat-completion request to OpenRouter. 60s timeout, one
     retry on 429/5xx only -- a 401/403 (bad/missing key) fails on the first
     attempt so a broken key costs exactly one request. `key` defaults to
@@ -641,6 +666,11 @@ def call_openrouter(prompt: str, key: str = "", max_tokens: int = 12000) -> str:
     key = key or get_openrouter_key()
     if not key:
         raise RuntimeError("OpenRouter requested but no key found (OPENROUTER_API_KEY / ~/.config/postevent/llm.env)")
+    # 0 = "caller didn't care", resolve from env/default. An explicit value
+    # (the health-check ping's max_tokens=1, or the 402 retry's halving) is
+    # always honoured as-is.
+    if max_tokens <= 0:
+        max_tokens = get_openrouter_max_tokens()
     body = json.dumps({
         "model": get_openrouter_model(),
         "messages": [{"role": "user", "content": prompt}],
