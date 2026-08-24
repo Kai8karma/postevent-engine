@@ -46,7 +46,7 @@ Loop used: builders run in parallel and self-verify → a critic pass per module
 
   | stage | seconds | result |
   |---|---|---|
-  | M1 enrich | 0.16 | PASS — 150 input rows, 3 fake-email exclusions, 133 output rows |
+  | M1 enrich | 0.21 | PASS — 150 input rows, 3 fake-email exclusions, 138 output rows (133 registrant contacts + 3 speakers + 2 recovered from the case-only-duplicate-email bug) |
   | M2 comms | 0.08 | PASS — 3 email variants rendered, 153 recipients |
   | M3 repurpose | 0.07 | PASS — 4 content assets |
   | M4 dashboard | 0.07 | PASS — 10 top accounts, 5 buying-committee accounts, 2 anomalies |

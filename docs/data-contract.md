@@ -68,7 +68,16 @@ match keeps one row (`merge_action` unaffected); a HubSpot match sets
 0.95, docks `confidence` proportionally (`enrich.py` line 1226) rather than
 treating every match at the threshold as equally certain. On this build's
 fixture: 150 raw rows → 3 excluded as synthetic-fake → 12 within-batch
-duplicate pairs → 16 HubSpot matches → 133 output rows, 117 net-new.
+duplicate pairs → 16 HubSpot matches → 135 registrant rows, plus 3 speakers
+read from `speakers.json` × `segments.json` → **138 output rows**.
+
+Two of those 135 were being silently lost until 2026-08-24: when two rows
+normalised to the same email (a case-only re-registration, e.g. `RHADDAD@…`
+vs `rhaddad@…`), the primaries filter keyed on the email string and dropped
+*both* the duplicate and the primary it should have merged into. Speakers
+were never in the export at all, because `enrich.py` only ever read
+`registrants.csv`. Both are fixed; see `enrich.py → load_speakers()` and the
+`_merged_away` flag.
 
 ## 3. ICP tier rubric
 

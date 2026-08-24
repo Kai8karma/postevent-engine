@@ -218,6 +218,52 @@
   }
 
   footer { padding: 30px 0 60px; color: var(--text-muted); font-size: 13px; text-align: center; }
+
+  /* ---------- run it yourself ---------- */
+  .run-box {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+    padding: 24px; box-shadow: var(--shadow);
+  }
+  .run-status-line { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); margin-bottom: 18px; }
+  .run-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted); flex: none; }
+  .run-dot.ok { background: #0f9d78; }
+  .run-dot.bad { background: #c0392b; }
+  .run-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
+  .run-field { display: flex; flex-direction: column; gap: 6px; }
+  .run-field-inline { min-width: 220px; }
+  .run-label { font-size: 12.5px; font-weight: 700; color: var(--text); }
+  .run-label-sub { font-weight: 500; color: var(--text-muted); margin-left: 6px; }
+  .run-textarea {
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; color: var(--text);
+    font-family: "SF Mono", "Cascadia Code", Consolas, Menlo, monospace; font-size: 12.5px;
+    padding: 10px; min-height: 90px; resize: vertical;
+  }
+  input[type="file"] {
+    font-size: 12.5px; color: var(--text-muted);
+  }
+  .run-text-input, .run-select {
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; color: var(--text);
+    font-size: 13.5px; padding: 8px 10px; width: 100%;
+  }
+  .run-controls { display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-end; margin-top: 18px; }
+  .run-live-toggle { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--text); }
+  .run-btn {
+    margin-top: 20px; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 10px;
+    padding: 11px 22px; font-size: 14.5px; font-weight: 700; cursor: pointer;
+  }
+  .run-btn:hover { filter: brightness(1.06); }
+  .run-btn:disabled { opacity: 0.55; cursor: default; }
+  .run-result { margin-top: 20px; border-top: 1px solid var(--border); padding-top: 18px; }
+  .run-result .run-msg { font-size: 14px; margin-bottom: 12px; }
+  .run-result .run-msg.err { color: #c0392b; font-weight: 600; }
+  .run-result .run-msg.ok { color: #0f9d78; font-weight: 600; }
+  .run-result .run-notes { font-size: 13px; color: var(--text-muted); background: var(--surface-2); border-radius: 8px; padding: 10px 12px; margin-bottom: 12px; }
+  .run-result .run-notes li { margin: 4px 0; }
+  .run-result pre {
+    background: var(--code-bg); color: var(--code-text); border-radius: 8px; padding: 12px;
+    font-size: 12px; overflow-x: auto; max-height: 340px;
+  }
+  .run-result details summary { cursor: pointer; font-size: 12.5px; color: var(--accent); font-weight: 600; margin-top: 6px; }
 </style>
 </head>
 <body>
@@ -235,6 +281,7 @@
       <a href="#scorecard">Scored against the brief</a>
       <a href="#economics">Economics</a>
       <a href="#buildlog">Build Log</a>
+      <a href="#runit">Run it yourself</a>
       <a href="#swap">Swap to your event</a>
     </div>
     <button class="theme-toggle" id="themeToggle" type="button">Toggle theme</button>
@@ -399,7 +446,7 @@
           <tbody>
             <tr><td>M1 enrich</td><td>2 inference batches over the 30 rows the rule tables couldn't fill; model inferred function / seniority / size band / industry</td><td>PASS — 25 of 30 rows patched by the model; 1 batch fell back to rule values after a malformed response (counted, not hidden: <code class="mono">live_inference_report.json</code>)</td><td>121 s</td></tr>
             <tr><td>M2 comms</td><td>3 calls: attendee takeaways by function × industry, no-show takeaways, speaker quotes + subject-line pairs</td><td id="m2-live-result">PASS — 3 variants rendered for 153 recipients; attendee + no-show takeaways came back keyed by all 6 functions × 3 industry buckets; the speaker call's first answer was 51 KB of reasoning with no JSON (kept: <code class="mono">m2/live_raw/speaker.attempt1.raw.txt</code>), the automatic retry returned clean JSON — the parse→validate→retry path doing its job live</td><td id="m2-live-secs">795 s</td></tr>
-            <tr><td>M3 repurpose</td><td>1 extraction call (key moments, quotes, data points) + 4 generation calls (blog, YouTube, infographic, social)</td><td>PASS — blog 1,277 words (<b>77 over the 800–1,200 spec</b>, flagged <code class="mono">blog_within_spec:false</code> in <code class="mono">manifest.json</code>), 8 social posts ✓, 18 YouTube chapters ✓</td><td>548 s</td></tr>
+            <tr><td>M3 repurpose</td><td>1 extraction call (key moments, quotes, data points) + 4 generation calls (blog, YouTube, infographic, social)</td><td>PASS — blog 1,277 words (<b>77 over the 800–1,200 spec</b>, flagged <code class="mono">blog_within_spec:false</code> in <code class="mono">manifest.json</code>), 8 social posts ✓, 18 YouTube chapters ✓. <b>This overrun is what the spec gate was built for:</b> the check now runs before the write and regenerates with the overage named, so this run would not ship as-is today.</td><td>548 s</td></tr>
             <tr><td>M4 dashboard</td><td>none at build time by design (deterministic metrics); narrative is generated on page load by <code class="mono">/api/narrative</code></td><td>PASS — 10 top accounts, 5 committee accounts, 2 anomalies</td><td>0.05 s</td></tr>
           </tbody>
         </table>
@@ -1072,7 +1119,7 @@
           <tr><td><span class="card-tag tag-m2">M2</span> n8n orchestration (Tools)</td><td>Cloud-lane workflow (real HubSpot/Clay HTTP nodes) imported into a live n8n Cloud instance and its webhook trigger fired live; the HubSpot leg still needs a credential the reviewer supplies</td><td><code class="mono">orchestrator/n8n/cloud/master.json</code> · <code class="mono">orchestrator/README.md</code></td><td>Met with a stand-in</td></tr>
           <tr><td><span class="card-tag tag-m3">M3</span> Extract key moments, insights, quotes, data points</td><td>One extraction call over the full transcript, structured JSON output</td><td><code class="mono">out/&lt;slug&gt;/m3/extraction.json</code></td><td>Met</td></tr>
           <tr><td><span class="card-tag tag-m3">M3</span> Transcription API (Tools)</td><td>Real stdlib client posting to Sarvam's <code class="mono">/speech-to-text</code>, 3 live calls on a synthesised stand-in recording (no real webinar recording exists)</td><td><code class="mono">modules/m3-repurpose/transcribe.py</code> · <a href="#receipts">transcription receipt</a> — 254 words, 0.9216 similarity</td><td>Met with a stand-in — stand-in audio; the live proof ran through the Sarvam MCP client, not <code class="mono">transcribe.py</code>'s own REST path (no key in that shell)</td></tr>
-          <tr><td><span class="card-tag tag-m3">M3</span> Blog draft, 800–1,200 words</td><td>Offline: 1,165 words, within spec. Live: 1,277 words, 77 over — flagged, not hidden</td><td><code class="mono">manifest.json → assets["blog.md"].words</code> / <code class="mono">blog_within_spec</code></td><td>Met</td></tr>
+          <tr><td><span class="card-tag tag-m3">M3</span> Blog draft, 800–1,200 words</td><td>Enforced before the file is written: the word count is checked, and a draft outside 800–1,200 is regenerated with the exact overage named in the retry prompt (up to 3 attempts), then shipped loudly flagged rather than silently. Offline: 1,165 words. The earlier 1,277-word live draft is what motivated the gate — that path now regenerates instead of annotating.</td><td><code class="mono">repurpose.py → check_asset_spec()</code> / <code class="mono">manifest.json → spec_check.gate</code></td><td>Met</td></tr>
           <tr><td><span class="card-tag tag-m3">M3</span> YouTube chapter markers + description + thumbnail brief</td><td>All three generated per run</td><td><code class="mono">out/&lt;slug&gt;/m3/youtube.md</code> — live run: 18 chapters</td><td>Met</td></tr>
           <tr><td><span class="card-tag tag-m3">M3</span> Infographic outline with data points</td><td>Real numbers pulled from the transcript, structured for a designer or a generator to render</td><td><code class="mono">out/&lt;slug&gt;/m3/infographic.md</code></td><td>Met</td></tr>
           <tr><td><span class="card-tag tag-m3">M3</span> Image generation for visual assets (Tools)</td><td>Higgsfield (primary) returned 0 credits / plan-gated; real fallback call to <code class="mono">google/gemini-2.5-flash-image</code> over OpenRouter, grounded in M3's own live briefs</td><td><a href="#receipts">image-generation receipt</a> — 2 images, $0.077647 total spend</td><td>Met with a stand-in — infographic has 3 model typos, thumbnail headline text didn't render legibly; both flagged for human review before publishing</td></tr>
@@ -1146,6 +1193,57 @@
     </div>
   </section>
 
+  <section id="runit">
+    <h2>Run it yourself — right here</h2>
+    <p class="section-sub">
+      Drop your own registrant CSV and transcript below and click Run. This talks to the same live
+      engine as <a href="https://postevent-engine.vercel.app">the console at the site root</a> —
+      embedded directly in this page so it works even if you opened this file from the submission zip
+      rather than clicking through. Nothing is uploaded until you click Run; nothing is saved server-side
+      after the response comes back.
+    </p>
+    <div class="run-box">
+      <div class="run-status-line">
+        <span class="run-dot" id="runEngineDot"></span>
+        <span id="runEngineStatus">checking engine reachability…</span>
+      </div>
+      <div class="run-grid">
+        <div class="run-field">
+          <label class="run-label" for="runCsvFile">Registrant list <span class="run-label-sub">.csv — leave empty to use the bundled fixture</span></label>
+          <input type="file" id="runCsvFile" accept=".csv,text/csv" />
+          <textarea id="runCsvText" class="run-textarea" placeholder="Or paste registrant CSV rows here…" spellcheck="false"></textarea>
+        </div>
+        <div class="run-field">
+          <label class="run-label" for="runTranscriptFile">Transcript <span class="run-label-sub">.md / .txt / .vtt — leave empty to use the bundled fixture</span></label>
+          <input type="file" id="runTranscriptFile" accept=".md,.txt,.vtt,text/plain,text/markdown" />
+          <textarea id="runTranscriptText" class="run-textarea" placeholder="Or paste transcript text here…" spellcheck="false"></textarea>
+        </div>
+      </div>
+      <div class="run-controls">
+        <div class="run-field run-field-inline">
+          <label class="run-label" for="runEventName">Event name <span class="run-label-sub">optional</span></label>
+          <input type="text" id="runEventName" class="run-text-input" placeholder="Leave blank to use the fixture event name" />
+        </div>
+        <div class="run-field run-field-inline">
+          <label class="run-label" for="runModule">Module</label>
+          <select id="runModule" class="run-select">
+            <option value="chain" selected>Whole chain (M1 → M2 → M3 → M4)</option>
+            <option value="m1">M1 — Enrichment</option>
+            <option value="m2">M2 — Comms</option>
+            <option value="m3">M3 — Repurposing</option>
+            <option value="m4">M4 — Dashboard</option>
+          </select>
+        </div>
+        <label class="run-live-toggle">
+          <input type="checkbox" id="runLiveToggle" /> Live AI
+          <span class="run-label-sub">real model calls — slower, needs a key on the deployment; falls back to offline and says so if there isn't one</span>
+        </label>
+      </div>
+      <button type="button" class="run-btn" id="runBtn">Run</button>
+      <div class="run-result" id="runResult" hidden></div>
+    </div>
+  </section>
+
   <section id="swap">
     <h2>Swap to your real event</h2>
     <div class="swap-box">
@@ -1187,6 +1285,139 @@
       var next = current === 'dark' ? 'light' : 'dark';
       root.setAttribute('data-theme', next);
       try { localStorage.setItem('pe-theme', next); } catch (e) {}
+    });
+  })();
+</script>
+
+<script>
+  (function () {
+    // Absolute URL, deliberately -- this page is opened three ways: on the
+    // Vercel deployment (same-origin, would work with a relative path too),
+    // as a static /control-room/ route on that same deployment (still
+    // same-origin), and as a bare file:// page straight out of the
+    // submission zip (relative paths resolve against the local filesystem
+    // there and silently 404 -- there is no way to make that work except an
+    // absolute URL). api/run.py sends Access-Control-Allow-Origin: * for
+    // exactly this reason.
+    var API = 'https://postevent-engine.vercel.app/api/run';
+
+    function qs(sel) { return document.querySelector(sel); }
+
+    var csvFile = qs('#runCsvFile'), csvText = qs('#runCsvText');
+    var trFile = qs('#runTranscriptFile'), trText = qs('#runTranscriptText');
+    var eventName = qs('#runEventName'), moduleSel = qs('#runModule'), liveToggle = qs('#runLiveToggle');
+    var btn = qs('#runBtn'), resultBox = qs('#runResult');
+    var dot = qs('#runEngineDot'), statusText = qs('#runEngineStatus');
+
+    function readFileInto(fileInput, textArea) {
+      fileInput.addEventListener('change', function () {
+        var f = fileInput.files && fileInput.files[0];
+        if (!f) return;
+        var reader = new FileReader();
+        reader.onload = function () { textArea.value = String(reader.result || ''); };
+        reader.onerror = function () { textArea.value = ''; alert('Could not read "' + f.name + '": ' + (reader.error && reader.error.message)); };
+        reader.readAsText(f);
+      });
+    }
+    readFileInto(csvFile, csvText);
+    readFileInto(trFile, trText);
+
+    // Reachability check on load -- tells you *before* you click Run whether
+    // this embed can reach the engine at all (e.g. no network, or the
+    // deployment is down), instead of only finding out after typing
+    // everything in.
+    fetch(API, { method: 'GET' })
+      .then(function (res) { return res.json(); })
+      .then(function (json) {
+        if (json && json.ok) {
+          dot.className = 'run-dot ok';
+          statusText.textContent = 'engine reachable' + (json.live_available ? ' — live AI lane available' : ' — offline lane only (no key on this deployment)');
+        } else {
+          dot.className = 'run-dot bad';
+          statusText.textContent = 'engine responded but reported not-ok: ' + (json && json.error || 'unknown error');
+        }
+      })
+      .catch(function (e) {
+        dot.className = 'run-dot bad';
+        statusText.textContent = 'engine unreachable (' + (e && e.message || 'network error') + ') — check your connection, or this deployment may be down';
+      });
+
+    function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+    function renderSummary(summary) {
+      if (!summary) return '';
+      var rows = [];
+      function walk(obj, prefix) {
+        Object.keys(obj).forEach(function (k) {
+          var v = obj[k];
+          if (v && typeof v === 'object' && !Array.isArray(v)) { walk(v, prefix + k + '.'); return; }
+          rows.push('<div class="stat"><div class="num">' + esc(v) + '</div><div class="lbl">' + esc(prefix + k) + '</div></div>');
+        });
+      }
+      walk(summary, '');
+      return '<div class="stat-row">' + rows.join('') + '</div>';
+    }
+
+    btn.addEventListener('click', function () {
+      btn.disabled = true;
+      btn.textContent = 'Running…';
+      resultBox.hidden = false;
+      resultBox.innerHTML = '<div class="run-msg">running — this can take a few seconds (offline) or up to a minute (live)…</div>';
+
+      var payload = {
+        module: moduleSel.value,
+        live: !!liveToggle.checked,
+      };
+      if (csvText.value.trim()) payload.registrants_csv = csvText.value;
+      if (trText.value.trim()) payload.transcript_md = trText.value;
+      if (eventName.value.trim()) payload.event_name = eventName.value.trim();
+
+      fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+        .then(function (res) { return res.text(); })
+        .then(function (text) {
+          var json;
+          try { json = JSON.parse(text); }
+          catch (e) { throw new Error('non-JSON response from /api/run: ' + text.slice(0, 200)); }
+          return json;
+        })
+        .then(function (json) {
+          var html = '';
+          if (json.ok) {
+            html += '<div class="run-msg ok">done — module: ' + esc(json.module) + ' · lane: ' + esc(json.lane) + ' · ' + esc(json.seconds) + 's' + (json.model ? ' · model: ' + esc(json.model) : '') + '</div>';
+            if (json.notes && json.notes.length) {
+              html += '<ul class="run-notes">' + json.notes.map(function (n) { return '<li>' + esc(n) + '</li>'; }).join('') + '</ul>';
+            }
+            html += renderSummary(json.summary);
+            if (json.log && json.log.length) {
+              html += '<details><summary>view run log (' + json.log.length + ' lines)</summary><pre>' + esc(json.log.join('\n')) + '</pre></details>';
+            }
+            if (json.artifacts && json.artifacts.length) {
+              html += '<details><summary>view artifacts (' + json.artifacts.length + ')</summary><pre>' + esc(json.artifacts.map(function (a) { return a.name + ' (' + a.bytes + ' bytes)'; }).join('\n')) + '</pre></details>';
+            }
+          } else {
+            html += '<div class="run-msg err">failed — module: ' + esc(json.module || '?') + '</div>';
+            html += '<pre>' + esc(json.error || 'unknown error') + (json.hint ? '\n\nhint: ' + json.hint : '') + '</pre>';
+            if (json.log && json.log.length) {
+              html += '<details><summary>view run log (' + json.log.length + ' lines)</summary><pre>' + esc(json.log.join('\n')) + '</pre></details>';
+            }
+          }
+          resultBox.innerHTML = html;
+        })
+        .catch(function (e) {
+          // Deliberately never falls back to canned/mock data here -- if the
+          // real engine can't be reached, this says so in plain text instead
+          // of silently showing numbers that don't reflect what was
+          // actually uploaded.
+          resultBox.innerHTML = '<div class="run-msg err">could not reach the engine: ' + esc(e && e.message || e) + '</div><pre>Nothing was faked as a real run. Check your network connection, or try https://postevent-engine.vercel.app directly.</pre>';
+        })
+        .then(function () {
+          btn.disabled = false;
+          btn.textContent = 'Run';
+        });
     });
   })();
 </script>
