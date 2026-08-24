@@ -1,0 +1,30 @@
+{
+  "logged_at": "2026-08-24T18:38:29.991357+00:00",
+  "source": "n8n workflow rxJnu5ZATDFLJToD execution 4, node 'Demo Send Receipt', fired 2026-08-24T18:23:55Z, approved via signed resume URL, dispatched 2026-08-24T18:35:00Z",
+  "logged": [
+    {
+      "segment": "attendee",
+      "engagement_id": "393626353349",
+      "contact_id": "539631766223",
+      "gmail_message_id": "1a0350de56d2b7a4"
+    },
+    {
+      "segment": "no_show",
+      "engagement_id": "393621030604",
+      "contact_id": "539631766222",
+      "gmail_message_id": "1a0350de73d887f3"
+    }
+  ],
+  "skipped": [
+    {
+      "segment": "speaker",
+      "override_to": "kai8karma+speaker@gmail.com",
+      "intended_recipient": "priya.nair@acmerevenue.example",
+      "subject": "[fixture speaker record] Your session numbers are in: 82 attendees, 58% avg watch-through",
+      "body_text": "[DEMO -- would send to: priya.nair@acmerevenue.example]\n\nHi Priya,\n\nThank you for joining Pipeline After the Webinar: Turning Event Engagement into Revenue. Performance snapshot: 82 live attendees of 150 registered, 35.8 min average watch time.\n\nBuild note, not shown to a real recipient: this is a fixture speaker record (the speaker address is a reserved .example domain -- non-routable by design). The production lane documents the same limitation.\n\nSent 1.1h after event close.\n\nPriya Nair\nVP Marketing, ACME Revenue Cloud",
+      "gmail_message_id": "1a0350deb474a665",
+      "sent_at": "2026-08-24T18:35:00.261Z",
+      "skip_reason": "no contact for intended_recipient"
+    }
+  ]
+}
