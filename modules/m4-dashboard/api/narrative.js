@@ -249,6 +249,83 @@ async function callOpenRouter(apiKey, content) {
   throw lastErr || new Error("openrouter: no candidate models available");
 }
 
+// --- Additional free-tier providers (each used only when its key is set) ---
+// One shared https helper: OpenAI-compatible chat-completions shape is used by
+// Groq and Sarvam; Gemini has its own generateContent shape. Each provider has
+// an independent quota pool, so one provider's daily death no longer takes the
+// live narrative down with it.
+
+function httpsJson(hostname, path, headers, payloadObj) {
+  const https = require("https");
+  const payload = JSON.stringify(payloadObj);
+  return new Promise((resolve, reject) => {
+    const req = https.request({
+      hostname, path, method: "POST",
+      headers: Object.assign({ "content-type": "application/json", "content-length": Buffer.byteLength(payload) }, headers),
+    }, (res) => {
+      let data = "";
+      res.on("data", (c) => { data += c; });
+      res.on("end", () => {
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          try { resolve(JSON.parse(data)); } catch (e) { reject(new Error(hostname + " unparseable response: " + data.slice(0, 200))); }
+        } else {
+          reject(new Error(hostname + " status " + res.statusCode + ": " + data.slice(0, 300)));
+        }
+      });
+    });
+    req.on("error", reject);
+    req.setTimeout(20000, () => { req.destroy(new Error(hostname + " timeout")); });
+    req.write(payload);
+    req.end();
+  });
+}
+
+async function callGemini(apiKey, content) {
+  const model = (process.env.GEMINI_MODEL || "gemini-2.0-flash").trim();
+  const out = await httpsJson(
+    "generativelanguage.googleapis.com",
+    "/v1beta/models/" + model + ":generateContent",
+    { "x-goog-api-key": apiKey },
+    { contents: [{ parts: [{ text: content }] }], generationConfig: { temperature: 0.2, maxOutputTokens: 1600 } }
+  );
+  const parts = (((out.candidates || [])[0] || {}).content || {}).parts || [];
+  const text = parts.map((p) => p.text || "").join("").trim();
+  if (!text) throw new Error("gemini: empty completion");
+  return text;
+}
+
+async function callOpenAICompatible(hostname, path, apiKey, model, content) {
+  const out = await httpsJson(
+    hostname, path,
+    { authorization: "Bearer " + apiKey },
+    { model, messages: [{ role: "user", content }], temperature: 0.2, max_tokens: 1600 }
+  );
+  const text = ((((out.choices || [])[0] || {}).message || {}).content || "").trim();
+  if (!text) throw new Error(hostname + ": empty completion");
+  return text;
+}
+
+// Provider chain: try every configured provider in order; first parseable
+// answer wins. Errors accumulate for the llm_error field.
+async function callAnyProvider(content) {
+  const attempts = [];
+  const errors = [];
+  if (process.env.OPENROUTER_API_KEY) attempts.push(["openrouter", () => callOpenRouter(process.env.OPENROUTER_API_KEY, content)]);
+  if (process.env.GEMINI_API_KEY) attempts.push(["gemini", () => callGemini(process.env.GEMINI_API_KEY, content)]);
+  if (process.env.GROQ_API_KEY) attempts.push(["groq", () => callOpenAICompatible("api.groq.com", "/openai/v1/chat/completions", process.env.GROQ_API_KEY, (process.env.GROQ_MODEL || "llama-3.3-70b-versatile").trim(), content)]);
+  if (process.env.SARVAM_API_KEY) attempts.push(["sarvam", () => callOpenAICompatible("api.sarvam.ai", "/v1/chat/completions", process.env.SARVAM_API_KEY, (process.env.SARVAM_MODEL || "sarvam-m").trim(), content)]);
+  for (const [name, fn] of attempts) {
+    try {
+      const text = await fn();
+      const paragraphs = extractParagraphsFromText(text);
+      return { paragraphs, provider: name };
+    } catch (e) {
+      errors.push(name + ": " + String((e && e.message) || e).slice(0, 140));
+    }
+  }
+  throw new Error(errors.length ? errors.join(" | ") : "no LLM provider keys configured");
+}
+
 // --- Deterministic fallback: composed from the caller's own numbers, no
 // model involved. Runs when every LLM lane fails (quota, network, parse).
 // Honest by construction: every figure comes straight from the payload the
@@ -291,28 +368,26 @@ module.exports = async (req, res) => {
   }
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
-  const openrouterKey = process.env.OPENROUTER_API_KEY;
-  if (!apiKey && !openrouterKey) {
-    res.status(500).json({ error: "ANTHROPIC_API_KEY not configured (set OPENROUTER_API_KEY as a fallback)" });
-    return;
-  }
 
   let stats = {};
   try {
     stats = req.method === "POST" ? await readBody(req) : (req.query || {});
     const prompt = "Dashboard stats:\n" + JSON.stringify(stats, null, 2);
     let paragraphs;
+    let provider = "anthropic";
     if (apiKey) {
       const completion = await callAnthropic(apiKey, prompt);
       paragraphs = extractParagraphs(completion);
     } else {
-      const text = await callOpenRouter(openrouterKey, SYSTEM_PROMPT + "\n\n" + prompt);
-      paragraphs = extractParagraphsFromText(text);
+      const result = await callAnyProvider(SYSTEM_PROMPT + "\n\n" + prompt);
+      paragraphs = result.paragraphs;
+      provider = result.provider;
     }
     res.status(200).json({
       paragraphs,
       generated_at: new Date().toISOString(),
       source: "live",
+      provider,
     });
   } catch (err) {
     // Every LLM lane failed (quota 402s, network, unparseable output).
