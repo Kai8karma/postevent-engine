@@ -132,6 +132,11 @@
   .status-pill.stalled{background:var(--danger-soft);color:var(--danger);}
   .anomaly-threshold-note{font-size:11.5px;color:var(--text-muted);margin:-6px 0 14px;line-height:1.5;max-width:760px;}
 
+  /* live annotations -- advisory-only, see build_dashboard.py's
+     generate_live_annotations() / README's AI-boundary section */
+  .annotation{font-style:italic;color:var(--text-muted);font-size:11.5px;line-height:1.45;margin-top:6px;}
+  .anomaly-card .annotation{margin:2px 0 8px;}
+
   /* narrative */
   .narrative-card{padding:20px 22px;}
   .narrative-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;}
@@ -169,7 +174,9 @@
     </div>
     <div class="gen-meta">
       Dashboard built <code id="generated-at">—</code><br>
-      Engagement as of <code id="as-of">—</code>
+      Engagement as of <code id="as-of">—</code><br>
+      Engagement source <code id="engagement-source">—</code><br>
+      Annotations <code id="annotations-source">—</code>
     </div>
   </div>
 </header>
@@ -251,7 +258,7 @@
 <footer id="source-footer">Post-Event Engine &middot; Module 4</footer>
 
 <script type="application/json" id="dashboard-data">{
-  "generated_at": "2026-08-24T16:22:18.903282",
+  "generated_at": "2026-08-24T23:53:02.569619",
   "as_of": "2026-08-19T21:50:00",
   "event": {
     "name": "Pipeline After the Webinar: Turning Event Engagement into Revenue",
@@ -280,6 +287,7 @@
     "contacts": "fixture",
     "detail": "local CSV -- hubspot_ready.csv (M1 pipeline output, offline)"
   },
+  "engagement_source": "fixture",
   "kpis": {
     "total_registrants": 138,
     "total_attendees": 79,
@@ -1073,7 +1081,11 @@
       "Post-event engagement is concentrating hard around four accounts, and Palmetto SaaS Group is the one to move on first: 9 of its 10 known contacts have engaged since the webinar, a 90% committee-coverage rate that puts it well past the buying-committee threshold, with the account's combined engagement score more than double the next name on the board. Anchorpoint SaaS is close behind at 7 of 9 contacts (78% coverage), and two smaller but fully-converted accounts \u2014 Truenorth Ecommerce and Zenith Marketing Group \u2014 show 100% committee coverage, meaning every contact ACME Revenue Cloud has on file for them has touched at least one post-event asset. Across all four, the case-study and pricing pages are the recurring pull, not just the recording \u2014 a signal these are evaluation-stage accounts comparing Meridian Software's RevOps story against their own build-vs-buy math, not passive content consumers.",
       "The anomaly detector is earning its keep on two contacts who otherwise look identical on paper. Lucas Menon (Director Marketing Ops, Bluepeak Ventures) put 21 of his 26 total touches into a single afternoon on August 7th \u2014 81% of all his activity in one sitting \u2014 and his lifecycle stage never moved, which is the pattern of a hot account HubSpot's automation quietly missed; it belongs on a RevOps desk today, not in next week's batch review. Kevin Ivanova at Palmetto SaaS Group shows the same shape of behavior, 17 of 27 touches concentrated on July 25th, but his stage already advanced to reflect it, confirming the scoring model isn't just flagging noise \u2014 it caught two real research sprints and correctly separated the one that was actioned from the one that was dropped."
     ]
-  }
+  },
+  "annotations_source": "none",
+  "annotations_model": null,
+  "annotations_generated_at": null,
+  "annotations_rejected": 0
 }</script>
 <script>
 (function(){
@@ -1100,6 +1112,17 @@
     DATA.event.host_company + " (" + DATA.event.host_domain + ") · " + DATA.event.date;
   document.getElementById('generated-at').textContent = fmtDate(DATA.generated_at);
   document.getElementById('as-of').textContent = fmtDate(DATA.as_of);
+  document.getElementById('engagement-source').textContent = DATA.engagement_source || 'fixture';
+  // Advisory annotation-layer provenance -- see build_dashboard.py's
+  // generate_live_annotations()/attach_live_annotations(). "none" when
+  // --live-annotations wasn't passed, no key was found, or the call/parse
+  // failed; every failure mode degrades here, never a blank/broken page.
+  (function renderAnnotationsProvenance(){
+    var src = DATA.annotations_source || 'none';
+    var text = src === 'llm_live' ? ('llm_live (' + (DATA.annotations_model || '?') + ')') : 'none';
+    if(DATA.annotations_rejected){ text += ' · ' + DATA.annotations_rejected + ' rejected'; }
+    document.getElementById('annotations-source').textContent = text;
+  })();
   (function renderSourceFooter(){
     var src = DATA.source || {contacts: 'fixture', detail: 'local CSV (offline)'};
     var label = src.contacts === 'hubspot' ? 'contacts read live from HubSpot' : 'contacts from local CSV fixture';
@@ -1169,7 +1192,9 @@
     var barPct = Math.round(100 * a.score / maxScore);
     return '<tr>' +
       '<td><div style="font-weight:600;">' + esc(a.account) + '</div>' +
-      '<div class="mono">' + esc(a.domain) + '</div></td>' +
+      '<div class="mono">' + esc(a.domain) + '</div>' +
+      (a.annotation ? '<div class="annotation">' + esc(a.annotation) + '</div>' : '') +
+      '</td>' +
       '<td><span class="score-bar-track"><span class="score-bar-fill" style="width:' + barPct + '%"></span></span>' + a.score + '</td>' +
       '<td>' + (a.is_buying_committee ?
         '<span class="badge committee">' + a.engaged_contact_count + '/' + a.total_known_contact_count + ' &middot; ' + a.committee_coverage_pct + '%</span>' :
@@ -1260,6 +1285,7 @@
       '<span class="status-pill ' + (a.lifecycle_progressed ? 'progressed' : 'stalled') + '">' +
       (a.lifecycle_progressed ? 'Stage moved' : 'Stalled') + '</span></div>' +
       '<div class="headline">' + esc(a.headline) + '</div>' +
+      (a.annotation ? '<div class="annotation">' + esc(a.annotation) + '</div>' : '') +
       '<div class="metrics"><span>' + a.events_that_day + ' touches on ' + esc(a.date) + '</span>' +
       '<span>' + a.events_total + ' total touches</span>' +
       '<span>' + a.share_of_activity_pct + '% same-day share</span></div>' +

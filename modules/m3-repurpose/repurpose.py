@@ -28,12 +28,26 @@ transcript/event data substituted in and writes them to <out>/dry-run/, but
 never calls claude -p. Zero network calls -- use to verify the --live path
 is wired correctly when auth is unavailable.
 
-Python 3 stdlib only. Zero network calls in the default (offline) path.
+Visuals (thumbnail + infographic hero): every mode ships a visuals/
+directory in manifest.json's assets, each entry tagged
+visuals_source: "template" | "ai_generated". Offline and plain --live both
+ship the zero-cost, zero-network template render (tools/render_visuals.py's
+pre-rendered output, sample_output/visuals/). --live-visuals additionally
+attempts real AI image generation (gen_visuals.py, OpenRouter, real spend)
+per asset, falling back to the template on any failure -- see
+run_visuals_live() and gen_visuals.py's own docstring for the deterministic
+text-overlay design that avoids the image model's baked-in-text typos.
+
+Python 3 stdlib only (gen_visuals.py, invoked as a subprocess for
+--live-visuals, optionally uses Pillow -- see its docstring). Zero network
+calls in the default (offline) path.
 
 Usage:
     python3 repurpose.py --out out/m3
     python3 repurpose.py --transcript data/incoming/transcript.md \
         --event data/incoming/event.json --out out/m3 --live
+    python3 repurpose.py --transcript data/incoming/transcript.md \
+        --event data/incoming/event.json --out out/m3 --live --live-visuals
     python3 repurpose.py --out out/m3 --live-dry-run
 """
 import argparse
@@ -276,13 +290,121 @@ def run_offline(event: dict, out_dir: Path) -> dict:
     manifest["_spec_gate"] = spec_gate
     # Rendered visual assets (thumbnail, quote card) ride along when present;
     # produced by tools/render_visuals.py from the thumbnail brief in youtube.md.
-    visuals_dir = SAMPLE_DIR / "visuals"
-    if visuals_dir.is_dir():
-        (out_dir / "visuals").mkdir(parents=True, exist_ok=True)
-        for png in sorted(visuals_dir.glob("*.png")):
-            (out_dir / "visuals" / png.name).write_bytes(png.read_bytes())
-            manifest["assets"][f"visuals/{png.name}"] = {"path": str(out_dir / "visuals" / png.name), "bytes": png.stat().st_size}
+    manifest["assets"].update(_template_visual_entries(out_dir))
     return manifest
+
+
+# --- Visual assets (thumbnail + infographic hero) -------------------------
+# Two lanes, both real: a zero-cost template render (tools/render_visuals.py,
+# pre-rendered once and checked into sample_output/visuals/) and a real
+# OpenRouter image generation (gen_visuals.py). Offline mode always ships
+# the template. --live ships the template too by default (visuals must
+# ship from *some* real, checked-in asset, not nothing -- run_live() used
+# to produce no visuals at all); pass --live-visuals to attempt real AI
+# generation instead, per asset, with template fallback on any failure --
+# see run_visuals_live() below. Every manifest asset entry this produces
+# carries "visuals_source": "ai_generated" | "template" so a reviewer never
+# has to guess which lane actually shipped a given file.
+VISUALS_AI_FILENAMES = {"youtube_thumbnail": "youtube-thumbnail.png", "infographic_hero": "infographic-hero.png"}
+
+
+def _template_visual_entries(out_dir: Path) -> dict:
+    """Copy the checked-in template PNGs (tools/render_visuals.py's output,
+    sample_output/visuals/) into <out_dir>/visuals -- zero cost, zero
+    network, identical bytes every run. Returns manifest asset entries
+    keyed 'visuals/<file>.png', each tagged visuals_source: template."""
+    entries = {}
+    visuals_dir = SAMPLE_DIR / "visuals"
+    if not visuals_dir.is_dir():
+        return entries
+    (out_dir / "visuals").mkdir(parents=True, exist_ok=True)
+    for png in sorted(visuals_dir.glob("*.png")):
+        dest = out_dir / "visuals" / png.name
+        dest.write_bytes(png.read_bytes())
+        entries[f"visuals/{png.name}"] = {
+            "path": str(dest), "bytes": dest.stat().st_size, "visuals_source": "template",
+        }
+    return entries
+
+
+def run_visuals_live(out_dir: Path, event: dict) -> dict:
+    """--live-visuals: shells out to gen_visuals.py (real OpenRouter
+    image-generation call, google/gemini-2.5-flash-image, deterministic
+    Pillow text overlay -- see that module's docstring) for the two visual
+    assets M3's spec calls for. Never raises: visuals are a real but
+    non-blocking deliverable, so any problem (missing key, HTTP error, no
+    image in the response, subprocess timeout) degrades that specific
+    asset to the same static template the offline lane ships -- loud on
+    stderr, and recorded (visuals_source + fallback_reason) in the
+    manifest entries this returns, never silent. Returns
+    (asset_entries, summary) -- summary carries the run-level receipt
+    (cost, generation ids, which lane each asset actually used)."""
+    tag = event_tag(event)
+    youtube_path, infographic_path = out_dir / "youtube.md", out_dir / "infographic.md"
+    gen_out = out_dir / "_visuals-ai"
+    cmd = [sys.executable, str(MODULE_DIR / "gen_visuals.py"),
+           "--youtube", str(youtube_path), "--infographic", str(infographic_path),
+           "--out", str(gen_out), "--event", tag]
+    print("[visuals] --live-visuals: generating AI visuals via gen_visuals.py "
+          "(google/gemini-2.5-flash-image over OpenRouter, ~$0.04-0.08 for 2 images)...")
+    try:
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=240)
+        if proc.stdout:
+            print(proc.stdout, end="" if proc.stdout.endswith("\n") else "\n")
+        if proc.returncode != 0 and proc.stderr:
+            print(f"[visuals] gen_visuals.py exited {proc.returncode}: {proc.stderr.strip()[-800:]}", file=sys.stderr)
+    except subprocess.TimeoutExpired:
+        print("[visuals] gen_visuals.py timed out after 240s -- falling back to template for all visual assets", file=sys.stderr)
+
+    meta_path = gen_out / "generation_meta.json"
+    meta = json.loads(meta_path.read_text()) if meta_path.exists() else {}
+    generations = meta.get("generations", {})
+
+    entries, per_asset, cost_total, ai_count = {}, {}, 0.0, 0
+    for asset, filename in VISUALS_AI_FILENAMES.items():
+        gen_info = generations.get(asset, {})
+        src_path = gen_out / filename
+        if gen_info.get("status") == "ok" and src_path.exists():
+            dest = out_dir / "visuals" / filename
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            dest.write_bytes(src_path.read_bytes())
+            usage = gen_info.get("usage") or {}
+            cost = usage.get("cost", usage.get("cost_usd"))
+            entries[f"visuals/{filename}"] = {
+                "path": str(dest), "bytes": dest.stat().st_size,
+                "visuals_source": "ai_generated",
+                "generation_id": gen_info.get("generation_id"),
+                "model": meta.get("model"),
+                "cost_usd": cost,
+                "text_overlay": gen_info.get("text_overlay"),
+            }
+            per_asset[asset] = "ai_generated"
+            if isinstance(cost, (int, float)):
+                cost_total += cost
+            ai_count += 1
+        else:
+            reason = gen_info.get("error") or "no successful generation (see stderr above / generation_meta.json)"
+            print(f"[visuals] {asset}: AI generation unavailable ({reason}) -- falling back to template", file=sys.stderr)
+            per_asset[asset] = f"template (fallback: {reason})"
+
+    # Fallback: any asset that didn't land an AI file above still needs to
+    # ship *something* -- reuse the same checked-in templates the offline
+    # lane ships (see _template_visual_entries). Only fills in filenames not
+    # already covered by a successful AI generation, so a partial AI success
+    # (e.g. thumbnail ok, infographic failed) doesn't overwrite the good one.
+    if ai_count < len(VISUALS_AI_FILENAMES):
+        for key, entry in _template_visual_entries(out_dir).items():
+            if key not in entries:
+                entries[key] = entry
+
+    summary = {
+        "requested": True,
+        "per_asset_lane": per_asset,
+        "ai_generated_count": ai_count,
+        "cost_usd_total": round(cost_total, 6) if cost_total else 0.0,
+        "generation_meta_path": str(meta_path) if meta_path.exists() else None,
+    }
+    return entries, summary
 
 
 def _openrouter_key() -> str:
@@ -478,7 +600,7 @@ def fill(template: str, transcript: str, event_json: str, extraction: str = "") 
                     .replace("{{EXTRACTION}}", extraction))
 
 
-def run_live(transcript_text: str, event: dict, out_dir: Path) -> dict:
+def run_live(transcript_text: str, event: dict, out_dir: Path, live_visuals: bool = False) -> dict:
     tag = event_tag(event)
     event_json = json.dumps(event, indent=2)
     mode_label = f"live-{os.environ.get('LLM_BACKEND', 'auto').strip().lower() or 'auto'}"
@@ -531,6 +653,19 @@ def run_live(transcript_text: str, event: dict, out_dir: Path) -> dict:
     # there is no silent-fallback count to worry about here. llm_calls_made
     # includes every regeneration attempt, not just one-per-asset.
     manifest["llm_calls_made"] = llm_calls
+
+    # Visuals: --live-visuals attempts real AI generation (gen_visuals.py,
+    # per-asset template fallback on failure); without it, --live still
+    # ships the same zero-cost template the offline lane ships (visuals
+    # must ship from *some* real asset every run, see run_visuals_live()'s
+    # docstring) rather than nothing, which is what this lane used to do.
+    if live_visuals:
+        visuals_entries, visuals_summary = run_visuals_live(out_dir, event)
+        manifest["visuals"] = visuals_summary
+    else:
+        visuals_entries = _template_visual_entries(out_dir)
+        manifest["visuals"] = {"requested": False, "per_asset_lane": {"all": "template (--live-visuals not passed)"}}
+    manifest["assets"].update(visuals_entries)
     return manifest
 
 
@@ -624,7 +759,7 @@ def run(args) -> int:
         return 0
 
     if args.live:
-        manifest = run_live(transcript_text, event, args.out)
+        manifest = run_live(transcript_text, event, args.out, live_visuals=args.live_visuals)
     else:
         check_fingerprint(args.transcript, args.event, args.allow_stale)
         manifest = run_offline(event, args.out)
@@ -693,6 +828,13 @@ def main():
     parser.add_argument("--event", type=Path, default=DEFAULT_EVENT, help="Path to event.json")
     parser.add_argument("--out", type=Path, required=True, help="Output directory")
     parser.add_argument("--live", action="store_true", help="Regenerate assets via claude -p instead of copying samples")
+    parser.add_argument("--live-visuals", dest="live_visuals", action="store_true",
+                         help="With --live, attempt real AI image generation for the thumbnail/infographic "
+                              "(gen_visuals.py, OpenRouter, ~$0.04-0.08 for 2 images) instead of the "
+                              "zero-cost template render --live ships by default. Per-asset fallback to "
+                              "the template on any generation failure (missing key, HTTP error, no image "
+                              "in the response) -- never blocks the run. No effect without --live (offline "
+                              "mode always ships the template, unchanged).")
     parser.add_argument("--live-dry-run", dest="live_dry_run", action="store_true",
                          help="Build and save the exact --live prompts (extraction + all 4 assets) filled "
                               "with real transcript/event data, without calling claude -p. Zero network "

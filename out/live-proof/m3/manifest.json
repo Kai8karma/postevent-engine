@@ -17,6 +17,16 @@
     "social.md": {
       "path": "out/live-proof/m3/social.md",
       "words": 508
+    },
+    "visuals/quote-card-linkedin.png": {
+      "path": "out/live-proof/m3/visuals/quote-card-linkedin.png",
+      "bytes": 64095,
+      "visuals_source": "template"
+    },
+    "visuals/youtube-thumbnail.png": {
+      "path": "out/live-proof/m3/visuals/youtube-thumbnail.png",
+      "bytes": 53260,
+      "visuals_source": "template"
     }
   },
   "llm_calls_made": 6,
@@ -60,5 +70,15 @@
       "failed": 0
     },
     "report": "out/live-proof/m3/grounding_report.json"
+  },
+  "visuals": {
+    "requested": true,
+    "per_asset_lane": {
+      "youtube_thumbnail": "template (fallback: openrouter image call failed: HTTP 402 {\"error\":{\"message\":\"This request requires more credits, or fewer max_tokens. You requested up to 3000 tokens, but can only afford 1143. To increase, visit https://openrouter.ai/settings/credits and upgrade to a paid account\",\"code\":402,\"metadata\":{\"limit_source\":\"openrouter_credits\",\"remedy_hint\":\"Add credits at https://openrouter.ai/settings/credits, or lower max_tokens / prompt size to fit your remaining balance.\",\"provider_name\":null,\"previous_errors\":[{\"code\":402,\"message\":\"This request req)",
+      "infographic_hero": "template (fallback: openrouter image call failed: HTTP 402 {\"error\":{\"message\":\"This request requires more credits, or fewer max_tokens. You requested up to 3000 tokens, but can only afford 1143. To increase, visit https://openrouter.ai/settings/credits and upgrade to a paid account\",\"code\":402,\"metadata\":{\"limit_source\":\"openrouter_credits\",\"remedy_hint\":\"Add credits at https://openrouter.ai/settings/credits, or lower max_tokens / prompt size to fit your remaining balance.\",\"provider_name\":null,\"previous_errors\":[{\"code\":402,\"message\":\"This request req)"
+    },
+    "ai_generated_count": 0,
+    "cost_usd_total": 0.0,
+    "generation_meta_path": "out/live-proof/m3/_visuals-ai/generation_meta.json"
   }
 }

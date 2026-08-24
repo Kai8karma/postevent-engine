@@ -7,6 +7,10 @@ Local build (offline, stdlib only, contacts from --enriched's CSV):
 Live build (contacts read from HubSpot instead of the CSV — see "Input source" below):
     python3 build_dashboard.py --hubspot --enriched <hubspot_ready.csv> --engagement ../../data/fixtures/engagement.json --segments ../../data/fixtures/segments.json --out dist/
 
+Live build with advisory annotations (optional LLM call over the already-computed
+findings — see "Optional advisory annotation layer" below; requires OPENROUTER_API_KEY):
+    python3 build_dashboard.py --enriched <hubspot_ready.csv> --engagement ../../data/fixtures/engagement.json --segments ../../data/fixtures/segments.json --out dist/ --live-annotations
+
 Deploy the narrative API to Vercel (dashboard works fully offline without this step):
     npm i -g vercel        # one-time
     cd modules/m4-dashboard
@@ -79,3 +83,66 @@ Lead-interest scoring (`WEIGHTS` in `build_dashboard.py`) stays a fixed, auditab
 weighted sum by design, not an oversight — a score a RevOps user can't hand-verify
 against the raw event list, or that changes on every run for the same input, is
 worse than a simple deterministic one for this use case.
+
+### Optional advisory annotation layer (`--live-annotations`)
+
+The spec's M4 AI-role bullet also asks the dashboard to "detect anomalies…, score
+lead interest…, surface top accounts and buying committees" — work this module has
+always done with the deterministic rule code above, on purpose (see "AI boundary"
+above). `--live-annotations` adds a second, **opt-in** real LLM call
+(`generate_live_annotations` / `attach_live_annotations` in `build_dashboard.py`)
+that **annotates** those already-computed anomaly and top-account findings with a
+one-line "why it matters / what an SDR should do" note — it never recomputes or
+overrides a number. Same advisory-only shape as
+`modules/m1-enrichment/enrich.py`'s `apply_icp_second_opinion()` (appends a
+rationale string, never rewrites `icp_tier`): the model sees only a cheap
+projection of the run's own anomaly candidates, top accounts, and lifecycle-window
+stats — never the full contact roster — and every annotation is
+**grounded-by-construction**: a post-check (`_grounded()`) rejects (and counts, in
+`annotations_rejected`) any annotation that cites a number not already present
+somewhere in the payload it was given, before it's ever attached. Output JSON gets
+four new top-level fields regardless of whether the flag is passed —
+`annotations_source` (`"llm_live"` | `"none"`), `annotations_model`,
+`annotations_generated_at`, `annotations_rejected` — plus an `annotation` string on
+individual `anomalies[]` / `top_accounts[]` entries that got one; the dashboard
+renders these as a small italic line under the relevant card/row, and the
+provenance next to the `engagement_source` label in the header, only when present
+— absent (the default), the page renders exactly as it always has.
+
+Off by default; requires `OPENROUTER_API_KEY` (env or
+`~/.config/postevent/llm.env`, same read pattern as everywhere else in this repo).
+Defaults to the README's free nemotron chain (`ANNOTATION_MODEL_FALLBACKS` —
+`nemotron-3.5-lightning` → `nemotron-3-super-120b` → `nemotron-3-ultra-550b`, all
+`:free`), not a paid model, since this is a new opt-in step rather than something
+on the pipeline's critical path; `OPENROUTER_MODEL` still overrides/prepends.
+Degrades to no annotations — never a hard failure — on a missing key, a network
+error, an unparseable response, or a response that parses but has every annotation
+grounding-rejected; each of those hands off to the next model in the chain before
+giving up, not just an HTTP-level failure.
+
+Verified live 2026-08-24 against this repo's own fixture-lane payload
+(`out/final/m1/hubspot_ready.csv` + `data/fixtures/engagement.json` +
+`data/fixtures/segments.json`, 2 anomaly candidates + 10 top accounts = 12 items):
+the chain's first-choice model, `nemotron-3.5-lightning:free`, reliably failed
+against this prompt's constraint density — either burning its whole completion
+budget on a visible "Here's a thinking process:" preamble before ever emitting
+JSON, or degenerating into a repetition loop (`finish_reason:"stop"`, zero valid
+JSON) — so `generate_live_annotations()` now hands off to the next model on an
+unparseable/unusable response, not only on an HTTP-level error (this file's
+earlier version didn't, and silently produced `annotations_source:"none"` on a
+technically-200 response). `nemotron-3-super-120b-a12b:free` and
+`nemotron-3-ultra-550b-a55b:free` each answered cleanly in ~26s and ~86s
+respectively — 12/12 items annotated, 0 rejected after a second live-discovered
+fix: the grounding check originally compared numbers as literal strings, which
+falsely rejected correct annotations that wrote a JSON `100.0`/`50.0` as natural
+prose "100%"/"50%" (`"100" != "100.0"`) — `_numbers_in_text()` now parses to
+`float` before comparing. Sample annotation (`nemotron-3-super-120b-a12b:free`,
+grounded): *"Palmetto SaaS Group leads with a score of 201.5, 9 of 10 contacts
+engaged and 90.0% committee coverage—prioritize multi-threaded outreach to close
+the deal."* Both fixes are covered above; the checked-in `out/final/m4/index.html`
+itself currently shows `annotations_source:"none"` because the account's shared
+free-tier daily quota (50 requests/day, `openrouter_free_tier_daily`, one bucket
+across every `:free` model, not per-model) was exhausted by this same debugging
+pass before a final rebuild could complete — re-running the "Live build with
+advisory annotations" command above after the daily reset (`X-RateLimit-Reset`,
+UTC midnight) reproduces the live-populated result.

@@ -1,0 +1,15 @@
+[
+    {"timestamp": "01:15", "speaker": "Priya Nair", "summary": "Priya reveals the motivation for the session: their own team historically let webinar leads sit unused."},
+    {"timestamp": "05:10", "speaker": "Daniel Kim", "summary": "Daniel shares the pivotal stat that follow-up within 4 hours lifts reply rate 3.2x vs next-day, securing budget."},
+    {"timestamp": "06:20", "speaker": "Sara Alvarez", "summary": "Sara reveals that accounts with 3+ attendees convert to opportunity at nearly double the rate of single-attendee accounts."},
+    {"timestamp": "10:18", "speaker": "Daniel Kim", "summary": "Daniel explains the unlock: using transcript + registration data to auto-generate first-draft follow-ups for scale."},
+    {"timestamp": "11:30", "speaker": "Sara Alvarez", "summary": "Sara shares that cutting internal routing delay from 18h to <2h boosted webinar-sourced opportunity creation by 41%."},
+    {"timestamp": "24:05", "speaker": "Priya Nair", "summary": "Transition to segmentation section, introducing the three-layer framework."},
+    {"timestamp": "28:20", "speaker": "Sara Alvarez", "summary": "Sara reports moving from blanket to segmented emails lifted click-through from ~6% to >17% (≈3x)."},
+    {"timestamp": "36:05", "speaker": "Priya Nair", "summary": "Transition to content repurposing segment, acknowledging her prior skepticism."},
+    {"timestamp": "38:42", "speaker": "Daniel Kim", "summary": "Daniel reveals repurposed content generated 2.4x the pipeline-influenced touches of the live session."},
+    {"timestamp": "41:32", "speaker": "Sara Alvarez", "summary": "Sara mandates every repurposed asset needs its own UTM tied to the original event for attribution."},
+    {"timestamp": "48:14", "speaker": "Sara Alvarez", "summary": "Transition to attribution section, outlining three layers of measurement."},
+    {"timestamp": "51:48", "speaker": "Sara Alvarez", "summary": "Sara shares end-to-end ROI of 11-14x on fully-loaded event cost within two quarters."},
+    {"timestamp": "55:45", "speaker": "Priya Nair", "summary": "Transition to live audience Q&A."}
+  ]

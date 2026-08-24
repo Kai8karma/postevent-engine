@@ -31,6 +31,18 @@ hardcoded guess. Real natural-language judgment -- the narrative panel --
 lives in api/narrative.js, a real LLM call, not here. See README.md's "AI
 boundary" section for the full doctrine.
 
+OPTIONAL ADVISORY ANNOTATION LAYER (--live-annotations; see
+generate_live_annotations() below): a second, opt-in real LLM call that
+ANNOTATES the already-computed anomaly/top-account findings with a one-line
+"why it matters / what to do" note for an SDR -- it never changes a number.
+Same advisory-only shape as modules/m1-enrichment/enrich.py's
+apply_icp_second_opinion() (which appends a rationale string and never
+overwrites row['icp_tier']): every annotation is grounded-by-construction --
+a cheap post-check rejects (and counts) any annotation that cites a number
+not already present in the payload it was given, before it's ever attached.
+Off by default; degrades to no annotations (never a hard failure) on a
+missing key, network error, or unparseable response.
+
 Usage:
     python3 build_dashboard.py --enriched hubspot_ready.csv \
         --engagement engagement.json --segments segments.json --out dist/
@@ -38,14 +50,18 @@ Usage:
         --engagement engagement.json --segments segments.json --out dist/
     python3 build_dashboard.py --hubspot --hubspot-engagement --enriched hubspot_ready.csv \
         --engagement engagement.json --segments segments.json --out dist/
+    python3 build_dashboard.py --enriched hubspot_ready.csv --engagement engagement.json \
+        --segments segments.json --out dist/ --live-annotations
 """
 import argparse
 import csv
 import json
 import math
 import os
+import re
 import statistics
 import sys
+import time
 import urllib.error
 import urllib.request
 from collections import Counter, defaultdict
@@ -682,8 +698,380 @@ def compute_anomaly_threshold(events_by_contact):
     return threshold, rationale
 
 
+# --------------------------------------------------------------------------
+# --live-annotations: optional advisory LLM layer over the already-computed
+# anomaly / top-account findings (opt-in; zero network by default). See the
+# module docstring's "OPTIONAL ADVISORY ANNOTATION LAYER" note above.
+# --------------------------------------------------------------------------
+
+LLM_ENV_FILE = Path.home() / ".config" / "postevent" / "llm.env"
+OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+OPENROUTER_REFERER = "https://kai8karma.github.io/agentkai/"
+OPENROUTER_TITLE = "Post-Event Engine"
+
+# Free by design -- this is a brand-new opt-in feature, not a required step,
+# so it defaults to the README's free nemotron chain rather than a paid
+# Claude model (contrast modules/m2-comms/comms.py's OPENROUTER_MODEL_FALLBACKS,
+# which default to paid Sonnet ids for a step that's actually on the
+# pipeline's critical path). OPENROUTER_MODEL still overrides/prepends, same
+# convention as comms.py/repurpose.py's _openrouter_models_to_try().
+ANNOTATION_MODEL_FALLBACKS = [
+    "nvidia/nemotron-3.5-lightning:free",
+    "nvidia/nemotron-3-super-120b-a12b:free",
+    "nvidia/nemotron-3-ultra-550b-a55b:free",
+]
+# KNOWN TRAP (see api/narrative.js's callOpenRouterModel comment): free
+# models overflow a small max_tokens ceiling and truncate mid-JSON. Verified
+# live 2026-08-24 that this call hits a WORSE version of that trap: the
+# first-choice model (nemotron-3.5-lightning:free) burns its whole budget on
+# a visible "Here's a thinking process:" preamble before ever emitting JSON,
+# and can degenerate into repetition loops under this prompt's constraint
+# density even past 6000 tokens (finish_reason:"stop" with zero valid JSON
+# emitted -- not a truncation a bigger ceiling fixes). ANNOTATION_SYSTEM_PROMPT
+# below now opens with an explicit anti-preamble instruction (confirmed live
+# to make nemotron-3-super-120b-a12b:free answer with clean JSON, no preamble,
+# in ~26s) and generate_live_annotations() hands off to the next model in the
+# chain on an unparseable OR ungrounded-into-nothing response, not just on an
+# HTTP-level failure -- see that function's docstring. 6000 gives real
+# headroom for a model that still reasons some despite the instruction.
+ANNOTATION_MAX_TOKENS = 6000
+ANNOTATION_TIMEOUT_S = 120
+
+ANNOTATION_SYSTEM_PROMPT = (
+    "Output ONLY a single JSON object -- no preamble, no thinking process, "
+    "no step-by-step reasoning, no markdown fences, no text before or after "
+    "it. Your entire reply must start with '{' and end with '}'. "
+    "You are a GTM/RevOps analyst annotating a post-event lead-intelligence "
+    "dashboard's ALREADY-COMPUTED findings. You will be given JSON with "
+    "anomaly candidates, top engaged accounts, and lifecycle-movement window "
+    "stats -- every number in it is already final and correct; you are not "
+    "computing or re-scoring anything, only explaining it. For each entry "
+    "listed under \"anomalies\" and \"top_accounts\", write ONE short "
+    "sentence (under 160 characters) covering why that pattern matters and "
+    "what an SDR should do about it. Reply with STRICT JSON only, no prose "
+    "outside it, no markdown fences, in exactly this shape: "
+    "{\"annotations\": {\"<id>\": \"<one-line advisory>\", ...}}, using the "
+    "exact id string given for each entry. CRITICAL: never introduce a "
+    "number -- count, percentage, day figure, dollar amount, anything -- "
+    "that is not already present somewhere in the input JSON below; describe "
+    "the recommended action in words rather than inventing a new one. Do not "
+    "restate every field back verbatim; be concrete and specific to that "
+    "one entry."
+)
+
+
+def _read_llm_env_file() -> dict:
+    """Tiny KEY=VALUE parser for ~/.config/postevent/llm.env -- same pattern
+    as api/run.py::_read_llm_env_file and enrich.py's copy of it."""
+    if not LLM_ENV_FILE.exists():
+        return {}
+    values = {}
+    try:
+        for line in LLM_ENV_FILE.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, value = line.partition("=")
+            values[key.strip()] = value.strip().strip("'\"")
+    except OSError:
+        return {}
+    return values
+
+
+def get_openrouter_key() -> str:
+    """OPENROUTER_API_KEY env var wins; else parsed from llm.env. Never
+    printed/logged/returned anywhere."""
+    return os.environ.get("OPENROUTER_API_KEY") or _read_llm_env_file().get("OPENROUTER_API_KEY", "")
+
+
+def _annotation_models_to_try() -> list:
+    """OPENROUTER_MODEL may be one id or a comma-separated chain -- same
+    override convention as m2-comms/m3-repurpose's _openrouter_models_to_try()."""
+    env_models = [m.strip() for m in os.environ.get("OPENROUTER_MODEL", "").split(",") if m.strip()]
+    if env_models:
+        return env_models + [m for m in ANNOTATION_MODEL_FALLBACKS if m not in env_models]
+    return list(ANNOTATION_MODEL_FALLBACKS)
+
+
+class _AnnotationModelError(RuntimeError):
+    """Raised when a specific model id is the problem (400/404, or exhausted
+    429/5xx retries) -- the caller hands off to the next model in the chain
+    rather than failing the whole call."""
+
+
+def _call_annotation_model(key: str, model: str, prompt: str) -> str:
+    body = json.dumps({
+        "model": model,
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.2,
+        "max_tokens": ANNOTATION_MAX_TOKENS,
+    }).encode("utf-8")
+    req = urllib.request.Request(
+        OPENROUTER_URL, data=body, method="POST",
+        headers={
+            "Authorization": f"Bearer {key}",
+            "HTTP-Referer": OPENROUTER_REFERER,
+            "X-Title": OPENROUTER_TITLE,
+            "Content-Type": "application/json",
+        },
+    )
+    for attempt in (1, 2, 3):
+        try:
+            with urllib.request.urlopen(req, timeout=ANNOTATION_TIMEOUT_S) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+            # OpenRouter can return a provider/rate-limit error as a 200 with
+            # {"error": {...}} and no "choices" (seen on free-tier models).
+            if isinstance(data, dict) and data.get("error"):
+                err = data["error"] or {}
+                if attempt < 3:
+                    time.sleep(3 * attempt)
+                    continue
+                raise _AnnotationModelError(
+                    f"provider error for {model!r}: {err.get('code')} {str(err.get('message'))[:200]}"
+                )
+            content = data["choices"][0]["message"].get("content")
+            if not content:
+                fr = data["choices"][0].get("finish_reason")
+                raise RuntimeError(f"model {model!r} returned empty content (finish_reason={fr})")
+            return content
+        except urllib.error.HTTPError as exc:
+            detail = exc.read().decode("utf-8", "replace")[:300]
+            if exc.code in (400, 404):
+                raise _AnnotationModelError(f"model {model!r} rejected (HTTP {exc.code}): {detail}") from None
+            if exc.code == 429 or 500 <= exc.code < 600:
+                if attempt < 3:
+                    time.sleep(3 * attempt)
+                    continue
+                raise _AnnotationModelError(f"HTTP {exc.code} for {model!r} (after retries): {detail}") from None
+            raise RuntimeError(f"openrouter HTTP {exc.code} for {model!r}: {detail}") from None
+        except urllib.error.URLError as exc:
+            raise RuntimeError(f"openrouter request failed: {exc.reason}") from None
+    raise RuntimeError(f"openrouter: exhausted retries for {model!r}")
+
+
+_NUMBER_RE = re.compile(r"\d+(?:\.\d+)?")
+_ANNOTATION_PAIR_RE = re.compile(r'"([A-Za-z0-9_@.\-]{1,160})"\s*:\s*"((?:[^"\\]|\\.)*)"')
+
+
+def _numbers_in_text(text: str) -> set:
+    """Numeric literals in text, normalized to float. Verified live
+    2026-08-24: a literal string compare (e.g. "100" vs the payload's
+    json.dumps rendering "100.0") falsely rejected every otherwise-grounded
+    annotation that quoted a whole-number percentage in natural prose
+    ("100% coverage" for a payload value of 100.0) -- comparing as float
+    makes "100" == "100.0" == 100.0 without weakening the check itself."""
+    out = set()
+    for m in _NUMBER_RE.findall(text or ""):
+        try:
+            out.add(float(m))
+        except ValueError:
+            continue
+    return out
+
+
+def _parse_annotations_json(raw: str) -> dict:
+    """Strict parse first; on failure, salvage complete "id": "text" pairs
+    via regex -- same truncation-salvage idea as api/narrative.js's
+    extractParagraphsFromText (free models can cut off mid-JSON at
+    max_tokens; a regex over complete key/value pairs recovers whatever the
+    model actually finished writing, dropping only the incomplete tail,
+    instead of discarding the whole response). Returns {id: text}; raises
+    ValueError if nothing usable was found either way."""
+    text = (raw or "").strip()
+    if not text:
+        raise ValueError("empty completion")
+    start, end = text.find("{"), text.rfind("}")
+    if start != -1 and end != -1 and end > start:
+        try:
+            parsed = json.loads(text[start:end + 1])
+            ann = parsed.get("annotations") if isinstance(parsed, dict) else None
+            if isinstance(ann, dict) and ann:
+                return {str(k): str(v).strip() for k, v in ann.items() if str(v).strip()}
+        except (ValueError, AttributeError):
+            pass  # fall through to truncation salvage below
+    salvaged = {}
+    for m in _ANNOTATION_PAIR_RE.finditer(text):
+        key, val = m.group(1), m.group(2)
+        if key == "annotations":
+            continue
+        try:
+            val = json.loads('"' + val + '"').strip()
+        except ValueError:
+            continue
+        if val:
+            salvaged[key] = val
+    if not salvaged:
+        raise ValueError("could not parse annotations JSON from LLM output")
+    return salvaged
+
+
+def _grounded(annotation_text: str, payload_numbers: set) -> bool:
+    """Cheap post-check, not semantic verification: every number the
+    annotation cites must already appear somewhere in the payload the model
+    was given. Catches a model inventing a new count/percentage/day figure
+    that this run's own data never produced."""
+    return all(num in payload_numbers for num in _numbers_in_text(annotation_text))
+
+
+def build_annotation_payload(data: dict) -> dict:
+    """Cheap projection of build()'s output -- ONLY anomaly candidates
+    (counts/threshold), top accounts (scores), and lifecycle window stats,
+    per the assignment's scope for this call. An advisory-annotation call
+    has no business seeing the full contact roster it isn't annotating."""
+    anomalies = [
+        {
+            "id": a["contact"]["email"],
+            "contact_name": a["contact"]["name"],
+            "company": a["company"],
+            "date": a["date"],
+            "events_that_day": a["events_that_day"],
+            "events_total": a["events_total"],
+            "share_of_activity_pct": a["share_of_activity_pct"],
+            "lifecycle_progressed": a["lifecycle_progressed"],
+        }
+        for a in data["anomalies"]
+    ]
+    top_accounts = [
+        {
+            "id": acc["domain"],
+            "account": acc["account"],
+            "score": acc["score"],
+            "engaged_contact_count": acc["engaged_contact_count"],
+            "total_known_contact_count": acc["total_known_contact_count"],
+            "committee_coverage_pct": acc["committee_coverage_pct"],
+            "is_buying_committee": acc["is_buying_committee"],
+        }
+        for acc in data["top_accounts"]
+    ]
+    window_stats = {
+        window: {"total": w["total"], "by_stage": w["by_stage"]}
+        for window, w in data["movement"].items()
+    }
+    return {
+        "anomaly_threshold": {
+            "threshold": data["anomaly_detection"]["threshold"],
+            "candidates_over_threshold": data["anomaly_detection"]["candidates_over_threshold"],
+        },
+        "anomalies": anomalies,
+        "top_accounts": top_accounts,
+        "window_stats": window_stats,
+    }
+
+
+def generate_live_annotations(data: dict):
+    """--live-annotations entry point. Returns (annotations: {id: text},
+    meta: dict) where meta always has annotations_source ("llm_live" |
+    "none"), annotations_model, annotations_generated_at, and
+    annotations_rejected -- even on total failure (source stays "none",
+    reason goes to stderr, this NEVER raises -- a flag must never break an
+    otherwise-good build).
+
+    Tries each model in _annotation_models_to_try() in turn (same handoff
+    convention as m2-comms/m3-repurpose), but -- unlike a plain completion
+    relay -- a model only "wins" here if its response both parses AND
+    produces at least one grounded annotation. Verified live 2026-08-24: the
+    first-choice free model can return HTTP 200 / finish_reason:"stop" with
+    content that is well-formed text but not usable JSON at all (a visible
+    reasoning preamble that ate the whole budget, or a repetition-loop
+    breakdown) -- accepting that as "the" response and giving up would throw
+    away two perfectly good fallback models. So parse/grounding failure hands
+    off to the next model exactly like an HTTP-level failure does.
+    annotations_model/generated_at/rejected are populated from whichever
+    model actually won; a response that parsed but had every annotation
+    grounding-rejected still counts as "this model produced nothing usable"
+    and moves on to the next one, rather than being reported as a success
+    with annotations_source=='llm_live' and an empty annotation set."""
+    meta = {
+        "annotations_source": "none",
+        "annotations_model": None,
+        "annotations_generated_at": None,
+        "annotations_rejected": 0,
+    }
+    key = get_openrouter_key()
+    if not key:
+        print(f"note: --live-annotations set but no OPENROUTER_API_KEY found (env or {LLM_ENV_FILE}) "
+              "-- building without annotations.", file=sys.stderr)
+        return {}, meta
+
+    payload = build_annotation_payload(data)
+    if not payload["anomalies"] and not payload["top_accounts"]:
+        print("note: --live-annotations set but nothing to annotate (no anomalies or top accounts "
+              "in this run) -- skipping the LLM call.", file=sys.stderr)
+        return {}, meta
+
+    prompt = ANNOTATION_SYSTEM_PROMPT + "\n\nINPUT:\n" + json.dumps(payload, indent=2)
+    payload_numbers = _numbers_in_text(json.dumps(payload))
+    valid_ids = {a["id"] for a in payload["anomalies"]} | {a["id"] for a in payload["top_accounts"]}
+
+    last_err = None
+    for model in _annotation_models_to_try():
+        try:
+            raw = _call_annotation_model(key, model, prompt)
+        except Exception as exc:  # noqa: BLE001 -- one model's failure must not abort the chain
+            last_err = exc
+            continue
+
+        try:
+            candidate = _parse_annotations_json(raw)
+        except ValueError as exc:
+            print(f"note: --live-annotations response from {model!r} unparseable ({exc}) -- "
+                  "trying next model.", file=sys.stderr)
+            last_err = exc
+            continue
+
+        annotations, rejected = {}, 0
+        for item_id, text in candidate.items():
+            if item_id not in valid_ids:
+                continue  # model invented/misquoted an id -- not a grounding failure, just ignored
+            if not _grounded(text, payload_numbers):
+                rejected += 1
+                continue
+            annotations[item_id] = text
+
+        if not annotations:
+            print(f"note: --live-annotations parsed {model!r}'s response but 0 of {len(candidate)} "
+                  f"annotation(s) were usable ({rejected} grounding-rejected) -- trying next model.",
+                  file=sys.stderr)
+            last_err = f"{model!r}: 0 usable annotations ({rejected} rejected)"
+            continue
+
+        meta.update({
+            "annotations_source": "llm_live",
+            "annotations_model": model,
+            "annotations_generated_at": datetime.now().isoformat(),
+            "annotations_rejected": rejected,
+        })
+        if rejected:
+            print(f"note: --live-annotations rejected {rejected} annotation(s) from {model!r} for citing "
+                  "a number not present in the input payload.", file=sys.stderr)
+        return annotations, meta
+
+    print(f"note: --live-annotations: all candidate models failed or produced nothing usable "
+          f"(last: {last_err}) -- building without annotations.", file=sys.stderr)
+    return {}, meta
+
+
+def attach_live_annotations(data: dict) -> None:
+    """Mutates data in place: attaches data['annotations_source'] /
+    annotations_model / annotations_generated_at / annotations_rejected, and
+    an 'annotation' string on each anomaly/top_account entry that got one --
+    ADDS a field alongside the deterministic values, never replaces one (see
+    module docstring)."""
+    annotations, meta = generate_live_annotations(data)
+    for a in data["anomalies"]:
+        note = annotations.get(a["contact"]["email"])
+        if note:
+            a["annotation"] = note
+    for acc in data["top_accounts"]:
+        note = annotations.get(acc["domain"])
+        if note:
+            acc["annotation"] = note
+    data.update(meta)
+
+
 def build(enriched_path, engagement_path, segments_path, event_path,
-          contact_rows=None, source=None, engagement_data=None, engagement_source=None):
+          contact_rows=None, source=None, engagement_data=None, engagement_source=None,
+          live_annotations=False):
     enriched_rows = contact_rows if contact_rows is not None else load_enriched(enriched_path)
     engagement = engagement_data if engagement_data is not None else load_json(engagement_path)
     segments = load_json(segments_path)
@@ -936,7 +1324,18 @@ def build(enriched_path, engagement_path, segments_path, event_path,
         },
         "anomalies": anomalies,
         "narrative_fallback": load_fallback_narrative(),
+        # Advisory annotation layer provenance (see module docstring's
+        # "OPTIONAL ADVISORY ANNOTATION LAYER" note / attach_live_annotations()
+        # below). Always present, even when --live-annotations was never
+        # passed, so the schema doesn't shift between offline and live
+        # builds -- just its values do.
+        "annotations_source": "none",
+        "annotations_model": None,
+        "annotations_generated_at": None,
+        "annotations_rejected": 0,
     }
+    if live_annotations:
+        attach_live_annotations(data)
     return data
 
 
@@ -971,6 +1370,14 @@ def main():
                           "fixture. lifecycle_changes always comes from --engagement regardless -- see "
                           "resolve_engagement(). Falls back to --engagement on no token, network error, "
                           "or zero results. Sets data.engagement_source to 'hubspot_live' or 'fixture'.")
+    ap.add_argument("--live-annotations", action="store_true", dest="live_annotations",
+                     help="Make one OpenRouter call (free nemotron chain by default, see "
+                          "ANNOTATION_MODEL_FALLBACKS) that ANNOTATES the already-computed anomaly/"
+                          "top-account findings with a one-line SDR advisory -- never changes a number. "
+                          "Requires OPENROUTER_API_KEY (env or ~/.config/postevent/llm.env); degrades to "
+                          "no annotations (never a hard failure) on a missing key, network error, or "
+                          "unparseable response -- see generate_live_annotations(). Sets "
+                          "data.annotations_source to 'llm_live' or 'none'.")
     args = ap.parse_args()
 
     for label, p in (
@@ -996,7 +1403,8 @@ def main():
 
     data = build(args.enriched, args.engagement, args.segments, args.event,
                  contact_rows=contact_rows, source=source,
-                 engagement_data=engagement_data, engagement_source=engagement_source)
+                 engagement_data=engagement_data, engagement_source=engagement_source,
+                 live_annotations=args.live_annotations)
 
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -1015,6 +1423,9 @@ def main():
     print(f"  anomaly_threshold={data['anomaly_detection']['threshold']} "
           f"(candidates_over_threshold={data['anomaly_detection']['candidates_over_threshold']})")
     print(f"  threshold_rationale: {data['anomaly_detection']['threshold_rationale']}")
+    if args.live_annotations:
+        print(f"  annotations_source={data['annotations_source']} model={data['annotations_model']} "
+              f"rejected={data['annotations_rejected']}")
 
 
 if __name__ == "__main__":

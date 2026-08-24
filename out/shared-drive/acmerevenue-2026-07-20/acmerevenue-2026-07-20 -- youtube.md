@@ -1,42 +1,30 @@
-<!-- event: acmerevenue-2026-07-20 | generated: offline-sample -->
-# YouTube Chapters, Description & Thumbnail Brief
-
-**Video:** Pipeline After the Webinar: Turning Event Engagement into Revenue
-**Speakers:** Priya Nair (VP Marketing, ACME Revenue Cloud — host), Daniel Kim (Head of Demand Gen, Northwind Analytics), Sara Alvarez (RevOps Lead, Meridian Software)
-**Recorded:** July 20, 2026 · **Runtime:** 62:00
-
+<!-- event: acmerevenue-2026-07-20 | generated: live-openrouter -->
 ## Chapters
-
-00:00 Welcome & Why This Session Exists
-02:20 Meet Daniel Kim & Sara Alvarez
-03:44 Today's Roadmap: Speed, Segments, Content, Attribution
-08:10 Segment 1 — Speed-to-Lead
-12:28 Good Looks Like, and the No-Show Myth
-18:50 The Most-Skipped Email: Speaker Thank-Yous
-24:05 Segment 2 — Segmentation
-26:45 Same Transcript, Different Reader
-28:10 The Segmentation Lift: 6% to 17%
-36:05 Segment 3 — Content Repurposing ROI
-39:30 The 2.4x Pipeline Number
-41:20 RevOps Gate & Social Post Variety
-48:05 Segment 4 — Attribution
-51:35 The 11–14x Return Number
-55:45 Audience Q&A
-61:10 Closing & Recap
+00:00 Opening remarks and attendee check-in  
+01:15 Why we built this session: fixing neglected leads  
+05:10 4‑hour follow‑up boosts replies 3.2×  
+06:20 Multi‑attendee accounts double opportunity rate  
+10:18 Auto‑draft follow‑ups using transcript + registration  
+11:30 Faster lead routing lifts opp creation 41%  
+24:05 Segmentation framework: attendee, no‑show, speaker  
+28:20 Segmented emails triple click‑through rate  
+36:05 Content repurposing: from skepticism to ROI  
+38:42 Repurposed content drives 2.4× more touches  
+41:32 UTM tagging every repurposed asset for attribution  
+48:14 Attribution framework: MQL, opportunity, ROI  
+51:48 Event ROI: 11‑14× return in two quarters  
+55:45 Live Q&A: audience questions answered  
 
 ## Description
-
-Webinar leads decay fast, and most teams don't move fast enough to catch them. ACME Revenue Cloud's Priya Nair sits down with Daniel Kim (Head of Demand Gen, Northwind Analytics) and Sara Alvarez (RevOps Lead, Meridian Software) to break down what a working post-event revenue system actually looks like, backed by real numbers instead of best-practice platitudes.
-
-You'll get the reply-rate math behind the four-hour follow-up window (3.2x), why no-show emails often outperform attendee emails, the account-level multi-threading signal most teams never check, the ROI case for repurposing one webinar into a full content package (2.4x the pipeline touches of the live session), and a working framework for proving any of it touched revenue.
-
-Topics: speed-to-lead, lead segmentation, content repurposing, multi-touch attribution, RevOps, demand generation. Recorded live, July 20, 2026. Full audience Q&A included.
+Pipeline After the Webinar: Turning Event Engagement into Revenue – hosted by Priya Nair, VP Marketing at ACME Revenue Cloud, features Daniel Kim, Head of Demand Gen from Northwind Analytics, and Sara Alvarez, RevOps Lead at Meridian Software. Viewers learn why responding within four hours after a webinar lifts reply rates 3.2× compared to next‑day follow‑up, how accounts with three or more attendees convert to opportunity at nearly double the rate of single‑attendee accounts, and how repurposing the webinar into blog posts, social clips, and infographics generates 2.4× more pipeline‑influenced touches than the live session itself. The session also covers practical segmentation tactics, internal lead‑routing improvements, and attribution basics that turn event engagement into measurable revenue. Topics: speed-to-lead, segmentation, content repurposing, attribution • Recorded 2026-07-20 for B2B marketing teams today  
 
 **Recording link:** [Watch the full session](https://drive.example/rec/pipeline-after-webinar.mp4?utm_source=youtube&utm_medium=video&utm_campaign=pipeline-after-the-webinar-2026-07-20&utm_content=youtube-description)
 
 ## Thumbnail Brief
+**Composition**: Three vertical sections; left shows Priya Nair (headshot, smiling), middle shows Daniel Kim, right shows Sara Alvarez. Each headshot is inside a thin navy circle. ACME Revenue Cloud logo placed in the bottom‑left corner, white on navy background. Background gradient from navy (#001F3F) to dark gray (#0A0A0A). Space reserved at the top for text overlay.  
 
-- **Composition:** Three-headshot layout, medium shot, direct-to-camera stills — Daniel Kim (left), Priya Nair (center, host position), Sara Alvarez (right). Even, neutral lighting. ACME Revenue Cloud logo bug, bottom-left corner, small.
-- **Text overlay:** Primary headline, top third, bold white on a dark navy bar: "YOUR LEADS ARE DYING IN 4 HOURS" (5 words). Secondary stat line beneath it, smaller, accent color: "3.2x reply rate — real data."
-- **Colors:** Deep navy (#0B2545) background panel behind the headshots; amber/gold (#E8A33D) for the stat callout text and a thin frame border; white typography throughout for contrast at small sizes.
-- **Style notes:** Real speaker stills, not stock photography. Keep the primary headline under 6 words per YouTube thumbnail legibility norms. Secondary stat line sits bottom-right, smaller weight than the headline.
+**Text overlay**:  
+- Headline (under 6 words): “Speed-to-Lead: 3.2× Reply Boost”  
+- Secondary stat callout (smaller, below headline): “3+ attendees = 2× opportunity rate”  
+
+**Colors**: Primary navy #001F3F, accent cyan #00FFFF for circle outlines and highlights, text white #FFFFFF. (If ACME’s exact brand colors are unavailable, this navy‑plus‑cyan palette provides a clean, professional B2B look.)

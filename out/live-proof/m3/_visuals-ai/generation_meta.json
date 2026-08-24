@@ -1,0 +1,14 @@
+{
+  "event": "acmerevenue-2026-07-20",
+  "model": "google/gemini-2.5-flash-image",
+  "generations": {
+    "youtube_thumbnail": {
+      "status": "failed",
+      "error": "openrouter image call failed: HTTP 402 {\"error\":{\"message\":\"This request requires more credits, or fewer max_tokens. You requested up to 3000 tokens, but can only afford 1143. To increase, visit https://openrouter.ai/settings/credits and upgrade to a paid account\",\"code\":402,\"metadata\":{\"limit_source\":\"openrouter_credits\",\"remedy_hint\":\"Add credits at https://openrouter.ai/settings/credits, or lower max_tokens / prompt size to fit your remaining balance.\",\"provider_name\":null,\"previous_errors\":[{\"code\":402,\"message\":\"This request req"
+    },
+    "infographic_hero": {
+      "status": "failed",
+      "error": "openrouter image call failed: HTTP 402 {\"error\":{\"message\":\"This request requires more credits, or fewer max_tokens. You requested up to 3000 tokens, but can only afford 1143. To increase, visit https://openrouter.ai/settings/credits and upgrade to a paid account\",\"code\":402,\"metadata\":{\"limit_source\":\"openrouter_credits\",\"remedy_hint\":\"Add credits at https://openrouter.ai/settings/credits, or lower max_tokens / prompt size to fit your remaining balance.\",\"provider_name\":null,\"previous_errors\":[{\"code\":402,\"message\":\"This request req"
+    }
+  }
+}

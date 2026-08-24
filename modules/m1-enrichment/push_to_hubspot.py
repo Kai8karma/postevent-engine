@@ -26,7 +26,12 @@ Steps, always run in order unless --dry-run just plans them:
 
 Two lanes:
   - --dry-run: builds every request (method, URL, body) and prints a compact
-    plan. urllib.request.urlopen is never called -- see NETWORK_CALLS below.
+    plan. Every WRITE call is zero network (urllib.request.urlopen never
+    invoked for ensure-properties/upsert/associate/log-emails/verify) -- see
+    NETWORK_CALLS below. One exception: owner routing's GET /crm/v3/owners
+    is a real, read-only live call even under --dry-run (with a token),
+    so the printed plan shows real hubspot_owner_id resolution instead of
+    a placeholder -- see resolve_owner_ids().
   - live (default, requires a token): real HTTP calls, 0.15s between batch
     calls, one retry on 429 (Retry-After), 4xx prints + continues unless
     --strict, 401 aborts the whole run immediately (bad token poisons every
@@ -55,6 +60,7 @@ REPO_ROOT = MODULE_DIR.parent.parent
 DEFAULT_EVENT_DIR = REPO_ROOT / "data" / "incoming"
 DEFAULT_SPEAKERS_PATH = DEFAULT_EVENT_DIR / "speakers.json"
 DEFAULT_SEGMENTS_PATH = REPO_ROOT / "data" / "fixtures" / "segments.json"
+DEFAULT_CONFIG_PATH = REPO_ROOT / "config" / "icp.yaml"
 HUBSPOT_ENV_PATH = Path.home() / ".config" / "postevent" / "hubspot.env"
 
 API_BASE = "https://api.hubapi.com"
@@ -121,8 +127,12 @@ COMPANY_PROPERTIES = [
 
 RECORDING_LINK_RE = re.compile(r'recording_link_variant_a:\s*"(.*?)"')
 
-# Incremented only inside http_call() -- a dry-run that finishes with this
-# still at 0 proves zero network calls were made (printed at the end).
+# Incremented only inside http_call(). Under --dry-run this should be 0 or 1:
+# 0 with no token (owner resolution skipped), 1 for the single read-only
+# GET /crm/v3/owners call resolve_owner_ids() is allowed to make live even
+# in --dry-run (see its docstring) -- every write step stays at 0. Printed
+# at the end (print_receipts()) with an accurate breakdown, not a bare
+# "zero network calls" claim.
 NETWORK_CALLS = 0
 
 
@@ -152,6 +162,101 @@ def resolve_token():
             if key.strip() == "HUBSPOT_TOKEN":
                 return value.strip().strip('"').strip("'")
     return None
+
+
+# --------------------------------------------------------------------------
+# owner routing (config/icp.yaml's icp.owner_map -> live HubSpot ownerId)
+# --------------------------------------------------------------------------
+# Minimal indentation-based YAML reader -- an independent copy of
+# enrich.py::parse_yaml() (same per-module HubSpot-code convention as
+# match_speaker_email()/build_speaker_contact_inputs() above: not imported
+# across modules), used only to read icp.yaml's `icp.owner_map` section.
+
+def _parse_scalar(v):
+    v = v.strip()
+    if len(v) >= 2 and v[0] == v[-1] and v[0] in ("'", '"'):
+        return v[1:-1]
+    return v
+
+
+def parse_yaml(text: str) -> dict:
+    root = {}
+    stack = [(-1, root)]
+    for raw_line in text.splitlines():
+        stripped = raw_line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        indent = len(raw_line) - len(raw_line.lstrip(" "))
+        if ":" not in stripped:
+            continue
+        key, _, value = stripped.partition(":")
+        key, value = key.strip(), value.strip()
+        while stack and stack[-1][0] >= indent:
+            stack.pop()
+        parent = stack[-1][1]
+        if value == "":
+            node = {}
+            parent[key] = node
+            stack.append((indent, node))
+        else:
+            parent[key] = _parse_scalar(value)
+    return root
+
+
+def load_owner_map(config_path: Path) -> dict:
+    """Reads config/icp.yaml's icp.owner_map section (routing bucket, e.g.
+    'AMER', -> a real portal owner email). Missing file or missing/empty
+    section degrades to {} -- callers treat that as "no mapping configured"
+    and skip+count, never inventing an id (see resolve_row_owner_id())."""
+    if not config_path.exists():
+        return {}
+    cfg = parse_yaml(config_path.read_text(encoding="utf-8"))
+    raw = (cfg.get("icp", {}) or {}).get("owner_map", {}) or {}
+    return {str(k).strip().upper(): str(v or "").strip().lower() for k, v in raw.items()}
+
+
+def resolve_owner_ids(token):
+    """GET /crm/v3/owners (paginated), live. Returns ({email.lower(): ownerId}, note).
+
+    Explicitly allowed to run even under --dry-run (Task: "the owners GET
+    may run live read-only") so --dry-run can show the real resolution plan
+    instead of a placeholder -- every OTHER call in this script still stays
+    at zero network under --dry-run (each step function short-circuits
+    before http_call when dry_run is set). No token -> ({}, note), zero
+    network -- degrades cleanly, never raises (AuthError on a genuine 401
+    still propagates, same as every other http_call site, so a bad token
+    aborts the whole run exactly like it already does elsewhere)."""
+    if not token:
+        return {}, "no HubSpot token available -- owner resolution skipped, hubspot_owner_id will be omitted"
+    id_by_email, after = {}, None
+    while True:
+        path = "/crm/v3/owners?limit=100" + (f"&after={after}" if after else "")
+        status, parsed, err = http_call("GET", path, token, None)
+        if status != 200 or parsed is None:
+            note = f"owners GET failed ({status}: {err}) -- {len(id_by_email)} owner(s) resolved before the failure"
+            return id_by_email, note
+        for o in parsed.get("results", []):
+            email = (o.get("email") or "").strip().lower()
+            if email and o.get("id"):
+                id_by_email[email] = o["id"]
+        after = ((parsed.get("paging") or {}).get("next") or {}).get("after")
+        if not after:
+            break
+    return id_by_email, f"{len(id_by_email)} owner(s) resolved live from the portal"
+
+
+def resolve_row_owner_id(region: str, owner_map: dict, owner_id_by_email: dict):
+    """Returns (owner_id_or_None, skip_reason_or_None). Never invents an id:
+    a routing bucket with no owner_map entry, or a mapped email with no
+    matching live portal owner, both skip cleanly with a stated reason."""
+    bucket = (region or "").strip().upper()
+    email = owner_map.get(bucket, "")
+    if not email:
+        return None, f"no owner_map entry for region '{bucket or '(blank)'}'"
+    owner_id = owner_id_by_email.get(email)
+    if not owner_id:
+        return None, f"owner_map email '{email}' (region '{bucket}') not found among live portal owners"
+    return owner_id, None
 
 
 def slugify(name: str) -> str:
@@ -313,8 +418,18 @@ def build_company_inputs(rows: list, event_tag: str):
     return inputs, skipped
 
 
-def build_contact_inputs(rows: list, event_tag: str):
+def build_contact_inputs(rows: list, event_tag: str, owner_map: dict = None, owner_id_by_email: dict = None):
+    """owner_map/owner_id_by_email (see resolve_row_owner_id()): when both
+    are given, each row's `region` column resolves to a real
+    `hubspot_owner_id` on the upsert -- the fictional `hubspot_owner_email`
+    stays CSV-only (routing label, never sent to HubSpot). Omitted with a
+    counted, stated reason when unresolvable, never invented. Returns
+    (inputs, skipped, owner_resolved_count, owner_skip_reasons)."""
+    owner_map = owner_map or {}
+    owner_id_by_email = owner_id_by_email or {}
     inputs, skipped = [], 0
+    owner_resolved = 0
+    owner_skip_reasons = []
     for row in rows:
         email = (row.get("email") or "").strip()
         if not email:
@@ -337,8 +452,14 @@ def build_contact_inputs(rows: list, event_tag: str):
         lifecycle = normalize_lifecyclestage(row.get("lifecyclestage", ""))
         if lifecycle:
             props["lifecyclestage"] = lifecycle
+        owner_id, skip_reason = resolve_row_owner_id(row.get("region", ""), owner_map, owner_id_by_email)
+        if owner_id:
+            props["hubspot_owner_id"] = owner_id
+            owner_resolved += 1
+        else:
+            owner_skip_reasons.append((email, skip_reason))
         inputs.append({"idProperty": "email", "id": email, "properties": props})
-    return inputs, skipped
+    return inputs, skipped, owner_resolved, owner_skip_reasons
 
 
 def match_speaker_email(name: str, segment_emails: list) -> str:
@@ -374,7 +495,13 @@ def build_speaker_contact_inputs(speakers: list, segment_emails: list, event_tag
     (lifecyclestage='evangelist', a standard property already wired through
     normalize_lifecyclestage() below, plus a human-readable role=speaker
     note in the existing custom icp_rationale property) rather than
-    inventing a new custom property -- see HUBSPOT_PUSH.md."""
+    inventing a new custom property -- see HUBSPOT_PUSH.md. No
+    `hubspot_owner_id` here: speakers.json carries no country/region signal
+    to route on, and owner resolution never invents one (see
+    resolve_row_owner_id()) -- a speaker upserted via the primary
+    hubspot_contacts.csv path (build_contact_inputs(), the default, see
+    load_speakers() in enrich.py) DOES get routed normally, since that CSV
+    row does carry a real `region`."""
     inputs, skipped = [], 0
     for sp in speakers:
         name = (sp.get("name") or "").strip()
@@ -750,7 +877,9 @@ def print_receipts(receipts: list, dry_run: bool):
         if dry_run and r.get("sample"):
             print(f"  sample body: {r['sample']}")
     if dry_run:
-        print(f"[dry-run] network_calls_made={NETWORK_CALLS} (urllib.request.urlopen never invoked)")
+        print(f"[dry-run] network_calls_made={NETWORK_CALLS} (all {NETWORK_CALLS} are the read-only "
+              "GET /crm/v3/owners call(s) for owner routing -- see resolve_owner_ids(); every write "
+              "call -- ensure-properties/upsert/associate/log-emails/verify -- made zero network calls)")
 
 
 def main():
@@ -775,6 +904,10 @@ def main():
                          help="Step 6: search HubSpot by event_tag and print counts.")
     parser.add_argument("--strict", action="store_true",
                          help="Abort the whole run on the first non-2xx/409 instead of continuing.")
+    parser.add_argument("--config", dest="config_path", default=str(DEFAULT_CONFIG_PATH),
+                         help="icp.yaml path -- read for icp.owner_map (routing bucket -> real portal "
+                              "owner email) to resolve each contact's hubspot_owner_id. See "
+                              "load_owner_map()/resolve_owner_ids().")
     args = parser.parse_args()
 
     in_dir = Path(args.in_path) if args.in_path else (REPO_ROOT / "out" / event_slug_for(DEFAULT_EVENT_DIR))
@@ -787,13 +920,17 @@ def main():
                   file=sys.stderr)
             sys.exit(1)
 
-    token = None
-    if not args.dry_run:
-        token = resolve_token()
-        if not token:
-            print(f"error: no HubSpot token found -- set HUBSPOT_TOKEN or write {HUBSPOT_ENV_PATH} "
-                  "(KEY=VALUE lines, HUBSPOT_TOKEN=...). Use --dry-run to preview without one.", file=sys.stderr)
-            sys.exit(1)
+    # Resolved regardless of --dry-run: owner resolution's GET /crm/v3/owners
+    # is explicitly allowed to run live-read-only under --dry-run (so the
+    # dry-run plan shows real owner ids, not placeholders) -- every WRITE
+    # step below still stays at zero network under --dry-run (each step
+    # function short-circuits before http_call). Live mode still hard-requires
+    # a token; --dry-run degrades to no owner resolution without one.
+    token = resolve_token()
+    if not token and not args.dry_run:
+        print(f"error: no HubSpot token found -- set HUBSPOT_TOKEN or write {HUBSPOT_ENV_PATH} "
+              "(KEY=VALUE lines, HUBSPOT_TOKEN=...). Use --dry-run to preview without one.", file=sys.stderr)
+        sys.exit(1)
 
     event_tag = resolve_event_tag(in_dir)
     company_rows, contact_rows = load_csv(companies_csv), load_csv(contacts_csv)
@@ -804,6 +941,15 @@ def main():
     exit_code = 0
 
     try:
+        # Step 0: owner routing -- read config/icp.yaml's icp.owner_map,
+        # then resolve each mapped email to a real HubSpot ownerId (live
+        # read, see resolve_owner_ids()'s docstring for why this runs even
+        # under --dry-run).
+        owner_map = load_owner_map(Path(args.config_path))
+        owner_id_by_email, owner_resolution_note = resolve_owner_ids(token)
+        print(f"note: hubspot_owner_id routing -- owner_map={owner_map or '(none configured)'}; "
+              f"{owner_resolution_note}")
+
         # Step 1: ensure-properties
         receipts.append(run_ensure_properties(token, args.dry_run, args.strict))
 
@@ -819,9 +965,8 @@ def main():
         })
 
         # Step 3: upsert contacts
-        print("note: hubspot_owner_email / hubspot_owner_id routing is emitted in the CSV but NOT pushed "
-              "to HubSpot in this sandbox pass (no matching owners) -- see HUBSPOT_PUSH.md.")
-        contact_inputs, contact_skipped = build_contact_inputs(contact_rows, event_tag)
+        contact_inputs, contact_skipped, owner_resolved, owner_skip_reasons = build_contact_inputs(
+            contact_rows, event_tag, owner_map, owner_id_by_email)
         speaker_upserted, speaker_skipped = 0, 0
         if args.include_speakers:
             if DEFAULT_SPEAKERS_PATH.exists():
@@ -838,7 +983,17 @@ def main():
         contact_chunks = chunked(contact_inputs, BATCH_SIZE)
         k_ok, k_fail, k_sample, contact_responses, contact_rejected = run_batch_step(
             "upsert-contacts", "/crm/v3/objects/contacts/batch/upsert", contact_chunks, token, args.dry_run, args.strict)
-        contact_note = f"skipped_no_email={contact_skipped}"
+        contact_note = (
+            f"skipped_no_email={contact_skipped}; hubspot_owner_id_set={owner_resolved} "
+            f"hubspot_owner_id_skipped={len(owner_skip_reasons)}"
+        )
+        if owner_skip_reasons:
+            print(f"[info] upsert-contacts: hubspot_owner_id omitted (never invented) for "
+                  f"{len(owner_skip_reasons)} contact(s):", file=sys.stderr)
+            for email, reason in owner_skip_reasons[:10]:
+                print(f"       {email} -> {reason}", file=sys.stderr)
+            if len(owner_skip_reasons) > 10:
+                print(f"       ...and {len(owner_skip_reasons) - 10} more", file=sys.stderr)
         if args.include_speakers:
             contact_note += f"; speakers_included={speaker_upserted} speakers_skipped_no_match={speaker_skipped}"
         if contact_rejected:

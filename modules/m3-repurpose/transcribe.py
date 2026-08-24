@@ -35,6 +35,14 @@ Failure behavior (by design, not a bug):
     - Network error / non-200 response  -> exit 1, prints the exact error.
     There is no fallback to a fixture transcript. A failed run produces no
     transcript.md and a non-zero exit code — never a fabricated result.
+
+Verification status: --dry-run and the fail-loud missing-key path are both
+verified in this repo's dev machine (no SARVAM_API_KEY available here); the
+real network call to Sarvam's saaras:v3 endpoint has not been exercised
+from this exact machine/script -- it was exercised via the Sarvam MCP tool
+in an earlier interactive session instead (see README.md's Transcription
+lane section, out/live-proof-transcription/). Swap in a real key
+(--api-key-env or the SARVAM_API_KEY default) to close that gap.
 """
 import argparse
 import difflib

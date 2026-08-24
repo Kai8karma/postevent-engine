@@ -46,7 +46,12 @@ Two lanes, both real:
   `claude -p` at all. Zero network calls. Use this to verify the live path
   is wired correctly when `claude -p` auth is unavailable.
 
-Proves: a messy 150-row Zoom registrant export -> fuzzy-deduped (within-batch + against a 40-contact HubSpot fixture, `difflib.SequenceMatcher`, threshold 0.80, documented in `dedupe_report.json`) -> every contact/company field inferred where missing (peer/company backfill cascade, then `--live`'s LLM second opinion for whatever's still unresolved) -> ICP-tiered against `config/icp.yaml` with a rationale string -> region/owner routed -> lifecycle-staged by a pinned tier/attendance/session-length rubric (never regressing an existing HubSpot contact) -> field-complete at >90% (verified: ~100% on the fixture, see `quality_report.json`), with rows the classifier structurally couldn't resolve (e.g. non-Latin company names) flagged `needs_review` and counted separately rather than laundered into the completeness number.
+Proves: a messy 150-row Zoom registrant export -> fuzzy-deduped (within-batch + against a 40-contact HubSpot fixture, `difflib.SequenceMatcher`, threshold 0.80, documented in `dedupe_report.json`) -> every contact/company field inferred where missing (peer/company backfill cascade, then `--live`'s LLM second opinion for whatever's still unresolved) -> ICP-tiered against `config/icp.yaml` with a rationale string -> region/owner routed -> lifecycle-staged by a pinned tier/attendance/session-length rubric (never regressing an existing HubSpot contact), with rows the classifier structurally couldn't resolve flagged `needs_review` and counted separately rather than laundered into the completeness number.
+
+**Completeness -- two numbers, not one.** `quality_report.json`'s `spec_completeness` reports both a **raw** and a **verified** figure per the dual-metric fix below; report whichever one you quote, don't blend them:
+- **Raw** (`spec_completeness_raw_pct`, `completeness_pct`, `fields`): counts anything non-blank as filled, including two things that read as "data" but aren't -- `numemployees` from `synthetic_company_size()`'s deterministic hash placeholder (never a real firmographic lookup offline), and the rule cascade's generic fallbacks (`jobtitle` = `"Attendee"`, `industry` = `"Other"`) when nothing better resolved them. On the offline fixture this reads **contact 99.9% / company 97.3%** -- both clear >90%, but company's number is inflated by `numemployees` reading ~100% filled by construction.
+- **Verified** (`spec_completeness_verified_pct`, `fields_verified`): the same fields with those two placeholders excluded from the numerator -- `numemployees` only counts when it's a real Clay `Enrich Company` result (`--live --clay-max`, see `run_clay_enrichment()`'s `numemployees_verified_domains`), and `jobtitle`/`industry` only count when they're not the generic fallback. On the offline fixture (zero `--clay-max` calls, so `numemployees` verifies at 0%) this reads **contact 87.8% / company 67.0%** -- both under the 90% bar. This is the honest number, reported as-is, not tuned to clear 90: the offline lane's synthetic company-size placeholder and the ~21% of rows the industry keyword classifier couldn't resolve (`synthetic_or_fallback_fields.industry_generic_fallback_count`) are real gaps, not just presentation. The path to verified >90% is the live Clay lane against real domains (see "Clay lane" below) -- `fixtures/clay_real_domains_registrants.csv`'s 8 real domains are the proof point that the mechanism itself works, not the synthetic default fixture.
+- `needs_review_broadened_count`/`_pct` (quality_report.json, alongside the original narrower `needs_review_count`/`_pct` -- see its `needs_review_note`) is the row-level view of the same gap: any row still on a generic `jobtitle`/`industry` fallback that no `--live` LLM patch or `--clay-max` Clay call resolved.
 
 ## Outputs (in `--out`)
 
@@ -73,7 +78,13 @@ Proves: a messy 150-row Zoom registrant export -> fuzzy-deduped (within-batch + 
 - `quality_report.json` -- per-field completeness, overall completeness vs.
   the 90% bar, and `needs_review_count` / `needs_review_pct` (kept separate
   from completeness so a high completeness number can't quietly launder
-  rows the classifier couldn't actually resolve). Also carries
+  rows the classifier couldn't actually resolve), plus the raw/verified
+  dual metric (`raw_fill` / `verified_fill` top-level, and
+  `spec_completeness.{contact,company}.spec_completeness_raw_pct` /
+  `spec_completeness_verified_pct` / `fields_verified` /
+  `synthetic_or_fallback_fields`) and `needs_review_broadened_count` /
+  `_pct` -- see "Completeness -- two numbers, not one" above for what's
+  excluded and the actual numbers on the offline fixture. Also carries
   `suppressed_count` / `mailable_count` / `suppressed` (judge fix #4): rows
   whose email domain is the host company's own or a named competitor
   (`config/icp.yaml`'s `suppression` key), flagged via each row's

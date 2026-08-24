@@ -1447,6 +1447,12 @@ def run_clay_enrichment(output_rows: list, cfg: dict, hs_matches: dict, clay_max
         "clay_credits_before": None,
         "clay_credits_after": None,
         "domains": domains,
+        # domains where numemployees actually landed a real Clay employee_count
+        # (not just "this domain's Clay call completed") -- the exact set
+        # quality_report.json's verified_fill treats numemployees as verified
+        # for (see spec_completeness()/_is_verified_value()). Empty unless a
+        # live --clay-max run actually returned a usable employee_count.
+        "numemployees_verified_domains": [],
     }
     if dry_run:
         print(f"[--clay-dry-run] would enrich {len(domains)} domain(s) via Clay Enrich Company: {domains}. "
@@ -1478,16 +1484,20 @@ def run_clay_enrichment(output_rows: list, cfg: dict, hs_matches: dict, clay_max
         if d:
             rows_by_domain.setdefault(d, []).append(r)
 
+    numemployees_verified_domains = set()
     for domain, fields in results.items():
         if fields.get("status") != "complete":
             continue
+        size = fields.get("employee_count")
+        size_is_real = isinstance(size, (int, float)) and size > 0
+        if size_is_real:
+            numemployees_verified_domains.add(domain)
         for r in rows_by_domain.get(domain, []):
             if fields.get("industry"):
                 r["industry"] = fields["industry"]
                 if r["industry"] != "Other":
                     r["needs_review"] = False
-            size = fields.get("employee_count")
-            if isinstance(size, (int, float)) and size > 0:
+            if size_is_real:
                 r["numemployees"] = int(size)
             if fields.get("country"):
                 r["country"] = fields["country"]
@@ -1513,6 +1523,7 @@ def run_clay_enrichment(output_rows: list, cfg: dict, hs_matches: dict, clay_max
                 "country field now reflects the company's HQ country from Clay, not the contact's "
                 "self-reported registration country used for region assignment]"
             )
+    report["numemployees_verified_domains"] = sorted(numemployees_verified_domains)
     return report
 
 
@@ -1948,37 +1959,128 @@ COMPANY_FIELDS = ["domain", "name", "industry", "numemployees"]
 
 
 def _fill_rate(rows, field):
-    """% of rows where `field` is present and not a placeholder ('', 'Unknown', '0')."""
+    """RAW fill: % of rows where `field` is present and not a placeholder
+    ('', 'Unknown', '0'). This is the field-level-as-is number -- it counts
+    a synthetic company_size or a generic rule-cascade fallback (jobtitle
+    'Attendee', industry 'Other') as filled, same as it always has. See
+    _is_verified_value()/_verified_fill_rate() for the honest counterpart
+    that excludes those."""
     if not rows:
         return 0.0
     filled = sum(1 for r in rows if str(r.get(field, "")).strip() not in ("", "Unknown", "0"))
     return round(100 * filled / len(rows), 1)
 
 
-def spec_completeness(rows):
+def _is_verified_value(row, field, clay_verified_domains) -> bool:
+    """RAW fill rule, minus the two rule-cascade fallbacks raw fill can't
+    see are placeholders: jobtitle == GENERIC_TITLE_FALLBACK ('Attendee' --
+    no peer/company signal resolved it) and industry == 'Other' (the ASCII
+    keyword classifier's catch-all, not a real industry match). Checked
+    against the row's FINAL value, so a --live inference patch or a
+    --clay-max Clay backfill that actually replaced the fallback already
+    verifies correctly here without any extra bookkeeping.
+
+    numemployees is verified only when this row's company_domain is in
+    clay_verified_domains (built by run_clay_enrichment() from real Clay
+    'Enrich Company' employee_count responses) -- synthetic_company_size()'s
+    deterministic hash placeholder is never verified, and a --live
+    inference-patch company_size guess isn't either (prompts/inference.md's
+    own guardrail: don't invent a number, defer to Clay)."""
+    raw = str(row.get(field, "")).strip()
+    if raw in ("", "Unknown", "0"):
+        return False
+    if field == "jobtitle" and raw == GENERIC_TITLE_FALLBACK:
+        return False
+    if field == "industry" and raw == "Other":
+        return False
+    if field == "numemployees" and row.get("company_domain", "") not in clay_verified_domains:
+        return False
+    return True
+
+
+def _verified_fill_rate(rows, field, clay_verified_domains):
+    if not rows:
+        return 0.0
+    filled = sum(1 for r in rows if _is_verified_value(r, field, clay_verified_domains))
+    return round(100 * filled / len(rows), 1)
+
+
+def spec_completeness(rows, clay_verified_domains=None):
     """Contact/company completeness against the exact field sets the
     assignment brief names, measured per contact-row (company completeness is
     NOT deduped to unique company entities -- deduping first would drop rows
     whose company/domain never resolved, which is exactly the weak spot this
     metric exists to surface; row-level keeps the same honest denominator as
-    the contact-completeness number)."""
+    the contact-completeness number).
+
+    Reports both numbers side by side rather than picking one:
+    - "fields"/"completeness_pct"/"pass_90" (unchanged key names, for
+      backward compat with modules/m4-dashboard/build_dashboard.py and
+      api/run.py, which read this exact shape) are the RAW numbers --
+      synthetic company_size and generic fallbacks count as filled, same as
+      always.
+    - "fields_verified"/"spec_completeness_raw_pct"/
+      "spec_completeness_verified_pct"/"pass_90_verified" are new: the
+      honest number with synthetic/fallback values excluded from the
+      numerator (see _is_verified_value()). Whatever this number is, it is
+      reported as-is -- it is not tuned to clear 90."""
+    clay_verified_domains = clay_verified_domains or set()
+
     contact_fields = {f: _fill_rate(rows, f) for f in SPEC_CONTACT_FIELDS}
     contact_pct = round(sum(contact_fields.values()) / len(contact_fields), 1) if contact_fields else 0.0
+    contact_fields_verified = {f: _verified_fill_rate(rows, f, clay_verified_domains) for f in SPEC_CONTACT_FIELDS}
+    contact_verified_pct = (
+        round(sum(contact_fields_verified.values()) / len(contact_fields_verified), 1)
+        if contact_fields_verified else 0.0
+    )
 
     company_fields_raw = {f: _fill_rate(rows, f) for f in SPEC_COMPANY_FIELDS}
     company_fields = {SPEC_COMPANY_FIELD_LABELS.get(f, f): v for f, v in company_fields_raw.items()}
     company_pct = round(sum(company_fields.values()) / len(company_fields), 1) if company_fields else 0.0
+    company_fields_verified_raw = {
+        f: _verified_fill_rate(rows, f, clay_verified_domains) for f in SPEC_COMPANY_FIELDS
+    }
+    company_fields_verified = {
+        SPEC_COMPANY_FIELD_LABELS.get(f, f): v for f, v in company_fields_verified_raw.items()
+    }
+    company_verified_pct = (
+        round(sum(company_fields_verified.values()) / len(company_fields_verified), 1)
+        if company_fields_verified else 0.0
+    )
+
+    synthetic_or_fallback_fields = {
+        "jobtitle_generic_fallback_count": sum(1 for r in rows if r.get("jobtitle") == GENERIC_TITLE_FALLBACK),
+        "industry_generic_fallback_count": sum(1 for r in rows if r.get("industry") == "Other"),
+        "numemployees_synthetic_count": sum(
+            1 for r in rows if r.get("company_domain", "") not in clay_verified_domains
+        ),
+    }
 
     return {
-        "contact": {"fields": contact_fields, "completeness_pct": contact_pct, "pass_90": contact_pct > 90.0},
+        "contact": {
+            "fields": contact_fields,
+            "completeness_pct": contact_pct,
+            "pass_90": contact_pct > 90.0,
+            "fields_verified": contact_fields_verified,
+            "spec_completeness_raw_pct": contact_pct,
+            "spec_completeness_verified_pct": contact_verified_pct,
+            "pass_90_verified": contact_verified_pct > 90.0,
+        },
         "company": {
             "fields": company_fields,
             "completeness_pct": company_pct,
             "pass_90": company_pct > 90.0,
+            "fields_verified": company_fields_verified,
+            "spec_completeness_raw_pct": company_pct,
+            "spec_completeness_verified_pct": company_verified_pct,
+            "pass_90_verified": company_verified_pct > 90.0,
             "caveat": "size_band (numemployees) is a synthetic offline placeholder "
                       "(see synthetic_company_size) never verified against a real source -- "
-                      "it will read as ~100% filled by construction, not by data quality.",
+                      "it will read as ~100% filled by construction, not by data quality. "
+                      "spec_completeness_verified_pct corrects for this (0% unless a --clay-max "
+                      "live run actually backfilled it).",
         },
+        "synthetic_or_fallback_fields": synthetic_or_fallback_fields,
     }
 
 
@@ -2073,19 +2175,63 @@ def write_outputs(out_dir: Path, rows, fake_rows, dup_pairs, total_input, hs_mat
         filled = sum(1 for r in rows if str(r.get(field, "")).strip() not in ("", "Unknown", "0"))
         field_completeness[field] = round(100 * filled / len(rows), 1) if rows else 0.0
     overall = round(sum(field_completeness.values()) / len(field_completeness), 1) if field_completeness else 0.0
+
+    # Honest-completeness pass (dual metric): "fields"/"overall_completeness_pct"
+    # above stay exactly as they always have (RAW -- a synthetic company_size
+    # or a generic rule-cascade fallback like jobtitle 'Attendee'/industry
+    # 'Other' counts as filled) for backward compat with anything reading
+    # this file's existing shape. "raw_fill"/"verified_fill" below make that
+    # explicit and add the honest counterpart -- see
+    # _is_verified_value()/spec_completeness()'s docstring for exactly what's
+    # excluded and why.
+    clay_verified_domains = set(clay_report.get("numemployees_verified_domains", [])) if clay_report else set()
+    verified_field_completeness = {
+        field: _verified_fill_rate(rows, field, clay_verified_domains) for field in COMPLETENESS_FIELDS
+    }
+    verified_overall = (
+        round(sum(verified_field_completeness.values()) / len(verified_field_completeness), 1)
+        if verified_field_completeness else 0.0
+    )
+
     needs_review_count = sum(1 for r in rows if r.get("needs_review"))
+    # Broadened needs_review (this task): any row whose FINAL jobtitle or
+    # industry is still a generic rule-cascade fallback ('Attendee' /
+    # 'Other') that no --live LLM patch or --clay-max Clay backfill
+    # resolved -- checked against final field state, so a row a patch/Clay
+    # actually fixed correctly drops out on its own. Reported as a SEPARATE
+    # count from needs_review_count/pct above rather than replacing it:
+    # needs_review_count/pct mirrors the per-row `needs_review` column baked
+    # into hubspot_ready.csv/hubspot_contacts.csv/enriched.json (kept
+    # narrower -- non-ASCII industry fallback only, judge fix #7's original
+    # scope) so those exported files stay byte-stable; this broadened count
+    # is the honest "still needs a human" number quality_report.json adds.
+    needs_review_broadened_count = sum(
+        1 for r in rows if r.get("jobtitle") == GENERIC_TITLE_FALLBACK or r.get("industry") == "Other"
+    )
     suppressed_rows = [r for r in rows if r.get("suppression_reason")]
     quality_report = {
         "generated_at": now,
         "row_count": len(rows),
         "fields": field_completeness,
+        "raw_fill": {"fields": field_completeness, "overall_pct": overall},
+        "verified_fill": {"fields": verified_field_completeness, "overall_pct": verified_overall},
         "overall_completeness_pct": overall,
         "threshold_required_pct": 90.0,
         "pass": overall > 90.0,
+        "pass_verified": verified_overall > 90.0,
         # judge fix #7: reported separately so a high completeness number
         # can't quietly launder rows the classifier couldn't actually resolve.
         "needs_review_count": needs_review_count,
         "needs_review_pct": round(100 * needs_review_count / len(rows), 1) if rows else 0.0,
+        "needs_review_broadened_count": needs_review_broadened_count,
+        "needs_review_broadened_pct": round(100 * needs_review_broadened_count / len(rows), 1) if rows else 0.0,
+        "needs_review_note": (
+            "needs_review_count/pct mirror the per-row `needs_review` export column (narrow -- "
+            "non-ASCII industry fallback only, so hubspot_ready.csv/hubspot_contacts.csv/enriched.json "
+            "stay unchanged); needs_review_broadened_count/pct also fire on any row still carrying a "
+            "generic fallback (jobtitle=='Attendee' or industry=='Other') that no --live LLM patch or "
+            "--clay-max backfill resolved -- the honest count."
+        ),
         # judge fix #4: host/competitor domains flagged, never dropped from
         # the CRM export -- only excluded from M2's mailable set. See
         # suppression_reason_for() / config/icp.yaml's `suppression` key.
@@ -2099,7 +2245,7 @@ def write_outputs(out_dir: Path, rows, fake_rows, dup_pairs, total_input, hs_mat
         # measured against the exact field sets the assignment brief names --
         # see spec_completeness() docstring for why this differs from the
         # softer overall_completeness_pct above.
-        "spec_completeness": spec_completeness(rows),
+        "spec_completeness": spec_completeness(rows, clay_verified_domains),
     }
     # only present when --clay-max/--clay-dry-run were passed -- default
     # (zero Clay calls) run leaves quality_report.json exactly as before.
@@ -2228,6 +2374,13 @@ def main():
           f"(pass90={sc['contact']['pass_90']}) "
           f"company_completeness={sc['company']['completeness_pct']}% "
           f"(pass90={sc['company']['pass_90']})")
+    print(f"[verified] contact_completeness={sc['contact']['spec_completeness_verified_pct']}% "
+          f"(pass90={sc['contact']['pass_90_verified']}) "
+          f"company_completeness={sc['company']['spec_completeness_verified_pct']}% "
+          f"(pass90={sc['company']['pass_90_verified']}) "
+          f"needs_review_broadened={quality_report['needs_review_broadened_count']} "
+          f"({quality_report['needs_review_broadened_pct']}%) -- excludes synthetic company_size "
+          "and generic title/industry fallbacks from the numerator, see quality_report.json")
 
 
 if __name__ == "__main__":

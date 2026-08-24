@@ -132,6 +132,11 @@
   .status-pill.stalled{background:var(--danger-soft);color:var(--danger);}
   .anomaly-threshold-note{font-size:11.5px;color:var(--text-muted);margin:-6px 0 14px;line-height:1.5;max-width:760px;}
 
+  /* live annotations -- advisory-only, see build_dashboard.py's
+     generate_live_annotations() / README's AI-boundary section */
+  .annotation{font-style:italic;color:var(--text-muted);font-size:11.5px;line-height:1.45;margin-top:6px;}
+  .anomaly-card .annotation{margin:2px 0 8px;}
+
   /* narrative */
   .narrative-card{padding:20px 22px;}
   .narrative-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;}
@@ -170,7 +175,8 @@
     <div class="gen-meta">
       Dashboard built <code id="generated-at">—</code><br>
       Engagement as of <code id="as-of">—</code><br>
-      Engagement source <code id="engagement-source">—</code>
+      Engagement source <code id="engagement-source">—</code><br>
+      Annotations <code id="annotations-source">—</code>
     </div>
   </div>
 </header>
@@ -278,6 +284,16 @@
   document.getElementById('generated-at').textContent = fmtDate(DATA.generated_at);
   document.getElementById('as-of').textContent = fmtDate(DATA.as_of);
   document.getElementById('engagement-source').textContent = DATA.engagement_source || 'fixture';
+  // Advisory annotation-layer provenance -- see build_dashboard.py's
+  // generate_live_annotations()/attach_live_annotations(). "none" when
+  // --live-annotations wasn't passed, no key was found, or the call/parse
+  // failed; every failure mode degrades here, never a blank/broken page.
+  (function renderAnnotationsProvenance(){
+    var src = DATA.annotations_source || 'none';
+    var text = src === 'llm_live' ? ('llm_live (' + (DATA.annotations_model || '?') + ')') : 'none';
+    if(DATA.annotations_rejected){ text += ' · ' + DATA.annotations_rejected + ' rejected'; }
+    document.getElementById('annotations-source').textContent = text;
+  })();
   (function renderSourceFooter(){
     var src = DATA.source || {contacts: 'fixture', detail: 'local CSV (offline)'};
     var label = src.contacts === 'hubspot' ? 'contacts read live from HubSpot' : 'contacts from local CSV fixture';
@@ -347,7 +363,9 @@
     var barPct = Math.round(100 * a.score / maxScore);
     return '<tr>' +
       '<td><div style="font-weight:600;">' + esc(a.account) + '</div>' +
-      '<div class="mono">' + esc(a.domain) + '</div></td>' +
+      '<div class="mono">' + esc(a.domain) + '</div>' +
+      (a.annotation ? '<div class="annotation">' + esc(a.annotation) + '</div>' : '') +
+      '</td>' +
       '<td><span class="score-bar-track"><span class="score-bar-fill" style="width:' + barPct + '%"></span></span>' + a.score + '</td>' +
       '<td>' + (a.is_buying_committee ?
         '<span class="badge committee">' + a.engaged_contact_count + '/' + a.total_known_contact_count + ' &middot; ' + a.committee_coverage_pct + '%</span>' :
@@ -438,6 +456,7 @@
       '<span class="status-pill ' + (a.lifecycle_progressed ? 'progressed' : 'stalled') + '">' +
       (a.lifecycle_progressed ? 'Stage moved' : 'Stalled') + '</span></div>' +
       '<div class="headline">' + esc(a.headline) + '</div>' +
+      (a.annotation ? '<div class="annotation">' + esc(a.annotation) + '</div>' : '') +
       '<div class="metrics"><span>' + a.events_that_day + ' touches on ' + esc(a.date) + '</span>' +
       '<span>' + a.events_total + ' total touches</span>' +
       '<span>' + a.share_of_activity_pct + '% same-day share</span></div>' +

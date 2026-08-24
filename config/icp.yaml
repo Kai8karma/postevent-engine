@@ -26,6 +26,17 @@ icp:
     AMER: "sdr.amer@acmerevenue.example"
     EMEA: "sdr.emea@acmerevenue.example"
     APAC: "sdr.apac@acmerevenue.example"
+  # Real portal ownership routing (distinct from `owners:` above, which
+  # stays the fictional-SDR routing LABEL -- route computation itself is
+  # unchanged). push_to_hubspot.py resolves this map's email -> a real
+  # HubSpot ownerId via GET /crm/v3/owners and sets hubspot_owner_id on the
+  # contact upsert. Sandbox portal 247135551 has exactly one owner (Kai's
+  # own portal user, verified live) -- all three buckets map to it for this
+  # demo; swap per-bucket for a real SDR team on a real portal.
+  owner_map:
+    AMER: "kai8karma@gmail.com"
+    EMEA: "kai8karma@gmail.com"
+    APAC: "kai8karma@gmail.com"
   # No longer applied as a blanket stage (that produced a fake 91.4%
   # attendee-to-MQL rate -- judge fix #2). enrich.py now derives lifecyclestage
   # per-row from a pinned rubric (tier1+attended+session>=25min -> MQL;
