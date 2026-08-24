@@ -5,7 +5,7 @@ Renders the attendee / no-show / speaker thank-you emails and gates every send b
 - `python3 comms.py --out <dir>` — offline, reads cached `sample_output/*.json` takeaways.
 - `python3 comms.py --out <dir> --enriched <hubspot_ready.csv|.json> --live` — live copy via `claude -p`.
 - Falls back to `data/incoming/registrants.csv` when `--enriched` is missing (M1 not run yet) -- this is a *personalization* fallback only (job title/company for the copy). See the recipient-list rule below, which is separate and stricter.
-- Output: `emails/*.md` (3 variants, UTM-tagged), `sends_log.json` (HubSpot-shaped), `approval_gate.json` (blocks all sends until a human sets `approved: true`).
+- Output: `emails/*.md` (3 variants, UTM-tagged), `sends_log.json` (HubSpot-shaped -- `sample_sends[]` per segment covers every mailable contact, not a preview slice, so "all logged to HubSpot" is literally true once approved and pushed), `approval_gate.json` (blocks all sends until a human sets `approved: true`). Nothing in this module ever calls a send API -- see `hubspot_wiring.md` for what fires downstream of the gate and exactly what "logged" does and doesn't mean.
 
 ## Who gets mailed (judge fix #1 + #4)
 
@@ -42,6 +42,12 @@ Speakers are unaffected by any of this -- they're matched by name against
 `event.json`'s named speakers via `match_speaker_emails()`, sourced from
 `segments.json`'s `speakers` list (a separate, small, hand-curated list;
 speakers are never in `registrants.csv` and so never flow through M1 at all).
+**Consequence for HubSpot logging** (traced 2026-08-24, see `hubspot_wiring.md`
+§6): because speakers never flow through M1, they're never in
+`hubspot_contacts.csv` either, so `push_to_hubspot.py --log-emails` has no
+contact ID to associate their engagement to -- their `sample_sends` entries
+are built and flagged (`hubspot_log_emails_note`) but will not actually log in
+a live run until M1's lane also upserts speakers as contacts.
 - Prompts in `prompts/`, production send path in `hubspot_wiring.md`.
 - `--live` LLM backend: `LLM_BACKEND` env selects `auto` (default, tries `claude -p` then falls back to OpenRouter if a key exists), `claude`, or `openrouter`.
 - OpenRouter key: `OPENROUTER_API_KEY` env, else a `OPENROUTER_API_KEY=...` line in `~/.config/postevent/llm.env`; never printed.

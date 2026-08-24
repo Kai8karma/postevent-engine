@@ -747,10 +747,15 @@ def _normalize_live_cache(seg: str, cache: dict, shipped: dict) -> dict:
     return out
 
 
-def sample_payloads(segment: str, contacts: list, cache: dict, campaign: str, utm_content: str, limit: int = 5) -> list:
-    """HubSpot single-send-API-shaped payloads for a capped sample of real
-    contacts (full list would be to_count entries; this proves the mechanism
-    without a 150-row JSON dump)."""
+def sample_payloads(segment: str, contacts: list, cache: dict, campaign: str, utm_content: str, limit: int = None) -> list:
+    """HubSpot single-send-API-shaped payloads, one per real contact.
+
+    limit=None (the production default) emits every contact -- SPEC.md M2
+    says "All ... logged to HubSpot", not "a sample of", so sends_log.json's
+    `sample_sends` (key name kept as-is: push_to_hubspot.py's --log-emails
+    reads that literal key) must carry the full mailable list, not a
+    5-row preview. A caller may still pass a small int here for a quick
+    manual smoke test without writing hundreds of entries."""
     payloads = []
     for c in contacts[:limit]:
         resolved = resolve_takeaway(cache, c["function"], c["industry_bucket"])
@@ -1054,6 +1059,18 @@ def run(args) -> int:
         "utm_campaign": campaign, "utm_content_a": utm_content_a, "utm_content_b": utm_content_b,
         "template_file": f"emails/{SEGMENT_TEMPLATE_FILES['speaker']}",
         "sample_sends": speaker_sends,
+        # Known cross-module gap, verified against a real M1 run (see
+        # hubspot_wiring.md "Known gap: speaker log-emails"): M1's
+        # push_to_hubspot.py --log-emails resolves each sample_sends[].message.to
+        # against the email_id_map it just built from THAT SAME run's contact
+        # upsert, which is sourced solely from M1's hubspot_contacts.csv --
+        # built from registrants.csv, which never includes speakers. Speaker
+        # emails come from data/fixtures/segments.json + event.json, a source
+        # M1 never reads. Net effect: in a live run these 3 entries resolve to
+        # no contact id and land in log-emails' skipped_no_contact_id, not as
+        # a logged engagement -- extra key, ignored by push_to_hubspot.py's
+        # reader, kept here as the receipt of the gap rather than silence.
+        "hubspot_log_emails_note": "speaker contacts are not upserted by M1's push_to_hubspot.py -- see modules/m2-comms/hubspot_wiring.md",
     })
 
     sends_log = {
