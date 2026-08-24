@@ -305,9 +305,10 @@ async function callGemini(apiKey, content) {
     } catch (e) {
       lastErr = e;
       const msg = String((e && e.message) || e);
-      // Only model-availability failures fall through to the next id;
-      // auth/quota errors abort the whole provider immediately.
-      if (!/status 404|not found|no longer available/i.test(msg)) throw e;
+      // Model-availability failures (retired id 404s) and transient
+      // congestion (503 "high demand", 429) fall through to the next id;
+      // auth errors abort the whole provider immediately.
+      if (!/status 404|not found|no longer available|status 503|status 429|high demand|overloaded/i.test(msg)) throw e;
     }
   }
   throw lastErr || new Error("gemini: no candidate models available");
