@@ -37,8 +37,9 @@
         440,
         300
       ],
+      "notes": "M4 reads M1's hubspot_ready.csv (see modules/m4-dashboard/README.md) -- this standalone single-module file used to hard-fail on a fresh clone if imported/run on its own instead of via master.json, since out/pipeline/m1/ would not exist yet. Self-heals: runs M1 first only if its output isn't already there, so this file is genuinely runnable standalone, not just as a step inside master.json.",
       "parameters": {
-        "command": "python3 modules/m4-dashboard/build_dashboard.py --out out/pipeline/m4 --enriched out/pipeline/m1/hubspot_ready.csv --engagement data/fixtures/engagement.json --segments data/fixtures/segments.json"
+        "command": "test -f out/pipeline/m1/hubspot_ready.csv || python3 modules/m1-enrichment/enrich.py --out out/pipeline/m1; python3 modules/m4-dashboard/build_dashboard.py --out out/pipeline/m4 --enriched out/pipeline/m1/hubspot_ready.csv --engagement data/fixtures/engagement.json --segments data/fixtures/segments.json"
       }
     }
   ],

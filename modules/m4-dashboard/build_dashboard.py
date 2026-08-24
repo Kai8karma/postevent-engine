@@ -7,16 +7,41 @@ committee map, 7/14/30-day lifecycle movement, and two anomaly callouts.
 Embeds the computed data as a JSON block into template.html and writes the
 result as index.html in --out.
 
-Python 3 stdlib only. Zero network calls.
+Python 3 stdlib only. Zero network calls by default -- optional exception is
+--hubspot, which reads live contacts from HubSpot instead of --enriched's CSV
+(same Bearer-token idiom as modules/m1-enrichment/push_to_hubspot.py), and
+degrades to the CSV on any failure. See load_contacts_from_hubspot() below.
+
+AI BOUNDARY (read this before changing anomaly/scoring math): every number
+in this file -- funnel counts, completeness percentages, account/contact
+scores, lifecycle movement -- is plain deterministic arithmetic over the
+input rows, and it must reconcile exactly with what HubSpot itself would
+report for the same data. No model, statistical or generative, ever touches
+a count. The one piece of judgment in this file is compute_anomaly_threshold()
+below: what counts as "anomalous" engagement is inherently relative to a
+given event's own distribution, not a fixed number, so the threshold is
+derived from THIS run's actual data (a Tukey IQR outlier fence, not a
+generative LLM call -- see that function's docstring for why a statistical
+model is the right and honest call here, not a network one) instead of a
+hardcoded guess. Real natural-language judgment -- the narrative panel --
+lives in api/narrative.js, a real LLM call, not here. See README.md's "AI
+boundary" section for the full doctrine.
 
 Usage:
     python3 build_dashboard.py --enriched hubspot_ready.csv \
+        --engagement engagement.json --segments segments.json --out dist/
+    python3 build_dashboard.py --hubspot --enriched hubspot_ready.csv \
         --engagement engagement.json --segments segments.json --out dist/
 """
 import argparse
 import csv
 import json
+import math
+import os
+import statistics
 import sys
+import urllib.error
+import urllib.request
 from collections import Counter, defaultdict
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -57,6 +82,14 @@ def load_event_identity(event_path: Path) -> dict:
         "speakers": speakers,
     }
 
+# Lead-interest score = deterministic weighted sum of an event's own type,
+# on purpose -- this is "counting", not "judgment" (see the AI BOUNDARY note
+# at the top of this file), and it has to stay auditable and reconcilable
+# with HubSpot's own engagement timeline: a RevOps user needs to be able to
+# hand-verify any contact's score from their raw event list, which a model
+# call would make unreproducible run to run. Weights themselves are a product
+# call (form fills matter more than opens), not something a model should
+# invent per run.
 WEIGHTS = {"form_fill": 10, "click": 3, "pageview": 1, "open": 0.5}
 
 FREEMAIL_DOMAINS = {
@@ -217,8 +250,206 @@ def load_fallback_narrative():
     }
 
 
-def build(enriched_path, engagement_path, segments_path, event_path):
-    enriched_rows = load_enriched(enriched_path)
+# --------------------------------------------------------------------------
+# --hubspot: live contact read-back (opt-in; zero network by default)
+# --------------------------------------------------------------------------
+# The spec's M4 input is "HubSpot data on event contacts" -- this file
+# historically only ever read M1's local hubspot_ready.csv. The same 133
+# contacts that CSV produced were actually pushed to HubSpot sandbox portal
+# 247135551 (modules/m1-enrichment/push_to_hubspot.py, verified by its own
+# --verify read-back), so reading them back here is the same API in
+# reverse, not a new integration. This block never runs unless --hubspot is
+# passed, and even then it falls back to the CSV on any failure -- see
+# resolve_contacts().
+
+HUBSPOT_ENV_PATH = Path.home() / ".config" / "postevent" / "hubspot.env"
+HUBSPOT_API_BASE = "https://api.hubapi.com"
+HUBSPOT_PAGE_SIZE = 100
+# Properties this pipeline actually writes per contact (see push_to_hubspot.py
+# CONTACT_PROPERTIES / build_contact_inputs) plus the handful of default
+# HubSpot properties normalize_row() already knows how to read.
+HUBSPOT_CONTACT_PROPERTIES = [
+    "email", "firstname", "lastname", "jobtitle", "company", "country",
+    "lifecyclestage", "icp_tier", "attendance_status", "event_tag",
+]
+
+
+def resolve_hubspot_token():
+    """Mirrors modules/m1-enrichment/push_to_hubspot.py::resolve_token
+    (read-only reference -- not imported, so the two lanes' file ownership
+    stays independent). Token is never printed, logged, or returned to the
+    output JSON."""
+    token = os.environ.get("HUBSPOT_TOKEN")
+    if token:
+        return token.strip()
+    if HUBSPOT_ENV_PATH.exists():
+        for line in HUBSPOT_ENV_PATH.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, value = line.partition("=")
+            if key.strip() == "HUBSPOT_TOKEN":
+                return value.strip().strip('"').strip("'")
+    return None
+
+
+def resolve_event_tag_for_hubspot(enriched_path, event_identity):
+    """Same event_tag formula push_to_hubspot.py used for the live sandbox
+    push (resolve_event_tag): prefer M3's manifest.json event_tag if it
+    sits alongside --enriched's out dir (an M1/M3 run's shared --out
+    parent), else recompute '{host_domain_label}-{date}' from event.json.
+    Getting this wrong just means the search returns 0 rows -- handled by
+    the caller, not fatal here."""
+    m3_manifest = Path(enriched_path).resolve().parent.parent / "m3" / "manifest.json"
+    if m3_manifest.exists():
+        try:
+            tag = json.loads(m3_manifest.read_text(encoding="utf-8")).get("event_tag")
+            if tag:
+                return tag
+        except (OSError, json.JSONDecodeError):
+            pass
+    domain_label = (event_identity.get("host_domain") or "event").split(".")[0]
+    return f"{domain_label}-{event_identity.get('date', '')}".strip("-") or "event"
+
+
+def hubspot_search_contacts(token, event_tag):
+    """POST /crm/v3/objects/contacts/search filtered on event_tag EQ <tag>,
+    paginated via 'after' -- the exact read pattern documented in
+    modules/m1-enrichment/HUBSPOT_PUSH.md's "Read-back" section and used by
+    push_to_hubspot.py's own --verify. Same Bearer-header idiom as that
+    file's http_call(). Returns (rows, error_message_or_None); rows are
+    already shaped through normalize_row() so build() cannot tell a
+    HubSpot-sourced row from a CSV-sourced one."""
+    rows = []
+    after = None
+    while True:
+        body = {
+            "filterGroups": [{"filters": [
+                {"propertyName": "event_tag", "operator": "EQ", "value": event_tag}
+            ]}],
+            "properties": HUBSPOT_CONTACT_PROPERTIES,
+            "limit": HUBSPOT_PAGE_SIZE,
+        }
+        if after:
+            body["after"] = after
+        req = urllib.request.Request(
+            f"{HUBSPOT_API_BASE}/crm/v3/objects/contacts/search",
+            data=json.dumps(body).encode("utf-8"),
+            method="POST",
+            headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                parsed = json.loads(resp.read())
+        except urllib.error.HTTPError as e:
+            return None, f"HubSpot search HTTP {e.code}: {e.read().decode('utf-8', 'replace')[:300]}"
+        except urllib.error.URLError as e:
+            return None, f"HubSpot search network error: {e}"
+        for result in parsed.get("results", []):
+            rows.append(normalize_row(result.get("properties", {}) or {}))
+        after = (parsed.get("paging", {}) or {}).get("next", {}).get("after")
+        if not after:
+            break
+    return rows, None
+
+
+def resolve_contacts(enriched_path, event_identity, fixture_rows):
+    """--hubspot entry point. Degrades to the fixture rows already loaded
+    from --enriched on ANY failure -- no token, network error, non-2xx, or
+    zero results all fall through to the CSV rather than crashing the
+    build. Returns (rows, source_dict) -- source_dict is embedded in the
+    output JSON and rendered in the dashboard footer so a reviewer can see
+    which lane actually produced a given build."""
+    fixture_source = {
+        "contacts": "fixture",
+        "detail": f"local CSV -- {Path(enriched_path).name} (M1 pipeline output, offline)",
+    }
+    token = resolve_hubspot_token()
+    if not token:
+        print(f"note: --hubspot set but no HUBSPOT_TOKEN found (env or {HUBSPOT_ENV_PATH}) "
+              "-- falling back to --enriched fixture rows.", file=sys.stderr)
+        return fixture_rows, fixture_source
+
+    event_tag = resolve_event_tag_for_hubspot(enriched_path, event_identity)
+    rows, err = hubspot_search_contacts(token, event_tag)
+    if err:
+        print(f"note: --hubspot search failed ({err}) -- falling back to --enriched fixture rows.",
+              file=sys.stderr)
+        return fixture_rows, fixture_source
+
+    for r in rows:
+        if r.get("email"):
+            r["email"] = r["email"].lower()
+    rows = [r for r in rows if r.get("email")]
+    if not rows:
+        print(f"note: --hubspot search for event_tag={event_tag!r} returned 0 contacts "
+              "-- falling back to --enriched fixture rows.", file=sys.stderr)
+        return fixture_rows, fixture_source
+
+    print(f"[hubspot] read {len(rows)} contacts live from HubSpot (event_tag={event_tag!r})")
+    return rows, {
+        "contacts": "hubspot",
+        "detail": f"HubSpot CRM v3 contact search, event_tag={event_tag!r}, {len(rows)} contacts",
+        "event_tag": event_tag,
+    }
+
+
+# --------------------------------------------------------------------------
+# anomaly threshold -- statistical model, not a hardcoded guess
+# --------------------------------------------------------------------------
+
+def compute_anomaly_threshold(events_by_contact):
+    """Replaces the previous hardcoded ">=15 events" guess with a threshold
+    computed from THIS run's own distribution of per-contact total event
+    counts -- a Tukey IQR outlier fence (Tukey, 1977; the standard "mild
+    outlier" cutoff used across data science: threshold = Q3 + 1.5*IQR),
+    not a generative-AI call.
+
+    Why statistical and not an LLM call: this file's contract is zero
+    network calls by default (see the AI BOUNDARY note at the top), and an
+    outlier fence is exactly the right tool here -- "how many touches is
+    unusual FOR THIS EVENT" is a question about a distribution's shape, not
+    a question needing linguistic judgment. The narrative panel
+    (api/narrative.js) is where this codebase spends its one real LLM call;
+    this function stays deterministic and instantly reproducible, and the
+    threshold moves with the data instead of being a constant nobody could
+    justify.
+
+    Returns (threshold: int, rationale: str). threshold is a floor on total
+    event count -- the existing same-day concentration logic in build()
+    still decides which of the contacts that clear it actually get
+    reported as anomalies.
+    """
+    totals = sorted(len(evs) for evs in events_by_contact.values() if evs)
+    n = len(totals)
+    if n < 4:
+        threshold = 15
+        rationale = (
+            f"fallback floor: only {n} contact(s) in this run have any post-event "
+            "engagement -- too few to fit a meaningful quartile-based distribution, "
+            f"so this build keeps a fixed floor of {threshold} total events until "
+            "more engagement data exists (recomputed fresh on every run with >=4 "
+            "engaged contacts)."
+        )
+        return threshold, rationale
+
+    q1, _, q3 = statistics.quantiles(totals, n=4, method="inclusive")
+    iqr = q3 - q1
+    threshold = max(3, math.ceil(q3 + 1.5 * iqr))
+    rationale = (
+        f"Tukey IQR outlier fence over this run's {n} engaged contacts' total "
+        f"event counts (median={statistics.median(totals):.1f}, Q1={q1:.1f}, "
+        f"Q3={q3:.1f}, IQR={iqr:.1f}): threshold = ceil(Q3 + 1.5×IQR) = "
+        f"{threshold} total events. A contact needs at least that many touches "
+        "to be an anomaly candidate at all, before the same-day concentration "
+        "check below decides which candidates actually get reported."
+    )
+    return threshold, rationale
+
+
+def build(enriched_path, engagement_path, segments_path, event_path,
+          contact_rows=None, source=None):
+    enriched_rows = contact_rows if contact_rows is not None else load_enriched(enriched_path)
     engagement = load_json(engagement_path)
     segments = load_json(segments_path)
     quality_report = load_quality_report(enriched_path)
@@ -384,13 +615,15 @@ def build(enriched_path, engagement_path, segments_path, event_path):
     movement_timeline = [{"date": d, "count": n} for d, n in sorted(daily_counts.items())]
 
     # ---------------- anomaly detection ----------------
-    # Rule: contacts with >=15 total engagement events whose activity is
-    # heavily concentrated on a single calendar day -- either a buying-
-    # committee research sprint, or a hot lead the lifecycle engine never
-    # re-scored. Ranked by raw same-day event count; top 2 reported.
+    # Rule: contacts whose total engagement clears compute_anomaly_threshold()
+    # (data-derived, see that function -- no more hardcoded ">=15") AND whose
+    # activity is heavily concentrated on a single calendar day -- either a
+    # buying-committee research sprint, or a hot lead the lifecycle engine
+    # never re-scored. Ranked by raw same-day event count; top 2 reported.
+    anomaly_threshold, anomaly_threshold_rationale = compute_anomaly_threshold(events_by_contact)
     candidates = []
     for email, evs in events_by_contact.items():
-        if len(evs) < 15:
+        if len(evs) < anomaly_threshold:
             continue
         day_counts = Counter(e["ts"][:10] for e in evs)
         top_day, top_count = day_counts.most_common(1)[0]
@@ -443,6 +676,10 @@ def build(enriched_path, engagement_path, segments_path, event_path):
         "generated_at": datetime.now().isoformat(),
         "as_of": as_of.isoformat(),
         "event": event_identity,
+        "source": source or {
+            "contacts": "fixture",
+            "detail": f"local CSV -- {Path(enriched_path).name} (M1 pipeline output, offline)",
+        },
         "kpis": kpis,
         "funnel": funnel,
         "top_accounts": top_accounts,
@@ -450,6 +687,12 @@ def build(enriched_path, engagement_path, segments_path, event_path):
         "committee_accounts": committee_accounts,
         "movement": movement,
         "movement_timeline": movement_timeline,
+        "anomaly_detection": {
+            "threshold": anomaly_threshold,
+            "threshold_rationale": anomaly_threshold_rationale,
+            "candidates_over_threshold": len(candidates),
+            "engaged_contacts_considered": len(events_by_contact),
+        },
         "anomalies": anomalies,
         "narrative_fallback": load_fallback_narrative(),
     }
@@ -476,6 +719,11 @@ def main():
     # can't drift between modules without a matching real-input change.
     ap.add_argument("--event", default=str(DEFAULT_EVENT), help="event.json (event name/date/host/speakers)")
     ap.add_argument("--out", required=True, help="output directory")
+    ap.add_argument("--hubspot", action="store_true",
+                     help="Read contacts live from HubSpot (CRM v3 search by event_tag) instead of "
+                          "--enriched's CSV. Falls back to --enriched on no token, network error, or "
+                          "zero results -- see resolve_contacts(). --enriched is still required: its "
+                          "directory is also where dedupe_report.json / quality_report.json live.")
     args = ap.parse_args()
 
     for label, p in (
@@ -486,7 +734,14 @@ def main():
             print(f"error: {label} path not found: {p}", file=sys.stderr)
             sys.exit(1)
 
-    data = build(args.enriched, args.engagement, args.segments, args.event)
+    contact_rows, source = None, None
+    if args.hubspot:
+        event_identity = load_event_identity(Path(args.event))
+        fixture_rows = load_enriched(args.enriched)
+        contact_rows, source = resolve_contacts(args.enriched, event_identity, fixture_rows)
+
+    data = build(args.enriched, args.engagement, args.segments, args.event,
+                 contact_rows=contact_rows, source=source)
 
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -495,11 +750,15 @@ def main():
     out_path.write_text(html, encoding="utf-8")
 
     print(f"wrote {out_path}")
+    print(f"  source.contacts={data['source']['contacts']} ({data['source']['detail']})")
     print(f"  registrants={data['kpis']['total_registrants']} attendees={data['kpis']['total_attendees']} "
           f"engaged={data['kpis']['engaged_post_event']} mql_plus={data['kpis']['mql_plus']} "
           f"attendee_to_mql_pct={data['kpis']['attendee_to_mql_pct']}")
     print(f"  top_accounts={len(data['top_accounts'])} committee_accounts={len(data['committee_accounts'])} "
           f"anomalies={len(data['anomalies'])}")
+    print(f"  anomaly_threshold={data['anomaly_detection']['threshold']} "
+          f"(candidates_over_threshold={data['anomaly_detection']['candidates_over_threshold']})")
+    print(f"  threshold_rationale: {data['anomaly_detection']['threshold_rationale']}")
 
 
 if __name__ == "__main__":

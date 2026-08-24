@@ -130,7 +130,14 @@ function callOpenRouterModel(apiKey, model, content) {
     model: model,
     messages: [{ role: "user", content: content }],
     temperature: 0.2,
-    max_tokens: 4000,
+    // Matches callAnthropic's own budget (700) with a little headroom for
+    // JSON-wrapping overhead -- was 4000, which is a lot more than a
+    // two-paragraph answer ever needs. Found live: OpenRouter rejects the
+    // whole request with a 402 if the account can't afford max_tokens even
+    // when it clearly has SOME balance ("requested up to 4000 tokens, but
+    // can only afford 1672"), so an oversized ceiling here can fail a call
+    // the account could otherwise easily pay for.
+    max_tokens: 800,
   });
 
   const options = {

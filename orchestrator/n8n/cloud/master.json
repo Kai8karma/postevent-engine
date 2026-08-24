@@ -27,7 +27,7 @@
         -680
       ],
       "parameters": {
-        "content": "## CREDENTIALS TO WIRE BEFORE RUNNING\n1. Fetch Registrants -- none wired on purpose (stand-in webinar-platform endpoint, see its notes). Point at your platform's registrants API + header auth when you have a real account.\n2. Check Already Processed (HubSpot Search) -- HubSpot credential PLACEHOLDER_HUBSPOT_HEADER_AUTH or a native HubSpot App Token credential.\n3. HubSpot Upsert Companies / HubSpot Upsert Contacts / Associate Contacts to Companies / HubSpot Single Send -- all reuse PLACEHOLDER_HUBSPOT_HEADER_AUTH (generic Header Auth: 'Authorization: Bearer <private-app token>').\n4. Push to Clay Table -- PLACEHOLDER_CLAY_TABLE_WEBHOOK_ID in the URL, swap for your Clay table's webhook source id.\n5. Notify Team of Failure (Slack, disabled) -- PLACEHOLDER_SLACK_CRED, channel id.\n6. Notify Team (Telegram, disabled) -- PLACEHOLDER_TELEGRAM_BOT_CRED, chat id.\n7. settings.errorWorkflow -- placeholder workflow id, repoint at your imported copy of error-handler.json (see its own sticky note).",
+        "content": "## CREDENTIALS TO WIRE BEFORE RUNNING\n1. Fetch Registrants -- none wired on purpose (stand-in webinar-platform endpoint, see its notes). Point at your platform's registrants API + header auth when you have a real account.\n2. Check Already Processed (HubSpot Search) -- NATIVE HubSpot node, needs its own 'hubspotAppToken' credential (PLACEHOLDER_HUBSPOT_APP_TOKEN, authentication=appToken). This is a DIFFERENT n8n credential TYPE than item 3 below, even though both wrap the same private-app token string -- the native node has no genericAuthType option the way HTTP Request does.\n3. HubSpot Upsert Companies / HubSpot Upsert Contacts / Associate Contacts to Companies / HubSpot Single Send -- all generic HTTP Request nodes, all reuse PLACEHOLDER_HUBSPOT_HEADER_AUTH (generic Header Auth: 'Authorization: Bearer <private-app token>').\n4. Push to Clay Table -- PLACEHOLDER_CLAY_TABLE_WEBHOOK_ID in the URL, swap for your Clay table's webhook source id.\n5. Notify Team of Failure (Slack, disabled) -- PLACEHOLDER_SLACK_CRED, channel id.\n6. Notify Team (Telegram, disabled) -- PLACEHOLDER_TELEGRAM_BOT_CRED, chat id.\n7. settings.errorWorkflow -- placeholder workflow id, repoint at your imported copy of error-handler.json (see its own sticky note).",
         "height": 360,
         "width": 600,
         "color": 5
@@ -156,6 +156,7 @@
         400
       ],
       "parameters": {
+        "authentication": "appToken",
         "resource": "contact",
         "operation": "search",
         "filterGroupsUi": {
@@ -176,11 +177,11 @@
         "limit": 1,
         "options": {}
       },
-      "notes": "Native HubSpot node, not httpRequest -- CRM contact search-by-property is exactly what n8n's HubSpot node exists for. Idempotency guard: searches for a contact already carrying this run's event_tag on custom property postevent_engine_event_tag (create it once in the target portal -- Settings > Properties -- or point this at an existing property). alwaysOutputData=true so a zero-match (the normal case) still emits one item for 'Already Processed?' to read, instead of the branch silently dead-ending on empty output (n8n's default: a node that would output 0 items simply doesn't run its downstream connections). onError=continueErrorOutput on purpose: if the search call itself fails, that must NOT be treated as 'not yet processed' -- doing so risks a duplicate CRM write and duplicate send -- so a failed check routes to the failure branch instead of falling through. Uncertain: exact filterGroupsUi key names for this n8n version -- reviewer may need to reselect resource=Contact, operation=Search in the node UI and re-add the property filter by hand; the search intent and idempotency logic are correct regardless of the exact UI schema.\nCredential: HubSpot App Token (private app, sandbox portal 247135551), same as every other HubSpot node in this workflow.",
+      "notes": "Native HubSpot node, not httpRequest -- CRM contact search-by-property is exactly what n8n's HubSpot node exists for. Idempotency guard: searches for a contact already carrying this run's event_tag on custom property postevent_engine_event_tag (create it once in the target portal -- Settings > Properties -- or point this at an existing property). alwaysOutputData=true so a zero-match (the normal case) still emits one item for 'Already Processed?' to read, instead of the branch silently dead-ending on empty output (n8n's default: a node that would output 0 items simply doesn't run its downstream connections). onError=continueErrorOutput on purpose: if the search call itself fails, that must NOT be treated as 'not yet processed' -- doing so risks a duplicate CRM write and duplicate send -- so a failed check routes to the failure branch instead of falling through. Verified against n8n-nodes-base's real HubSpotV2 node source (credentials/authentication options in Hubspot/V2/HubspotV2.node.ts): filterGroupsUi's shape (filterGroupsValues[].filtersUi.filterValues[].{propertyName,operator,value}) matches exactly, but the credential WAS wrong -- see below.\nCredential: this native node requires authentication='appToken' + a credential keyed 'hubspotAppToken' (a HubSpot App Token credential, private app, sandbox portal 247135551) -- NOT the generic Header Auth ('httpHeaderAuth') credential the other (generic-HTTP) HubSpot nodes below use. Both ultimately wrap the SAME private-app token string, but as two different n8n credential objects, because the native HubSpot node has its own hardcoded credential-type mapping (hubspotApi/hubspotAppToken/hubspotOAuth2Api) instead of the generic HTTP Request node's pluggable genericAuthType.",
       "credentials": {
-        "httpHeaderAuth": {
-          "id": "PLACEHOLDER_HUBSPOT_HEADER_AUTH",
-          "name": "HubSpot Sandbox (Header Auth: Authorization: Bearer <private-app token>)"
+        "hubspotAppToken": {
+          "id": "PLACEHOLDER_HUBSPOT_APP_TOKEN",
+          "name": "HubSpot Sandbox (App Token -- private app)"
         }
       },
       "onError": "continueErrorOutput",

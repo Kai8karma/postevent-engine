@@ -8,7 +8,7 @@
   :root{
     --bg:#f5f6f8; --surface:#ffffff; --surface-alt:#eef0f4; --border:#e1e4ea;
     --text:#161922; --text-muted:#5b6270; --accent:#2554ff; --accent-soft:#e8edff;
-    --good:#15803d; --good-soft:#e7f6ec; --warn:#b45309; --warn-soft:#fdf1df;
+    --good:#157a3d; --good-soft:#e7f6ec; --warn:#b45309; --warn-soft:#fdf1df;
     --danger:#b91c1c; --danger-soft:#fbe9e9;
     --shadow:0 1px 2px rgba(16,20,30,.04), 0 4px 14px rgba(16,20,30,.05);
     --radius:10px;
@@ -111,6 +111,7 @@
 
   /* movement */
   .movement-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px;}
+  @media (max-width:480px){ .movement-grid{grid-template-columns:1fr;} }
   .movement-card{padding:14px;}
   .movement-card .n{font-size:22px;font-weight:700;}
   .movement-card .l{font-size:11.5px;color:var(--text-muted);}
@@ -129,6 +130,7 @@
   .status-pill{font-size:10.5px;font-weight:650;padding:2px 7px;border-radius:999px;}
   .status-pill.progressed{background:var(--good-soft);color:var(--good);}
   .status-pill.stalled{background:var(--danger-soft);color:var(--danger);}
+  .anomaly-threshold-note{font-size:11.5px;color:var(--text-muted);margin:-6px 0 14px;line-height:1.5;max-width:760px;}
 
   /* narrative */
   .narrative-card{padding:20px 22px;}
@@ -149,7 +151,9 @@
     padding:4px 10px;border-radius:6px;cursor:pointer;
   }
   .refresh-btn:hover{color:var(--text);border-color:var(--accent);}
+  .refresh-btn:disabled{opacity:.6;cursor:default;}
   .skeleton{color:var(--text-muted);font-size:13px;}
+  .narrative-error{font-size:11px;color:var(--danger);max-width:280px;text-align:right;line-height:1.4;}
 
   footer{padding:24px 0;text-align:center;color:var(--text-muted);font-size:11.5px;}
 </style>
@@ -222,6 +226,7 @@
 
   <section class="divider">
     <h2 class="section-title">Anomaly Callouts</h2>
+    <div class="anomaly-threshold-note" id="anomaly-threshold-note"></div>
     <div class="anomaly-grid" id="anomaly-grid"></div>
   </section>
 
@@ -229,7 +234,8 @@
     <div class="card narrative-card">
       <div class="narrative-head">
         <h2 class="section-title">AI Narrative Summary</h2>
-        <div style="display:flex;align-items:center;gap:8px;">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="narrative-error" id="narrative-error" hidden></span>
           <span class="source-badge loading" id="narrative-badge"><span class="dot"></span><span id="narrative-badge-text">loading&hellip;</span></span>
           <button class="refresh-btn" id="narrative-refresh">Regenerate</button>
         </div>
@@ -242,7 +248,7 @@
 
 </main>
 
-<footer>Post-Event Engine &middot; Module 4 &middot; generated offline from HubSpot-ready CSV + engagement fixtures &middot; zero external requests except <code>/api/narrative</code></footer>
+<footer id="source-footer">Post-Event Engine &middot; Module 4</footer>
 
 <script type="application/json" id="dashboard-data">__DASHBOARD_DATA_JSON__</script>
 <script>
@@ -270,6 +276,13 @@
     DATA.event.host_company + " (" + DATA.event.host_domain + ") · " + DATA.event.date;
   document.getElementById('generated-at').textContent = fmtDate(DATA.generated_at);
   document.getElementById('as-of').textContent = fmtDate(DATA.as_of);
+  (function renderSourceFooter(){
+    var src = DATA.source || {contacts: 'fixture', detail: 'local CSV (offline)'};
+    var label = src.contacts === 'hubspot' ? 'contacts read live from HubSpot' : 'contacts from local CSV fixture';
+    document.getElementById('source-footer').textContent =
+      'Post-Event Engine · Module 4 · ' + label + ' (' + src.detail + ') · ' +
+      'zero external requests except /api/narrative';
+  })();
   var chipsHtml = DATA.event.speakers.map(function(s){
     return '<span class="chip">' + esc(s.name) + ' &middot; ' + esc(s.title) + ', ' + esc(s.company) + '</span>';
   }).join('');
@@ -407,6 +420,15 @@
   })();
 
   // ---------------- anomalies ----------------
+  // Threshold is a statistical (Tukey IQR) model over this run's own event
+  // distribution, not a hardcoded guess and not a generative-AI call --
+  // see build_dashboard.py's AI BOUNDARY note / README for why. Shown here
+  // so the rationale is visible on the page, not just in the JSON.
+  if(DATA.anomaly_detection){
+    document.getElementById('anomaly-threshold-note').textContent =
+      'Threshold: ' + DATA.anomaly_detection.threshold + '+ total events to qualify as a candidate — ' +
+      DATA.anomaly_detection.threshold_rationale;
+  }
   document.getElementById('anomaly-grid').innerHTML = DATA.anomalies.map(function(a){
     return '<div class="card anomaly-card">' +
       '<div class="head"><div><div class="who">' + esc(a.contact.name) + '</div>' +
@@ -447,10 +469,29 @@
     };
   }
 
-  function loadNarrative(){
+  // isManual: true when the user clicked Regenerate, false on the initial
+  // page-load fetch. Both lanes hit the same /api/narrative and fall back to
+  // the same cached fallback_narrative.md on failure, but a manual failure
+  // needs to be VISIBLE -- without ANTHROPIC_API_KEY/OPENROUTER_API_KEY
+  // configured on the deployment, /api/narrative 500s in well under a
+  // second, so the old code's loading-state -> fallback-content flip
+  // happened too fast to notice, and since the fallback content is
+  // identical every time, a click looked like a no-op. See the narrative-error
+  // span next to the timestamp below.
+  function loadNarrative(isManual){
+    var errEl = document.getElementById('narrative-error');
+    errEl.hidden = true;
+    errEl.textContent = '';
+
     document.getElementById('narrative-badge').className = 'source-badge loading';
     document.getElementById('narrative-badge-text').textContent = 'loading…';
-    document.getElementById('narrative-body').innerHTML = '<p class="skeleton">Fetching live narrative…</p>';
+    var btn = document.getElementById('narrative-refresh');
+    if(isManual){
+      btn.disabled = true;
+      btn.textContent = 'Regenerating…';
+    } else {
+      document.getElementById('narrative-body').innerHTML = '<p class="skeleton">Fetching live narrative…</p>';
+    }
 
     var controller = ('AbortController' in window) ? new AbortController() : null;
     var timer = setTimeout(function(){ if(controller) controller.abort(); }, 25000); // 25s: free OpenRouter models answer in 2-8s; reasoning models won't make it and fall back (labeled)
@@ -466,22 +507,42 @@
       .then(function(){ return fetch('/api/narrative', fetchOpts); })
       .then(function(res){
         clearTimeout(timer);
-        if(!res.ok) throw new Error('bad status ' + res.status);
+        if(!res.ok){
+          // Best-effort: /api/narrative answers errors as {error: "..."} JSON
+          // (see api/narrative.js) -- surface that instead of a bare status
+          // code when possible, but never let a body-parse failure mask the
+          // original HTTP status.
+          return res.json().catch(function(){ return null; }).then(function(body){
+            var detail = (body && body.error) ? body.error : ('HTTP ' + res.status);
+            throw new Error(detail);
+          });
+        }
         return res.json();
       })
       .then(function(json){
-        if(!json || !json.paragraphs || !json.paragraphs.length){ throw new Error('empty narrative'); }
+        if(!json || !json.paragraphs || !json.paragraphs.length){ throw new Error('empty narrative response'); }
         renderNarrative(json.paragraphs, 'live', json.generated_at || new Date().toISOString());
       })
-      .catch(function(){
+      .catch(function(err){
         clearTimeout(timer);
+        var reason = (err && err.name === 'AbortError') ? 'timed out after 25s' : ((err && err.message) || 'request failed');
         var fb = DATA.narrative_fallback;
         renderNarrative(fb.paragraphs, 'cached', fb.generated_at);
+        if(isManual){
+          errEl.textContent = 'Regeneration failed (' + reason + ') — showing cached narrative.';
+          errEl.hidden = false;
+        }
+      })
+      .then(function(){
+        if(isManual){
+          btn.disabled = false;
+          btn.textContent = 'Regenerate';
+        }
       });
   }
 
-  document.getElementById('narrative-refresh').addEventListener('click', loadNarrative);
-  loadNarrative();
+  document.getElementById('narrative-refresh').addEventListener('click', function(){ loadNarrative(true); });
+  loadNarrative(false);
 
 })();
 </script>
