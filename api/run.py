@@ -245,11 +245,17 @@ def degraded_note(module: str, reason: str, key_present: bool) -> str:
 
 # --------------------------------------------------------------------------
 # Input materialisation
-def materialize_event(tmp_dir: Path, registrants_csv, transcript_md, event_name):
+def materialize_event(tmp_dir: Path, registrants_csv, transcript_md, event_name,
+                       engagement_json=None, segments_json=None):
     """Writes this request's event inputs into tmp_dir, using the caller's
-    values where supplied and the bundled fixture (data/incoming/) otherwise.
-    Returns (registrants_path, event_path, transcript_path, custom)."""
+    values where supplied and the bundled fixture (data/incoming/ or
+    data/fixtures/) otherwise. engagement_json/segments_json are already-
+    parsed dicts (M4's inputs -- see build_dashboard.py --engagement/--segments)
+    -- the caller validates JSON-ness before this function ever sees them.
+    Returns (registrants_path, event_path, transcript_path, engagement_path,
+    segments_path, custom)."""
     incoming = REPO_ROOT / "data" / "incoming"
+    fixtures = REPO_ROOT / "data" / "fixtures"
     custom = False
 
     reg_path = tmp_dir / "registrants.csv"
@@ -273,7 +279,21 @@ def materialize_event(tmp_dir: Path, registrants_csv, transcript_md, event_name)
         custom = True
     ev_path.write_text(json.dumps(event_data, indent=2), encoding="utf-8")
 
-    return reg_path, ev_path, tr_path, custom
+    eng_path = tmp_dir / "engagement.json"
+    if engagement_json is not None:
+        eng_path.write_text(json.dumps(engagement_json, indent=2), encoding="utf-8")
+        custom = True
+    else:
+        shutil.copy2(fixtures / "engagement.json", eng_path)
+
+    seg_path = tmp_dir / "segments.json"
+    if segments_json is not None:
+        seg_path.write_text(json.dumps(segments_json, indent=2), encoding="utf-8")
+        custom = True
+    else:
+        shutil.copy2(fixtures / "segments.json", seg_path)
+
+    return reg_path, ev_path, tr_path, eng_path, seg_path, custom
 
 
 # --------------------------------------------------------------------------
@@ -588,13 +608,13 @@ def stage_m3(out_dir: Path, ev_path: Path, tr_path: Path, live: bool, log: list)
     return result
 
 
-def stage_m4(out_dir: Path, m1_ready_csv: Path, log: list):
+def stage_m4(out_dir: Path, m1_ready_csv: Path, engagement_path: Path, segments_path: Path, log: list):
     cmd = [
         PY, str(REPO_ROOT / "modules" / "m4-dashboard" / "build_dashboard.py"),
         "--out", str(out_dir),
         "--enriched", str(m1_ready_csv),
-        "--engagement", str(REPO_ROOT / "data" / "fixtures" / "engagement.json"),
-        "--segments", str(REPO_ROOT / "data" / "fixtures" / "segments.json"),
+        "--engagement", str(engagement_path),
+        "--segments", str(segments_path),
     ]
     timeout_s = OFFLINE_TIMEOUT_S
     log.append(f"[m4] offline (no --live flag exists on build_dashboard.py) -- invoking build_dashboard.py (timeout {timeout_s}s)")
@@ -637,6 +657,17 @@ def handle_run(payload: dict) -> dict:
             return {"ok": False, "module": module, "error": f"'{field}' must be a string if provided",
                     "hint": f"remove {field} or pass it as a JSON string", "log": []}
 
+    # M4's two remaining inputs (see build_dashboard.py --engagement/--segments):
+    # sent as parsed JSON objects in the request body, not strings -- the
+    # underlying files are already JSON, so no double-encoding round trip.
+    engagement_json = payload.get("engagement_json")
+    segments_json = payload.get("segments_json")
+    for field, value in (("engagement_json", engagement_json), ("segments_json", segments_json)):
+        if value is not None and not isinstance(value, dict):
+            return {"ok": False, "module": module, "error": f"'{field}' must be a JSON object if provided",
+                    "hint": f"remove {field} or pass it as a parsed object (same shape as data/fixtures/{field.replace('_json','')}.json)",
+                    "log": []}
+
     key_present = openrouter_key_present()
     notes = []
     if live_requested and not key_present:
@@ -646,7 +677,8 @@ def handle_run(payload: dict) -> dict:
 
     tmp_dir = Path(tempfile.mkdtemp(prefix="postevent-run-", dir=tempfile.gettempdir()))
     try:
-        reg_path, ev_path, tr_path, custom_inputs = materialize_event(tmp_dir, registrants_csv, transcript_md, event_name)
+        reg_path, ev_path, tr_path, eng_path, seg_path, custom_inputs = materialize_event(
+            tmp_dir, registrants_csv, transcript_md, event_name, engagement_json, segments_json)
         out_root = tmp_dir / "out"
         log = []
         start = time.perf_counter()
@@ -660,7 +692,7 @@ def handle_run(payload: dict) -> dict:
                 stage_m1(m1_out, reg_path, effective_live, log)
                 stage_m2(m2_out, m1_out / "hubspot_ready.csv", ev_path, tr_path, effective_live, log)
                 stage_m3(m3_out, ev_path, tr_path, effective_live, log)
-                m4_result = stage_m4(m4_out, m1_out / "hubspot_ready.csv", log)
+                m4_result = stage_m4(m4_out, m1_out / "hubspot_ready.csv", eng_path, seg_path, log)
             except ModuleFailure as fail:
                 return {"ok": False, "module": fail.module, "error": fail.error, "hint": fail.hint, "log": fail.log}
 
@@ -725,7 +757,7 @@ def handle_run(payload: dict) -> dict:
                 # it needs an M1 run first, so run M1 offline here to feed it.
                 m1_out = out_root / "m1"
                 stage_m1(m1_out, reg_path, False, log)
-                result = stage_m4(out_dir, m1_out / "hubspot_ready.csv", log)
+                result = stage_m4(out_dir, m1_out / "hubspot_ready.csv", eng_path, seg_path, log)
                 summary = summarize_m4(result["stdout"])
                 artifacts = collect_artifacts(out_dir, M4_ARTIFACT_SPECS)
                 if live_requested:
@@ -777,13 +809,36 @@ def build_get_response(probe: bool = False) -> dict:
 # --------------------------------------------------------------------------
 # HTTP handler (Vercel Python runtime contract: module-level `handler`)
 class handler(BaseHTTPRequestHandler):
+    # CORS: this endpoint is meant to be called from more than one origin --
+    # the Vercel-hosted console at the site root, the control room page
+    # embedded straight from docs/index.html (which also ships inside the
+    # submission zip and gets opened as a bare file:// page -- an "Origin:
+    # null" request with no way to allowlist a specific domain), and any
+    # reviewer's own copy of either page. Wide-open GET/POST with no
+    # credentials is the deliberate tradeoff (no auth, no cookies, nothing
+    # sensitive in the response) -- see api/vercel-api-notes.md.
+    def _cors_headers(self):
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+
     def _send_json(self, status: int, body: dict):
         payload = json.dumps(body).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(payload)))
+        self._cors_headers()
         self.end_headers()
         self.wfile.write(payload)
+
+    def do_OPTIONS(self):
+        # Browsers preflight any cross-origin POST with a JSON content-type
+        # (it's not a CORS "simple request") -- without this, the actual
+        # POST from a page on a different origin (or file://) never fires.
+        self.send_response(204)
+        self._cors_headers()
+        self.send_header("Content-Length", "0")
+        self.end_headers()
 
     def do_GET(self):
         # probe=1 opts into a live 1-token OpenRouter ping (see

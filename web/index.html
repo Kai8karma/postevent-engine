@@ -517,6 +517,34 @@
             <label for="transcript-input" class="sr-only">Transcript text</label>
             <textarea class="transcript-input" id="transcript-input" spellcheck="false"></textarea>
           </div>
+
+          <div class="field-block">
+            <label class="field-label" for="engagement-file-input">Engagement events (M4 only)</label>
+            <div class="dropzone" id="engagement-dropzone" tabindex="0" role="button" aria-describedby="engagement-hint">
+              <p class="dz-title">Drop an engagement.json here, or click to browse</p>
+              <p id="engagement-hint">Opens/clicks/pageviews/form fills -- same shape as <code class="mono">data/fixtures/engagement.json</code>: <code class="mono">{"events":[{"email":...,"type":...,"ts":...,"asset":...}]}</code>. Feeds M4's dashboard, funnel and anomaly detection.</p>
+              <input type="file" id="engagement-file-input" accept=".json,application/json" aria-label="Upload engagement events JSON" />
+            </div>
+            <div class="data-status">
+              <span class="src-badge" id="engagement-src-badge">bundled fixture</span>
+              <span id="engagement-event-count">&hellip; events</span>
+              <button type="button" class="btn btn-ghost btn-sm" id="engagement-use-fixture-btn">use bundled fixture</button>
+            </div>
+          </div>
+
+          <div class="field-block">
+            <label class="field-label" for="segments-file-input">Attendance segments (M4 only)</label>
+            <div class="dropzone" id="segments-dropzone" tabindex="0" role="button" aria-describedby="segments-hint">
+              <p class="dz-title">Drop a segments.json here, or click to browse</p>
+              <p id="segments-hint">Same shape as <code class="mono">data/fixtures/segments.json</code>: <code class="mono">{"attendees":[...],"no_shows":[...],"speakers":[...]}</code> (email lists). Feeds M4's funnel and lifecycle movement.</p>
+              <input type="file" id="segments-file-input" accept=".json,application/json" aria-label="Upload attendance segments JSON" />
+            </div>
+            <div class="data-status">
+              <span class="src-badge" id="segments-src-badge">bundled fixture</span>
+              <span id="segments-count">&hellip;</span>
+              <button type="button" class="btn btn-ghost btn-sm" id="segments-use-fixture-btn">use bundled fixture</button>
+            </div>
+          </div>
         </div>
 
         <div class="field-block" style="margin-top:18px;max-width:420px;">
@@ -812,8 +840,19 @@
     registrantsCSV: MOCK.fixture.registrants_csv,
     transcriptMD: MOCK.fixture.transcript_md,
     eventName: '',
+    engagementJSON: null,
+    segmentsJSON: null,
     liveAI: false,
-    demoModeEverUsed: false
+    demoModeEverUsed: false,
+    // True the moment any input diverges from the bundled fixture (custom
+    // CSV/transcript/engagement/segments upload, or a typed event name).
+    // Read by runModule()'s fetch-failure handler: falling back to MOCK data
+    // is a reasonable "preview the UI" affordance when everything is still
+    // the bundled fixture, but it must never happen once the reviewer has
+    // put their own data in -- silently replaying canned numbers under
+    // someone else's upload is indistinguishable, from their side, from
+    // "this tool ignores whatever I give it."
+    usingCustomInput: false
   };
 
   /* ---------------- input panel ---------------- */
@@ -836,6 +875,7 @@
 
   function setRegistrants(text, label, isCustom){
     state.registrantsCSV = text;
+    if (isCustom) state.usingCustomInput = true;
     qs('#csv-row-count').textContent = countCsvRows(text) + ' rows';
     var badge = qs('#csv-src-badge');
     badge.textContent = label;
@@ -845,6 +885,7 @@
   }
   function setTranscript(text, label, isCustom){
     state.transcriptMD = text;
+    if (isCustom) state.usingCustomInput = true;
     qs('#transcript-input').value = text;
     var words = (text.trim() ? text.trim().split(/\s+/).length : 0);
     qs('#transcript-word-count').textContent = words + ' words';
@@ -852,6 +893,35 @@
     badge.textContent = label;
     badge.className = 'src-badge' + (isCustom ? ' custom' : '');
     updateInputSummary();
+  }
+  function setEngagement(obj, label, isCustom){
+    state.engagementJSON = obj; // null = fall back to data/fixtures/engagement.json server-side
+    if (isCustom) state.usingCustomInput = true;
+    var n = obj && Array.isArray(obj.events) ? obj.events.length : null;
+    qs('#engagement-event-count').textContent = (n === null ? 'bundled fixture' : n + ' events');
+    var badge = qs('#engagement-src-badge');
+    badge.textContent = label;
+    badge.className = 'src-badge' + (isCustom ? ' custom' : '');
+  }
+  function setSegments(obj, label, isCustom){
+    state.segmentsJSON = obj; // null = fall back to data/fixtures/segments.json server-side
+    if (isCustom) state.usingCustomInput = true;
+    var n = obj ? (obj.attendees || []).length + (obj.no_shows || []).length : null;
+    qs('#segments-count').textContent = (n === null ? 'bundled fixture' : n + ' registrants (attendees + no-shows)');
+    var badge = qs('#segments-src-badge');
+    badge.textContent = label;
+    badge.className = 'src-badge' + (isCustom ? ' custom' : '');
+  }
+  function readJSONFile(file){
+    return readFileAsText(file).then(function(text){
+      var obj;
+      try{ obj = JSON.parse(text); }
+      catch(e){ throw new Error('"' + file.name + '" is not valid JSON: ' + e.message); }
+      if (!obj || typeof obj !== 'object' || Array.isArray(obj)){
+        throw new Error('"' + file.name + '" must be a JSON object (e.g. {"events":[...]}), not ' + (Array.isArray(obj) ? 'an array' : typeof obj) + '.');
+      }
+      return obj;
+    });
   }
   function updateInputSummary(){
     var customCsv = qs('#csv-src-badge').classList.contains('custom');
@@ -894,6 +964,8 @@
     qs('#fixture-event-name').textContent = MOCK.fixture.event_name;
     setRegistrants(MOCK.fixture.registrants_csv, 'bundled fixture', false);
     setTranscript(MOCK.fixture.transcript_md, 'bundled fixture', false);
+    setEngagement(null, 'bundled fixture', false);
+    setSegments(null, 'bundled fixture', false);
 
     wireDropzone('csv-dropzone', 'csv-file-input', function(file){
       readFileAsText(file).then(function(text){ setRegistrants(text, file.name, true); });
@@ -901,17 +973,32 @@
     wireDropzone('transcript-dropzone', 'transcript-file-input', function(file){
       readFileAsText(file).then(function(text){ setTranscript(text, file.name, true); });
     });
+    wireDropzone('engagement-dropzone', 'engagement-file-input', function(file){
+      readJSONFile(file).then(function(obj){ setEngagement(obj, file.name, true); })
+        .catch(function(e){ alert(e.message); });
+    });
+    wireDropzone('segments-dropzone', 'segments-file-input', function(file){
+      readJSONFile(file).then(function(obj){ setSegments(obj, file.name, true); })
+        .catch(function(e){ alert(e.message); });
+    });
     qs('#csv-use-fixture-btn').addEventListener('click', function(){
       setRegistrants(MOCK.fixture.registrants_csv, 'bundled fixture', false);
     });
     qs('#transcript-use-fixture-btn').addEventListener('click', function(){
       setTranscript(MOCK.fixture.transcript_md, 'bundled fixture', false);
     });
+    qs('#engagement-use-fixture-btn').addEventListener('click', function(){
+      setEngagement(null, 'bundled fixture', false);
+    });
+    qs('#segments-use-fixture-btn').addEventListener('click', function(){
+      setSegments(null, 'bundled fixture', false);
+    });
     qs('#transcript-input').addEventListener('input', function(e){
       setTranscript(e.target.value, 'pasted text', true);
     });
     qs('#event-name-input').addEventListener('input', function(e){
       state.eventName = e.target.value;
+      if (e.target.value.trim()) state.usingCustomInput = true;
     });
 
     var toggle = qs('#live-toggle');
@@ -1408,6 +1495,8 @@
       transcript_md: state.transcriptMD
     };
     if (state.eventName.trim()) payload.event_name = state.eventName.trim();
+    if (state.engagementJSON) payload.engagement_json = state.engagementJSON;
+    if (state.segmentsJSON) payload.segments_json = state.segmentsJSON;
 
     fetchWithTimeout('/api/run', {
       method: 'POST',
@@ -1423,6 +1512,13 @@
     .catch(function(e){
       if (e && e.isTimeout){
         return {result: {ok:false, module:moduleKey, timeout:true, error:'Client-side 55s budget exceeded waiting on /api/run.', hint:'This mirrors the Vercel Hobby 60s function cap -- see the pre-computed live run instead.'}, opts:{}};
+      }
+      if (state.usingCustomInput){
+        // Never silently substitute canned MOCK output for a request that
+        // carried the reviewer's own data -- from their side that is
+        // indistinguishable from "this tool ignored what I uploaded", which
+        // is the exact failure this fallback used to cause.
+        return {result: {ok:false, module:moduleKey, error:'Could not reach /api/run: ' + (e && e.message || e) + '.', hint:'This request carried your own uploaded data, so it was not replayed with canned demo output -- that would have shown numbers that do not reflect what you uploaded. Check your connection, or try https://postevent-engine.vercel.app directly.'}, opts:{}};
       }
       var mockResult = isChain ? MOCK.chain : MOCK.runs[moduleKey];
       state.demoModeEverUsed = true;
