@@ -23,7 +23,8 @@
     "confidence": 0.8,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "northfielddata.com"
+    "company_domain": "northfielddata.com",
+    "suppression_reason": ""
   },
   {
     "email": "tivanov@everlinetech.com",
@@ -49,7 +50,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "everlinetech.com"
+    "company_domain": "everlinetech.com",
+    "suppression_reason": ""
   },
   {
     "email": "aali@quantarasoftware.com",
@@ -75,7 +77,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "quantarasoftware.com"
+    "company_domain": "quantarasoftware.com",
+    "suppression_reason": ""
   },
   {
     "email": "miguel.iyer@hotmail.com",
@@ -101,7 +104,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": ""
+    "company_domain": "",
+    "suppression_reason": ""
   },
   {
     "email": "annam@lumen8marketing.com",
@@ -127,7 +131,8 @@
     "confidence": 0.8,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "lumen8marketing.com"
+    "company_domain": "lumen8marketing.com",
+    "suppression_reason": ""
   },
   {
     "email": "lzhang@kestrelit.com",
@@ -153,7 +158,8 @@
     "confidence": 0.95,
     "merge_action": "update_existing:100010",
     "needs_review": false,
-    "company_domain": "kestrelit.com"
+    "company_domain": "kestrelit.com",
+    "suppression_reason": ""
   },
   {
     "email": "adityak@alderwoodfintech.com",
@@ -179,7 +185,8 @@
     "confidence": 0.8,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "alderwoodfintech.com"
+    "company_domain": "alderwoodfintech.com",
+    "suppression_reason": ""
   },
   {
     "email": "maria.sato@wavecrestit.com",
@@ -205,7 +212,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "wavecrestit.com"
+    "company_domain": "wavecrestit.com",
+    "suppression_reason": ""
   },
   {
     "email": "rnair@kestrelit.com",
@@ -231,7 +239,8 @@
     "confidence": 0.94,
     "merge_action": "update_existing:100007",
     "needs_review": false,
-    "company_domain": "kestrelit.com"
+    "company_domain": "kestrelit.com",
+    "suppression_reason": ""
   },
   {
     "email": "rahul.alvarez@clarionanalytics.com",
@@ -257,7 +266,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "clarionanalytics.com"
+    "company_domain": "clarionanalytics.com",
+    "suppression_reason": ""
   },
   {
     "email": "antonm@anchorpointsaas.com",
@@ -283,7 +293,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "anchorpointsaas.com"
+    "company_domain": "anchorpointsaas.com",
+    "suppression_reason": ""
   },
   {
     "email": "ibrahim.braun@sableridgeanalytics.com",
@@ -309,7 +320,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "sableridgeanalytics.com"
+    "company_domain": "sableridgeanalytics.com",
+    "suppression_reason": ""
   },
   {
     "email": "tomf@palmettosaasgroup.com",
@@ -335,7 +347,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "palmettosaasgroup.com"
+    "company_domain": "palmettosaasgroup.com",
+    "suppression_reason": ""
   },
   {
     "email": "graces@quantarasoftware.com",
@@ -361,7 +374,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "quantarasoftware.com"
+    "company_domain": "quantarasoftware.com",
+    "suppression_reason": ""
   },
   {
     "email": "nora.garcia@wavecrestit.com",
@@ -387,7 +401,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "wavecrestit.com"
+    "company_domain": "wavecrestit.com",
+    "suppression_reason": ""
   },
   {
     "email": "carlos.iyer@wavecrestit.com",
@@ -413,7 +428,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "wavecrestit.com"
+    "company_domain": "wavecrestit.com",
+    "suppression_reason": ""
   },
   {
     "email": "jonas.alsayed@wavecrestit.com",
@@ -439,7 +455,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "wavecrestit.com"
+    "company_domain": "wavecrestit.com",
+    "suppression_reason": ""
   },
   {
     "email": "ninaj@palmettosaasgroup.com",
@@ -465,7 +482,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "palmettosaasgroup.com"
+    "company_domain": "palmettosaasgroup.com",
+    "suppression_reason": ""
   },
   {
     "email": "pthompson@pinehollowsoftware.com",
@@ -491,7 +509,8 @@
     "confidence": 0.85,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "pinehollowsoftware.com"
+    "company_domain": "pinehollowsoftware.com",
+    "suppression_reason": ""
   },
   {
     "email": "bfischer@northfielddata.com",
@@ -517,7 +536,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "northfielddata.com"
+    "company_domain": "northfielddata.com",
+    "suppression_reason": ""
   },
   {
     "email": "nadia.costa@outlook.com",
@@ -543,7 +563,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": ""
+    "company_domain": "",
+    "suppression_reason": ""
   },
   {
     "email": "victor.reyes@kestrelit.com",
@@ -569,7 +590,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "kestrelit.com"
+    "company_domain": "kestrelit.com",
+    "suppression_reason": ""
   },
   {
     "email": "rohan.fontaine@gmail.com",
@@ -595,7 +617,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": ""
+    "company_domain": "",
+    "suppression_reason": ""
   },
   {
     "email": "clara.menon@meridiangrowthpartners.com",
@@ -621,7 +644,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "meridiangrowthpartners.com"
+    "company_domain": "meridiangrowthpartners.com",
+    "suppression_reason": ""
   },
   {
     "email": "daniel.tanaka@wavecrestit.com",
@@ -647,7 +671,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "wavecrestit.com"
+    "company_domain": "wavecrestit.com",
+    "suppression_reason": ""
   },
   {
     "email": "priyanka.marsh@zenithmarketinggroup.com",
@@ -673,7 +698,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "zenithmarketinggroup.com"
+    "company_domain": "zenithmarketinggroup.com",
+    "suppression_reason": ""
   },
   {
     "email": "samuel.rao@anchorpointsaas.com",
@@ -699,7 +725,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "anchorpointsaas.com"
+    "company_domain": "anchorpointsaas.com",
+    "suppression_reason": ""
   },
   {
     "email": "diego.dubois@ridgelinecommerce.com",
@@ -725,7 +752,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "ridgelinecommerce.com"
+    "company_domain": "ridgelinecommerce.com",
+    "suppression_reason": ""
   },
   {
     "email": "ling.johnson@fernwooddata.com",
@@ -751,7 +779,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "fernwooddata.com"
+    "company_domain": "fernwooddata.com",
+    "suppression_reason": ""
   },
   {
     "email": "yreyes@meridiangrowthpartners.com",
@@ -777,7 +806,8 @@
     "confidence": 0.85,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "meridiangrowthpartners.com"
+    "company_domain": "meridiangrowthpartners.com",
+    "suppression_reason": ""
   },
   {
     "email": "akapoor@brightlineanalytics.com",
@@ -803,7 +833,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "brightlineanalytics.com"
+    "company_domain": "brightlineanalytics.com",
+    "suppression_reason": ""
   },
   {
     "email": "zoe.moreau@hotmail.com",
@@ -829,7 +860,8 @@
     "confidence": 0.95,
     "merge_action": "update_existing:100018",
     "needs_review": false,
-    "company_domain": ""
+    "company_domain": "",
+    "suppression_reason": ""
   },
   {
     "email": "isabelb@redshiftcommerce.com",
@@ -855,7 +887,8 @@
     "confidence": 0.85,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "redshiftcommerce.com"
+    "company_domain": "redshiftcommerce.com",
+    "suppression_reason": ""
   },
   {
     "email": "tariq.rossi@redshiftcommerce.com",
@@ -881,7 +914,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "redshiftcommerce.com"
+    "company_domain": "redshiftcommerce.com",
+    "suppression_reason": ""
   },
   {
     "email": "julia.baker@wavecrestit.com",
@@ -907,7 +941,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "wavecrestit.com"
+    "company_domain": "wavecrestit.com",
+    "suppression_reason": ""
   },
   {
     "email": "rkrishnan@palmettosaasgroup.com",
@@ -933,7 +968,8 @@
     "confidence": 0.85,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "palmettosaasgroup.com"
+    "company_domain": "palmettosaasgroup.com",
+    "suppression_reason": ""
   },
   {
     "email": "katie.sato@yahoo.com",
@@ -959,7 +995,8 @@
     "confidence": 0.95,
     "merge_action": "update_existing:100005",
     "needs_review": false,
-    "company_domain": ""
+    "company_domain": "",
+    "suppression_reason": ""
   },
   {
     "email": "ahussain@redshiftcommerce.com",
@@ -985,7 +1022,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "redshiftcommerce.com"
+    "company_domain": "redshiftcommerce.com",
+    "suppression_reason": ""
   },
   {
     "email": "deepak.tanaka@sableridgeanalytics.com",
@@ -1011,7 +1049,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "sableridgeanalytics.com"
+    "company_domain": "sableridgeanalytics.com",
+    "suppression_reason": ""
   },
   {
     "email": "anna.baker@ridgelinecommerce.com",
@@ -1037,7 +1076,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "ridgelinecommerce.com"
+    "company_domain": "ridgelinecommerce.com",
+    "suppression_reason": ""
   },
   {
     "email": "karana@sableridgeanalytics.com",
@@ -1063,7 +1103,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "sableridgeanalytics.com"
+    "company_domain": "sableridgeanalytics.com",
+    "suppression_reason": ""
   },
   {
     "email": "anton.chen@gmail.com",
@@ -1089,7 +1130,8 @@
     "confidence": 0.7,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": ""
+    "company_domain": "",
+    "suppression_reason": ""
   },
   {
     "email": "kenji.khan@pinehollowsoftware.com",
@@ -1115,7 +1157,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "pinehollowsoftware.com"
+    "company_domain": "pinehollowsoftware.com",
+    "suppression_reason": ""
   },
   {
     "email": "alice.lin@harborviewsoftware.com",
@@ -1141,7 +1184,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "harborviewsoftware.com"
+    "company_domain": "harborviewsoftware.com",
+    "suppression_reason": ""
   },
   {
     "email": "efischer@quantarasoftware.com",
@@ -1167,7 +1211,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "quantarasoftware.com"
+    "company_domain": "quantarasoftware.com",
+    "suppression_reason": ""
   },
   {
     "email": "wendy.nilsson@solsticegrowthlabs.com",
@@ -1193,7 +1238,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "solsticegrowthlabs.com"
+    "company_domain": "solsticegrowthlabs.com",
+    "suppression_reason": ""
   },
   {
     "email": "tdiaz@copperlineit.com",
@@ -1219,7 +1265,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "copperlineit.com"
+    "company_domain": "copperlineit.com",
+    "suppression_reason": ""
   },
   {
     "email": "kevin.verma@onyxbridgefintech.com",
@@ -1245,7 +1292,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "onyxbridgefintech.com"
+    "company_domain": "onyxbridgefintech.com",
+    "suppression_reason": ""
   },
   {
     "email": "marcob@palmettosaasgroup.com",
@@ -1271,7 +1319,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "palmettosaasgroup.com"
+    "company_domain": "palmettosaasgroup.com",
+    "suppression_reason": ""
   },
   {
     "email": "zoe.chen@driftwoodsaas.com",
@@ -1297,7 +1346,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "driftwoodsaas.com"
+    "company_domain": "driftwoodsaas.com",
+    "suppression_reason": ""
   },
   {
     "email": "nadial@copperlineit.com",
@@ -1323,7 +1373,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "copperlineit.com"
+    "company_domain": "copperlineit.com",
+    "suppression_reason": ""
   },
   {
     "email": "anton.petrov@truenorthecom.com",
@@ -1349,7 +1400,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "truenorthecom.com"
+    "company_domain": "truenorthecom.com",
+    "suppression_reason": ""
   },
   {
     "email": "isabel.mahajan@gmail.com",
@@ -1375,7 +1427,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": ""
+    "company_domain": "",
+    "suppression_reason": ""
   },
   {
     "email": "vnair@wavecrestit.com",
@@ -1401,7 +1454,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "wavecrestit.com"
+    "company_domain": "wavecrestit.com",
+    "suppression_reason": ""
   },
   {
     "email": "sfoster@cobaltreach.com",
@@ -1427,7 +1481,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "cobaltreach.com"
+    "company_domain": "cobaltreach.com",
+    "suppression_reason": ""
   },
   {
     "email": "meib@palmettosaasgroup.com",
@@ -1453,7 +1508,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "palmettosaasgroup.com"
+    "company_domain": "palmettosaasgroup.com",
+    "suppression_reason": ""
   },
   {
     "email": "vlin@copperlineit.com",
@@ -1479,7 +1535,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "copperlineit.com"
+    "company_domain": "copperlineit.com",
+    "suppression_reason": ""
   },
   {
     "email": "daniel.garcia@outlook.com",
@@ -1505,7 +1562,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": ""
+    "company_domain": "",
+    "suppression_reason": ""
   },
   {
     "email": "pedro.khan@copperlineit.com",
@@ -1531,7 +1589,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "copperlineit.com"
+    "company_domain": "copperlineit.com",
+    "suppression_reason": ""
   },
   {
     "email": "jamesb@palmettosaasgroup.com",
@@ -1557,7 +1616,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "palmettosaasgroup.com"
+    "company_domain": "palmettosaasgroup.com",
+    "suppression_reason": ""
   },
   {
     "email": "mfarouk@northfielddata.com",
@@ -1583,7 +1643,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "northfielddata.com"
+    "company_domain": "northfielddata.com",
+    "suppression_reason": ""
   },
   {
     "email": "dbauer@brightlineanalytics.com",
@@ -1609,7 +1670,35 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "brightlineanalytics.com"
+    "company_domain": "brightlineanalytics.com",
+    "suppression_reason": ""
+  },
+  {
+    "email": "vikramk@copperlineit.com",
+    "firstname": "Vikram",
+    "lastname": "Kaur",
+    "jobtitle": "RevOps Manager",
+    "company": "Copperline IT Services",
+    "industry": "IT Services",
+    "numemployees": 15,
+    "function": "revops",
+    "seniority": "manager",
+    "country": "MX",
+    "region": "AMER",
+    "hubspot_owner_email": "sdr.amer@acmerevenue.example",
+    "lifecyclestage": "salesqualifiedlead",
+    "hs_lead_status": "IN_PROGRESS",
+    "hubspot_contact_id": 100008,
+    "attendance_status": "attended",
+    "time_in_session_minutes": "26",
+    "registration_time": "2026-07-13T13:01:00",
+    "icp_tier": "tier3",
+    "icp_rationale": "tier3 -- catch-all title 'RevOps Manager'; company_size=15 in [1, 50]; industry=IT Services (wildcard). [lifecycle unchanged -- existing HubSpot stage 'salesqualifiedlead' already at or past rubric target 'subscriber' (tier=tier3, attended=True)]",
+    "confidence": 0.95,
+    "merge_action": "update_existing:100008",
+    "needs_review": false,
+    "company_domain": "copperlineit.com",
+    "suppression_reason": ""
   },
   {
     "email": "vbello@truenorthecom.com",
@@ -1635,7 +1724,8 @@
     "confidence": 0.93,
     "merge_action": "update_existing:100015",
     "needs_review": false,
-    "company_domain": "truenorthecom.com"
+    "company_domain": "truenorthecom.com",
+    "suppression_reason": ""
   },
   {
     "email": "marcot@anchorpointsaas.com",
@@ -1661,7 +1751,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "anchorpointsaas.com"
+    "company_domain": "anchorpointsaas.com",
+    "suppression_reason": ""
   },
   {
     "email": "ibrahim.verma@yahoo.com",
@@ -1687,7 +1778,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": ""
+    "company_domain": "",
+    "suppression_reason": ""
   },
   {
     "email": "alice.cruz@wavecrestit.com",
@@ -1713,7 +1805,8 @@
     "confidence": 0.95,
     "merge_action": "update_existing:100002",
     "needs_review": false,
-    "company_domain": "wavecrestit.com"
+    "company_domain": "wavecrestit.com",
+    "suppression_reason": ""
   },
   {
     "email": "lingm@sableridgeanalytics.com",
@@ -1739,7 +1832,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "sableridgeanalytics.com"
+    "company_domain": "sableridgeanalytics.com",
+    "suppression_reason": ""
   },
   {
     "email": "maria.bishop@alderwoodfintech.com",
@@ -1765,7 +1859,8 @@
     "confidence": 0.95,
     "merge_action": "update_existing:100004",
     "needs_review": false,
-    "company_domain": "alderwoodfintech.com"
+    "company_domain": "alderwoodfintech.com",
+    "suppression_reason": ""
   },
   {
     "email": "charlotteh@clarionanalytics.com",
@@ -1791,7 +1886,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "clarionanalytics.com"
+    "company_domain": "clarionanalytics.com",
+    "suppression_reason": ""
   },
   {
     "email": "grace.rao@lumen8marketing.com",
@@ -1817,7 +1913,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "lumen8marketing.com"
+    "company_domain": "lumen8marketing.com",
+    "suppression_reason": ""
   },
   {
     "email": "diegoi@cascaderevops.com",
@@ -1843,7 +1940,8 @@
     "confidence": 0.95,
     "merge_action": "update_existing:100003",
     "needs_review": false,
-    "company_domain": "cascaderevops.com"
+    "company_domain": "cascaderevops.com",
+    "suppression_reason": "competitor domain ('cascaderevops.com')"
   },
   {
     "email": "laura.tanaka@fernwooddata.com",
@@ -1869,7 +1967,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "fernwooddata.com"
+    "company_domain": "fernwooddata.com",
+    "suppression_reason": ""
   },
   {
     "email": "peterp@quantarasoftware.com",
@@ -1895,7 +1994,35 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "quantarasoftware.com"
+    "company_domain": "quantarasoftware.com",
+    "suppression_reason": ""
+  },
+  {
+    "email": "rhaddad@pinehollowsoftware.com",
+    "firstname": "Rebecca",
+    "lastname": "Haddad",
+    "jobtitle": "Account Executive",
+    "company": "Pinehollow Software",
+    "industry": "SaaS",
+    "numemployees": 97,
+    "function": "sales",
+    "seniority": "individual_contributor",
+    "country": "AU",
+    "region": "APAC",
+    "hubspot_owner_email": "sdr.apac@acmerevenue.example",
+    "lifecyclestage": "subscriber",
+    "hs_lead_status": "IN_PROGRESS",
+    "hubspot_contact_id": 100014,
+    "attendance_status": "attended",
+    "time_in_session_minutes": "36",
+    "registration_time": "2026-07-10T11:17:00",
+    "icp_tier": "unqualified",
+    "icp_rationale": "unqualified -- title 'Account Executive' not in tier1/tier2 title lists and company_size=97 outside tier3 range [1, 50] (industry=SaaS). [lifecycle unchanged -- existing HubSpot stage 'subscriber' already at or past rubric target 'subscriber' (tier=unqualified, attended=True)]",
+    "confidence": 0.95,
+    "merge_action": "update_existing:100014",
+    "needs_review": false,
+    "company_domain": "pinehollowsoftware.com",
+    "suppression_reason": ""
   },
   {
     "email": "yuki.moreno@clarionanalytics.com",
@@ -1921,7 +2048,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "clarionanalytics.com"
+    "company_domain": "clarionanalytics.com",
+    "suppression_reason": ""
   },
   {
     "email": "valvarez@meridiangrowthpartners.com",
@@ -1947,7 +2075,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "meridiangrowthpartners.com"
+    "company_domain": "meridiangrowthpartners.com",
+    "suppression_reason": ""
   },
   {
     "email": "sara.weber@alderwoodfintech.com",
@@ -1973,7 +2102,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "alderwoodfintech.com"
+    "company_domain": "alderwoodfintech.com",
+    "suppression_reason": ""
   },
   {
     "email": "vmehta@anchorpointsaas.com",
@@ -1999,7 +2129,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "anchorpointsaas.com"
+    "company_domain": "anchorpointsaas.com",
+    "suppression_reason": ""
   },
   {
     "email": "sbose@ridgelinecommerce.com",
@@ -2025,7 +2156,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "ridgelinecommerce.com"
+    "company_domain": "ridgelinecommerce.com",
+    "suppression_reason": ""
   },
   {
     "email": "nina.haddad@outlook.com",
@@ -2051,7 +2183,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": ""
+    "company_domain": "",
+    "suppression_reason": ""
   },
   {
     "email": "sara.reddy@zenithmarketinggroup.com",
@@ -2077,7 +2210,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "zenithmarketinggroup.com"
+    "company_domain": "zenithmarketinggroup.com",
+    "suppression_reason": ""
   },
   {
     "email": "elena.kapoor@pinehollowsoftware.com",
@@ -2103,7 +2237,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "pinehollowsoftware.com"
+    "company_domain": "pinehollowsoftware.com",
+    "suppression_reason": ""
   },
   {
     "email": "peter.karimi@brightlineanalytics.com",
@@ -2129,7 +2264,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "brightlineanalytics.com"
+    "company_domain": "brightlineanalytics.com",
+    "suppression_reason": ""
   },
   {
     "email": "victork@quantarasoftware.com",
@@ -2155,7 +2291,8 @@
     "confidence": 0.93,
     "merge_action": "update_existing:100013",
     "needs_review": false,
-    "company_domain": "quantarasoftware.com"
+    "company_domain": "quantarasoftware.com",
+    "suppression_reason": ""
   },
   {
     "email": "layla.iyer@brightlineanalytics.com",
@@ -2181,7 +2318,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "brightlineanalytics.com"
+    "company_domain": "brightlineanalytics.com",
+    "suppression_reason": ""
   },
   {
     "email": "rebecca.wright@pinehollowsoftware.com",
@@ -2207,7 +2345,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "pinehollowsoftware.com"
+    "company_domain": "pinehollowsoftware.com",
+    "suppression_reason": ""
   },
   {
     "email": "ewright@ironwoodfintech.com",
@@ -2233,7 +2372,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "ironwoodfintech.com"
+    "company_domain": "ironwoodfintech.com",
+    "suppression_reason": ""
   },
   {
     "email": "pmalik@palmettosaasgroup.com",
@@ -2259,7 +2399,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "palmettosaasgroup.com"
+    "company_domain": "palmettosaasgroup.com",
+    "suppression_reason": ""
   },
   {
     "email": "ling.verma@outlook.com",
@@ -2285,7 +2426,8 @@
     "confidence": 0.95,
     "merge_action": "update_existing:100017",
     "needs_review": false,
-    "company_domain": ""
+    "company_domain": "",
+    "suppression_reason": ""
   },
   {
     "email": "marcoi@kestrelit.com",
@@ -2311,7 +2453,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "kestrelit.com"
+    "company_domain": "kestrelit.com",
+    "suppression_reason": ""
   },
   {
     "email": "nyamamoto@everlinetech.com",
@@ -2337,7 +2480,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "everlinetech.com"
+    "company_domain": "everlinetech.com",
+    "suppression_reason": ""
   },
   {
     "email": "anjalif@clarionanalytics.com",
@@ -2363,7 +2507,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "clarionanalytics.com"
+    "company_domain": "clarionanalytics.com",
+    "suppression_reason": ""
   },
   {
     "email": "priya.almeida@kestrelit.com",
@@ -2389,7 +2534,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "kestrelit.com"
+    "company_domain": "kestrelit.com",
+    "suppression_reason": ""
   },
   {
     "email": "ahmedt@quantarasoftware.com",
@@ -2415,7 +2561,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "quantarasoftware.com"
+    "company_domain": "quantarasoftware.com",
+    "suppression_reason": ""
   },
   {
     "email": "anton.johnson@lumen8marketing.com",
@@ -2441,7 +2588,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "lumen8marketing.com"
+    "company_domain": "lumen8marketing.com",
+    "suppression_reason": ""
   },
   {
     "email": "sanjayt@driftwoodsaas.com",
@@ -2467,7 +2615,8 @@
     "confidence": 0.93,
     "merge_action": "update_existing:100012",
     "needs_review": false,
-    "company_domain": "driftwoodsaas.com"
+    "company_domain": "driftwoodsaas.com",
+    "suppression_reason": ""
   },
   {
     "email": "felix.rao@meridiangrowthpartners.com",
@@ -2493,7 +2642,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "meridiangrowthpartners.com"
+    "company_domain": "meridiangrowthpartners.com",
+    "suppression_reason": ""
   },
   {
     "email": "laura.chen@meridiangrowthpartners.com",
@@ -2519,7 +2669,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "meridiangrowthpartners.com"
+    "company_domain": "meridiangrowthpartners.com",
+    "suppression_reason": ""
   },
   {
     "email": "irossi@solsticegrowthlabs.com",
@@ -2545,7 +2696,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "solsticegrowthlabs.com"
+    "company_domain": "solsticegrowthlabs.com",
+    "suppression_reason": ""
   },
   {
     "email": "obose@ridgelinecommerce.com",
@@ -2571,7 +2723,8 @@
     "confidence": 0.85,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "ridgelinecommerce.com"
+    "company_domain": "ridgelinecommerce.com",
+    "suppression_reason": ""
   },
   {
     "email": "lingb@truenorthecom.com",
@@ -2597,7 +2750,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "truenorthecom.com"
+    "company_domain": "truenorthecom.com",
+    "suppression_reason": ""
   },
   {
     "email": "laura.patel@yahoo.com",
@@ -2623,7 +2777,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": ""
+    "company_domain": "",
+    "suppression_reason": ""
   },
   {
     "email": "nadia.moreau@zenithmarketinggroup.com",
@@ -2649,7 +2804,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "zenithmarketinggroup.com"
+    "company_domain": "zenithmarketinggroup.com",
+    "suppression_reason": ""
   },
   {
     "email": "lmenon@bluepeakventures.com",
@@ -2675,7 +2831,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "bluepeakventures.com"
+    "company_domain": "bluepeakventures.com",
+    "suppression_reason": ""
   },
   {
     "email": "sophie.bishop@cobaltreach.com",
@@ -2701,7 +2858,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "cobaltreach.com"
+    "company_domain": "cobaltreach.com",
+    "suppression_reason": ""
   },
   {
     "email": "wendya@pinehollowsoftware.com",
@@ -2727,7 +2885,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "pinehollowsoftware.com"
+    "company_domain": "pinehollowsoftware.com",
+    "suppression_reason": ""
   },
   {
     "email": "storres@stonegateecom.com",
@@ -2753,7 +2912,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "stonegateecom.com"
+    "company_domain": "stonegateecom.com",
+    "suppression_reason": ""
   },
   {
     "email": "wmenon@fernwooddata.com",
@@ -2779,7 +2939,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "fernwooddata.com"
+    "company_domain": "fernwooddata.com",
+    "suppression_reason": ""
   },
   {
     "email": "norar@fernwooddata.com",
@@ -2805,7 +2966,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "fernwooddata.com"
+    "company_domain": "fernwooddata.com",
+    "suppression_reason": ""
   },
   {
     "email": "nwong@truenorthecom.com",
@@ -2831,7 +2993,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "truenorthecom.com"
+    "company_domain": "truenorthecom.com",
+    "suppression_reason": ""
   },
   {
     "email": "yuki.ivanova@onyxbridgefintech.com",
@@ -2857,7 +3020,8 @@
     "confidence": 0.85,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "onyxbridgefintech.com"
+    "company_domain": "onyxbridgefintech.com",
+    "suppression_reason": ""
   },
   {
     "email": "lucas.alsayed@cascaderevops.com",
@@ -2883,7 +3047,8 @@
     "confidence": 0.85,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "cascaderevops.com"
+    "company_domain": "cascaderevops.com",
+    "suppression_reason": "competitor domain ('cascaderevops.com')"
   },
   {
     "email": "kevin.ivanova@palmettosaasgroup.com",
@@ -2909,7 +3074,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "palmettosaasgroup.com"
+    "company_domain": "palmettosaasgroup.com",
+    "suppression_reason": ""
   },
   {
     "email": "marcof@harborviewsoftware.com",
@@ -2935,7 +3101,8 @@
     "confidence": 0.95,
     "merge_action": "update_existing:100006",
     "needs_review": false,
-    "company_domain": "harborviewsoftware.com"
+    "company_domain": "harborviewsoftware.com",
+    "suppression_reason": ""
   },
   {
     "email": "divya.verma@clarionanalytics.com",
@@ -2961,7 +3128,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "clarionanalytics.com"
+    "company_domain": "clarionanalytics.com",
+    "suppression_reason": ""
   },
   {
     "email": "samuel.marsh@ironwoodfintech.com",
@@ -2987,7 +3155,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "ironwoodfintech.com"
+    "company_domain": "ironwoodfintech.com",
+    "suppression_reason": ""
   },
   {
     "email": "ingrid.popescu@northfielddata.com",
@@ -3013,7 +3182,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "northfielddata.com"
+    "company_domain": "northfielddata.com",
+    "suppression_reason": ""
   },
   {
     "email": "tomas.haddad@anchorpointsaas.com",
@@ -3039,7 +3209,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "anchorpointsaas.com"
+    "company_domain": "anchorpointsaas.com",
+    "suppression_reason": ""
   },
   {
     "email": "adityar@northfielddata.com",
@@ -3065,7 +3236,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "northfielddata.com"
+    "company_domain": "northfielddata.com",
+    "suppression_reason": ""
   },
   {
     "email": "kclarke@everlinetech.com",
@@ -3091,7 +3263,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "everlinetech.com"
+    "company_domain": "everlinetech.com",
+    "suppression_reason": ""
   },
   {
     "email": "aditya.bello@palmettosaasgroup.com",
@@ -3117,7 +3290,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "palmettosaasgroup.com"
+    "company_domain": "palmettosaasgroup.com",
+    "suppression_reason": ""
   },
   {
     "email": "aditya.joshi@anchorpointsaas.com",
@@ -3143,7 +3317,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "anchorpointsaas.com"
+    "company_domain": "anchorpointsaas.com",
+    "suppression_reason": ""
   },
   {
     "email": "inesk@anchorpointsaas.com",
@@ -3169,7 +3344,8 @@
     "confidence": 0.85,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "anchorpointsaas.com"
+    "company_domain": "anchorpointsaas.com",
+    "suppression_reason": ""
   },
   {
     "email": "sophie.adams@lumen8marketing.com",
@@ -3195,7 +3371,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "lumen8marketing.com"
+    "company_domain": "lumen8marketing.com",
+    "suppression_reason": ""
   },
   {
     "email": "axu@vectorcloudsystems.com",
@@ -3221,7 +3398,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "vectorcloudsystems.com"
+    "company_domain": "vectorcloudsystems.com",
+    "suppression_reason": ""
   },
   {
     "email": "vivian.nilsson@meridiangrowthpartners.com",
@@ -3247,7 +3425,8 @@
     "confidence": 0.95,
     "merge_action": "update_existing:100011",
     "needs_review": false,
-    "company_domain": "meridiangrowthpartners.com"
+    "company_domain": "meridiangrowthpartners.com",
+    "suppression_reason": ""
   },
   {
     "email": "sanjay.novak@ironwoodfintech.com",
@@ -3273,7 +3452,8 @@
     "confidence": 0.95,
     "merge_action": "update_existing:100009",
     "needs_review": false,
-    "company_domain": "ironwoodfintech.com"
+    "company_domain": "ironwoodfintech.com",
+    "suppression_reason": ""
   },
   {
     "email": "hivanova@palmettosaasgroup.com",
@@ -3299,7 +3479,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "palmettosaasgroup.com"
+    "company_domain": "palmettosaasgroup.com",
+    "suppression_reason": ""
   },
   {
     "email": "carlos.cruz@brightlineanalytics.com",
@@ -3325,7 +3506,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "brightlineanalytics.com"
+    "company_domain": "brightlineanalytics.com",
+    "suppression_reason": ""
   },
   {
     "email": "vikram.haddad@sableridgeanalytics.com",
@@ -3351,7 +3533,8 @@
     "confidence": 0.8,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "sableridgeanalytics.com"
+    "company_domain": "sableridgeanalytics.com",
+    "suppression_reason": ""
   },
   {
     "email": "chloe.bishop@redshiftcommerce.com",
@@ -3377,7 +3560,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": "redshiftcommerce.com"
+    "company_domain": "redshiftcommerce.com",
+    "suppression_reason": ""
   },
   {
     "email": "aisha.mehta@yahoo.com",
@@ -3403,7 +3587,8 @@
     "confidence": 0.95,
     "merge_action": "create_new",
     "needs_review": false,
-    "company_domain": ""
+    "company_domain": "",
+    "suppression_reason": ""
   },
   {
     "email": "juliaf@anchorpointsaas.com",
@@ -3429,7 +3614,8 @@
     "confidence": 0.95,
     "merge_action": "update_existing:100001",
     "needs_review": false,
-    "company_domain": "anchorpointsaas.com"
+    "company_domain": "anchorpointsaas.com",
+    "suppression_reason": ""
   },
   {
     "email": "aokafor@solsticegrowthlabs.com",
@@ -3455,6 +3641,88 @@
     "confidence": 0.86,
     "merge_action": "update_existing:100016",
     "needs_review": false,
-    "company_domain": "solsticegrowthlabs.com"
+    "company_domain": "solsticegrowthlabs.com",
+    "suppression_reason": ""
+  },
+  {
+    "email": "priya.nair@acmerevenue.example",
+    "firstname": "Priya",
+    "lastname": "Nair",
+    "jobtitle": "VP Marketing",
+    "company": "ACME Revenue Cloud",
+    "industry": "IT Services",
+    "numemployees": 13,
+    "function": "marketing",
+    "seniority": "vp",
+    "country": "",
+    "region": "UNASSIGNED",
+    "hubspot_owner_email": "sdr.amer@acmerevenue.example",
+    "lifecyclestage": "evangelist",
+    "hs_lead_status": "NEW",
+    "hubspot_contact_id": "",
+    "attendance_status": "attended",
+    "time_in_session_minutes": "",
+    "registration_time": "",
+    "icp_tier": "tier3",
+    "icp_rationale": "tier3 -- catch-all title 'VP Marketing'; company_size=13 in [1, 50]; industry=IT Services (wildcard). [speaker at this event (title='VP Marketing', company='ACME Revenue Cloud') -- lifecyclestage set to 'evangelist' rather than the attendee attended/session-length rubric, which does not apply to a speaker]",
+    "confidence": 0.95,
+    "merge_action": "create_new",
+    "needs_review": false,
+    "company_domain": "acmerevenue.example",
+    "suppression_reason": "host company domain ('acmerevenue.example') -- internal staff, not a prospect"
+  },
+  {
+    "email": "daniel.kim@northwindanalytics.example",
+    "firstname": "Daniel",
+    "lastname": "Kim",
+    "jobtitle": "Head of Demand Gen",
+    "company": "Northwind Analytics",
+    "industry": "IT Services",
+    "numemployees": 39,
+    "function": "marketing",
+    "seniority": "head",
+    "country": "",
+    "region": "UNASSIGNED",
+    "hubspot_owner_email": "sdr.amer@acmerevenue.example",
+    "lifecyclestage": "evangelist",
+    "hs_lead_status": "NEW",
+    "hubspot_contact_id": "",
+    "attendance_status": "attended",
+    "time_in_session_minutes": "",
+    "registration_time": "",
+    "icp_tier": "tier3",
+    "icp_rationale": "tier3 -- catch-all title 'Head of Demand Gen'; company_size=39 in [1, 50]; industry=IT Services (wildcard). [speaker at this event (title='Head of Demand Gen', company='Northwind Analytics') -- lifecyclestage set to 'evangelist' rather than the attendee attended/session-length rubric, which does not apply to a speaker]",
+    "confidence": 0.95,
+    "merge_action": "create_new",
+    "needs_review": false,
+    "company_domain": "northwindanalytics.example",
+    "suppression_reason": ""
+  },
+  {
+    "email": "sara.alvarez@meridiansoftware.example",
+    "firstname": "Sara",
+    "lastname": "Alvarez",
+    "jobtitle": "RevOps Lead",
+    "company": "Meridian Software",
+    "industry": "SaaS",
+    "numemployees": 1547,
+    "function": "revops",
+    "seniority": "unknown",
+    "country": "",
+    "region": "UNASSIGNED",
+    "hubspot_owner_email": "sdr.amer@acmerevenue.example",
+    "lifecyclestage": "evangelist",
+    "hs_lead_status": "NEW",
+    "hubspot_contact_id": "",
+    "attendance_status": "attended",
+    "time_in_session_minutes": "",
+    "registration_time": "",
+    "icp_tier": "unqualified",
+    "icp_rationale": "unqualified -- title 'RevOps Lead' not in tier1/tier2 title lists and company_size=1547 outside tier3 range [1, 50] (industry=SaaS). [speaker at this event (title='RevOps Lead', company='Meridian Software') -- lifecyclestage set to 'evangelist' rather than the attendee attended/session-length rubric, which does not apply to a speaker]",
+    "confidence": 0.95,
+    "merge_action": "create_new",
+    "needs_review": false,
+    "company_domain": "meridiansoftware.example",
+    "suppression_reason": ""
   }
 ]

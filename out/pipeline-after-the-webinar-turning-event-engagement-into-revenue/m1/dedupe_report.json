@@ -1,14 +1,15 @@
 {
-  "generated_at": "2026-08-23T09:14:49.420893+00:00",
+  "generated_at": "2026-08-24T08:07:27.548629+00:00",
   "threshold": 0.8,
   "method": "difflib.SequenceMatcher combined score = 0.25*ratio(email localpart) + 0.75*ratio(firstname+lastname+company); matched at combined >= 0.8",
   "counts": {
     "total_input_rows": 150,
     "fake_rows_excluded": 3,
     "within_batch_duplicate_pairs": 12,
-    "hubspot_matches": 16,
-    "net_new_contacts": 117,
-    "output_rows": 133
+    "hubspot_matches": 18,
+    "net_new_contacts": 120,
+    "output_rows": 138,
+    "speakers_loaded": 3
   },
   "within_batch_duplicates": [
     {

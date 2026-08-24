@@ -17,6 +17,20 @@ Two lanes, both real:
   `icp_rationale`, never auto-overriding the rule engine). Every batch call
   is wrapped so a parse failure or an unavailable backend degrades to the
   rule-table result with a warning -- `--live` never silently no-ops.
+  - **Gray-zone dedupe adjudication**: dedupe pairs scoring in `[0.65, 0.80)`
+    -- ambiguous enough that a fixed threshold can't call it, but not weak
+    enough to dismiss -- are batched (one call, capped at `GRAY_ZONE_MAX_PAIRS`
+    = 20 pairs) through `prompts/dedupe_adjudication.md`. The rule engine
+    stays fully authoritative outside that band (`>=0.80` always merges,
+    `<0.65` never does, `--live` or not); inside it, a `merge`/`no_merge`
+    decision with a written rationale is applied the same way a
+    >=threshold match would be, and surfaced into the row's
+    `icp_rationale` (not only into `dedupe_report.json`). The prompt states
+    the asymmetry up front (a false merge destroys a real lead; a false
+    split only double-touches one person) so the model weighs the two
+    failure modes differently, not just off the raw score. A parse failure
+    or unavailable backend degrades every pair in the batch to `no_merge`
+    -- the same default the rule engine already applies below threshold.
   - `LLM_BACKEND` (env, default `auto`): `auto` tries `claude -p` first and
     falls back to OpenRouter if a key is present; `claude` or `openrouter`
     force that backend only. Resolved once per `--live` run (a single
@@ -52,7 +66,10 @@ Proves: a messy 150-row Zoom registrant export -> fuzzy-deduped (within-batch + 
   `hubspot_contact_id` is a demo join key for reconciling a run against
   `dedupe_report.json`; it is never sent to HubSpot as a Contact property.
 - `dedupe_report.json` -- fuzzy-match method, threshold, matched pairs, fake
-  rows excluded.
+  rows excluded. With `--live`/`--live-dry-run` and at least one gray-zone
+  pair, also carries `gray_zone_adjudication`: pairs in band, pairs
+  evaluated/skipped (cap), merged/no_merge counts, parse failures, and the
+  per-pair decision + rationale (dry-run: the exact prompt instead).
 - `quality_report.json` -- per-field completeness, overall completeness vs.
   the 90% bar, and `needs_review_count` / `needs_review_pct` (kept separate
   from completeness so a high completeness number can't quietly launder
@@ -76,4 +93,12 @@ Production lane: `clay_spec.md` -- same column-by-column waterfall, run in Clay 
 
 ### Clay lane (optional, `--clay-max`)
 
-Default is **zero Clay calls** -- `--clay-max` defaults to `0` and nothing in `tools/clay_enrich.py` runs unless you opt in. Enable with `--live --clay-max N` (N > 0) to backfill industry/`numemployees`/country on up to N distinct company domains still missing/low-confidence after inference, via Clay's real "Enrich Company" function (`enrich_domains()` in `tools/clay_enrich.py`, respects the `CLAY_BIN` env var); use `--clay-dry-run` first to preview the exact domains with zero network calls. A live receipt of the underlying Clay call shape lives at `out/clay-live-proof/clay_enrich_results.json`. Every real run's call count and credit balance before/after are logged into `quality_report.json`'s `"clay"` key.
+Default is **zero Clay calls** -- `--clay-max` defaults to `0` and nothing in `tools/clay_enrich.py` runs unless you opt in. Enable with `--live --clay-max N` (N > 0) to backfill industry/`numemployees`/country on up to N distinct company domains still missing/low-confidence after inference, via Clay's real "Enrich Company" function (`enrich_domains()` in `tools/clay_enrich.py`, respects the `CLAY_BIN` env var); use `--clay-dry-run` first to preview the exact domains with zero network calls. Every real run's call count and credit balance before/after are logged into `quality_report.json`'s `"clay"` key.
+
+`data/incoming/registrants.csv`'s company domains are entirely synthetic (`acmerevenue.example`, `northfielddata.com`, ...) -- Clay returns nothing for a domain that doesn't exist, so `--clay-max` against that fixture would burn credits for zero rows back. Two separate live receipts exist for this reason, see `clay_spec.md`'s "Live proof" section for the full writeup:
+- `out/clay-live-proof/clay_enrich_results.json` -- 3 real vendor domains via `tools/clay_enrich.py`'s own CLI; proves the raw Clay call/auth/routine ID.
+- `modules/m1-enrichment/fixtures/clay_real_domains_registrants.csv` -- an 8-real-domain (Stripe, Notion, Figma, Airtable, Brex, Retool, Webflow, Linear) registrant-shaped fixture; run it with `--in modules/m1-enrichment/fixtures/clay_real_domains_registrants.csv --live --clay-max 8` (`--clay-dry-run` first, zero cost) to prove `enrich.py`'s own domain-selection + merge-back path end-to-end -- Clay's real industry/`numemployees`/country land in `hubspot_ready.csv` and `hubspot_companies.csv`, not only in a log.
+
+### Speakers (`--speakers` / `--segments`)
+
+Speakers never appear in the registrant CSV. `data/incoming/speakers.json` has name/title/company/bio but no email; `data/fixtures/segments.json`'s `speakers` key is a flat email list with no name -- `load_speakers()` pairs the two (matching each speaker's `firstname.lastname` localpart against the segment email list, not a fragile array-index assumption) and appends them to the same prepped-row pipeline a registrant goes through, so a speaker gets identical rule-engine treatment: dedupe, industry/function/seniority classification, ICP tier, HubSpot create/update, and host-domain suppression (an internal speaker on the host's own domain is suppressed from M2's mailable set exactly like an internal registrant would be). The one deliberate difference: `lifecyclestage` is set to `evangelist` rather than run through the attendee attended/session-length rubric, which has no meaning for a speaker -- `evangelist` is HubSpot's own top-ranked lifecycle stage (see `LIFECYCLE_RANK`), the correct semantic for someone who publicly presented for the host rather than a funnel prospect being nurtured. Defaults to `data/incoming/speakers.json` / `data/fixtures/segments.json`; override with `--speakers` / `--segments` for a different event. A missing file or an unmatched speaker degrades to a warning, never a crash.

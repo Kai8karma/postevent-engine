@@ -36,6 +36,52 @@ the webinar platform's post-event webhook -> n8n -> Clay import API (see
 | 14 | `Needs Review` | Formula column: true when a firmographic/industry lookup structurally couldn't resolve the row (e.g. non-Latin company name past the keyword classifier) | -- | `needs_review` (counted separately in `quality_report.json`, not folded into the completeness percentage) |
 | 15 | `Company Domain` | Formula column: registrant email domain, excluded for freemail addresses | -- | `company_domain` -- the domain used to associate the Contact to its Company object on import (see below) |
 
+## Live proof: two receipts, not one, and why both are needed
+
+The registrant fixture (`data/incoming/registrants.csv`) is entirely
+synthetic company domains (`acmerevenue.example`, `northfielddata.com`,
+etc.) so the pipeline demos without any account. Clay's "Enrich Company"
+routine returns nothing for a domain that doesn't exist -- running
+`--clay-max` against this fixture burns real credits for zero rows back.
+That constraint forced a choice between two honest options, and both ended
+up mattering for a different reason:
+
+1. **`out/clay-live-proof/`** -- 3 real vendor domains (`hubspot.com`,
+   `clay.com`, `n8n.io`), run via `tools/clay_enrich.py`'s own CLI
+   (`clay routines runs start/get` directly). 1.5 credits spent, full raw
+   API response saved. This proves the underlying Clay call shape,
+   authentication, and routine ID are correct -- but it never went through
+   `enrich.py`'s own domain-selection (`select_clay_domains()`) or
+   merge-back (`run_clay_enrichment()`) code, because those only ever fire
+   on `company_domain` values already present in a loaded registrant batch.
+2. **`modules/m1-enrichment/fixtures/clay_real_domains_registrants.csv`** --
+   a 9-row, 8-domain registrant-shaped fixture (same CSV columns as
+   `registrants.csv`) built entirely from real, independently-verifiable
+   company domains (stripe.com, notion.so, figma.com, airtable.com,
+   brex.com, retool.com, webflow.com, linear.app) with placeholder contact
+   names -- not tied to any real person, only the company identity needs to
+   be real for Clay to resolve it. Run via `enrich.py --in
+   modules/m1-enrichment/fixtures/clay_real_domains_registrants.csv --live
+   --clay-max 8` (`--clay-dry-run` first to confirm the exact domain list
+   at zero cost): 4.0 credits spent (workspace 1341735, `2503.5 -> 2499.5`),
+   logged in that run's `quality_report.json["clay"]`. This is the one that
+   proves the *pipeline's own* selection + merge-back path: pre-Clay every
+   row classified `industry="Other"` (none of these company names hit
+   `INDUSTRY_KEYWORDS`) with a synthetic `numemployees`; post-Clay every row
+   in `hubspot_ready.csv` and `hubspot_companies.csv` carries Clay's real
+   `industry` (e.g. Stripe -> `"Technology, Information and Internet"`,
+   Figma -> `"Design Services"`) and real `numemployees` (Stripe 17187,
+   Linear 284, ...), with `icp_rationale` recording the before/after
+   recompute inline -- verifiable straight from the CSV, not only from a
+   log. `icp_tier` correctly recomputes to `unqualified` for all 8 once the
+   real headcounts land outside this ICP config's tier bands (it's built
+   for SMB/mid-market, not companies Stripe's size) -- that's the rule
+   engine doing its job on real data, not a bug.
+
+Neither receipt alone was sufficient: (1) proves the API integration works,
+(2) proves the pipeline actually uses it. Kept both rather than deleting
+either.
+
 ## HTTP-to-HubSpot upsert -- two object types, not one (judge fix #3)
 
 `hubspot_ready.csv` mixes Contact-object properties (e.g. `jobtitle`,

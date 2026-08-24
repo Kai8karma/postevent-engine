@@ -14,20 +14,31 @@ Two lanes, both real:
     after the rule cascade (or classified industry "Other") and backfills
     them from the model instead of the generic fallback; prompts/icp_scoring.md
     batches rows with confidence < 0.7 for a human-readable second opinion on
-    the tier call (logged, never auto-overriding the rule engine). Backend is
-    `claude -p` by default, with an OpenRouter fallback -- see LLM_BACKEND /
-    OPENROUTER_API_KEY / OPENROUTER_MODEL in README.md. `--live` without a
-    working backend degrades to the offline result with a per-batch warning
-    -- it never silently no-ops.
+    the tier call (logged, never auto-overriding the rule engine);
+    prompts/dedupe_adjudication.md batches dedupe pairs scoring in
+    [GRAY_ZONE_LOW, DEDUPE_THRESHOLD) = [0.65, 0.80) -- too ambiguous for the
+    threshold to call -- for a merge/no_merge decision with a written
+    rationale, capped at GRAY_ZONE_MAX_PAIRS pairs/run, rule engine still
+    authoritative outside that band. Backend is `claude -p` by default, with
+    an OpenRouter fallback -- see LLM_BACKEND / OPENROUTER_API_KEY /
+    OPENROUTER_MODEL in README.md. `--live` without a working backend
+    degrades to the offline result (or, for dedupe, the rule engine's
+    existing no_merge default) with a per-batch warning -- it never silently
+    no-ops.
   - `--live-dry-run`: builds and prints the exact prompts + batch plan for
-    both lanes above, without calling `claude -p` at all (zero network) --
-    use this to verify the live path is wired correctly when auth is down.
+    all three lanes above, without calling `claude -p` at all (zero network)
+    -- use this to verify the live path is wired correctly when auth is down.
   - `--clay-max N` (optional, default 0 = never call Clay): with `--live`,
     backfills industry/numemployees/country on up to N distinct company
     domains still missing/low-confidence after inference, via Clay's real
     "Enrich Company" function called in-process (tools/clay_enrich.py's
     enrich_domains()). `--clay-dry-run` previews the planned domains with
     zero calls. See README.md's "Clay lane" section.
+  - Speakers (data/incoming/speakers.json x data/fixtures/segments.json,
+    override with --speakers/--segments): appended to the same pipeline a
+    registrant goes through -- same dedupe/classification/ICP/HubSpot
+    treatment, lifecyclestage fixed to "evangelist" instead of the
+    attendee rubric. See load_speakers() and README.md's "Speakers" section.
 
 Stdlib only (csv, json, re, argparse, pathlib, datetime, difflib, hashlib).
 """
@@ -54,6 +65,10 @@ REPO_ROOT = MODULE_DIR.parent.parent
 DEFAULT_IN = REPO_ROOT / "data" / "incoming" / "registrants.csv"
 DEFAULT_CONFIG = REPO_ROOT / "config" / "icp.yaml"
 DEFAULT_HUBSPOT = REPO_ROOT / "data" / "fixtures" / "hubspot_existing.json"
+# Speakers never appear in the registrant CSV -- see load_speakers()'s
+# docstring for why two separate fixtures are needed to build one contact.
+DEFAULT_SPEAKERS = REPO_ROOT / "data" / "incoming" / "speakers.json"
+DEFAULT_SEGMENTS = REPO_ROOT / "data" / "fixtures" / "segments.json"
 
 DEDUPE_THRESHOLD = 0.80  # combined composite score >= this counts as a match
 LOCAL_WEIGHT = 0.25
@@ -62,6 +77,19 @@ FIRSTNAME_GATE = 0.5  # HubSpot matching only: a shared lastname+company can
 # otherwise mask a genuinely different first name (e.g. two different
 # "Verma"s at the same company) inside one blended ident-string ratio --
 # require the first names themselves to clear this bar before scoring at all
+
+GRAY_ZONE_LOW = 0.65  # composite score in [GRAY_ZONE_LOW, DEDUPE_THRESHOLD) is
+# the band a fixed threshold can't reason about -- roughly where two humans
+# reviewing the same two records would genuinely disagree. --live routes
+# exactly these pairs to prompts/dedupe_adjudication.md (see
+# run_dedupe_adjudication()); below GRAY_ZONE_LOW the pair is too weak for
+# even a qualitative read to help and the rule engine's "no match" stands,
+# with or without --live.
+GRAY_ZONE_MAX_PAIRS = 20  # hard cap on gray-zone pairs entering the LLM loop
+# per run (cost + review-load guard, not a quality signal) -- highest-scoring
+# (closest to DEDUPE_THRESHOLD, most defensible) pairs are kept; overflow is
+# logged as skipped and left on the rule engine's default (no merge).
+DEDUPE_ADJUDICATION_PROMPT_FILE = "dedupe_adjudication.md"
 
 FREEMAIL_DOMAINS = {"gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "aol.com", "icloud.com"}
 FAKE_NAME_TOKENS = {"asdf", "test", "fake", "foo", "bar", "sample", "xxx"}
@@ -109,6 +137,10 @@ OPENROUTER_MODEL_FALLBACKS = [
     "anthropic/claude-3.7-sonnet",
     "anthropic/claude-3.5-sonnet",
 ]
+# Floor for the 402 ceiling-retry below. Batched inference answers land well
+# under this; going lower would start truncating real responses instead of
+# working around the affordability check.
+OPENROUTER_MIN_MAX_TOKENS = 1500
 
 ALLOWED_FUNCTIONS = {"executive", "revops", "customer_success", "sales", "marketing", "general"}
 ALLOWED_SENIORITY = {
@@ -455,13 +487,32 @@ def dedupe_within_batch(records):
     """Blocks on normalized (first,last) -- every real dupe pair in this
     fixture shares an exact name once casing is normalized; the composite
     score is still computed and thresholded so a same-name/different-person
-    collision would NOT merge if company/localpart diverge enough."""
+    collision would NOT merge if company/localpart diverge enough.
+
+    A merged-away duplicate is flagged directly on the row object
+    (`r["_merged_away"] = True`) rather than only recorded in `clusters` by
+    email string -- two distinct rows in the same export can normalize to
+    the *identical* email (e.g. a re-registration submitted in different
+    casing: "RHADDAD@..." vs "rhaddad@..."), and `email` is lowercased
+    before this function ever sees it. Filtering `primaries` by "email not
+    in clusters" in that case would drop BOTH rows (the duplicate and the
+    primary it was supposed to merge into, since they share the same
+    dict key) -- silently losing a real contact, not just deduping one.
+    Filtering by the per-row flag instead is identity-safe regardless of
+    whether two rows happen to share a normalized email string.
+
+    Also surfaces `gray_pairs`: pairs scoring in [GRAY_ZONE_LOW,
+    DEDUPE_THRESHOLD) -- too ambiguous for the rule engine to merge, but not
+    weak enough to dismiss outright. Row references (not just emails) are
+    kept so run_dedupe_adjudication() can apply a `merge` decision the same
+    way the >=DEDUPE_THRESHOLD path above does. See GRAY_ZONE_LOW's docstring."""
     by_name = {}
     for r in records:
         key = (r["firstname"].lower(), r["lastname"].lower())
         by_name.setdefault(key, []).append(r)
 
     pairs = []
+    gray_pairs = []
     clusters = {}  # email -> primary email
     for key, group in by_name.items():
         if len(group) < 2:
@@ -481,6 +532,7 @@ def dedupe_within_batch(records):
             )
             if score >= DEDUPE_THRESHOLD:
                 clusters[r["email"]] = best_primary["email"]
+                r["_merged_away"] = True  # identity-safe exclusion -- see docstring
                 pairs.append({
                     "primary_email": best_primary["email"],
                     "duplicate_email": r["email"],
@@ -495,16 +547,25 @@ def dedupe_within_batch(records):
                     best_primary["company_raw"] = r["company_raw"]
                     best_primary["company_key"] = r["company_key"]
                     best_primary["company_source"] = "sibling_record"
-    return clusters, pairs
+            elif score >= GRAY_ZONE_LOW:
+                gray_pairs.append({
+                    "kind": "within_batch", "score": score,
+                    "primary_ref": best_primary, "candidate_ref": r,
+                })
+    return clusters, pairs, gray_pairs
 
 
 def dedupe_against_hubspot(records, hubspot):
+    """Also surfaces `gray_pairs` -- the best-scoring HubSpot candidate for a
+    row when that best score lands in [GRAY_ZONE_LOW, DEDUPE_THRESHOLD)
+    instead of clearing it outright. See dedupe_within_batch()'s docstring."""
     hs_index = []
     for h in hubspot:
         local = h["email"].split("@")[0]
         hs_index.append((h, local, h.get("firstname", ""), h.get("lastname", ""), company_norm_key(h.get("company", ""))))
 
     matches = {}
+    gray_pairs = []
     for r in records:
         best_score, best_hs = 0.0, None
         for h, local, hfirst, hlast, hcompany in hs_index:
@@ -518,7 +579,12 @@ def dedupe_against_hubspot(records, hubspot):
                 best_score, best_hs = score, h
         if best_hs and best_score >= DEDUPE_THRESHOLD:
             matches[r["email"]] = {"hubspot": best_hs, "score": round(best_score, 3)}
-    return matches
+        elif best_hs and best_score >= GRAY_ZONE_LOW:
+            gray_pairs.append({
+                "kind": "hubspot", "score": best_score,
+                "row_ref": r, "hubspot_ref": best_hs,
+            })
+    return matches, gray_pairs
 
 
 # --------------------------------------------------------------------------
@@ -615,6 +681,17 @@ def call_openrouter(prompt: str, key: str = "", max_tokens: int = 12000) -> str:
                 time.sleep(5 * attempts)
                 continue
             detail = exc.read().decode("utf-8", "replace")[:300]
+            # 402 is an affordability check against max_tokens as a CEILING, not
+            # against what the answer actually costs: OpenRouter rejects the whole
+            # request if the balance can't cover the ceiling, even with plenty of
+            # funds for the ~2k tokens a batch really uses. Retry smaller rather
+            # than reporting "out of credits" -- halving preserves the headroom
+            # reasoning models need instead of capping everyone at a low value.
+            if exc.code == 402 and max_tokens > OPENROUTER_MIN_MAX_TOKENS:
+                reduced = max(OPENROUTER_MIN_MAX_TOKENS, max_tokens // 2)
+                print(f"[llm] openrouter 402 at max_tokens={max_tokens} (affordability is checked against the "
+                      f"ceiling, not actual usage) -- retrying at {reduced}", file=sys.stderr)
+                return call_openrouter(prompt, key=key, max_tokens=reduced)
             raise RuntimeError(f"OpenRouter request failed: HTTP {exc.code} {exc.reason} {detail}".strip()) from exc
         except urllib.error.URLError as exc:
             raise RuntimeError(f"OpenRouter request failed: {exc.reason}") from exc
@@ -862,16 +939,220 @@ def apply_icp_second_opinion(row: dict, opinion: dict) -> None:
     row["icp_rationale"] = row["icp_rationale"] + " " + note
 
 
-def run_live_inference(output_rows, cfg, hs_matches, live: bool, dry_run: bool) -> dict:
+# --------------------------------------------------------------------------
+# gray-zone dedupe adjudication (--live / --live-dry-run only)
+# --------------------------------------------------------------------------
+
+def _gray_zone_person(ref: dict, source: str) -> dict:
+    """Normalizes a registrant-prepped-row or a HubSpot-fixture dict into the
+    same {firstname, lastname, email, company, jobtitle} shape for the
+    dedupe_adjudication.md prompt -- the two source dicts use different key
+    names (company_raw/jobtitle_raw vs company/jobtitle)."""
+    if source == "registrant":
+        return {
+            "firstname": ref["firstname"], "lastname": ref["lastname"], "email": ref["email"],
+            "company": ref["company_raw"] or "", "jobtitle": ref["jobtitle_raw"] or "",
+        }
+    return {
+        "firstname": ref.get("firstname", ""), "lastname": ref.get("lastname", ""),
+        "email": ref.get("email", ""), "company": ref.get("company", ""),
+        "jobtitle": ref.get("jobtitle", ""),
+    }
+
+
+def gray_pair_prompt_record(cand: dict) -> dict:
+    """One JSON-ready record per gray-zone candidate for the batch prompt.
+    `pair_id` is stable and reversible so the response can be matched back to
+    the exact candidate (and, for a `merge` decision, applied to the right
+    row references) -- see run_dedupe_adjudication()."""
+    if cand["kind"] == "within_batch":
+        primary, candidate = cand["primary_ref"], cand["candidate_ref"]
+        return {
+            "pair_id": f"wb:{primary['email']}|{candidate['email']}", "kind": "within_batch",
+            "score": round(cand["score"], 3),
+            "context": "two rows in the same registrant export share a normalized (first, last) name",
+            "a": {"role": "candidate_primary", **_gray_zone_person(primary, "registrant")},
+            "b": {"role": "candidate_duplicate", **_gray_zone_person(candidate, "registrant")},
+        }
+    row, hs = cand["row_ref"], cand["hubspot_ref"]
+    return {
+        "pair_id": f"hs:{row['email']}|{hs.get('vid')}", "kind": "hubspot",
+        "score": round(cand["score"], 3),
+        "context": "new registrant row scored against the closest existing HubSpot contact",
+        "a": {"role": "existing_hubspot_contact", **_gray_zone_person(hs, "hubspot")},
+        "b": {"role": "new_registrant", **_gray_zone_person(row, "registrant")},
+    }
+
+
+def select_gray_zone_pairs(within_gray: list, hubspot_gray: list, cap: int):
+    """Combines both gray-zone lanes, highest score first (closest to
+    DEDUPE_THRESHOLD -- the most defensible ambiguity), and hard-caps at
+    `cap` (GRAY_ZONE_MAX_PAIRS). Returns (selected, skipped) -- skipped
+    candidates are never sent to the LLM and stay on the rule engine's
+    existing default (no merge)."""
+    combined = sorted(within_gray + hubspot_gray, key=lambda c: -c["score"])
+    return combined[:cap], combined[cap:]
+
+
+def build_dedupe_prompt(template: str, batch_records: list) -> str:
+    payload = {"pairs": batch_records}
+    return (
+        f"{template}\n\n---\n\n"
+        "Apply the input/output contract above to the batch below. Reply with "
+        "ONLY the JSON output object matching the output contract -- no markdown "
+        "fences, no commentary, no extra keys.\n\nINPUT:\n"
+        f"{json.dumps(payload, indent=2)}"
+    )
+
+
+def parse_dedupe_response(raw: str, expected_ids: set) -> dict:
+    """Returns {pair_id: {decision, rationale, confidence}}. An unrecognized
+    `decision` value (or a pair_id echoed back that wasn't asked about)
+    degrades to `no_merge` -- the same safe default a parse failure or a
+    missing pair_id falls back to in run_dedupe_adjudication()."""
+    data = json.loads(_strip_fences(raw))
+    out = {}
+    for entry in data["pairs"]:
+        pid = entry.get("pair_id")
+        if pid not in expected_ids:
+            continue
+        decision = entry.get("decision")
+        if decision not in ("merge", "no_merge"):
+            decision = "no_merge"
+        out[pid] = {
+            "decision": decision,
+            "rationale": (entry.get("rationale") or "").strip(),
+            "confidence": entry.get("confidence"),
+        }
+    return out
+
+
+def apply_gray_zone_merge_within_batch(cand: dict, rationale: str, dup_map: dict, dup_pairs: list) -> None:
+    """Same effect as the >=DEDUPE_THRESHOLD merge path in
+    dedupe_within_batch(): flags the candidate `_merged_away` (identity-safe
+    exclusion from `primaries` -- see that function's docstring for why this
+    is not a dup_map/email-string lookup), records the pair, and backfills
+    any gap on the primary from the sibling -- except the reason names this
+    as an LLM decision, not a rule-engine one, so a reviewer a year from now
+    can tell the two apart."""
+    primary, candidate = cand["primary_ref"], cand["candidate_ref"]
+    dup_map[candidate["email"]] = primary["email"]
+    candidate["_merged_away"] = True
+    dup_pairs.append({
+        "primary_email": primary["email"],
+        "duplicate_email": candidate["email"],
+        "score": round(cand["score"], 3),
+        "reason": f"llm gray-zone adjudication (score={round(cand['score'], 3)}): {rationale}",
+    })
+    if not primary["jobtitle_raw"] and candidate["jobtitle_raw"]:
+        primary["jobtitle_raw"] = candidate["jobtitle_raw"]
+        primary["title_source"] = "sibling_record"
+    if not primary["company_raw"] and candidate["company_raw"]:
+        primary["company_raw"] = candidate["company_raw"]
+        primary["company_key"] = candidate["company_key"]
+        primary["company_source"] = "sibling_record"
+    # surfaced into icp_rationale on the primary's output row (see run_pipeline)
+    # so the decision is visible in hubspot_ready.csv, not only in a log.
+    primary.setdefault("llm_dedupe_notes", []).append(
+        f"absorbed a within-batch duplicate ({candidate['email']}) via LLM gray-zone "
+        f"adjudication (score={round(cand['score'], 3)}): {rationale}"
+    )
+
+
+def apply_gray_zone_merge_hubspot(cand: dict, rationale: str, matches: dict) -> None:
+    """Same effect as the >=DEDUPE_THRESHOLD path in dedupe_against_hubspot():
+    adds the row to `matches` so run_pipeline() treats it as
+    `update_existing`. Tagged `via`/`rationale` so the output-row loop can
+    surface the decision into icp_rationale (see run_pipeline)."""
+    row, hs = cand["row_ref"], cand["hubspot_ref"]
+    matches[row["email"]] = {
+        "hubspot": hs, "score": round(cand["score"], 3),
+        "via": "llm_gray_zone_adjudication", "rationale": rationale,
+    }
+
+
+def run_dedupe_adjudication(within_gray: list, hubspot_gray: list, dup_map: dict, dup_pairs: list,
+                             matches: dict, live: bool, dry_run: bool, backend: str) -> dict:
+    """The gray zone a fixed threshold can't reason about: pairs scoring in
+    [GRAY_ZONE_LOW, DEDUPE_THRESHOLD). The rule engine stays fully
+    authoritative outside that band -- this only ever sees pairs
+    dedupe_within_batch()/dedupe_against_hubspot() already filtered into it.
+    One batch, one call (prompts/dedupe_adjudication.md), same discipline as
+    run_live_inference() -- capped at GRAY_ZONE_MAX_PAIRS pairs total across
+    both lanes. A `merge` decision is applied in place (mutates dup_map/
+    dup_pairs or matches, same effect as clearing DEDUPE_THRESHOLD
+    outright); `no_merge` leaves the pair exactly as the rule engine already
+    left it. A parse failure or unavailable backend degrades every pair in
+    the batch to `no_merge` with a warning -- this lane can only ever
+    *decline* to merge on failure, never merge silently."""
+    selected, skipped = select_gray_zone_pairs(within_gray, hubspot_gray, GRAY_ZONE_MAX_PAIRS)
+    report = {
+        "mode": "dry_run" if dry_run else "live",
+        "pairs_in_band": len(within_gray) + len(hubspot_gray),
+        "pairs_evaluated": len(selected),
+        "pairs_skipped_over_cap": len(skipped),
+        "pairs_merged": 0,
+        "pairs_no_merge": 0,
+        "parse_failures": 0,
+        "decisions": [],
+        "prompt": None,
+    }
+    if not selected:
+        return report
+
+    template = load_prompt(DEDUPE_ADJUDICATION_PROMPT_FILE)
+    records = [gray_pair_prompt_record(c) for c in selected]
+    by_pair_id = dict(zip((r["pair_id"] for r in records), zip(selected, records)))
+    prompt = build_dedupe_prompt(template, records)
+
+    if dry_run:
+        report["prompt"] = {"batch_size": len(records), "pair_ids": list(by_pair_id), "prompt": prompt}
+        return report
+    if not live:
+        return report
+
+    try:
+        raw = call_llm(prompt, backend)
+        decisions = parse_dedupe_response(raw, set(by_pair_id))
+    except Exception as exc:
+        report["parse_failures"] = 1
+        report["pairs_no_merge"] = len(selected)
+        print(f"[warn] --live dedupe gray-zone adjudication batch parse failed ({exc}); "
+              f"{len(selected)} pair(s) kept on the rule engine's default (no_merge).", file=sys.stderr)
+        return report
+
+    for pair_id, (cand, rec) in by_pair_id.items():
+        decision = decisions.get(pair_id) or {
+            "decision": "no_merge",
+            "rationale": "no decision returned for this pair_id -- degraded to safe default",
+        }
+        rationale = decision.get("rationale", "")
+        if decision["decision"] == "merge":
+            if cand["kind"] == "within_batch":
+                apply_gray_zone_merge_within_batch(cand, rationale, dup_map, dup_pairs)
+            else:
+                apply_gray_zone_merge_hubspot(cand, rationale, matches)
+            report["pairs_merged"] += 1
+        else:
+            report["pairs_no_merge"] += 1
+        report["decisions"].append({
+            "pair_id": pair_id, "kind": cand["kind"], "score": round(cand["score"], 3),
+            "decision": decision["decision"], "rationale": rationale,
+        })
+    return report
+
+
+def run_live_inference(output_rows, cfg, hs_matches, live: bool, dry_run: bool, resolved_backend: str = "") -> dict:
     """Judge fix #1 (FAKE-AI): actually reads prompts/inference.md and
     prompts/icp_scoring.md, batches ~25 rows/call, validates strict JSON, and
     falls back to the rule-table values per-row (with a warning count) on any
     parse failure. In --live-dry-run mode, every prompt is built exactly as
     it would be sent, but call_llm() is never invoked -- zero network calls,
     so this is code-inspectable-correct even with `claude -p` auth down.
-    Backend resolution (check_llm_health()) runs exactly once per real
-    --live call, before any batch -- see call_llm()'s docstring."""
-    resolved_backend = check_llm_health(resolve_llm_backend_pref()) if (live and not dry_run) else ""
+    `resolved_backend` is resolved once per real --live run by run_pipeline()
+    (check_llm_health(), before any batch -- including the gray-zone dedupe
+    adjudication batch, which shares this same resolution) -- see
+    call_llm()'s docstring."""
     report = {
         "mode": "dry_run" if dry_run else "live",
         "inference_batches": 0, "inference_rows_flagged": 0,
@@ -1077,6 +1358,73 @@ def load_hubspot(path: Path):
         return json.load(f)
 
 
+def load_speakers(speakers_path: Path, segments_path: Path) -> list:
+    """Speakers never appear in the registrant CSV, so without this they
+    never reach hubspot_contacts.csv -- push_to_hubspot.py's ID lookup then
+    has no vid for any speaker email, and M2's --log-emails run silently
+    drops their sends into skipped_no_contact_id (only visible against the
+    live API; a dry-run never exercises the real ID lookup). No single
+    fixture has both fields: data/incoming/speakers.json has name/title/
+    company/bio but no email; data/fixtures/segments.json's `speakers` key
+    is a flat email list with no name. This pairs them (matching each
+    speaker's "firstname.lastname" localpart pattern against the segment
+    email list -- robust to either file being reordered, not a fragile
+    array-index assumption) and returns prepped-row dicts in the exact shape
+    run_pipeline() already builds from registrants.csv, so a speaker gets
+    the same rule-engine treatment (dedupe, industry/function/seniority
+    classification, ICP tier, HubSpot create/update, suppression) as any
+    other contact -- a person who presented at the event is a real CRM
+    contact, not a registrant-only afterthought. Missing/malformed files or
+    an unmatched speaker degrade to a warning, never a crash -- see
+    README.md's "Speakers" section."""
+    if not speakers_path.exists() or not segments_path.exists():
+        return []
+    try:
+        speakers_json = json.loads(speakers_path.read_text(encoding="utf-8"))
+        segments = json.loads(segments_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError) as exc:
+        print(f"[warn] could not load speakers/segments ({exc}); continuing without speaker contacts.",
+              file=sys.stderr)
+        return []
+
+    segment_emails = segments.get("speakers", []) or []
+    by_localpart = {e.split("@")[0].lower(): e.lower() for e in segment_emails if "@" in e}
+
+    prepped_speakers = []
+    unmatched = []
+    for sp in speakers_json:
+        name = (sp.get("name") or "").strip()
+        parts = name.split()
+        candidate = f"{parts[0]}.{parts[-1]}".lower() if len(parts) >= 2 else (parts[0].lower() if parts else "")
+        email = by_localpart.get(candidate)
+        if not email:
+            unmatched.append(name or "(unnamed speaker)")
+            continue
+        first_raw, last_raw = (parts[0], " ".join(parts[1:])) if len(parts) >= 2 else (name, "")
+        company_raw = (sp.get("company") or "").strip()
+        prepped_speakers.append({
+            "email": email,
+            "local": email.split("@")[0],
+            "domain": email.split("@")[-1],
+            "firstname": norm_name(first_raw),
+            "lastname": norm_name(last_raw),
+            "company_raw": company_raw,
+            "company_key": company_norm_key(company_raw) if company_raw else "",
+            "jobtitle_raw": (sp.get("title") or "").strip(),
+            "country": "",  # not carried by speakers.json -- honest blank, not fabricated
+            "registration_time": "",
+            "attended": "Yes",  # a speaker was present for their own session by construction
+            "time_in_session": "",
+            "title_source": "given",
+            "company_source": "given",
+            "is_speaker": True,
+        })
+    if unmatched:
+        print(f"[warn] {len(unmatched)} speaker(s) in {speakers_path.name} had no matching email in "
+              f"{segments_path.name}'s speaker list; skipped: {unmatched}", file=sys.stderr)
+    return prepped_speakers
+
+
 def build_peer_lookups(prepped):
     """Company-name and domain backfill tables built from whatever *is*
     present in the batch, before any inference runs."""
@@ -1117,7 +1465,8 @@ def canonicalize_companies(prepped):
 
 
 def run_pipeline(in_path, config_path, hubspot_path, live: bool = False, dry_run: bool = False,
-                  clay_max: int = 0, clay_dry_run: bool = False, clay_bin: str = "clay"):
+                  clay_max: int = 0, clay_dry_run: bool = False, clay_bin: str = "clay",
+                  speakers_path: Path = DEFAULT_SPEAKERS, segments_path: Path = DEFAULT_SEGMENTS):
     cfg = parse_yaml(config_path.read_text(encoding="utf-8"))
     raw_rows = load_registrants(in_path)
     hubspot = load_hubspot(hubspot_path)
@@ -1150,6 +1499,13 @@ def run_pipeline(in_path, config_path, hubspot_path, live: bool = False, dry_run
             "company_source": "given" if company_raw else "",
         })
 
+    # Speakers (data/incoming/speakers.json x data/fixtures/segments.json) --
+    # appended to the same `prepped` list, before dedupe/canonicalization, so
+    # they get identical rule-engine treatment to a registrant row instead of
+    # a separate one-off path. See load_speakers()'s docstring.
+    speakers = load_speakers(speakers_path, segments_path)
+    prepped.extend(speakers)
+
     company_canon = canonicalize_companies(prepped)
     for r in prepped:
         if r["company_raw"]:
@@ -1157,10 +1513,34 @@ def run_pipeline(in_path, config_path, hubspot_path, live: bool = False, dry_run
 
     domain_to_company, company_mode_title = build_peer_lookups(prepped)
 
-    dup_map, dup_pairs = dedupe_within_batch(prepped)
-    primaries = [r for r in prepped if r["email"] not in dup_map]
+    # Resolved once per real --live run, before any batch -- shared by the
+    # gray-zone dedupe adjudication below and run_live_inference() further
+    # down, so an unavailable backend costs exactly one preflight probe for
+    # the whole run (see check_llm_health()'s docstring).
+    resolved_backend = check_llm_health(resolve_llm_backend_pref()) if (live and not dry_run) else ""
 
-    hs_matches = dedupe_against_hubspot(primaries, hubspot)
+    dup_map, dup_pairs, within_gray = dedupe_within_batch(prepped)
+    primaries = [r for r in prepped if not r.get("_merged_away")]
+
+    hs_matches, hubspot_gray = dedupe_against_hubspot(primaries, hubspot)
+
+    # Gray-zone dedupe adjudication (--live / --live-dry-run only): pairs in
+    # [GRAY_ZONE_LOW, DEDUPE_THRESHOLD) that the rule engine above left
+    # unmatched. Computed from the same within_gray/hubspot_gray candidates
+    # the rule pass already found -- a `merge` decision mutates dup_map/
+    # dup_pairs/hs_matches in place, so `primaries` is recomputed below to
+    # reflect any newly-approved within-batch merges before output rows are
+    # built. See run_dedupe_adjudication()'s docstring for the ordering
+    # rationale (why hubspot_gray is computed on the pre-adjudication
+    # primaries list, not after).
+    dedupe_adjudication_report = None
+    if within_gray or hubspot_gray:
+        if live or dry_run:
+            dedupe_adjudication_report = run_dedupe_adjudication(
+                within_gray, hubspot_gray, dup_map, dup_pairs, hs_matches,
+                live=live, dry_run=dry_run, backend=resolved_backend,
+            )
+            primaries = [r for r in prepped if not r.get("_merged_away")]
 
     output_rows = []
     for r in primaries:
@@ -1196,6 +1576,9 @@ def run_pipeline(in_path, config_path, hubspot_path, live: bool = False, dry_run
             notes.append("title backfilled from a within-batch duplicate record")
         if r.get("company_source") == "sibling_record":
             notes.append("company backfilled from a within-batch duplicate record")
+        # gray-zone dedupe decisions land here so they're visible in
+        # hubspot_ready.csv's icp_rationale, not only in dedupe_report.json.
+        notes.extend(r.get("llm_dedupe_notes", []))
 
         function = classify_function(title)
         seniority = classify_seniority(title)
@@ -1223,7 +1606,21 @@ def run_pipeline(in_path, config_path, hubspot_path, live: bool = False, dry_run
         tier, rationale = icp_tier(cfg, title, company_size, industry)
 
         attended_bool = r["attended"] == "Yes"
-        target_stage = lifecycle_target(tier, attended_bool, r["time_in_session"])
+        if r.get("is_speaker"):
+            # A speaker has no attendance/session-length signal to run the
+            # registrant rubric on -- "evangelist" is HubSpot's own lifecycle
+            # stage for exactly this persona (someone who publicly advocated
+            # for the host, not a funnel prospect being nurtured), and it's
+            # already the top rank in LIFECYCLE_RANK so a pre-existing
+            # HubSpot stage is still never regressed below it.
+            target_stage = "evangelist"
+            notes.append(
+                f"speaker at this event (title='{title}', company='{company}') -- lifecyclestage set "
+                "to 'evangelist' rather than the attendee attended/session-length rubric, which does "
+                "not apply to a speaker"
+            )
+        else:
+            target_stage = lifecycle_target(tier, attended_bool, r["time_in_session"])
 
         merge_info = hs_matches.get(r["email"])
         if merge_info:
@@ -1248,6 +1645,11 @@ def run_pipeline(in_path, config_path, hubspot_path, live: bool = False, dry_run
             hubspot_contact_id = hs["vid"]
             if score < 0.95:
                 confidence -= (1 - score) * 0.2
+            if merge_info.get("via") == "llm_gray_zone_adjudication":
+                notes.append(
+                    f"matched to existing HubSpot contact {hs['vid']} via LLM gray-zone dedupe "
+                    f"adjudication (score={score}): {merge_info.get('rationale', '')}"
+                )
         else:
             merge_action = "create_new"
             lifecycle_stage = target_stage
@@ -1304,7 +1706,9 @@ def run_pipeline(in_path, config_path, hubspot_path, live: bool = False, dry_run
 
     live_report = None
     if live or dry_run:
-        live_report = run_live_inference(output_rows, cfg, hs_matches, live=live, dry_run=dry_run)
+        live_report = run_live_inference(
+            output_rows, cfg, hs_matches, live=live, dry_run=dry_run, resolved_backend=resolved_backend,
+        )
 
     clay_report = None
     if clay_max > 0 or clay_dry_run:
@@ -1312,7 +1716,10 @@ def run_pipeline(in_path, config_path, hubspot_path, live: bool = False, dry_run
             output_rows, cfg, hs_matches, clay_max, live=live, dry_run=clay_dry_run, clay_bin=clay_bin,
         )
 
-    return output_rows, fake_rows, dup_pairs, len(raw_rows), live_report, clay_report
+    return (
+        output_rows, fake_rows, dup_pairs, len(raw_rows), live_report, clay_report,
+        dedupe_adjudication_report, len(speakers),
+    )
 
 
 # Full analyst-view column list (hubspot_ready.csv). NOT an import file -- see
@@ -1420,7 +1827,8 @@ def build_company_rows(rows):
     return company_rows
 
 
-def write_outputs(out_dir: Path, rows, fake_rows, dup_pairs, total_input, hs_match_count, clay_report=None):
+def write_outputs(out_dir: Path, rows, fake_rows, dup_pairs, total_input, hs_match_count, clay_report=None,
+                   dedupe_adjudication_report=None, speaker_count=0):
     out_dir.mkdir(parents=True, exist_ok=True)
     now = datetime.now(timezone.utc).isoformat()
 
@@ -1462,10 +1870,18 @@ def write_outputs(out_dir: Path, rows, fake_rows, dup_pairs, total_input, hs_mat
             "hubspot_matches": hs_match_count,
             "net_new_contacts": len(rows) - hs_match_count,
             "output_rows": len(rows),
+            # speakers.json x segments.json -- see load_speakers(). Included
+            # in output_rows/hubspot_contacts.csv above, not a separate file.
+            "speakers_loaded": speaker_count,
         },
         "within_batch_duplicates": dup_pairs,
         "fake_rows_excluded": fake_rows,
     }
+    # only present when --live/--live-dry-run were passed AND at least one
+    # gray-zone pair existed -- default (offline) run leaves dedupe_report.json
+    # exactly as before. See run_dedupe_adjudication()'s docstring.
+    if dedupe_adjudication_report is not None:
+        dedupe_report["gray_zone_adjudication"] = dedupe_adjudication_report
     with open(out_dir / "dedupe_report.json", "w", encoding="utf-8") as f:
         json.dump(dedupe_report, f, indent=2)
 
@@ -1522,6 +1938,12 @@ def main():
     parser.add_argument("--in", dest="in_path", default=str(DEFAULT_IN))
     parser.add_argument("--config", dest="config_path", default=str(DEFAULT_CONFIG))
     parser.add_argument("--hubspot", dest="hubspot_path", default=str(DEFAULT_HUBSPOT))
+    parser.add_argument("--speakers", dest="speakers_path", default=str(DEFAULT_SPEAKERS),
+                         help="Speaker name/title/company fixture (no email -- paired against --segments' "
+                              "email list). Missing file degrades to zero speaker contacts, not an error; "
+                              "see load_speakers().")
+    parser.add_argument("--segments", dest="segments_path", default=str(DEFAULT_SEGMENTS),
+                         help="Segments fixture providing the 'speakers' email list paired against --speakers.")
     parser.add_argument("--out", dest="out_dir", default="out/selftest-m1")
     parser.add_argument("--live", action="store_true",
                          help="Batch remaining-ambiguous rows through an LLM (prompts/inference.md, "
@@ -1552,13 +1974,16 @@ def main():
     live = args.live and not dry_run
     clay_bin = os.environ.get("CLAY_BIN") or "clay"
 
-    rows, fake_rows, dup_pairs, total_input, live_report, clay_report = run_pipeline(
+    (rows, fake_rows, dup_pairs, total_input, live_report, clay_report,
+     dedupe_adjudication_report, speaker_count) = run_pipeline(
         Path(args.in_path), Path(args.config_path), Path(args.hubspot_path), live=live, dry_run=dry_run,
         clay_max=args.clay_max, clay_dry_run=args.clay_dry_run, clay_bin=clay_bin,
+        speakers_path=Path(args.speakers_path), segments_path=Path(args.segments_path),
     )
     hs_match_count = sum(1 for r in rows if r["merge_action"].startswith("update_existing"))
     dedupe_report, quality_report = write_outputs(
         Path(args.out_dir), rows, fake_rows, dup_pairs, total_input, hs_match_count, clay_report=clay_report,
+        dedupe_adjudication_report=dedupe_adjudication_report, speaker_count=speaker_count,
     )
 
     if live_report is not None:
@@ -1587,11 +2012,24 @@ def main():
               f"credits_before={clay_report['clay_credits_before']} "
               f"credits_after={clay_report['clay_credits_after']}")
 
+    if dedupe_adjudication_report is not None:
+        dar = dedupe_adjudication_report
+        if dry_run:
+            print(f"[--live-dry-run] dedupe gray-zone: {dar['pairs_in_band']} pair(s) in band "
+                  f"[{GRAY_ZONE_LOW}, {DEDUPE_THRESHOLD}), {dar['pairs_evaluated']} would be sent "
+                  f"({dar['pairs_skipped_over_cap']} over the {GRAY_ZONE_MAX_PAIRS}-pair cap). "
+                  "Zero network calls made -- prompt saved to dedupe_report.json['gray_zone_adjudication'].")
+        else:
+            print(f"[--live] dedupe gray-zone: {dar['pairs_evaluated']}/{dar['pairs_in_band']} pair(s) "
+                  f"adjudicated ({dar['pairs_skipped_over_cap']} skipped over cap) -- "
+                  f"{dar['pairs_merged']} merged, {dar['pairs_no_merge']} left unmatched, "
+                  f"{dar['parse_failures']} batch parse failure(s).")
+
     print(json.dumps(quality_report))
     print(f"input_rows={total_input} fake_excluded={len(fake_rows)} "
           f"within_batch_dupe_pairs={len(dup_pairs)} hubspot_matches={hs_match_count} "
           f"output_rows={len(rows)} suppressed={quality_report['suppressed_count']} "
-          f"mailable={quality_report['mailable_count']}")
+          f"mailable={quality_report['mailable_count']} speakers_loaded={speaker_count}")
     sc = quality_report["spec_completeness"]
     print(f"contact_completeness={sc['contact']['completeness_pct']}% "
           f"(pass90={sc['contact']['pass_90']}) "
