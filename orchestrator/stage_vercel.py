@@ -103,7 +103,7 @@ def main() -> int:
     shutil.copy2(ROOT / "api" / "run.py", STAGE / "api" / "run.py")
     if (ROOT / "requirements.txt").exists():
         shutil.copy2(ROOT / "requirements.txt", STAGE / "requirements.txt")
-    for tree in ("modules", "config", "data"):
+    for tree in ("modules", "config", "data", "shared"):
         src = ROOT / tree
         if src.exists():
             copy_tree(src, STAGE / tree)
