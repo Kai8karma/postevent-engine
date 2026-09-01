@@ -1531,9 +1531,80 @@ def run_clay_enrichment(output_rows: list, cfg: dict, hs_matches: dict, clay_max
 # main pipeline
 # --------------------------------------------------------------------------
 
+# Registrant exports arrive with platform-specific headers -- Zoom ships
+# "First Name"/"Country/Region", GoTo ships "FirstName"/"Country", ON24 ships
+# "First"/"Email Address", and a hand-built sheet ships whatever someone typed.
+# Every downstream field read below is a literal row.get("First Name") against
+# the Zoom spelling, so an unrecognised header used to silently yield "" for
+# every row: the run still exited 0 and still reported high completeness, but
+# emitted rows with no email at all -- unmergeable, unroutable, and wrong in a
+# way no report surfaced. Headers are normalised to the Zoom spelling here so
+# one shape reaches the pipeline, and an unresolvable email column raises
+# rather than producing a confidently empty file.
+HEADER_ALIASES = {
+    "First Name": ("first name", "firstname", "first", "given name", "fname"),
+    "Last Name": ("last name", "lastname", "last", "surname", "family name", "lname"),
+    "Email": ("email", "email address", "e mail", "emailaddress", "work email", "user email"),
+    "Job Title": ("job title", "jobtitle", "title", "position", "role"),
+    "Company": ("company", "company name", "organization", "organisation", "account", "employer"),
+    "Country/Region": ("country region", "country", "region", "country name", "location"),
+    "Registration Time": ("registration time", "registered at", "registration date", "signup time"),
+    "Attended": ("attended", "did attend", "attendance", "attendance status", "joined"),
+    "Time in Session (minutes)": (
+        "time in session minutes", "time in session", "duration minutes",
+        "minutes attended", "attendance duration", "session duration",
+    ),
+}
+# alias -> canonical, keyed by squashed form so "Country/Region", "country_region"
+# and "COUNTRY REGION" all collapse to the same lookup.
+_ALIAS_LOOKUP = {
+    alias: canonical
+    for canonical, aliases in HEADER_ALIASES.items()
+    for alias in aliases
+}
+
+
+def squash_header(name: str) -> str:
+    """Lowercase, strip punctuation/underscores/slashes, collapse whitespace."""
+    return re.sub(r"[^a-z0-9]+", " ", (name or "").lower()).strip()
+
+
+def normalize_headers(fieldnames):
+    """Map a CSV's headers onto the canonical Zoom spellings.
+
+    Returns (mapping, unmapped). Unrecognised headers are passed through
+    unchanged rather than dropped -- they are simply ignored downstream, same
+    as before, but they are reported so the caller can say what it skipped.
+    """
+    mapping, unmapped = {}, []
+    for raw in fieldnames or []:
+        canonical = _ALIAS_LOOKUP.get(squash_header(raw))
+        if canonical:
+            mapping[raw] = canonical
+        else:
+            mapping[raw] = raw
+            unmapped.append(raw)
+    return mapping, unmapped
+
+
 def load_registrants(path: Path):
     with open(path, newline="", encoding="utf-8") as f:
-        return list(csv.DictReader(f))
+        reader = csv.DictReader(f)
+        mapping, unmapped = normalize_headers(reader.fieldnames)
+        if "Email" not in mapping.values():
+            raise SystemExit(
+                f"[m1] FATAL: no email column found in {path.name}. "
+                f"Headers seen: {list(reader.fieldnames or [])}. "
+                f"Rename the email column to 'Email' (or one of {HEADER_ALIASES['Email']}) "
+                f"and re-run -- refusing to emit rows with no email."
+            )
+        renamed = [{mapping.get(k, k): v for k, v in row.items()} for row in reader]
+    remapped = {r: c for r, c in mapping.items() if r != c}
+    if remapped:
+        print(f"[m1] header mapping applied: {remapped}", file=sys.stderr)
+    if unmapped:
+        print(f"[m1] headers ignored (not used by the pipeline): {unmapped}", file=sys.stderr)
+    return renamed
 
 
 def load_hubspot(path: Path):
