@@ -31,6 +31,8 @@ def main():
     ap.add_argument("--event", required=True); ap.add_argument("--chapter", action="append", required=True)
     ap.add_argument("--speaker-map", action="append", default=[]); ap.add_argument("--out", required=True)
     ap.add_argument("--merge-gap", type=float, default=2.0, help="merge consecutive same-speaker turns closer than this (s)")
+    ap.add_argument("--replace", action="append", default=["Darwin Box=Darwinbox", "Darwin box=Darwinbox", "darwin box=Darwinbox"],
+                    help="literal STT spelling fixes, FROM=TO (defaults fix the host name)")
     a = ap.parse_args()
     ev = json.loads(Path(a.event).read_text())
     offsets, acc = {}, 0
@@ -50,6 +52,8 @@ def main():
             spk = str(e.get("speaker_id", e.get("speaker", "?")))
             start = float(e.get("start_time_seconds", e.get("start", 0))) + offsets[ch]
             text = (e.get("transcript") or e.get("text") or "").strip()
+            for kv in a.replace:
+                f, _, t = kv.partition("="); text = text.replace(f, t)
             if text: turns.append((start, smap.get(spk, spk), text))
     turns.sort(key=lambda t: t[0])
     merged = []

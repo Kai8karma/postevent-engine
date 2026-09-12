@@ -1,553 +1,337 @@
 WEBVTT
 
 1
-00:00:00.000 --> 00:00:41.000
-<v Priya Nair>Hi everyone, welcome in — we're just letting a few more folks trickle in from the waiting room, so give us thirty seconds. I can already see people joining from, looks like, six or seven different countries today, which is great. While we wait, drop in the chat where you're joining from, I always like to see that.
+00:00:04.000 --> 00:00:17.000
+<v Sudi Bjornstad Korba>Our first question is that you recently embarked on an HR transformation journey with Darwinbox. What were the key drivers or challenges that led you to initiate this change?
 
 2
-00:00:41.000 --> 00:01:15.000
-<v Priya Nair>Okay, I think we're at a good number now, so let's get going, we've got a lot to cover in the next hour. My name is Priya Nair, I lead marketing here at ACME Revenue Cloud, and I will be your host and moderator today. Thank you all so much for carving out time — I know webinar fatigue is real, so the fact that you're here means a lot, and I promise we are going to make this worth the sixty-two minutes.
+00:00:17.000 --> 00:00:47.000
+<v Q Hamirani>Yeah, so one of the, I guess the underlying reason on why we were exploring an HRIS to begin with as I zoom out into our journey, was we have experienced tremendous hyper growth in the last year or two. Um, so we are today high level is almost 1800 employees in 10 countries, um, and rapidly growing. When I joined about 10 months ago, I think we were probably around 1000. Um, so we were, you know, over the last 10 months I've been here, we've been hiring.
 
 3
-00:01:15.000 --> 00:01:52.000
-<v Priya Nair>Today's session is called "Pipeline After the Webinar: Turning Event Engagement into Revenue," and honestly the reason we built this session is kind of embarrassing — for years our own team ran webinars, got great attendance, felt good about ourselves, and then just... let the leads sit. Like, sit for days. So this is equal parts what we learned from doing it wrong and what actually works.
+00:00:47.000 --> 00:01:17.000
+<v Q Hamirani>in hiring almost I would say a little over 100 a month when you factor nutrition as well as the overall growth. Um so we knew that we needed something that would scale with us. Um our demographic is global. Um and because of the rapid growth that we had, we did not have NHRIs, a true global NHRIs. We had different systems in different countries that ran NHRIs, ran payroll. Um and you know, it's mostly you you can't really get a lot of insights, you don't have a unified experience, you don't have
 
 4
-00:01:52.000 --> 00:02:20.000
-<v Priya Nair>I'm joined today by two people I've wanted to get on a stage, or a screen I guess, with for a long time. Daniel Kim, who runs demand gen over at Northwind Analytics, and Sara Alvarez, who leads RevOps at Meridian Software. Daniel, Sara, welcome — do you want to say a quick hello before we dive in?
+00:01:17.000 --> 00:01:47.000
+<v Q Hamirani>kind of unified processes. Um, so we embarked on a journey to pick the next HRIS for us. Um, for our journey, um, through what I call is kind of the inflection point on us growing up. Um, you know, or the big switch as I refer to as well where everyone goes through this journey where you got a switch from a small in-house system when you were 50 people to something that's going to take you for scale. Um, and that's how we started the journey and we ended up picking Darwinbox and we went live.
 
 5
-00:02:20.000 --> 00:02:48.000
-<v Daniel Kim>Yeah, thanks Priya, happy to be here. Hi everyone. I run demand generation at Northwind Analytics — we're an analytics platform, mid-market mostly, and my whole world for the last three years has basically been fixing what happens in the seventy-two hours after somebody registers for or attends one of our events. So this topic is very close to home.
+00:01:47.000 --> 00:02:17.000
+<v Q Hamirani>a couple months ago as well. Um, and I think for us there were, there were kind of a few key decision making points um that we went with. One is, can it meet the needs of our global employee base? So we have employees in the US and we have Philippines, Mexico, India as well, a pretty large population. So how do we bring all these countries together and how do we have one operations team and the people team that can manage tasks, right? So, so that was one, like can we get a one that a solution?
 
 6
-00:02:48.000 --> 00:03:10.000
-<v Sara Alvarez>And hi from me too — Sara Alvarez, I lead revenue operations at Meridian Software. I sit kind of in between marketing and sales, so my job is honestly to be the annoying person who asks "okay but did that actually turn into pipeline" every time someone tells me a webinar went well. I promise I'm more fun than that sounds.
+00:02:17.000 --> 00:02:47.000
+<v Q Hamirani>that is UX friendly relative to all the other, you know, big ERPs that are out there. Can we get one that's global but also locally nuanced? So for example, we have a lot of time tracking individuals in the US, right? As we know in the US, the time tracking laws for each state are unique and need to be configured in a very different manner. Can it do that, but can it also do everything that India needs on a local level in terms of the laws and the statute?
 
 7
-00:03:10.000 --> 00:03:44.000
-<v Priya Nair>[laughs] No that's — that's exactly the energy we need today. Okay, quick housekeeping — this is being recorded, we'll send it out to everyone including no-shows, so don't stress about taking notes on every slide. There's a Q&amp;A box, not the chat, please use the Q&amp;A box, we'll take live questions in the last stretch. Alright. Let's get into it.
+00:02:47.000 --> 00:03:17.000
+<v Q Hamirani>requirements there. And the answer was yes. So, you know, it's a it's a tool that scales, it's a tool that we don't have to switch again, right? This is our big switch for for however long we need. Um, it's got a good UX. It's easy to manage for an HR team. I didn't want to have a big HR technology team just to manage it. So that checked off the box. Um, and then I think it just made it an all round um easy decision for us. Doing a transformation of this size is never easy. Um, you're changing processes, you're changing
 
 8
-00:03:44.000 --> 00:04:20.000
-<v Priya Nair>So the framing for today — I want to walk through four things. First, speed-to-lead, basically why the clock starts the second the webinar ends and not a day later. Second, segmentation — because attendees, no-shows, and speakers are three completely different audiences and most teams still send one email to all of them. Third, content repurposing, and specifically whether it's actually worth the effort or just busywork. And fourth, attribution — how do you even prove any of this mattered.
+00:03:17.000 --> 00:03:47.000
+<v Q Hamirani>behaviors, um, you're changing systems, but, uh, yeah, so that's and then I think one of the true powers which I do appreciate with Darwinboxes from a system standpoint is, you know, when you have everything in one system, you can then start to harness reporting and eventually analytics and get more insights to drive your business. In Darwinboxes case, uh, what was promising and is promising is the analytics capabilities are embedded in-house. So we, we have the people and
 
 9
-00:04:20.000 --> 00:04:30.000
-<v Priya Nair>Before we get into the substance, let's do real introductions. Daniel, walk us through how you ended up owning this problem at Northwind.
+00:03:47.000 --> 00:04:17.000
+<v Q Hamirani>analytics module, um, and because the analytics are so rich and embedded, um, and they have this thing called storyboards that kind of serves me, um, some of the stories that I'm looking for in my people data, I don't need to build a people analytics team that I've had to build in previous organizations. So, it comes down to usability, scalability, um, usability for all stakeholders, not just HR, right? I've used ERP tools that are great for HR, but the adoption is low because the engagement is low.
 
 10
-00:04:30.000 --> 00:05:10.000
-<v Daniel Kim>Sure. So I've been at Northwind about four years now, Head of Demand Gen for the last two. When I joined, we were running maybe two webinars a month, decent attendance, three hundred, four hundred registrants each, and then just... nothing happened. Leads went into a general nurture list, sales would maybe glance at them a week later, and by then honestly a lot of them had already moved on or forgotten they'd even registered. So my first real project was just — can we compress that window.
+00:04:17.000 --> 00:04:25.000
+<v Q Hamirani>usability across all stakeholders, scalability, um, and then just being able to grow with it, uh, was, was why we picked it and I'm really excited for that.
 
 11
-00:05:10.000 --> 00:05:32.000
-<v Daniel Kim>And what we found, and I'll share the number properly later, but the short version is follow-up within four hours lifts reply rate three point two x compared to next-day follow-up. Three point two x. That was the stat that got budget approved for the whole rebuild, honestly.
+00:04:25.000 --> 00:04:47.000
+<v Sudi Bjornstad Korba>Well, thank you, great. Um, I would say the same is, uh, really exciting time to be part of Darwinbox and all the, um, exciting things that are, that are happening. Uh, let's talk a little bit about AI. What metrics do you use to track and demonstrate real business impact from AI in HR?
 
 12
-00:05:32.000 --> 00:05:42.000
-<v Priya Nair>We'll come back to that, I want Sara to weigh in on the operational side of what "four hours" even requires. Sara, your path into this?
+00:04:47.000 --> 00:05:17.000
+<v Q Hamirani>Yeah, so I think like a lot of us even I think in the in the poll kind of reflected. I think we are all in various journeys of AI within different processes in the HR space as well. So there isn't one single metric, well if there is one single metric I would say, it's can we do more with less, right? Can we not continue to exponentially grow our HR team as the company grows? And this is somewhat a metric for every organization, every function within it.
 
 13
-00:05:42.000 --> 00:06:20.000
-<v Sara Alvarez>Yeah so I came at this from the opposite direction — I was in sales ops before RevOps was really a title anyone used, and my complaint was always the reverse of what Daniel's describing. Marketing would hand sales a list of "engaged leads" and half the time sales had no idea what "engaged" meant. Did they attend the whole thing? Did they ask a question? Did they just register and never show up? Nobody knew. So attribution and lead scoring became my obsession because the handoff was just broken.
+00:05:17.000 --> 00:05:47.000
+<v Q Hamirani>an organization with AI and it applies to us as well. Can you do more with less? Um, so that's one piece. I think as you zoom zoom into our people function specifically, I think it really depends on each um kind of sub domain within the people function has different metrics. So for example, um if you're in hiring like how is your standard metrics that you always had time to fill quality those things like are they are they getting further
 
 14
-00:06:20.000 --> 00:06:48.000
-<v Sara Alvarez>At Meridian now we've rebuilt that whole pipe, and one thing that still surprises people when I say it out loud — accounts with three or more attendees on the same webinar convert to opportunity at almost double the rate of single-attendee accounts. Multi-threading basically happens by accident at a webinar and most teams don't even notice it's happening.
+00:05:47.000 --> 00:06:17.000
+<v Q Hamirani>enhance both in quality and in terms of efficiency without adding more people, right? Because at the end of the day, um, AI in my view is best used when it's it's it's technology with human injection points, right? So we have to balance that in recruiting too, right? Like I'm not I'm not a big believer that um AI will completely take end to end recruiting. Like that human element of us talking today as well, we could have had an AI talk, but I think the connection of actually explaining someone's
 
 15
-00:06:48.000 --> 00:08:10.000
-<v Priya Nair>That's a great one to file away, we'll dig into that in the segmentation section. Okay — let's actually start with segment one, speed-to-lead. Daniel, take us through it.
+00:06:17.000 --> 00:06:47.000
+<v Q Hamirani>personal perspective and being relatable, um, is something that humans will always do. So, in hiring there's that, there's some specific examples. One I hinted to is people analytics, right? Like AI is helping us do a lot of the analytics embedded in Darwinbox, but if I even zoom out of Darwinbox, for us, um, compensation is a function that every HR team has. Um, it's a, it's a pretty complex function where you're doing a lot of analysis, you're doing a lot of market data constantly. Um, we
 
 16
-00:08:10.000 --> 00:08:35.000
-<v Daniel Kim>Okay so, speed-to-lead. The core idea is dead simple and everybody nods along when you say it, but almost nobody's process actually reflects it: the value of a lead decays, like, aggressively, from the moment the event ends. It's not linear either, it's closer to a cliff.
+00:06:47.000 --> 00:07:17.000
+<v Q Hamirani>I was set out to build a compensation team of about 2 to 3 people for our size and we are not building a compensation team because we built our own AI model. We've trained it with the data that we have subscribed to from Radford for example for most up-to-date market data and we've been able to train our own models to give us almost real-time compensation based on a job description and alignment with our internal leveling framework. So I think as we look at each of these pockets within our subdomains,
 
 17
-00:08:35.000 --> 00:09:20.000
-<v Daniel Kim>Here's the breakdown we've validated internally, across probably eleven, twelve webinars now. Follow-up sent within the first hour after the session ends — best reply rates we see, full stop. Within four hours, still strong, that's the three point two x number versus next-day I mentioned. By twenty-four hours, you've lost most of that lift, reply rate drops to something like one point four x versus next-day, and by forty-eight hours you're basically at baseline, like it barely matters anymore whether you send at hour forty-eight or hour ninety-six.
+00:07:17.000 --> 00:07:47.000
+<v Q Hamirani>The the philosophy for me is let's look at what we're doing and just stop and ask why are we doing a particular process, right? If we understand why we're doing a process, so we're doing compensation to pay people comparatively and we need to make sure that a job description when it's written for a new job, we align it to the right framework. So once we identify the what, then the how can be mixed with is AI even a solution? Because I've been in this kind of rabbit hole with a lot of us in the last few years.
 
 18
-00:09:20.000 --> 00:09:24.000
-<v Priya Nair>So there's really a four-hour window where most of the value lives.
+00:07:47.000 --> 00:08:17.000
+<v Q Hamirani>I've tried to solve for something a year or two ago with AI and realized it didn't need AI. It just needed a process change or it needed the right tools or the right behaviors. So I think unpacking that then gives you the metrics, but the metrics fundamentally I would say, you know, remain relatively the same. Can you get comparative market data from for compensation to pay your people how you want to pay them against the market? That is the guiding principle there. Then the how you do it, you can figure out how to embed AI. Can you get analytics?
 
 19
-00:09:24.000 --> 00:10:00.000
-<v Daniel Kim>Basically, yeah. And the reason is obvious once you say it out loud — the person just spent an hour thinking about your topic, it's fresh, they might still have the tab open. A day later they're back in their actual job, dealing with their actual fires, and your webinar is a distant memory competing with forty other emails in their inbox.
+00:08:17.000 --> 00:08:47.000
+<v Q Hamirani>make data informed business decisions and understand where the organization is going through data. You know, then if you have a team doing it with multiple warehouses and, you know, or you click a, you know, you click the bot in analytics bot in Darwinbox, that's the how, right? So I think it's for me it's always coming back to what are we trying to solve for? What is our measurement of success? And then kind of marrying up the how and AI is really I think in my view super
 
 20
-00:10:00.000 --> 00:10:18.000
-<v Priya Nair>Okay but here's my pushback, and I think a lot of people watching are thinking this too — that's easy to say when you've got one webinar and a small list. What happens at scale? You can't have a human write a personalized four-hour follow-up to eight hundred people.
+00:08:47.000 --> 00:09:17.000
+<v Q Hamirani>recharging the how, if there's things like analytics, like compensation or people analytics, um, it is so powerful and so quick. Like it can look through 8000, 9000 jobs in Radford and tell you a match a lot quicker than I would have been able to do even by knowing the codes, right? Um, so I think it just comes down to that and then the measurements of success fundamentally don't change, but I think what changes is you can keep raising the bar on those measurements of success. So what you are measuring for,
 
 21
-00:10:18.000 --> 00:10:55.000
-<v Daniel Kim>Right, and that's — honestly that's the whole unlock. You can't do it manually at scale, full stop, nobody's SDR team is sitting there at 6pm on a Tuesday hand-writing four hundred emails. What changed for us was using the transcript and the registration data together to generate the first draft automatically, segmented by role, and then a human just reviews and hits send rather than writes from scratch. That's the difference between "four hours" being aspirational and "four hours" being Tuesday.
+00:09:17.000 --> 00:09:27.000
+<v Q Hamirani>You know, which is, are you paying people comparatively in this example, should is not changing, but now we can do it within minutes versus days.
 
 22
-00:10:55.000 --> 00:11:25.000
-<v Sara Alvarez>Can I jump in here — because I think there's a nuance people miss, which is speed-to-lead isn't just about the thank-you email, it's about internal speed too. If marketing generates a lead score and that score sits in a queue for two days before an SDR even sees it, doesn't matter how fast the thank-you email went out, you've already lost the moment on the sales side.
+00:09:27.000 --> 00:09:57.000
+<v Q Hamirani>Right? That's the change. And the more we are agile, especially if you're in hyper growth or actually even if you're not in hyper growth, in today's climate, in terms of how the world is moving so quickly, in terms of technology, in terms of globalization, you know, every organization whether you're on hyper growth or not needs to be agile. And the only way you can be agile is if you're not waiting days or months for analysis and you can almost get it as close to real time as you can and then always balancing it with the
 
 23
-00:11:25.000 --> 00:11:30.000
-<v Priya Nair>So it's a two-sided clock — outbound comms and internal routing.
+00:09:57.000 --> 00:10:13.000
+<v Q Hamirani>intuition and the gut, which is what we have as people leaders on, does it actually align with what we are seeing on the business front? Because sometimes the data can be just one dimension of what you're seeing. So, I know a bit bit of roundabout, but that's that's my feel on kind of the success metrics as well.
 
 24
-00:11:30.000 --> 00:12:05.000
-<v Sara Alvarez>Exactly. And this is where I'll throw in a number from our side — when we cut the internal routing delay from an average of about eighteen hours down to under two hours, our webinar-sourced opportunity creation rate went up by forty-one percent over the following quarter. Same leads, same list quality, just faster internal handoff.
+00:10:13.000 --> 00:10:43.000
+<v Sudi Bjornstad Korba>Yeah, no, that's awesome. I think when we think about success, are you giving your employees tools that will help them do their job better, from an employee standpoint, not just from the HR and administrator standpoint. Adoption and I don't know how are employees able to do their job faster, just as much as HR is able to do their job faster. So, lots of metrics out there, engagement, is there, you know, new metrics around?
 
 25
-00:12:05.000 --> 00:12:07.000
-<v Daniel Kim>That's a huge number.
+00:10:43.000 --> 00:10:53.000
+<v Sudi Bjornstad Korba>found engagement when AI is involved. And the example I'll use is, you know, I I I never loved doing my expense report. That was always something I I just I just hated it. And so I'd always wait till the end and I was always so, um, you know, now using my Darwinbox expense module, it's so easy for me to use because AI is kind of embedded within it. Um, I use it so much more and I have become a lot more efficient with my time.
 
 26
-00:12:07.000 --> 00:12:28.000
-<v Sara Alvarez>It is, and it's honestly the easiest fix on this whole call for most teams, because it's not even a content problem, it's a workflow problem. It's "does the lead score update trigger a task automatically or does someone have to remember to check a list."
+00:10:53.000 --> 00:10:56.000
+<v Q Hamirani>Nice
 
 27
-00:12:28.000 --> 00:12:40.000
-<v Priya Nair>Okay so walk me through what "good" actually looks like operationally. Like hour by hour, what happens after the webinar ends.
+00:10:56.000 --> 00:11:09.000
+<v Q Hamirani>Enjoyed.
 
 28
-00:12:40.000 --> 00:13:45.000
-<v Daniel Kim>Sure, I'll do our version. Webinar ends at, say, 2pm. Within about fifteen minutes the platform exports attendance data — who showed up, when they joined, when they dropped, any poll or Q&amp;A activity. That feeds into a scoring model, nothing fancy, just weighted by engagement signals. By 2:45 we've got a segmented list — hot attendees, lukewarm attendees, no-shows, and speakers get pulled out separately obviously. By 3, generation of the actual follow-up content kicks off using the transcript for takeaways specific to what was actually said, not some generic template. By 4, a human — usually me or someone on my team — has reviewed and approved sends. Emails go out by 5, 6 at the latest. That's the four-hour window, roughly.
+00:11:09.000 --> 00:11:13.000
+<v Q Hamirani>Hmm
 
 29
-00:13:45.000 --> 00:13:50.000
-<v Priya Nair>And the sales side, Sara, in that same window?
+00:11:13.000 --> 00:11:26.000
+<v Sudi Bjornstad Korba>and that's just an example I will use from a metric standpoint, the adoption and the usability is maybe not tracked, but I know as an employee that is definitely something that
 
 30
-00:13:50.000 --> 00:14:30.000
-<v Sara Alvarez>In parallel, the hot-attendee segment — so people who asked questions, stayed the full session, clicked pricing-related content before — those get pushed as tasks to the right rep based on territory and account ownership, ideally within that same first hour or two. Not a list dump at end of day. A task, assigned, with context, like "this person attended the full session and asked about integration timelines in the Q&amp;and A" — that context matters enormously for how the rep opens the conversation.
+00:11:26.000 --> 00:11:41.000
+<v Sudi Bjornstad Korba>that has improved in my my area since I use that so much.
 
 31
-00:14:30.000 --> 00:14:42.000
-<v Priya Nair>I want to poke at something — what about false positives? Like people who attended the whole thing because they had it open in another tab while doing something else.
+00:11:41.000 --> 00:12:05.000
+<v Sudi Bjornstad Korba>Okay, we're going to move on to our next question. And this is really about kind of responsibility and ethics in AI and HR. There's a lot of questions about what should we be doing in AI and what shouldn't we be doing. So, the question that I'll ask is what guard rails or governance frameworks did you put in place to manage risk and compliance?
 
 32
-00:14:42.000 --> 00:15:15.000
-<v Daniel Kim>Yeah that's real, and honestly we don't fully solve it, nobody does. What we do is weight signals rather than treat attendance as binary. Did they answer a poll. Did they stay through the Q&amp;A specifically, which tends to filter out the "background tab" crowd because people doing something else usually drop before Q&amp;A. Did they click anything in chat. It's imperfect but it's way better than "attended yes or no."
+00:12:05.000 --> 00:12:35.000
+<v Q Hamirani>Yeah, so I think if we step out of AI for a second because the same kind of mindset and philosophy should apply whether it's AI or not, right? In terms of we are all responsible for very sensitive employee information that if it gets misused, is not good for anyone, right? So that's been kind of engraved in our profession. When you when you look at AI or when I look at it, so compensation data is a great great example. You know, I would not and I did not
 
 33
-00:15:15.000 --> 00:15:35.000
-<v Sara Alvarez>And to be fair, even an imperfect score beats no score. The alternative most teams have is literally alphabetical order or whoever registered first gets called first, which has zero correlation with actual interest.
+00:12:35.000 --> 00:13:05.000
+<v Q Hamirani>go and put data in general chat GPT and just say give me stuff, right? I did not put our own personal information. So I built guard rails in the context of I did test it out with chat GPT initially, but we used an enterprise account for our teams that does not train any of the data that we put in there generally, right? So you have to, you have to, at least for me, I had to bite off a little bit before I could take kind of the whole cake if you will, and learn what AI could do for me in a controlled environment. So
 
 34
-00:15:35.000 --> 00:15:44.000
-<v Priya Nair>Let's talk about the no-show segment for a second because I think people assume no-shows are just... dead leads.
+00:13:05.000 --> 00:13:35.000
+<v Q Hamirani>create analytics in the Darwinbox module where storyboards lets me just ask a question and it tells me what the data is. It's very using the Gen AI features or if it's testing compensation in our own environment that is not training another another LLM and putting our data out there. You have to start from a place of experimenting with with caution. At the same time I think I'm generally an optimist so I have to hold myself back because sometimes
 
 35
-00:15:44.000 --> 00:16:20.000
-<v Daniel Kim>Huge mistake if you think that. No-shows are often just as valuable, sometimes more, because they self-selected into your topic enough to register, then something legitimate came up. Calendar conflict, higher priority meeting, whatever. Our no-show follow-up — recording link plus a genuinely useful three-bullet summary, not "sorry we missed you" fluff — that email actually gets a better click-through rate than our attendee follow-up in like six of the last eight webinars. Six of eight.
+00:13:35.000 --> 00:14:05.000
+<v Q Hamirani>you know, the optimism can can can get you to move quicker than you should. But once the once the prototype or the pilot or what you're trying to do. So I basically, you know, when I tested the compensation, I didn't use any of AI used our data. I stepped to in our own environment, which was controlled. But before that, if you go to chat GPT, for example, you can ask it to just find comp data and it does it based on browsing the the web. So I tested it with a job description. I said, tell me what level it is. So I started to understand how it was being
 
 36
-00:16:20.000 --> 00:16:23.000
-<v Priya Nair>Wait, better than attendees?
+00:14:05.000 --> 00:14:35.000
+<v Q Hamirani>processed. Um, and then once I did it in an internal environment and I knew it was controlled and I knew it was working, that's when I then did step three which is, okay, let's put all our data in there to help us get data quickly. So you have to step change it, but I, you know, my only choice is, you know, don't, don't let the fear hold you back, um, because it is daunting and, you know, we have data privacy issues. There's a lot of things where we cannot get, you know, they're non-negotiables. Um.
 
 37
-00:16:23.000 --> 00:16:45.000
-<v Daniel Kim>Better than attendees, yeah, which surprised us the first time we saw it too. Our working theory is no-shows have higher intent-to-consume because they haven't gotten the content yet, whereas some attendees feel like they already got the value and don't click through again.
+00:14:35.000 --> 00:15:05.000
+<v Q Hamirani>But you can test it out, you can do it, and I would say one piece for me that worked really well, in addition to picking a tool that has native AI capabilities, because if you pick a tool that has native AI capabilities, you don't have to build everything, right? There will always be in a world of AI today. You can, you can find tools that have inbuilt AI native features, as well as you will always probably need to build some AI tools yourself that are very specific to your organization.
 
 38
-00:16:45.000 --> 00:17:15.000
-<v Sara Alvarez>That matches what we see too. I'd add — don't just send the recording to no-shows, send them the recording with a timestamp link to the most relevant five minutes for their apparent interest, if you have that data from their registration form. "You mentioned integration challenges when you registered, here's the twelve-minute mark where Daniel covers exactly that." Way higher engagement than "here's the whole hour, good luck."
+00:15:05.000 --> 00:15:35.000
+<v Q Hamirani>compensation needs, for example, what we're doing for compensation. And I think it's just a matter of figuring out which ones those are and then having the guard rails and then, you know, continuing to have a lens on privacy, accountability, who's managed, you know, even this compensation model, there's only two, three people in in my team out of 50 that have access to it. So you have to still continue to have the same guard rails that you would have, you know, security, where are you housing the data?
 
 39
-00:17:15.000 --> 00:17:28.000
-<v Priya Nair>Okay let's talk about the actual copy for a second, because I think teams get the timing right sometimes but still write a bad email. What's changed in how you write these?
+00:15:35.000 --> 00:16:05.000
+<v Q Hamirani>get checked. And I lean on, you know, we are a tech firm, so we are, we have that in our DNA. So I also, and this is a, you know, an advice I would give, is I am partnering with our engineering teams to understand, is this safe? What are they doing to train customer data? For example, we're doing a bunch of cool stuff with our own AI models for our customer data, which is very secure and has its own sets of protocol. Can I, can I marry into that? Can I tag team with that? So I think understanding
 
 40
-00:17:28.000 --> 00:18:05.000
-<v Daniel Kim>The biggest shift for us was stopping writing one email and starting writing, like, four or five subject line variants and two or three body variants per segment, and actually testing them rather than guessing. Sounds obvious but most teams write one email because writing five by hand for every single webinar is exhausting, nobody has the bandwidth. That's really only become practical once generation got cheap and fast — a human can review five drafts in the time it used to take to write one from scratch.
+00:16:05.000 --> 00:16:35.000
+<v Q Hamirani>understanding what your organization is doing and getting that internal level of support that I've been thankful to get to guide me in terms of other guard rails, the right ones before I dive deep and then taking it step by step and always focusing on, you know, we're stewards of data, we need to be responsible with it. Um, so those are I would say the the the risks on kind of the legalities or compliance front, but then I would say flipping just for a minute on the other risk I would say is
 
 41
-00:18:05.000 --> 00:18:15.000
-<v Priya Nair>Do you have a sense of how much subject line actually moves the needle versus, I don't know, being a rounding error?
+00:16:35.000 --> 00:17:05.000
+<v Q Hamirani>not using the data blindly as well. when you have when you have AI doing things for you, as we all know it can hallucinate in some form or the other. So even once I got the model working, we're still fine tuning it. And what I mean by fine tuning it is I know, you know, to some extent what the comp data should be, based on my experience. Sometimes it matches it to a different job code and I have to try and understand and tell it that it's wrong and this is what I wanted to do. So it's not a one and done thing.
 
 42
-00:18:15.000 --> 00:18:50.000
-<v Daniel Kim>It's not a rounding error. On our last big webinar we A/B tested two subject lines on the attendee thank-you send — one that led with the speaker's name, one that led with a specific stat from the session — and the stat-led subject line got a fourteen-point-something percent higher open rate. I don't want to overstate subject lines, timing still matters more, but it's not nothing.
+00:17:05.000 --> 00:17:35.000
+<v Q Hamirani>It's not like where you build a system, you had an integration, data's flowing perfect and you're good. AI for me is also being the training process. so just keep an open eye that don't blindly use it is what I'm saying. you will find it'll get lot better as you use it more and more, but don't don't take it right away. always always make sure you marry it up with that sense of HR knowledge that we all have, or a gut check if it's not if it's something else in
 
 43
-00:18:50.000 --> 00:19:00.000
-<v Sara Alvarez>Can we talk about the speaker thank-you email for a second, because I think it's the most skipped one and it shouldn't be.
+00:17:35.000 --> 00:18:01.000
+<v Q Hamirani>in terms of just analytics and data you're looking at, you're looking at attrition, and you're looking at it in a department and something is not, you know, it's telling you something insightful, validate it with the business, right? Don't just take that because that those are things that, um, we do best and we have a lot of insights on the people, um, that we can marry it up. So just use it with caution and build it with caution and keep doing it, is what I would say.
 
 44
-00:19:00.000 --> 00:19:06.000
-<v Priya Nair>Please, yes, because we are historically terrible at this one internally.
+00:18:01.000 --> 00:18:09.000
+<v Sudi Bjornstad Korba>Yeah, I've heard there's quite a few companies that are establishing cross-functional AI review groups and councils, including HR, legal, IT, and they're reviewing some of the different AI protocols that are coming up within organizations. Are there any kind of approval workflows that you've put in place when there is AI that is introduced, whether that's through your H
 
 45
-00:19:06.000 --> 00:19:52.000
-<v Sara Alvarez>[laughs] A lot of teams are. The speaker thank-you — especially when it's an external speaker like Daniel today, or like me — should not just be a generic "thanks for joining." It should include an actual performance snapshot. How many people attended, what the engagement looked like during their specific segment, maybe a top quote of theirs that resonated, any pipeline that's traceable back to the session so far. That does two things — it's genuinely nice to receive, and it's also how you get invited back, or how you get that speaker to reshare the recording to their own network, which is free distribution you're leaving on the table if the thank-you is generic.
+00:18:09.000 --> 00:18:31.000
+<v Q Hamirani>Hmm
 
 46
-00:19:52.000 --> 00:20:20.000
-<v Daniel Kim>I'll vouch for that from the receiving end — I've spoken at maybe twenty external webinars over the years and I can count on one hand how many sent me anything beyond "thanks for your time!" The ones that sent me a real snapshot, I reshared every single one of those to my own LinkedIn without being asked.
+00:18:31.000 --> 00:18:39.000
+<v Sudi Bjornstad Korba>VM or through other enterprise systems, are there certain workflows that you have introduced?
 
 47
-00:20:20.000 --> 00:20:45.000
-<v Priya Nair>That's a great plug for segment two actually, because that's exactly the segmentation point — attendee, no-show, and speaker are fundamentally different audiences with different needs, and yet I bet most people on this call today, no judgment, are sending one email to everybody.
+00:18:39.000 --> 00:19:09.000
+<v Q Hamirani>So, I think in a lot of our processes, what I've learned is as you use AI, you have, at least from my perspective, you have to figure out where you want to have kind of human in the loop checkpoints. So, if we have a process that is AI is helping us do an automated process, the the beauty today, um, with MCP that you mentioned, um, up front that Dornbox has launched as well, is it's no longer just, um, automating a task, you can go further.
 
 48
-00:20:45.000 --> 00:20:58.000
-<v Priya Nair>Before we move on, small tangent, because someone in the chat is asking about internal speakers specifically — do we, ACME, actually do this well for our own team? Because I want to be honest here.
+00:19:09.000 --> 00:19:39.000
+<v Q Hamirani>and odd like it can also take decisions and act on it, right? So it's a step further that we can do today. So when we are looking at things like that, it's like where do I put intentional checkpoints so that we can validate it? And over time maybe those checkpoints will be less, but as I mentioned before, till we are 100% sure that the process is working right, we've just put kind of workflows in there for certain processes. Certain processes that can completely automate a task. It can go and we make sure we have audits.
 
 49
-00:20:58.000 --> 00:21:02.000
-<v Daniel Kim>[laughs] Put on the spot.
+00:19:39.000 --> 00:20:09.000
+<v Q Hamirani>going on in our routine processes. Um, but certain ones you need a human in a loop to make sure that it is working as we want. So I think it's it's more a matter of, you know, what do you, what can you enhance with AI? Like data flow and integrations can be a lot better now. So those are no different than you would have the controls before. Make sure there's audit reports, make sure the data is being audited, make sure you catch any anomalies. And then with the decision making and the conversational part of AI where you're using it, um, just making sure that we
 
 50
-00:21:02.000 --> 00:21:35.000
-<v Priya Nair>No, genuinely, I'll self-report — we historically did not send our own internal speakers any kind of performance snapshot at all, because the assumption internally was "well, they already know how it went, they were there." Which, in hindsight, is a ridiculous assumption. Being in the room doesn't tell you the click-through rate on your quote three weeks later.
+00:20:09.000 --> 00:20:39.000
+<v Q Hamirani>do have systematic or even non-systematic more processes built in that when we are getting data from this particular model, we are stopping to evaluate it or stopping to talk from a business partner lens to marry it up with what we're seeing in the business. So I think it really comes down to kind of formal systematic workflow checkpoints as well as just overall process with the team that is using it to all learn from each other. And you know, we we try to within our team as well share what we
 
 51
-00:21:35.000 --> 00:22:10.000
-<v Sara Alvarez>That's actually a really common blind spot — teams remember to do the relationship-maintenance version of the speaker thank-you for external guests because there's an obvious incentive, you want them back. Internal speakers get skipped because there's no obvious relationship risk if you don't. But internal speakers are the ones who'll fight for budget for the next event, and a good snapshot is basically free ammunition for them to go tell their own leadership the session mattered.
+00:20:39.000 --> 00:21:00.000
+<v Q Hamirani>learning with each other because this is a learning journey for a lot of us. Um, like a lot of us today, like we are in different stages of, you know, uh, some using chat GPT a lot, some building models and somewhere in between. Um, so continuing to have those, uh, because then we can co-create some of these checkpoints as well when we explore new, um, situations.
 
 52
-00:22:10.000 --> 00:22:28.000
-<v Daniel Kim>Agreed, and honestly it's a cheap fix once you're already generating the snapshot for external speakers anyway — it's the same pipeline, you're just not skipping a row.
+00:21:00.000 --> 00:21:15.000
+<v Sudi Bjornstad Korba>a lot of exciting things happening in AI, the governance frameworks around data privacy protocols, some of those things. What are you doing kind of around data protection when it comes to AI?
 
 53
-00:22:28.000 --> 00:24:05.000
-<v Priya Nair>Noted, and mildly embarrassing to admit live, but that's the spirit of today's session I think, so I'll leave it in.
+00:21:15.000 --> 00:21:45.000
+<v Q Hamirani>Yeah, so the biggest thing for us is, you know, wherever data is flowing out of any system, making sure it's done in the most secure way. So, MCP, is a way of connecting data without building integrations almost to multiple places through a single source like data unbox. So, you know, exploring that, we're in the process of exploring it, we haven't gone live yet, we're looking at that. And then basically, wherever you do it, you have to make sure, so my example of Chat GPT
 
 54
-00:24:05.000 --> 00:24:18.000
-<v Priya Nair>Okay let's move into segment two properly — segmentation. Sara, you flagged that multi-threading stat earlier, walk us through segmentation more broadly.
+00:21:45.000 --> 00:22:15.000
+<v Q Hamirani>or or a team version. Wherever you're putting in data should be I'm not a huge fan of extracting people information into spreadsheets because then the control point is weakened right there. So I would say to the extent that you can use MCP to connect it, where you're because MCP by itself, the beauty of it is it has all the security and protocols and role-based security applied to it. So the beauty of it is as data is being passed with it, it's applying
 
 55
-00:24:18.000 --> 00:25:00.000
-<v Sara Alvarez>Sure. So the way I think about post-event segmentation, there's really three layers. Layer one is the coarse split — attendee versus no-show versus speaker, which we already covered. Layer two is role and seniority — a VP who attended needs different content than an individual contributor who attended, even if they saw the exact same session. Layer three, and this is the one people skip most, is account-level context — not just who this person is, but who else at their company engaged with this event or with you generally.
+00:22:15.000 --> 00:22:33.000
+<v Q Hamirani>the securities that you wanted already on it. So it controls the data that's coming out. So I would say for us it's really making sure our HR team, we have, you know, an HRIS focus as well within the team that they are looking at everything that we are using people data for, in a very secure way, partnering with our IT, engineering, tech teams to help us understand if we if we connected these simple kind of plugin as well, is it safe, right?
 
 56
-00:25:00.000 --> 00:25:04.000
-<v Priya Nair>And that's where the multi-threading stat comes from.
+00:22:33.000 --> 00:22:45.000
+<v Sudi Bjornstad Korba>Hello
 
 57
-00:25:04.000 --> 00:25:38.000
-<v Sara Alvarez>Right — the number I mentioned earlier, accounts with three-plus attendees convert to opportunity at nearly double the rate of single-attendee accounts. So if you're not looking at the account level, you might treat three attendees from the same company as three separate leads to route separately, when actually the right move might be a single coordinated outreach that acknowledges "hey, we noticed a few folks from your team joined."
+00:22:45.000 --> 00:23:15.000
+<v Q Hamirani>And then we have internally now started having tools that our organization is exploring cross functionally and there are groups where I could join, you know, an engineering group that's exploring a particular tool and we can learn from them or maybe get help from them. So really partnering with the right experts as well because if you are not sure and you've not got those checkpoints on how the data is flowing. So the governance model is for us making sure internally within the HR team it's limited to
 
 58
-00:25:38.000 --> 00:25:44.000
-<v Priya Nair>Do you actually say that in the email? "We noticed three people from your company attended"?
+00:23:15.000 --> 00:23:56.000
+<v Q Hamirani>to access of data based on the type of model you're using, working with our IT teams or our vendors to make sure that it's being always done in a, you know, relatively straightforward and more than anything a compliant way. And then just having fun once we get into it, because once we have those structures set up, the power is just amazing on how quick it can do things and how quick we can move as an organization as well to get things done.
 
 59
-00:25:44.000 --> 00:26:15.000
-<v Sara Alvarez>We've tested it both ways honestly. Saying it explicitly in an email can feel slightly surveillance-y if it's worded wrong, so we tend to save that observation for the sales rep's outreach rather than the automated email — "hey, I saw a few folks from your team on the session Tuesday, curious what's driving the interest right now" lands much better coming from a human in a personalized message than from an automated marketing email.
+00:23:56.000 --> 00:24:07.000
+<v Sudi Bjornstad Korba>Question three. How did you manage resistance from employees who feared AI might replace the roles? I think we're hearing a lot about that. so I this is a a great question.
 
 60
-00:26:15.000 --> 00:26:45.000
-<v Daniel Kim>We do something similar, and I'd add a fourth layer honestly, which is industry and company size, because the takeaways we pull out of the same transcript literally change based on who's reading them. A five hundred person company cares about a different part of the same webinar than a twenty person startup does, even if they watched the identical recording.
+00:24:07.000 --> 00:24:10.000
+<v Q Hamirani>Hello
 
 61
-00:26:45.000 --> 00:26:52.000
-<v Priya Nair>Can you make that concrete? Like what would actually be different in the email.
+00:24:10.000 --> 00:24:40.000
+<v Q Hamirani>I mean, I think this is a general theme across, you know, it's not just internal to an organization. I talk to colleagues and friends and it's a general theme. Um, and I guess to my point, um, earlier on generally trying to be more optimistic. The way I deal with it is I don't view AI specifically as a new thing that's taking away people's jobs. So what I mean by that is just to paraphrase, every technology revolution that's happened has taken away some set of jobs. But
 
 62
-00:26:52.000 --> 00:27:25.000
-<v Daniel Kim>Sure — say the session covers pricing tiers and integration depth. For an enterprise attendee, the takeaway snippet we surface leads with integration and security, because that's usually the blocker at that size. For a smaller company, we lead with time-to-value and pricing, because that's usually the actual objection. Same transcript, same event, genuinely different three-sentence summary depending on who's opening the email.
+00:24:40.000 --> 00:25:10.000
+<v Q Hamirani>The way I've looked at that is, it's taken away a small subset of jobs and unlocked capacity from those individuals to do things that they were not able to do before. So if I want to do something today or as a as a people team, but if I'm investing 3, 4 resources in a particular process and now I don't need to, it mean all it means for me is I can use those resources to do things that we could not do before in ways that we could partner with the business and be more embedded. So to me it's a capacity unlock. Um, yes it's changes.
 
 63
-00:27:25.000 --> 00:27:40.000
-<v Priya Nair>That's a lot of variants to manage though. Like if you've got attendee times no-show times speaker times seniority times company size, that's — that's a lot of emails.
+00:25:10.000 --> 00:25:40.000
+<v Q Hamirani>Change is not easy, changes, there is a level of unknown. So till you get through that process, it's an ambiguous situation and different people react to it differently, right? Some people love change and they like that mode of operating, some don't. And we have to recognize that we're we're all in this journey together. The reality of it is we can't keep resisting it and be lagging because we will be left behind pretty soon if we do that. So, you know, just as I was referencing any other technology, so the example I love.
 
 64
-00:27:40.000 --> 00:28:10.000
-<v Sara Alvarez>It is, and honestly that's exactly why this has to be systematized rather than hand-written, because manually you'd cap out at maybe three variants before a human just gives up and sends the generic one. The moment you can generate variant drafts fast and cheap, and a human just reviews rather than authors from scratch, the ceiling on how granular you can get goes way up.
+00:25:40.000 --> 00:26:10.000
+<v Q Hamirani>to use is to remind myself, um, whenever, you know, Microsoft Excel or Google Sheets came out, we could do formulas and we could do pivots and we could do analytics so much quicker than, you know, before that. Um, and that basically unlocked us to do things that we could now not do before. So I view it in the same form. Will it take specific jobs? Yes. I mean, every technology revolution has taken on specific jobs, taken off specific jobs, but it's on us to upscale and learn them so that we can then move
 
 65
-00:28:10.000 --> 00:28:20.000
-<v Priya Nair>Let's talk numbers on segmentation specifically — do you have anything on lift from segmented versus blanket sends?
+00:26:10.000 --> 00:26:40.000
+<v Q Hamirani>go into another level of ability with the capacity that's gained. And in today's world with AI, with Gen AI specifically, I think the first time at least for me that I've been able to be technical without being technical, if that makes sense, right? Like you're talking to a tool to wipe code. You're talking to a tool to get analysis done. You don't have to necessarily know SQL like I needed to know 20 years ago to to do analysis. So it is even easier, I would say from my perspective, to
 
 66
-00:28:20.000 --> 00:28:52.000
-<v Sara Alvarez>Yeah, on our side, when we moved from a single blanket post-webinar email to the three-way segmentation, attendee, no-show, speaker, with role-based variants layered in after that, our overall click-through across the full post-event send went from around six percent to just over seventeen percent. That's not a small bump, that's basically triple.
+00:26:40.000 --> 00:27:10.000
+<v Q Hamirani>jump on and learn the new skills, right? So, I would say fear is real. I don't want to minimize it. That that is a level of ambiguity that a lot of us have, but I would look at it from a way of capacity unlock to do things that we were not able to do before. And hence, we can uplevel our function, uplevel our organization, uplevel our community, our society, the world. Like that's I believe how we as humans will continue to do bigger things with the power of technology. And this the
 
 67
-00:28:52.000 --> 00:28:56.000
-<v Priya Nair>Triple, from segmentation alone, without changing timing.
+00:27:10.000 --> 00:27:16.000
+<v Q Hamirani>The big difference this time is, I think, which is why the fear is real as well, is it's moving at rocket speed.
 
 68
-00:28:56.000 --> 00:29:10.000
-<v Sara Alvarez>Without changing timing at all in that test, yeah — timing was actually held constant specifically so we could isolate the segmentation variable.
+00:27:16.000 --> 00:27:46.000
+<v Q Hamirani>Right, so it's before you know it, there's another tool and there's another tool and it can do different things and the risk is also because the tools are moving so quickly, probability of risk is potentially higher because you don't know which tool is really vetted, which tool has a version. You know, I default to anything I'm doing for work, if I'm using a tool, it should have an enterprise version, so it's not just out there even if I'm asking it basic questions. So I think it's, it's the rocket speed and the ambiguity kind of.
 
 69
-00:29:10.000 --> 00:29:35.000
-<v Daniel Kim>I'd caveat slightly — in our data timing and segmentation compound, they're not fully independent, doing both well beats doing either well in isolation by more than the sum of the parts, in our experience. But yes, segmentation alone moves a lot.
+00:27:46.000 --> 00:28:16.000
+<v Q Hamirani>coupled together, um, does make it fearful and I think that's completely natural. Um, but I do think once you start using it, um, for simple things like audits is a good example. Payroll audits, we all have to do a bunch of audits for our jobs. It can do it so much quicker, um, and it can give you more insights on the audits that you probably, you know, did not have the capacity to necessarily do because you're just trying to get through the audit. Once you start using it, it's just it's addictive because then you just kind of see what
 
 70
-00:29:35.000 --> 00:29:42.000
-<v Priya Nair>What about attendees who dropped off partway through? Is that its own segment?
+00:28:16.000 --> 00:28:46.000
+<v Q Hamirani>it can do. So my biggest word to friends and colleagues is just try it. Just jump in there and it's it's natural language. So you don't need to go to a technical class, you don't need to learn how to code, just start using it and you will then realize what you can use it for more best because you know your use cases better than anyone else. Um so yeah, I would say uh to me it's it's uh I'm optimistic and excited um because of the capacity unlock it can give all of us um to just do more things.
 
 71
-00:29:42.000 --> 00:30:15.000
-<v Daniel Kim>It should be, and most teams don't bother, but it's a meaningfully different signal. Someone who dropped at minute eight probably realized this wasn't the session for them. Someone who dropped at minute fifty probably got pulled into a meeting and might've genuinely wanted the rest. We treat late-drop as closer to a "hot" signal, actually — send them the recording with a note pointing to what they missed after their drop point.
+00:28:46.000 --> 00:28:49.000
+<v Q Hamirani>in a way that we could not do before.
 
 72
-00:30:15.000 --> 00:30:20.000
-<v Priya Nair>That's such a small detail but it makes total sense once you say it.
+00:28:49.000 --> 00:29:19.000
+<v Sudi Bjornstad Korba>So, I I think we've heard you talk a little bit about some of the kind of, you know, grunt work from a HR perspective that AI can replace. You talked a little bit about compensation, audits. I talked a little bit about, you know, expense reports, performance management, all of those things. What are maybe some of the things that you you see a, you know, AI not replacing? You know, the coaching, some of those other things. You talk a little bit about kind of how you're addressing those.
 
 73
-00:30:20.000 --> 00:30:40.000
-<v Sara Alvarez>A lot of this is small details, honestly, that's kind of the theme of the whole talk. None of these individually feel revolutionary, it's the compounding of a dozen small correct decisions instead of a dozen small default ones.
+00:29:19.000 --> 00:29:20.000
+<v Sudi Bjornstad Korba>those other pieces.
 
 74
-00:30:40.000 --> 00:30:52.000
-<v Priya Nair>Let's talk speaker segmentation for one more second, because I don't think we've fully covered — do you segment your speaker thank-yous by internal versus external speaker?
+00:29:20.000 --> 00:29:50.000
+<v Q Hamirani>So I think AI right now can touch almost everything. The question is or or the the thought I have is can it replace everything and I think the answer is no for me there. Um an example of true business or embedded business partnership which is where you're working with the business to really understand all the context. Yes, AI can give you more data on your fingertips in real time relative to waiting for different teams to give it to you, but that connecting to understand the dots that exist
 
 75
-00:30:52.000 --> 00:31:30.000
-<v Sara Alvarez>We do, yes. Internal speakers, like say Priya today, that's more of an internal recognition and metrics loop, less about relationship maintenance because obviously she works here. External speakers, Daniel today for example, that's much more relationship maintenance — you genuinely want that person to want to do this again, and to talk about you positively to their own network. So the tone and the content of those two thank-yous should be pretty different even though both are technically "speaker thank-you" emails.
+00:29:50.000 --> 00:30:20.000
+<v Q Hamirani>in different teams or with different individuals, managing performance. Yes, it can do, it can do core metrics a lot better, but like what is going on? How can you improve a person's performance? What is really unpacked behind that behavior? So the true human connection, I don't think, I'm a strong believer, cannot be replaced in work or even in life truly with AI, just with AI. Right? So for us, I think it really just comes down to things like
 
 76
-00:31:30.000 --> 00:36:05.000
-<v Priya Nair>Makes sense. Okay, I want to pause segmentation there because I think we've covered the core of it, and move into content repurposing, because I know a lot of people registered specifically for this part.
+00:30:20.000 --> 00:30:52.000
+<v Q Hamirani>um Where can we, uh, so in the recruiting process as well. Like I do believe that you have to talk to a candidate. You don't, you may not need to meet them in today's real, uh, in virtual world in real life, but you have to talk to them at some point. You're not going to hire someone just with AI going through it. That's my belief, right? And that's an example of, uh, a talent acquisition or recruiting team is not going to be extinct because of AI. Can they do more with less in the context of not just saying, do we need less recruiters? My philosophy is we may need the same amount of recruiters.
 
 77
-00:36:05.000 --> 00:36:28.000
-<v Priya Nair>Alright, segment three — content repurposing. And I want to be honest about my own skepticism here, because for a long time I thought repurposing a sixty-minute webinar into ten different assets was just busywork that made a marketing team look productive without actually driving anything. Daniel, change my mind.
+00:30:52.000 --> 00:31:22.000
+<v Q Hamirani>but can we do, can we go more in depth on the skills, the assessments, the quality. Today's world, we all have to hire AI engineers and we all know that's a unique skill set that's hard to find, hard to source. Um, so there will be these unique challenges that now we can unlock capacity to do, but the human part of it is not going away. So for us, you know, I I think, um, I talked about a lot of different use cases. One use case that, um, I've been exploring a lot is change management, right? And change management is one
 
 78
-00:36:28.000 --> 00:36:55.000
-<v Daniel Kim>[laughs] Fair skepticism, and honestly it used to be busywork at Northwind too, because the way we did it originally was exactly the failure mode you're describing — an intern would watch the whole recording, pull some quotes manually, write a blog post, and it would take like a week and a half, by which point the moment had completely passed and nobody cared anymore.
+00:31:22.000 --> 00:31:52.000
+<v Q Hamirani>that you can augment with AI, but you can also rely on the human capability. So for example, you know, there's a lot of AI tools today that can make vast amount of information into a podcast, for example, just with one click. There's ones that can make a music song out of things. There's ones that can, you know, the basic chat GPT that can also help you with kind of drafting coms and then you put your own voice to it, right? You putting your own voice to it or you connecting to what the employees are looking for.
 
 79
-00:36:55.000 --> 00:37:30.000
-<v Daniel Kim>What changed the ROI calculation for us wasn't the idea of repurposing, it was the speed and the source. Working directly off the transcript rather than someone's memory of watching the video means you catch things a tired intern misses at minute fifty of a rewatch. And doing it within like forty-eight hours instead of two weeks means the content is still riding the wave of the actual event instead of feeling stale.
+00:31:52.000 --> 00:32:22.000
+<v Q Hamirani>I don't think AI can go 100% on a lot of these things. So automations, yes, AI can go 100% and it's doing it a lot more efficient and it can do it in a lot more real time, great. But the rest of it, it takes you 75, 80% there. And then you have to marry up what makes sense based on the context and what's relatable and what the dynamic is in the human minds at that particular point. So that's my general belief that I think, um, we have to continue to, it's not, you know,
 
 80
-00:37:30.000 --> 00:37:40.000
-<v Priya Nair>Give me the actual output list, like what does "repurposing one webinar" produce concretely for you.
+00:32:22.000 --> 00:32:48.000
+<v Q Hamirani>It's going to work with us. It's a new teammate that we may not have been ready for, um, and it can do so much, but it also cannot do everything in my view. Um, and we just have to learn, um, to work with the teammate is the best way I can put it, um, and harness what it can do well and marry it up with what we do best and then just kind of continue to accelerate, um, our growth and in turn kind of the impact that we drive as people professionals as well.
 
 81
-00:37:40.000 --> 00:38:35.000
-<v Daniel Kim>For a typical sixty-minute session at Northwind: one blog post, eight hundred to twelve hundred words, built around the core argument of the session plus the best two or three quotes. YouTube chapter markers so people can jump to the part they care about instead of scrubbing blindly, plus a description and a thumbnail brief. An infographic outline built around the data points mentioned in the session — and there's usually more of those buried in a transcript than anyone remembers, because in the room you're following the argument, not counting stats. And then somewhere between eight and ten social posts split across LinkedIn and what used to be Twitter, each with a genuinely different hook rather than the same sentence chopped ten ways.
+00:32:48.000 --> 00:32:57.000
+<v Sudi Bjornstad Korba>Yeah, I I love that. The um the team the new teammate, but you know, being in the HR world, culture building, empathy, everything, all of those things, you know, AI can can help, but it can't do it for us. Exactly. Yeah.
 
 82
-00:38:35.000 --> 00:38:42.000
-<v Priya Nair>And the ROI question — do you actually have a number on this or is it a vibe?
+00:32:57.000 --> 00:33:02.000
+<v Q Hamirani>Hmm
 
 83
-00:38:42.000 --> 00:39:30.000
-<v Daniel Kim>We have a number, and it convinced our CFO, which is a higher bar than convincing me. Repurposed content from a single sixty-minute webinar — across the blog post, the social posts, and the infographic — generated, on average across our last six events, about two point four times the pipeline-influenced touches of the original live session itself. The live session is one touch with maybe four hundred people. The repurposed content, over the following month, touches a much wider audience who never even registered for the original event, several times over.
+00:33:02.000 --> 00:33:12.000
+<v Q Hamirani>Yeah Hello Okay
 
 84
-00:39:30.000 --> 00:39:38.000
-<v Priya Nair>Two point four x the touches of the live event, from stuff that's essentially a byproduct of an event you were already running.
-
-85
-00:39:38.000 --> 00:39:55.000
-<v Daniel Kim>Right, that's the framing that got budget, exactly that — this isn't new content spend, it's yield on content you already produced and mostly let evaporate after the live hour ended.
-
-86
-00:39:55.000 --> 00:40:25.000
-<v Sara Alvarez>I'll add the RevOps angle on this, which is slightly different — the thing I care about is whether repurposed content actually gets tagged and tracked properly, because I've seen teams do beautiful repurposing work and then have zero idea whether any of it touched a closed-won deal, because nobody set up the tracking. Repurposing without attribution is just content marketing theater.
-
-87
-00:40:25.000 --> 00:40:38.000
-<v Priya Nair>Which is a perfect segue but let's stay on repurposing for one more beat — what about the infographic specifically, because that one feels the hardest to automate well.
-
-88
-00:40:38.000 --> 00:41:20.000
-<v Daniel Kim>It's the one that needs the most human polish at the end, agreed, but the outline — which data points to feature, in what order, with what framing — that part comes almost entirely out of a good transcript pass. A sixty-minute session usually has, in our experience, somewhere between six and ten genuinely citable data points buried in the conversation that nobody would remember without going back through it carefully. Pulling those out and ranking them by how surprising or specific they are, that's the unlock, then a designer just needs a day, not a week, to make it look good.
-
-89
-00:41:20.000 --> 00:41:32.000
-<v Priya Nair>Sara, from the RevOps seat, what do you actually require before repurposed content gets published, in terms of tracking?
-
-90
-00:41:32.000 --> 00:42:05.000
-<v Sara Alvarez>Every single asset needs its own UTM, no exceptions, tied back to the original event in our CRM as a campaign. Blog post, each individual social post, the infographic, the YouTube description link — each one distinct, so that three months from now when a deal closes I can actually tell you it touched, say, the LinkedIn post with Sara's quote about multi-threading, not just "something webinar-related, probably."
-
-91
-00:42:05.000 --> 00:42:12.000
-<v Priya Nair>That level of granularity — is that overkill for most teams starting out?
-
-92
-00:42:12.000 --> 00:42:40.000
-<v Sara Alvarez>Honestly, no, and I'd push back gently on "overkill" — UTMs are basically free to set up if you build the convention once and template it. The overkill is doing the repurposing work and skipping the two minutes of tagging, because then you've done the hard part and thrown away your ability to prove it mattered.
-
-93
-00:42:40.000 --> 00:43:10.000
-<v Daniel Kim>Strongly agree, and I'd add — tag by event, not just by campaign type, from day one. We didn't do that early on, tagged everything as generic "webinar-content," and by the time we wanted to compare event A's repurposing performance against event B's, the data was mush. Learned that one the hard way.
-
-94
-00:43:10.000 --> 00:43:22.000
-<v Priya Nair>Let's talk about the social posts specifically, since that's usually the highest volume output. How do you keep eight to ten posts from all sounding the same?
-
-95
-00:43:22.000 --> 00:44:15.000
-<v Daniel Kim>The trick is picking a genuinely different angle for each one rather than a different sentence. One post might be the single boldest quote from the session, standalone, no context, just the quote and the speaker's name — those tend to perform really well actually, people underestimate the pure quote post. Another might be a contrarian take one of the speakers made. Another might be a data point framed as a question — "is your team still doing X" — that invites comments. Another might be a behind-the-scenes note about a question from the audience that surprised the panel. If you try to summarize the whole event in every post you get ten posts that all feel like the same press release.
-
-96
-00:44:15.000 --> 00:44:40.000
-<v Sara Alvarez>From a numbers standpoint, we've found the quote posts, exactly like Daniel's describing, get around forty percent higher engagement than the summary-style posts in our own testing. People respond to a specific sharp sentence way more than a recap.
-
-97
-00:44:40.000 --> 00:44:52.000
-<v Priya Nair>That's a great stat to close this segment on actually — quote posts outperforming summary posts by that much.
-
-98
-00:44:52.000 --> 00:45:05.000
-<v Priya Nair>One more thing before we move on, slight tangent — YouTube chapters specifically, does anyone actually use those, or is that effort wasted?
-
-99
-00:45:05.000 --> 00:45:40.000
-<v Daniel Kim>I was skeptical too, honestly, felt like a nice-to-have nobody clicks. But we started tracking it and chapter markers meaningfully increase average watch time on the recording, because people jump to the part relevant to them instead of bouncing in the first ninety seconds when it's not immediately clear the thing they care about is coming later. It's a small lift to build once you've got the transcript segmented anyway, so the marginal cost is basically zero.
-
-100
-00:45:40.000 --> 00:46:05.000
-<v Sara Alvarez>And from a tracking standpoint, chapter clicks are a decent proxy signal too — if someone jumps straight to the pricing chapter and lingers there, that's a data point worth feeding back into their lead score, the same way a pricing-page visit on your website would be.
-
-101
-00:46:05.000 --> 00:46:20.000
-<v Priya Nair>That's a good point, treating video engagement with the same rigor as web analytics rather than as a separate, vaguer bucket.
-
-102
-00:46:20.000 --> 00:46:38.000
-<v Daniel Kim>Right, and most teams do treat it as separate, mostly because the tooling historically made it annoying to connect the two. That's changing fast though.
-
-103
-00:46:38.000 --> 00:48:05.000
-<v Priya Nair>Okay, let's move into attribution, because I think that ties everything we've discussed together and is honestly the hardest part.
-
-104
-00:48:05.000 --> 00:48:14.000
-<v Priya Nair>Segment four, attribution. Sara, this is squarely your domain, so take the wheel.
-
-105
-00:48:14.000 --> 00:48:50.000
-<v Sara Alvarez>Happy to. So attribution, for the post-event context specifically, I think about in three layers, similar structure to the segmentation piece actually. Layer one — did the person become a marketing qualified lead, and how fast, after the event. Layer two — did that MQL become a sales accepted lead and eventually an opportunity, and how much of that speed traces back to the event versus other touches. Layer three — did it close, and what multiple of the event's cost did it return.
-
-106
-00:48:50.000 --> 00:48:56.000
-<v Priya Nair>Let's do layer one first — the speed from event to MQL.
-
-107
-00:48:56.000 --> 00:49:35.000
-<v Sara Alvarez>Sure. Contacts who attended a webinar and got timely, well-segmented follow-up convert to MQL at meaningfully higher rates than contacts who just registered and got left in general nurture. In our data specifically, attendees who received segmented follow-up within that critical window reach MQL status about sixty percent faster, measured in days, than attendees who got a generic delayed follow-up. Sixty percent faster time-to-MQL.
-
-108
-00:49:35.000 --> 00:49:46.000
-<v Priya Nair>Sixty percent faster — is that mostly the timing effect we discussed in segment one, or the segmentation effect from segment two, or both compounding?
-
-109
-00:49:46.000 --> 00:50:10.000
-<v Sara Alvarez>Genuinely both, and honestly separating them cleanly is hard because in practice teams that nail timing also tend to be the teams that nail segmentation — it's rare to see one without the other, they're both symptoms of a team that's actually operationalized this instead of treating it as an afterthought.
-
-110
-00:50:10.000 --> 00:50:40.000
-<v Daniel Kim>I'd add a wrinkle here — attribution gets messy the moment a lead touches more than one asset, which happens constantly. Someone gets the thank-you email, then later clicks a repurposed social post, then reads the blog post two weeks after that. First-touch and last-touch models will tell you wildly different stories about what actually mattered.
-
-111
-00:50:40.000 --> 00:50:50.000
-<v Priya Nair>How do you handle that practically? Not everyone on this call has a full multi-touch attribution model built out.
-
-112
-00:50:50.000 --> 00:51:35.000
-<v Sara Alvarez>Totally fair, and you don't need a perfect model to start. What I'd tell anyone starting from scratch — at minimum, tag the original event as a campaign in your CRM, and make sure every single downstream asset, the emails, the repurposed content, everything, rolls up to that same campaign ID. Even without a sophisticated multi-touch weighting model, you can then at least answer "did anything from this event touch this closed deal," which is layer one of attribution and honestly answers eighty percent of the questions leadership actually asks.
-
-113
-00:51:35.000 --> 00:51:48.000
-<v Priya Nair>Let's talk actual dollars, if you're comfortable sharing. What's the return you've actually measured on an event, all-in.
-
-114
-00:51:48.000 --> 00:52:30.000
-<v Sara Alvarez>I'll give you a directional number rather than a specific dollar figure since it varies a lot by deal size, but — across the events we've been able to fully attribute end to end at Meridian, when you account for the original event cost plus the follow-up and repurposing effort, we're seeing something in the range of eleven to fourteen x return on fully-loaded event cost within two quarters, once you count both the direct pipeline from attendees and the secondary pipeline sourced through repurposed content touching people who never even attended live.
-
-115
-00:52:30.000 --> 00:52:38.000
-<v Priya Nair>Eleven to fourteen x, within two quarters. That's a big number to say out loud to a CFO.
-
-116
-00:52:38.000 --> 00:53:15.000
-<v Sara Alvarez>It is, and I'd genuinely caution people not to just repeat that number without doing their own math, because it depends heavily on deal size and sales cycle length in your specific business — a company with a six-month enterprise cycle isn't going to see the same shape of return in the same two-quarter window that we do. But directionally, when you actually chase down all three layers instead of stopping at "we got some MQLs," the number is almost always bigger than what people assumed going in.
-
-117
-00:53:15.000 --> 00:53:45.000
-<v Daniel Kim>The thing I'd underline from the demand gen side is — none of that return shows up if layer one and two, the speed and segmentation stuff, are broken. Attribution doesn't create value, it just measures value that was created by doing the earlier steps well. You can have a perfect attribution model and still get a bad number if your follow-up went out three days late to an unsegmented list.
-
-118
-00:53:45.000 --> 00:54:15.000
-<v Priya Nair>That's a good note to bring us toward the close of the core content — the four pieces genuinely build on each other, speed enables segmentation to matter, segmentation and speed together drive the MQL lift, and attribution is just how you prove it happened rather than a lever on its own.
-
-119
-00:54:15.000 --> 00:54:22.000
-<v Sara Alvarez>Exactly right. Attribution is the mirror, not the engine.
-
-120
-00:54:22.000 --> 00:54:35.000
-<v Priya Nair>"Attribution is the mirror, not the engine" — I'm stealing that, that's going on a slide somewhere.
-
-121
-00:54:35.000 --> 00:54:50.000
-<v Priya Nair>Quick tangent before Q&amp;A — Sara, does that eleven-to-fourteen-x figure hold up the same way for a first-time webinar host, or is that a mature-program number that took years to get to?
-
-122
-00:54:50.000 --> 00:55:20.000
-<v Sara Alvarez>Fair challenge, and no, I wouldn't set that as a first-event expectation. That number reflects a program we've iterated on for a while — better segmentation, faster routing, tighter attribution tagging all compounding together. A first webinar with none of that infrastructure in place is going to see a much smaller multiple, and that's fine, that's normal. The point isn't "expect this number immediately," it's "this is the ceiling once the underlying process is actually built well, so it's worth building toward."
-
-123
-00:55:20.000 --> 00:55:45.000
-<v Daniel Kim>Agreed, and I'd say the honest first-event expectation is closer to just proving the pipeline touched anything measurable at all — get that muscle built, the multiple grows as the process matures, not the other way around.
-
-124
-00:55:45.000 --> 00:56:15.000
-<v Priya Nair>Okay, we've got a good number of questions queued up in the Q&amp;A box, let's get through as many as we can. First one — this is from someone who joined from, looks like, a mid-market SaaS company — "We're a five-person marketing team, no dedicated ops person. Where do we even start with all of this?"
-
-125
-00:56:15.000 --> 00:56:52.000
-<v Sara Alvarez>Great question and a really common starting point honestly. If I had to pick one thing to fix first with zero budget and no dedicated ops person, it's the internal routing speed we talked about earlier — getting hot leads to a human faster, even manually, even with something as simple as a shared spreadsheet checked twice a day instead of once a week. That single change, cutting routing delay, moved our own numbers more than almost anything else we tried, and it costs nothing but a bit of discipline.
-
-126
-00:56:52.000 --> 00:57:25.000
-<v Daniel Kim>I'd add — pick one segment to do well before trying to do all three. Most teams that fail at this try to build the full attendee-no-show-speaker system on day one and burn out. Just nail the attendee thank-you with real transcript-based takeaways first, get that habit in place, then add the no-show segment next month, then speaker thank-yous after that.
-
-127
-00:57:25.000 --> 00:57:38.000
-<v Priya Nair>Next question — "How do you handle GDPR or data privacy concerns when personalizing based on registration data?"
-
-128
-00:57:38.000 --> 00:58:15.000
-<v Sara Alvarez>Important question. The short answer is — whatever personalization you're doing should only use data the person actually gave you consent for at registration, and it should be pretty obviously in-context, not creepy. "You mentioned integration challenges" based on a form field they filled in themselves is fine. Anything that feels like it's inferring things they didn't tell you, that's where you want to be much more careful, and honestly where a human review step before send matters most, not just for tone but for exactly this kind of judgment call.
-
-129
-00:58:15.000 --> 00:58:28.000
-<v Priya Nair>Third question — "What tools are you both using for the transcript-to-content pipeline specifically?"
-
-130
-00:58:28.000 --> 00:59:05.000
-<v Daniel Kim>We use a transcription step off the recording, then an LLM pass over that transcript to pull out quotes, data points, and chapter-worthy moments, feeding into templated outputs for blog, social, and the infographic outline. The important part isn't really the specific tool, it's that a human reviews every generated draft before it goes anywhere, we've never fully auto-published anything without a person looking at it first. AI drafts, human approves, every single time.
-
-131
-00:59:05.000 --> 00:59:18.000
-<v Priya Nair>Last question, and I think it's a good one to end on — "What's the single biggest mistake you see teams make in this whole process?"
-
-132
-00:59:18.000 --> 00:59:50.000
-<v Daniel Kim>For me it's treating every attendee identically. One email, one send time, regardless of whether they stayed the full hour or dropped at minute six. That single failure to segment quietly costs more pipeline than almost anything else on this list, and it's usually not a technology gap, it's just nobody decided to fix it.
-
-133
-00:59:50.000 --> 01:00:20.000
-<v Sara Alvarez>Mine's closely related — doing the work of timing and segmentation well, and then not tagging any of it, so three months later nobody can prove any of it mattered and the whole program gets deprioritized in the next budget cycle for something that looks flashier but actually performs worse. Tag everything, from day one, even if the tracking feels tedious in the moment.
-
-134
-01:00:20.000 --> 01:01:10.000
-<v Priya Nair>"Tag everything from day one" — noted, and honestly a fitting closing line.
-
-135
-01:01:10.000 --> 01:01:32.000
-<v Priya Nair>Alright, we're basically at time, so let me close us out. Huge thank you to Daniel Kim from Northwind Analytics and Sara Alvarez from Meridian Software for genuinely one of the more concrete, number-heavy sessions we've run — no fluff, which I appreciate as the person who has to sit through a lot of these.
-
-136
-01:01:32.000 --> 01:01:58.000
-<v Priya Nair>For everyone watching, live or on the recording later — the full recording, a written summary of the key data points we covered today, and a couple of follow-up resources will be in your inbox within the next few hours, not next week, which I promise is deliberate given everything we just talked about. If you have follow-up questions for Daniel or Sara, their details will be in that same email, and both have kindly agreed to take a few direct questions.
-
-137
-01:01:58.000 --> 01:02:00.000
-<v Priya Nair>Thanks again everyone for your time today, we'll see you at the next one.
-
-138
-01:02:00.000 --> 01:02:20.000
+00:33:12.000 --> 00:33:32.000
 <v SYSTEM>[Session ends]

@@ -1,0 +1,52 @@
+{
+  "provider": "sarvam",
+  "model": "saaras:v3",
+  "endpoint": "https://api.sarvam.ai/speech-to-text/job/v1",
+  "files": [
+    {
+      "file": "chapter1.mp3",
+      "bytes": 4181895,
+      "init_status": 202,
+      "job_id": "20260912_6f77c5fe-0880-4dd6-8e71-ad510cda982c",
+      "upload_links_status": 200,
+      "upload_status": 201,
+      "start_status": 200,
+      "job_state": "Completed",
+      "seconds": 20.3,
+      "download_links_status": 200,
+      "outputs": [
+        "out/transcription/chapter1.sarvam.json"
+      ]
+    },
+    {
+      "file": "chapter2.mp3",
+      "bytes": 4410207,
+      "init_status": 202,
+      "job_id": "20260912_dae1c536-f479-4b4c-813e-4da97f0b6fcd",
+      "upload_links_status": 200,
+      "upload_status": 201,
+      "start_status": 200,
+      "job_state": "Completed",
+      "seconds": 19.8,
+      "download_links_status": 200,
+      "outputs": [
+        "out/transcription/chapter2.sarvam.json"
+      ]
+    },
+    {
+      "file": "chapter3.mp3",
+      "bytes": 3363255,
+      "init_status": 202,
+      "job_id": "20260912_52dabff2-3302-47de-b9b7-877d1f90e042",
+      "upload_links_status": 200,
+      "upload_status": 201,
+      "start_status": 200,
+      "job_state": "Completed",
+      "seconds": 7.5,
+      "download_links_status": 200,
+      "outputs": [
+        "out/transcription/chapter3.sarvam.json"
+      ]
+    }
+  ]
+}
