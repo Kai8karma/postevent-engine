@@ -1650,7 +1650,10 @@ def load_speakers(speakers_path: Path, segments_path: Path) -> list:
         name = (sp.get("name") or "").strip()
         parts = name.split()
         candidate = f"{parts[0]}.{parts[-1]}".lower() if len(parts) >= 2 else (parts[0].lower() if parts else "")
-        email = by_localpart.get(candidate)
+        # An explicit `email` on the speaker record wins (v2 fixtures carry it);
+        # the localpart pairing below stays as the fallback for name-only files.
+        explicit = (sp.get("email") or "").strip().lower()
+        email = explicit if ("@" in explicit and explicit in {e.lower() for e in segment_emails}) else by_localpart.get(candidate)
         if not email:
             unmatched.append(name or "(unnamed speaker)")
             continue

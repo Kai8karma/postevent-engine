@@ -1,5 +1,0 @@
-[live lane] M2 comms: invoking OpenRouter (nvidia/nemotron-3-ultra-550b-a55b:free,nvidia/nemotron-3-super-120b-a12b:free,nvidia/nemotron-3.5-lightning:free,google/gemma-4-31b-it:free,stealth/ox-alpha) at runtime for real generation -- use no flag / omit --live to replay cached outputs instead
-stage     seconds  key output                                          pass/fail
---------  -------  --------------------------------------------------  ---------
-M2 comms  794.68   M2 comms: 3 email variants rendered (153 recipient  PASS     
-EXIT=0

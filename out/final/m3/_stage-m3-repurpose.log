@@ -1,8 +1,0 @@
-$ /opt/homebrew/opt/python@3.14/bin/python3.14 /Users/kiran/Desktop/Claude GOD/career/postevent-engine/modules/m3-repurpose/repurpose.py --out out/final/m3 --event /Users/kiran/Desktop/Claude GOD/career/postevent-engine/data/incoming/event.json --transcript /Users/kiran/Desktop/Claude GOD/career/postevent-engine/data/incoming/transcript.md
-exit=0 seconds=8.55
---- stdout ---
-M3 grounding check (FLAGGED): 48/49 claims verified, 1 failed -> out/final/m3/grounding_report.json
-M3 repurpose (offline): 4 assets -> out/final/m3 (blog 1165w, 8 social posts, event_tag=acmerevenue-2026-07-20)
-
---- stderr ---
-

@@ -1,2780 +1,2719 @@
 {
   "events": [
     {
-      "email": "alice.lin@harborviewsoftware.com",
-      "type": "click",
-      "ts": "2026-08-02T00:55:00",
-      "asset": "cta-book-demo"
-    },
-    {
-      "email": "alice.lin@harborviewsoftware.com",
+      "email": "anjalik@infosys.com",
       "type": "form_fill",
-      "ts": "2026-07-28T02:07:00",
+      "ts": "2026-08-13T11:00:00",
       "asset": "contact-sales-form"
     },
     {
-      "email": "alice.lin@harborviewsoftware.com",
+      "email": "anjalik@infosys.com",
       "type": "open",
-      "ts": "2026-07-25T09:09:00",
+      "ts": "2026-08-13T11:00:00",
       "asset": "thank-you-email"
     },
     {
-      "email": "alice.lin@harborviewsoftware.com",
-      "type": "pageview",
-      "ts": "2026-07-24T09:26:00",
-      "asset": "/blog/pipeline-after-webinar"
+      "email": "divya@hdfcbank.com",
+      "type": "form_fill",
+      "ts": "2026-08-13T11:00:00",
+      "asset": "pricing-request-form"
     },
     {
-      "email": "alice.lin@harborviewsoftware.com",
+      "email": "rgunawan@grab.com",
       "type": "open",
-      "ts": "2026-08-08T10:11:00",
-      "asset": "thank-you-email"
-    },
-    {
-      "email": "alice.lin@harborviewsoftware.com",
-      "type": "open",
-      "ts": "2026-07-29T12:06:00",
+      "ts": "2026-08-13T11:00:00",
       "asset": "no-show-catchup-email"
     },
     {
-      "email": "alice.lin@harborviewsoftware.com",
+      "email": "yalzaabi@landmarkgroup.com",
       "type": "click",
-      "ts": "2026-08-17T10:16:00",
-      "asset": "recording-link"
-    },
-    {
-      "email": "juliaf@anchorpointsaas.com",
-      "type": "click",
-      "ts": "2026-07-26T07:48:00",
-      "asset": "blog-post-link"
-    },
-    {
-      "email": "juliaf@anchorpointsaas.com",
-      "type": "click",
-      "ts": "2026-08-04T16:48:00",
-      "asset": "recording-link"
-    },
-    {
-      "email": "juliaf@anchorpointsaas.com",
-      "type": "click",
-      "ts": "2026-07-28T01:20:00",
+      "ts": "2026-08-13T11:00:00",
       "asset": "cta-book-demo"
     },
     {
-      "email": "juliaf@anchorpointsaas.com",
-      "type": "click",
-      "ts": "2026-07-22T15:01:00",
-      "asset": "blog-post-link"
-    },
-    {
-      "email": "juliaf@anchorpointsaas.com",
-      "type": "click",
-      "ts": "2026-08-18T00:17:00",
-      "asset": "recording-link"
-    },
-    {
-      "email": "juliaf@anchorpointsaas.com",
-      "type": "pageview",
-      "ts": "2026-07-27T17:41:00",
-      "asset": "/case-studies/meridian"
-    },
-    {
-      "email": "kevin.ivanova@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-08-02T14:05:00",
-      "asset": "/product/revenue-cloud"
-    },
-    {
-      "email": "kevin.ivanova@palmettosaasgroup.com",
-      "type": "click",
-      "ts": "2026-07-26T04:23:00",
-      "asset": "blog-post-link"
-    },
-    {
-      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "email": "sneham@phonepe.com",
       "type": "form_fill",
-      "ts": "2026-08-14T07:34:00",
+      "ts": "2026-08-13T11:00:00",
       "asset": "contact-sales-form"
     },
     {
-      "email": "kevin.ivanova@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-08-03T01:00:00",
-      "asset": "/product/revenue-cloud"
-    },
-    {
-      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "email": "siriporn@ninjavan.co",
       "type": "open",
-      "ts": "2026-07-29T20:10:00",
+      "ts": "2026-08-13T11:00:00",
       "asset": "no-show-catchup-email"
     },
     {
-      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "email": "ejohnson@chewy.com",
       "type": "pageview",
-      "ts": "2026-07-28T19:16:00",
-      "asset": "/resources/revops-playbook"
+      "ts": "2026-08-13T11:00:00",
+      "asset": "/product/darwinbox-cortex"
     },
     {
-      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "email": "averma@asianpaints.com",
+      "type": "pageview",
+      "ts": "2026-08-13T11:00:00",
+      "asset": "/resources/webinar-how-to-start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "ajay@bajajfinserv.in",
       "type": "click",
-      "ts": "2026-07-31T20:13:00",
-      "asset": "case-study-link"
-    },
-    {
-      "email": "kevin.ivanova@palmettosaasgroup.com",
-      "type": "click",
-      "ts": "2026-07-21T05:47:00",
-      "asset": "recording-link"
-    },
-    {
-      "email": "kevin.ivanova@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-07-29T02:25:00",
-      "asset": "/pricing"
-    },
-    {
-      "email": "kevin.ivanova@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-08-12T17:17:00",
-      "asset": "/pricing"
-    },
-    {
-      "email": "zmoreau@vectorcloudsystems.com",
-      "type": "pageview",
-      "ts": "2026-08-05T10:56:00",
-      "asset": "/case-studies/meridian"
-    },
-    {
-      "email": "zmoreau@vectorcloudsystems.com",
-      "type": "pageview",
-      "ts": "2026-08-09T08:48:00",
-      "asset": "/case-studies/meridian"
-    },
-    {
-      "email": "zmoreau@vectorcloudsystems.com",
-      "type": "open",
-      "ts": "2026-07-27T21:20:00",
-      "asset": "no-show-catchup-email"
-    },
-    {
-      "email": "zmoreau@vectorcloudsystems.com",
-      "type": "open",
-      "ts": "2026-08-19T19:21:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "zmoreau@vectorcloudsystems.com",
-      "type": "open",
-      "ts": "2026-07-24T20:59:00",
-      "asset": "no-show-catchup-email"
-    },
-    {
-      "email": "zmoreau@vectorcloudsystems.com",
-      "type": "open",
-      "ts": "2026-07-20T00:43:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "zmoreau@vectorcloudsystems.com",
-      "type": "click",
-      "ts": "2026-08-17T22:45:00",
+      "ts": "2026-08-13T11:00:00",
       "asset": "cta-book-demo"
     },
     {
-      "email": "zmoreau@vectorcloudsystems.com",
+      "email": "robert.johnson@datadoghq.com",
       "type": "pageview",
-      "ts": "2026-08-06T02:50:00",
-      "asset": "/blog/pipeline-after-webinar"
+      "ts": "2026-08-13T11:00:00",
+      "asset": "/product/darwinbox-cortex"
     },
     {
-      "email": "zmoreau@vectorcloudsystems.com",
+      "email": "yalsayed@qatarairways.com",
       "type": "pageview",
-      "ts": "2026-08-06T00:57:00",
-      "asset": "/resources/revops-playbook"
+      "ts": "2026-08-13T11:00:00",
+      "asset": "/product/darwinbox-cortex"
     },
     {
-      "email": "zmoreau@vectorcloudsystems.com",
+      "email": "ahassan@maybank.com",
+      "type": "click",
+      "ts": "2026-08-13T11:00:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "mohammed.alsayed@gmail.com",
+      "type": "click",
+      "ts": "2026-08-13T11:00:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "nurul.osman@airasia.com",
+      "type": "pageview",
+      "ts": "2026-08-13T11:00:00",
+      "asset": "/product/darwinbox-cortex"
+    },
+    {
+      "email": "meerap@hcltech.com",
+      "type": "open",
+      "ts": "2026-08-13T11:00:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "tnguyen@ninjavan.co",
+      "type": "click",
+      "ts": "2026-08-13T11:00:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "tnguyen@ninjavan.co",
+      "type": "open",
+      "ts": "2026-08-13T11:00:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "meeram@darwinbox.com",
+      "type": "open",
+      "ts": "2026-08-13T11:00:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "rahul.mukherjee@iimb.ac.in",
+      "type": "click",
+      "ts": "2026-08-13T11:00:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "yalzaabi@landmarkgroup.com",
+      "type": "open",
+      "ts": "2026-08-13T11:00:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "robert.johnson@datadoghq.com",
+      "type": "click",
+      "ts": "2026-08-13T11:00:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "siriporn@ninjavan.co",
+      "type": "click",
+      "ts": "2026-08-13T11:00:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "rbose@swiggy.com",
+      "type": "click",
+      "ts": "2026-08-13T11:00:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "siriporn@ninjavan.co",
+      "type": "open",
+      "ts": "2026-08-13T11:00:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "sanjay.rao@hdfcbank.com",
+      "type": "open",
+      "ts": "2026-08-13T11:02:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "pooja@delhivery.com",
+      "type": "click",
+      "ts": "2026-08-13T11:34:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "robert.johnson@datadoghq.com",
+      "type": "open",
+      "ts": "2026-08-13T11:58:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "priya@sunpharma.com",
+      "type": "open",
+      "ts": "2026-08-13T12:15:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "neha.rao@havells.com",
+      "type": "open",
+      "ts": "2026-08-13T13:28:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "fatimah@grab.com",
+      "type": "click",
+      "ts": "2026-08-13T14:17:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "robert.johnson@datadoghq.com",
+      "type": "pageview",
+      "ts": "2026-08-13T14:47:00",
+      "asset": "/resources/webinar-how-to-start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "poojak@icicibank.com",
+      "type": "pageview",
+      "ts": "2026-08-13T15:01:00",
+      "asset": "/resources/webinar-how-to-start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "oalharthi54@outlook.com",
       "type": "form_fill",
-      "ts": "2026-08-10T03:22:00",
-      "asset": "content-download-form"
-    },
-    {
-      "email": "pmalik@palmettosaasgroup.com",
-      "type": "open",
-      "ts": "2026-08-08T11:24:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "pmalik@palmettosaasgroup.com",
-      "type": "click",
-      "ts": "2026-07-20T03:29:00",
-      "asset": "blog-post-link"
-    },
-    {
-      "email": "pmalik@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-08-03T00:14:00",
-      "asset": "/case-studies/meridian"
-    },
-    {
-      "email": "pmalik@palmettosaasgroup.com",
-      "type": "open",
-      "ts": "2026-08-10T22:22:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "pmalik@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-08-09T09:51:00",
-      "asset": "/pricing"
-    },
-    {
-      "email": "pmalik@palmettosaasgroup.com",
-      "type": "open",
-      "ts": "2026-08-04T11:02:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "pmalik@palmettosaasgroup.com",
-      "type": "open",
-      "ts": "2026-08-11T19:13:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "pmalik@palmettosaasgroup.com",
-      "type": "open",
-      "ts": "2026-08-01T03:55:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "pmalik@palmettosaasgroup.com",
-      "type": "open",
-      "ts": "2026-08-04T05:35:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "pmalik@palmettosaasgroup.com",
-      "type": "click",
-      "ts": "2026-08-07T21:43:00",
-      "asset": "blog-post-link"
-    },
-    {
-      "email": "pmalik@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-07-22T18:08:00",
-      "asset": "/pricing"
-    },
-    {
-      "email": "pmalik@palmettosaasgroup.com",
-      "type": "open",
-      "ts": "2026-07-28T18:54:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "jamesb@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-08-14T08:12:00",
-      "asset": "/blog/pipeline-after-webinar"
-    },
-    {
-      "email": "jamesb@palmettosaasgroup.com",
-      "type": "click",
-      "ts": "2026-08-11T21:34:00",
-      "asset": "cta-book-demo"
-    },
-    {
-      "email": "jamesb@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-07-20T13:41:00",
-      "asset": "/blog/pipeline-after-webinar"
-    },
-    {
-      "email": "jamesb@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-08-16T10:27:00",
-      "asset": "/resources/revops-playbook"
-    },
-    {
-      "email": "jamesb@palmettosaasgroup.com",
-      "type": "click",
-      "ts": "2026-07-28T03:43:00",
-      "asset": "cta-book-demo"
-    },
-    {
-      "email": "jamesb@palmettosaasgroup.com",
-      "type": "open",
-      "ts": "2026-07-31T16:48:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "jamesb@palmettosaasgroup.com",
-      "type": "form_fill",
-      "ts": "2026-07-27T01:17:00",
+      "ts": "2026-08-13T16:03:00",
       "asset": "contact-sales-form"
     },
     {
-      "email": "jamesb@palmettosaasgroup.com",
-      "type": "click",
-      "ts": "2026-08-03T10:00:00",
-      "asset": "case-study-link"
+      "email": "averma@asianpaints.com",
+      "type": "pageview",
+      "ts": "2026-08-13T16:41:00",
+      "asset": "/product/darwinbox-cortex"
     },
     {
-      "email": "jamesb@palmettosaasgroup.com",
-      "type": "open",
-      "ts": "2026-07-22T18:51:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "jamesb@palmettosaasgroup.com",
+      "email": "laura.miller@sweetgreen.com",
       "type": "form_fill",
-      "ts": "2026-07-27T22:27:00",
-      "asset": "demo-request-form"
-    },
-    {
-      "email": "jamesb@palmettosaasgroup.com",
-      "type": "open",
-      "ts": "2026-07-26T05:21:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "ninaj@palmettosaasgroup.com",
-      "type": "click",
-      "ts": "2026-07-23T00:30:00",
-      "asset": "recording-link"
-    },
-    {
-      "email": "ninaj@palmettosaasgroup.com",
-      "type": "open",
-      "ts": "2026-08-07T20:59:00",
-      "asset": "no-show-catchup-email"
-    },
-    {
-      "email": "ninaj@palmettosaasgroup.com",
-      "type": "open",
-      "ts": "2026-07-27T03:30:00",
-      "asset": "no-show-catchup-email"
-    },
-    {
-      "email": "ninaj@palmettosaasgroup.com",
-      "type": "open",
-      "ts": "2026-08-15T01:52:00",
-      "asset": "thank-you-email"
-    },
-    {
-      "email": "ninaj@palmettosaasgroup.com",
-      "type": "click",
-      "ts": "2026-08-19T02:49:00",
-      "asset": "cta-book-demo"
-    },
-    {
-      "email": "ninaj@palmettosaasgroup.com",
-      "type": "click",
-      "ts": "2026-08-13T03:40:00",
-      "asset": "recording-link"
-    },
-    {
-      "email": "ninaj@palmettosaasgroup.com",
-      "type": "open",
-      "ts": "2026-07-22T01:58:00",
-      "asset": "no-show-catchup-email"
-    },
-    {
-      "email": "ninaj@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-08-17T22:04:00",
-      "asset": "/blog/pipeline-after-webinar"
-    },
-    {
-      "email": "ninaj@palmettosaasgroup.com",
-      "type": "open",
-      "ts": "2026-08-18T14:03:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "ninaj@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-08-02T02:06:00",
-      "asset": "/product/revenue-cloud"
-    },
-    {
-      "email": "ninaj@palmettosaasgroup.com",
-      "type": "click",
-      "ts": "2026-07-21T09:54:00",
-      "asset": "recording-link"
-    },
-    {
-      "email": "nina.haddad@outlook.com",
-      "type": "pageview",
-      "ts": "2026-08-13T13:14:00",
-      "asset": "/product/revenue-cloud"
-    },
-    {
-      "email": "nina.haddad@outlook.com",
-      "type": "click",
-      "ts": "2026-07-20T14:24:00",
-      "asset": "cta-book-demo"
-    },
-    {
-      "email": "nina.haddad@outlook.com",
-      "type": "open",
-      "ts": "2026-08-17T19:39:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "nina.haddad@outlook.com",
-      "type": "open",
-      "ts": "2026-08-19T21:50:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "nina.haddad@outlook.com",
-      "type": "open",
-      "ts": "2026-07-30T18:12:00",
-      "asset": "thank-you-email"
-    },
-    {
-      "email": "nina.haddad@outlook.com",
-      "type": "click",
-      "ts": "2026-08-08T22:04:00",
-      "asset": "blog-post-link"
-    },
-    {
-      "email": "nina.haddad@outlook.com",
-      "type": "click",
-      "ts": "2026-08-17T18:08:00",
-      "asset": "case-study-link"
-    },
-    {
-      "email": "nina.haddad@outlook.com",
-      "type": "pageview",
-      "ts": "2026-07-31T13:30:00",
-      "asset": "/resources/revops-playbook"
-    },
-    {
-      "email": "nina.haddad@outlook.com",
-      "type": "pageview",
-      "ts": "2026-07-25T07:08:00",
-      "asset": "/blog/pipeline-after-webinar"
-    },
-    {
-      "email": "nina.haddad@outlook.com",
-      "type": "click",
-      "ts": "2026-07-24T09:37:00",
-      "asset": "case-study-link"
-    },
-    {
-      "email": "lingb@truenorthecom.com",
-      "type": "open",
-      "ts": "2026-08-07T17:49:00",
-      "asset": "no-show-catchup-email"
-    },
-    {
-      "email": "lingb@truenorthecom.com",
-      "type": "open",
-      "ts": "2026-07-29T19:21:00",
-      "asset": "thank-you-email"
-    },
-    {
-      "email": "lingb@truenorthecom.com",
-      "type": "pageview",
-      "ts": "2026-08-05T18:42:00",
-      "asset": "/blog/pipeline-after-webinar"
-    },
-    {
-      "email": "lingb@truenorthecom.com",
-      "type": "pageview",
-      "ts": "2026-07-27T16:52:00",
-      "asset": "/blog/pipeline-after-webinar"
-    },
-    {
-      "email": "lingb@truenorthecom.com",
-      "type": "form_fill",
-      "ts": "2026-08-02T11:12:00",
+      "ts": "2026-08-13T16:45:00",
       "asset": "contact-sales-form"
     },
     {
-      "email": "lingb@truenorthecom.com",
-      "type": "open",
-      "ts": "2026-08-18T06:50:00",
-      "asset": "thank-you-email"
-    },
-    {
-      "email": "lingb@truenorthecom.com",
-      "type": "pageview",
-      "ts": "2026-08-10T15:44:00",
-      "asset": "/resources/revops-playbook"
-    },
-    {
-      "email": "lingb@truenorthecom.com",
-      "type": "pageview",
-      "ts": "2026-08-08T22:21:00",
-      "asset": "/product/revenue-cloud"
-    },
-    {
-      "email": "nwong@truenorthecom.com",
-      "type": "open",
-      "ts": "2026-08-08T09:26:00",
-      "asset": "thank-you-email"
-    },
-    {
-      "email": "nwong@truenorthecom.com",
-      "type": "open",
-      "ts": "2026-08-03T01:31:00",
-      "asset": "thank-you-email"
-    },
-    {
-      "email": "nwong@truenorthecom.com",
-      "type": "open",
-      "ts": "2026-08-09T07:44:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "nwong@truenorthecom.com",
-      "type": "pageview",
-      "ts": "2026-07-26T07:30:00",
-      "asset": "/case-studies/meridian"
-    },
-    {
-      "email": "nwong@truenorthecom.com",
-      "type": "open",
-      "ts": "2026-08-14T23:24:00",
-      "asset": "thank-you-email"
-    },
-    {
-      "email": "nwong@truenorthecom.com",
-      "type": "open",
-      "ts": "2026-08-15T00:23:00",
-      "asset": "no-show-catchup-email"
-    },
-    {
-      "email": "nwong@truenorthecom.com",
-      "type": "open",
-      "ts": "2026-07-20T17:07:00",
-      "asset": "no-show-catchup-email"
-    },
-    {
-      "email": "nwong@truenorthecom.com",
+      "email": "emilyw@datadoghq.com",
       "type": "form_fill",
-      "ts": "2026-07-26T20:37:00",
-      "asset": "content-download-form"
+      "ts": "2026-08-13T17:31:00",
+      "asset": "pricing-request-form"
     },
     {
-      "email": "marcot@anchorpointsaas.com",
+      "email": "eko@grab.com",
       "type": "open",
-      "ts": "2026-07-20T06:12:00",
-      "asset": "thank-you-email"
-    },
-    {
-      "email": "marcot@anchorpointsaas.com",
-      "type": "open",
-      "ts": "2026-08-17T08:46:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "marcot@anchorpointsaas.com",
-      "type": "open",
-      "ts": "2026-07-27T05:12:00",
+      "ts": "2026-08-13T18:01:00",
       "asset": "no-show-catchup-email"
     },
     {
-      "email": "marcot@anchorpointsaas.com",
-      "type": "pageview",
-      "ts": "2026-08-18T03:01:00",
-      "asset": "/pricing"
+      "email": "yalsayed@qatarairways.com",
+      "type": "form_fill",
+      "ts": "2026-08-13T18:15:00",
+      "asset": "pricing-request-form"
     },
     {
-      "email": "marcot@anchorpointsaas.com",
-      "type": "pageview",
-      "ts": "2026-08-01T20:50:00",
-      "asset": "/case-studies/meridian"
-    },
-    {
-      "email": "marcot@anchorpointsaas.com",
+      "email": "yousef@emirates.com",
       "type": "click",
-      "ts": "2026-08-18T06:19:00",
-      "asset": "case-study-link"
+      "ts": "2026-08-13T18:59:00",
+      "asset": "cta-watch-recording"
     },
     {
-      "email": "vbello@truenorthecom.com",
+      "email": "meerap@hcltech.com",
+      "type": "open",
+      "ts": "2026-08-13T19:12:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "amandat@datadoghq.com",
+      "type": "pageview",
+      "ts": "2026-08-13T21:12:00",
+      "asset": "/blog/start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "lalharthi@emirates.com",
+      "type": "open",
+      "ts": "2026-08-13T21:21:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "malfarsi@eand.com",
+      "type": "click",
+      "ts": "2026-08-13T21:58:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "anjalik@infosys.com",
+      "type": "open",
+      "ts": "2026-08-14T00:13:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "meerap@ril.com",
+      "type": "open",
+      "ts": "2026-08-14T03:30:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "amit@keka.com",
       "type": "form_fill",
-      "ts": "2026-07-31T21:10:00",
+      "ts": "2026-08-14T03:33:00",
+      "asset": "pricing-request-form"
+    },
+    {
+      "email": "ajay.kulkarni@icicibank.com",
+      "type": "click",
+      "ts": "2026-08-14T04:37:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "sanjayg@keka.com",
+      "type": "pageview",
+      "ts": "2026-08-14T04:49:00",
+      "asset": "/blog/start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "anjalig@freshworks.com",
+      "type": "open",
+      "ts": "2026-08-14T05:36:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "mohammeda@qatarairways.com",
+      "type": "open",
+      "ts": "2026-08-14T05:38:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "laura.miller@sweetgreen.com",
+      "type": "pageview",
+      "ts": "2026-08-14T06:13:00",
+      "asset": "/blog/start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "ppillai@techmahindra.com",
+      "type": "click",
+      "ts": "2026-08-14T06:34:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "sanjay.rao@hdfcbank.com",
+      "type": "click",
+      "ts": "2026-08-14T07:30:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "nishap@rediffmail.com",
+      "type": "pageview",
+      "ts": "2026-08-14T10:00:00",
+      "asset": "/product/darwinbox-cortex"
+    },
+    {
+      "email": "laylaa@landmarkgroup.com",
+      "type": "open",
+      "ts": "2026-08-14T10:23:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "deepakm@razorpay.com",
+      "type": "pageview",
+      "ts": "2026-08-14T11:16:00",
+      "asset": "/resources/webinar-how-to-start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "ahassan@maybank.com",
+      "type": "click",
+      "ts": "2026-08-14T11:41:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "ritu@narayanahealth.org",
+      "type": "open",
+      "ts": "2026-08-14T12:25:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "ahassan@maybank.com",
+      "type": "pageview",
+      "ts": "2026-08-14T12:48:00",
+      "asset": "/resources/webinar-how-to-start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "omar.alfarsi@landmarkgroup.com",
+      "type": "click",
+      "ts": "2026-08-14T13:12:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "mohammed.alsayed@majidalfuttaim.com",
+      "type": "pageview",
+      "ts": "2026-08-14T13:30:00",
+      "asset": "/resources/webinar-how-to-start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "divya.pillai@yahoo.com",
+      "type": "open",
+      "ts": "2026-08-14T13:31:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "ahmad.hassan98@gmail.com",
+      "type": "form_fill",
+      "ts": "2026-08-14T13:32:00",
       "asset": "contact-sales-form"
     },
     {
-      "email": "vbello@truenorthecom.com",
-      "type": "pageview",
-      "ts": "2026-08-17T13:56:00",
-      "asset": "/blog/pipeline-after-webinar"
-    },
-    {
-      "email": "vbello@truenorthecom.com",
-      "type": "open",
-      "ts": "2026-07-24T04:50:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "vbello@truenorthecom.com",
-      "type": "open",
-      "ts": "2026-08-01T22:23:00",
-      "asset": "no-show-catchup-email"
-    },
-    {
-      "email": "vbello@truenorthecom.com",
-      "type": "open",
-      "ts": "2026-08-09T07:58:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "vbello@truenorthecom.com",
-      "type": "click",
-      "ts": "2026-08-07T06:54:00",
-      "asset": "blog-post-link"
-    },
-    {
-      "email": "vbello@truenorthecom.com",
-      "type": "click",
-      "ts": "2026-07-30T07:03:00",
-      "asset": "case-study-link"
-    },
-    {
-      "email": "vbello@truenorthecom.com",
-      "type": "click",
-      "ts": "2026-08-16T04:54:00",
-      "asset": "cta-book-demo"
-    },
-    {
-      "email": "vbello@truenorthecom.com",
-      "type": "pageview",
-      "ts": "2026-07-26T23:05:00",
-      "asset": "/product/revenue-cloud"
-    },
-    {
-      "email": "vbello@truenorthecom.com",
-      "type": "click",
-      "ts": "2026-07-22T05:32:00",
-      "asset": "case-study-link"
-    },
-    {
-      "email": "vbello@truenorthecom.com",
-      "type": "open",
-      "ts": "2026-08-04T16:29:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "vbello@truenorthecom.com",
-      "type": "click",
-      "ts": "2026-07-31T16:44:00",
-      "asset": "cta-book-demo"
-    },
-    {
-      "email": "meib@palmettosaasgroup.com",
-      "type": "click",
-      "ts": "2026-07-28T18:25:00",
-      "asset": "recording-link"
-    },
-    {
-      "email": "meib@palmettosaasgroup.com",
-      "type": "open",
-      "ts": "2026-07-26T07:57:00",
-      "asset": "thank-you-email"
-    },
-    {
-      "email": "meib@palmettosaasgroup.com",
-      "type": "click",
-      "ts": "2026-08-01T06:19:00",
-      "asset": "cta-book-demo"
-    },
-    {
-      "email": "meib@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-08-07T05:59:00",
-      "asset": "/case-studies/meridian"
-    },
-    {
-      "email": "meib@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-08-06T02:08:00",
-      "asset": "/case-studies/meridian"
-    },
-    {
-      "email": "meib@palmettosaasgroup.com",
-      "type": "open",
-      "ts": "2026-08-03T16:22:00",
-      "asset": "thank-you-email"
-    },
-    {
-      "email": "meib@palmettosaasgroup.com",
-      "type": "open",
-      "ts": "2026-08-03T16:39:00",
-      "asset": "no-show-catchup-email"
-    },
-    {
-      "email": "meib@palmettosaasgroup.com",
-      "type": "click",
-      "ts": "2026-08-03T13:26:00",
-      "asset": "cta-book-demo"
-    },
-    {
-      "email": "meib@palmettosaasgroup.com",
-      "type": "open",
-      "ts": "2026-07-30T08:24:00",
-      "asset": "no-show-catchup-email"
-    },
-    {
-      "email": "aditya.joshi@anchorpointsaas.com",
-      "type": "click",
-      "ts": "2026-07-28T20:04:00",
-      "asset": "recording-link"
-    },
-    {
-      "email": "aditya.joshi@anchorpointsaas.com",
-      "type": "click",
-      "ts": "2026-07-29T16:32:00",
-      "asset": "recording-link"
-    },
-    {
-      "email": "aditya.joshi@anchorpointsaas.com",
-      "type": "open",
-      "ts": "2026-08-14T08:59:00",
-      "asset": "thank-you-email"
-    },
-    {
-      "email": "aditya.joshi@anchorpointsaas.com",
-      "type": "click",
-      "ts": "2026-07-22T11:02:00",
-      "asset": "case-study-link"
-    },
-    {
-      "email": "aditya.joshi@anchorpointsaas.com",
-      "type": "open",
-      "ts": "2026-07-26T21:21:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "aditya.joshi@anchorpointsaas.com",
-      "type": "open",
-      "ts": "2026-08-15T21:54:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "aditya.joshi@anchorpointsaas.com",
-      "type": "pageview",
-      "ts": "2026-08-08T04:54:00",
-      "asset": "/product/revenue-cloud"
-    },
-    {
-      "email": "vmehta@anchorpointsaas.com",
-      "type": "pageview",
-      "ts": "2026-07-20T09:18:00",
-      "asset": "/resources/revops-playbook"
-    },
-    {
-      "email": "vmehta@anchorpointsaas.com",
-      "type": "click",
-      "ts": "2026-08-19T12:52:00",
-      "asset": "recording-link"
-    },
-    {
-      "email": "vmehta@anchorpointsaas.com",
+      "email": "meerap@ril.com",
       "type": "form_fill",
-      "ts": "2026-08-04T20:32:00",
-      "asset": "demo-request-form"
-    },
-    {
-      "email": "vmehta@anchorpointsaas.com",
-      "type": "open",
-      "ts": "2026-08-16T12:14:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "vmehta@anchorpointsaas.com",
-      "type": "click",
-      "ts": "2026-07-26T15:14:00",
-      "asset": "cta-book-demo"
-    },
-    {
-      "email": "vmehta@anchorpointsaas.com",
-      "type": "pageview",
-      "ts": "2026-08-12T14:21:00",
-      "asset": "/case-studies/meridian"
-    },
-    {
-      "email": "vmehta@anchorpointsaas.com",
-      "type": "pageview",
-      "ts": "2026-08-16T06:27:00",
-      "asset": "/resources/revops-playbook"
-    },
-    {
-      "email": "vmehta@anchorpointsaas.com",
-      "type": "pageview",
-      "ts": "2026-07-26T14:28:00",
-      "asset": "/blog/pipeline-after-webinar"
-    },
-    {
-      "email": "laura.patel@yahoo.com",
-      "type": "open",
-      "ts": "2026-07-24T18:55:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "laura.patel@yahoo.com",
-      "type": "pageview",
-      "ts": "2026-07-20T15:51:00",
-      "asset": "/case-studies/meridian"
-    },
-    {
-      "email": "laura.patel@yahoo.com",
-      "type": "click",
-      "ts": "2026-07-30T07:26:00",
-      "asset": "cta-book-demo"
-    },
-    {
-      "email": "laura.patel@yahoo.com",
-      "type": "open",
-      "ts": "2026-08-13T22:34:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "laura.patel@yahoo.com",
-      "type": "open",
-      "ts": "2026-07-20T18:50:00",
-      "asset": "thank-you-email"
-    },
-    {
-      "email": "laura.patel@yahoo.com",
-      "type": "click",
-      "ts": "2026-07-24T10:36:00",
-      "asset": "cta-book-demo"
-    },
-    {
-      "email": "laura.patel@yahoo.com",
-      "type": "open",
-      "ts": "2026-08-01T06:25:00",
-      "asset": "no-show-catchup-email"
-    },
-    {
-      "email": "laura.patel@yahoo.com",
-      "type": "open",
-      "ts": "2026-07-26T15:06:00",
-      "asset": "no-show-catchup-email"
-    },
-    {
-      "email": "priyanka.marsh@zenithmarketinggroup.com",
-      "type": "open",
-      "ts": "2026-08-17T09:05:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "priyanka.marsh@zenithmarketinggroup.com",
-      "type": "pageview",
-      "ts": "2026-08-06T05:02:00",
-      "asset": "/product/revenue-cloud"
-    },
-    {
-      "email": "priyanka.marsh@zenithmarketinggroup.com",
-      "type": "open",
-      "ts": "2026-08-04T00:11:00",
-      "asset": "no-show-catchup-email"
-    },
-    {
-      "email": "priyanka.marsh@zenithmarketinggroup.com",
-      "type": "open",
-      "ts": "2026-07-29T06:14:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "priyanka.marsh@zenithmarketinggroup.com",
-      "type": "click",
-      "ts": "2026-07-22T14:03:00",
-      "asset": "recording-link"
-    },
-    {
-      "email": "priyanka.marsh@zenithmarketinggroup.com",
-      "type": "form_fill",
-      "ts": "2026-07-25T10:55:00",
-      "asset": "content-download-form"
-    },
-    {
-      "email": "priyanka.marsh@zenithmarketinggroup.com",
-      "type": "click",
-      "ts": "2026-07-25T03:08:00",
-      "asset": "cta-book-demo"
-    },
-    {
-      "email": "priyanka.marsh@zenithmarketinggroup.com",
-      "type": "form_fill",
-      "ts": "2026-08-12T02:24:00",
-      "asset": "demo-request-form"
-    },
-    {
-      "email": "priyanka.marsh@zenithmarketinggroup.com",
-      "type": "click",
-      "ts": "2026-07-24T06:19:00",
-      "asset": "cta-book-demo"
-    },
-    {
-      "email": "priyanka.marsh@zenithmarketinggroup.com",
-      "type": "form_fill",
-      "ts": "2026-07-25T19:36:00",
+      "ts": "2026-08-14T13:39:00",
       "asset": "contact-sales-form"
     },
     {
-      "email": "priyanka.marsh@zenithmarketinggroup.com",
-      "type": "pageview",
-      "ts": "2026-07-26T16:45:00",
-      "asset": "/case-studies/meridian"
-    },
-    {
-      "email": "nadia.moreau@zenithmarketinggroup.com",
-      "type": "open",
-      "ts": "2026-07-20T04:28:00",
-      "asset": "no-show-catchup-email"
-    },
-    {
-      "email": "nadia.moreau@zenithmarketinggroup.com",
-      "type": "open",
-      "ts": "2026-08-08T07:33:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "nadia.moreau@zenithmarketinggroup.com",
+      "email": "amit@keka.com",
       "type": "click",
-      "ts": "2026-08-17T15:29:00",
-      "asset": "recording-link"
+      "ts": "2026-08-14T14:55:00",
+      "asset": "cta-watch-recording"
     },
     {
-      "email": "nadia.moreau@zenithmarketinggroup.com",
-      "type": "click",
-      "ts": "2026-08-12T02:18:00",
-      "asset": "cta-book-demo"
-    },
-    {
-      "email": "nadia.moreau@zenithmarketinggroup.com",
+      "email": "rgunawan@grab.com",
       "type": "pageview",
-      "ts": "2026-07-31T22:53:00",
-      "asset": "/case-studies/meridian"
+      "ts": "2026-08-14T16:25:00",
+      "asset": "/resources/webinar-how-to-start-and-scale-ai-in-hr"
     },
     {
-      "email": "nadia.moreau@zenithmarketinggroup.com",
+      "email": "deepakm@razorpay.com",
       "type": "pageview",
-      "ts": "2026-08-01T19:52:00",
-      "asset": "/pricing"
+      "ts": "2026-08-14T19:13:00",
+      "asset": "/resources/webinar-how-to-start-and-scale-ai-in-hr"
     },
     {
-      "email": "nadia.moreau@zenithmarketinggroup.com",
-      "type": "pageview",
-      "ts": "2026-08-02T07:11:00",
-      "asset": "/resources/revops-playbook"
-    },
-    {
-      "email": "hivanova@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-08-01T21:11:00",
-      "asset": "/blog/pipeline-after-webinar"
-    },
-    {
-      "email": "hivanova@palmettosaasgroup.com",
+      "email": "noura.alzaabi@alfuttaim.com",
       "type": "open",
-      "ts": "2026-08-01T22:02:00",
+      "ts": "2026-08-14T19:33:00",
       "asset": "thank-you-email"
     },
     {
-      "email": "hivanova@palmettosaasgroup.com",
-      "type": "open",
-      "ts": "2026-07-28T20:34:00",
-      "asset": "thank-you-email"
-    },
-    {
-      "email": "hivanova@palmettosaasgroup.com",
+      "email": "mohammeda@qatarairways.com",
       "type": "form_fill",
-      "ts": "2026-08-11T23:46:00",
-      "asset": "content-download-form"
+      "ts": "2026-08-14T19:36:00",
+      "asset": "pricing-request-form"
     },
     {
-      "email": "hivanova@palmettosaasgroup.com",
-      "type": "form_fill",
-      "ts": "2026-08-02T17:07:00",
-      "asset": "demo-request-form"
-    },
-    {
-      "email": "hivanova@palmettosaasgroup.com",
+      "email": "anjalig@freshworks.com",
       "type": "pageview",
-      "ts": "2026-08-13T03:32:00",
-      "asset": "/case-studies/meridian"
+      "ts": "2026-08-14T19:45:00",
+      "asset": "/product/darwinbox-cortex"
     },
     {
-      "email": "hivanova@palmettosaasgroup.com",
-      "type": "open",
-      "ts": "2026-08-02T14:10:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "hivanova@palmettosaasgroup.com",
-      "type": "open",
-      "ts": "2026-07-21T14:01:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "hivanova@palmettosaasgroup.com",
+      "email": "divyar@hdfcbank.com",
       "type": "click",
-      "ts": "2026-08-10T23:29:00",
-      "asset": "cta-book-demo"
+      "ts": "2026-08-14T20:14:00",
+      "asset": "cta-watch-recording"
     },
     {
-      "email": "tomf@palmettosaasgroup.com",
+      "email": "yalzaabi@landmarkgroup.com",
       "type": "open",
-      "ts": "2026-07-26T12:02:00",
+      "ts": "2026-08-14T20:42:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "rgunawan@grab.com",
+      "type": "pageview",
+      "ts": "2026-08-14T21:04:00",
+      "asset": "/resources/webinar-how-to-start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "ahassan@maybank.com",
+      "type": "pageview",
+      "ts": "2026-08-14T21:11:00",
+      "asset": "/resources/webinar-how-to-start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "anjalig@freshworks.com",
+      "type": "click",
+      "ts": "2026-08-14T21:14:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "deepak.gupta@deloitte.com",
+      "type": "open",
+      "ts": "2026-08-14T22:06:00",
       "asset": "thank-you-email"
     },
     {
-      "email": "tomf@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-08-11T04:20:00",
-      "asset": "/resources/revops-playbook"
-    },
-    {
-      "email": "tomf@palmettosaasgroup.com",
+      "email": "aisyah.abdullah@sea.com",
       "type": "open",
-      "ts": "2026-08-04T14:04:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "tomf@palmettosaasgroup.com",
-      "type": "open",
-      "ts": "2026-07-27T22:28:00",
-      "asset": "no-show-catchup-email"
-    },
-    {
-      "email": "tomf@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-08-15T05:10:00",
-      "asset": "/product/revenue-cloud"
-    },
-    {
-      "email": "tomf@palmettosaasgroup.com",
-      "type": "open",
-      "ts": "2026-07-23T05:18:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "tomf@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-08-01T05:04:00",
-      "asset": "/blog/pipeline-after-webinar"
-    },
-    {
-      "email": "tomf@palmettosaasgroup.com",
-      "type": "click",
-      "ts": "2026-08-10T08:09:00",
-      "asset": "blog-post-link"
-    },
-    {
-      "email": "tomf@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-07-26T22:02:00",
-      "asset": "/product/revenue-cloud"
-    },
-    {
-      "email": "tomf@palmettosaasgroup.com",
-      "type": "open",
-      "ts": "2026-07-26T14:44:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "tomf@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-08-14T16:41:00",
-      "asset": "/blog/pipeline-after-webinar"
-    },
-    {
-      "email": "tomf@palmettosaasgroup.com",
-      "type": "click",
-      "ts": "2026-08-01T22:19:00",
-      "asset": "recording-link"
-    },
-    {
-      "email": "sara.reddy@zenithmarketinggroup.com",
-      "type": "open",
-      "ts": "2026-08-13T12:49:00",
+      "ts": "2026-08-14T22:31:00",
       "asset": "thank-you-email"
     },
     {
-      "email": "sara.reddy@zenithmarketinggroup.com",
+      "email": "ajay@techmahindra.com",
       "type": "open",
-      "ts": "2026-07-31T07:12:00",
-      "asset": "no-show-catchup-email"
-    },
-    {
-      "email": "sara.reddy@zenithmarketinggroup.com",
-      "type": "pageview",
-      "ts": "2026-07-20T00:21:00",
-      "asset": "/blog/pipeline-after-webinar"
-    },
-    {
-      "email": "sara.reddy@zenithmarketinggroup.com",
-      "type": "pageview",
-      "ts": "2026-07-27T03:51:00",
-      "asset": "/pricing"
-    },
-    {
-      "email": "sara.reddy@zenithmarketinggroup.com",
-      "type": "click",
-      "ts": "2026-08-12T05:02:00",
-      "asset": "recording-link"
-    },
-    {
-      "email": "sara.reddy@zenithmarketinggroup.com",
-      "type": "click",
-      "ts": "2026-08-15T10:20:00",
-      "asset": "blog-post-link"
-    },
-    {
-      "email": "zoe.moreau@hotmail.com",
-      "type": "form_fill",
-      "ts": "2026-07-26T17:25:00",
-      "asset": "demo-request-form"
-    },
-    {
-      "email": "zoe.moreau@hotmail.com",
-      "type": "click",
-      "ts": "2026-07-27T06:06:00",
-      "asset": "blog-post-link"
-    },
-    {
-      "email": "zoe.moreau@hotmail.com",
-      "type": "open",
-      "ts": "2026-07-20T12:41:00",
-      "asset": "no-show-catchup-email"
-    },
-    {
-      "email": "zoe.moreau@hotmail.com",
-      "type": "open",
-      "ts": "2026-07-26T14:14:00",
-      "asset": "no-show-catchup-email"
-    },
-    {
-      "email": "zoe.moreau@hotmail.com",
-      "type": "open",
-      "ts": "2026-08-09T19:23:00",
+      "ts": "2026-08-14T23:05:00",
       "asset": "thank-you-email"
     },
     {
-      "email": "zoe.moreau@hotmail.com",
-      "type": "click",
-      "ts": "2026-08-02T09:49:00",
-      "asset": "recording-link"
-    },
-    {
-      "email": "zoe.moreau@hotmail.com",
-      "type": "form_fill",
-      "ts": "2026-08-11T17:50:00",
-      "asset": "contact-sales-form"
-    },
-    {
-      "email": "zoe.moreau@hotmail.com",
-      "type": "click",
-      "ts": "2026-07-25T08:06:00",
-      "asset": "cta-book-demo"
-    },
-    {
-      "email": "zoe.moreau@hotmail.com",
+      "email": "dwilson@carvana.com",
       "type": "open",
-      "ts": "2026-08-10T22:08:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "zoe.moreau@hotmail.com",
-      "type": "form_fill",
-      "ts": "2026-08-13T22:20:00",
-      "asset": "contact-sales-form"
-    },
-    {
-      "email": "victor.bello@truenorthecom.com",
-      "type": "click",
-      "ts": "2026-07-22T10:01:00",
-      "asset": "cta-book-demo"
-    },
-    {
-      "email": "victor.bello@truenorthecom.com",
-      "type": "pageview",
-      "ts": "2026-08-01T16:40:00",
-      "asset": "/product/revenue-cloud"
-    },
-    {
-      "email": "victor.bello@truenorthecom.com",
-      "type": "open",
-      "ts": "2026-08-07T22:00:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "victor.bello@truenorthecom.com",
-      "type": "open",
-      "ts": "2026-08-13T03:19:00",
+      "ts": "2026-08-14T23:22:00",
       "asset": "no-show-catchup-email"
     },
     {
-      "email": "victor.bello@truenorthecom.com",
+      "email": "fatimah@grab.com",
       "type": "open",
-      "ts": "2026-08-13T07:39:00",
-      "asset": "thank-you-email"
-    },
-    {
-      "email": "victor.bello@truenorthecom.com",
-      "type": "open",
-      "ts": "2026-07-31T15:18:00",
+      "ts": "2026-08-15T00:38:00",
       "asset": "no-show-catchup-email"
     },
     {
-      "email": "victor.bello@truenorthecom.com",
+      "email": "eko@grab.com",
       "type": "open",
-      "ts": "2026-07-26T20:02:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "victor.bello@truenorthecom.com",
-      "type": "pageview",
-      "ts": "2026-08-08T14:47:00",
-      "asset": "/pricing"
-    },
-    {
-      "email": "victor.bello@truenorthecom.com",
-      "type": "pageview",
-      "ts": "2026-07-28T10:41:00",
-      "asset": "/blog/pipeline-after-webinar"
-    },
-    {
-      "email": "katie.sato@yahoo.com",
-      "type": "pageview",
-      "ts": "2026-08-14T13:41:00",
-      "asset": "/blog/pipeline-after-webinar"
-    },
-    {
-      "email": "katie.sato@yahoo.com",
-      "type": "open",
-      "ts": "2026-07-27T23:21:00",
-      "asset": "thank-you-email"
-    },
-    {
-      "email": "katie.sato@yahoo.com",
-      "type": "form_fill",
-      "ts": "2026-08-06T01:58:00",
-      "asset": "demo-request-form"
-    },
-    {
-      "email": "katie.sato@yahoo.com",
-      "type": "pageview",
-      "ts": "2026-08-14T21:44:00",
-      "asset": "/product/revenue-cloud"
-    },
-    {
-      "email": "katie.sato@yahoo.com",
-      "type": "open",
-      "ts": "2026-08-16T12:33:00",
+      "ts": "2026-08-15T01:18:00",
       "asset": "no-show-catchup-email"
     },
     {
-      "email": "katie.sato@yahoo.com",
-      "type": "pageview",
-      "ts": "2026-08-09T00:04:00",
-      "asset": "/blog/pipeline-after-webinar"
-    },
-    {
-      "email": "katie.sato@yahoo.com",
+      "email": "joser@ayala.com",
       "type": "click",
-      "ts": "2026-08-19T06:03:00",
-      "asset": "blog-post-link"
-    },
-    {
-      "email": "katie.sato@yahoo.com",
-      "type": "open",
-      "ts": "2026-08-19T06:08:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "katie.sato@yahoo.com",
-      "type": "click",
-      "ts": "2026-08-06T06:15:00",
+      "ts": "2026-08-15T01:40:00",
       "asset": "cta-book-demo"
     },
     {
-      "email": "katie.sato@yahoo.com",
+      "email": "ejohnson@chewy.com",
+      "type": "pageview",
+      "ts": "2026-08-15T01:44:00",
+      "asset": "/resources/webinar-how-to-start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "nurul.osman@airasia.com",
       "type": "open",
-      "ts": "2026-08-12T14:19:00",
+      "ts": "2026-08-15T02:29:00",
       "asset": "thank-you-email"
     },
     {
-      "email": "marcob@palmettosaasgroup.com",
+      "email": "divyar@hdfcbank.com",
+      "type": "pageview",
+      "ts": "2026-08-15T02:59:00",
+      "asset": "/product/darwinbox-cortex"
+    },
+    {
+      "email": "aiyer@nykaa.com",
       "type": "open",
-      "ts": "2026-08-02T05:38:00",
+      "ts": "2026-08-15T03:11:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "amalhotra@havells.com",
+      "type": "click",
+      "ts": "2026-08-15T04:10:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "lalharthi@emirates.com",
+      "type": "open",
+      "ts": "2026-08-15T05:13:00",
       "asset": "no-show-catchup-email"
     },
     {
-      "email": "marcob@palmettosaasgroup.com",
+      "email": "snehad@infosys.com",
       "type": "open",
-      "ts": "2026-08-07T14:40:00",
+      "ts": "2026-08-15T05:23:00",
       "asset": "no-show-catchup-email"
     },
     {
-      "email": "marcob@palmettosaasgroup.com",
-      "type": "click",
-      "ts": "2026-07-22T11:25:00",
-      "asset": "cta-book-demo"
-    },
-    {
-      "email": "marcob@palmettosaasgroup.com",
-      "type": "click",
-      "ts": "2026-08-03T13:32:00",
-      "asset": "cta-book-demo"
-    },
-    {
-      "email": "marcob@palmettosaasgroup.com",
+      "email": "ejohnson@chewy.com",
       "type": "form_fill",
-      "ts": "2026-08-13T04:52:00",
-      "asset": "content-download-form"
+      "ts": "2026-08-15T06:25:00",
+      "asset": "pricing-request-form"
     },
     {
-      "email": "marcob@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-07-20T12:27:00",
-      "asset": "/case-studies/meridian"
-    },
-    {
-      "email": "marcob@palmettosaasgroup.com",
-      "type": "click",
-      "ts": "2026-08-08T17:09:00",
-      "asset": "blog-post-link"
-    },
-    {
-      "email": "anton.petrov@truenorthecom.com",
-      "type": "click",
-      "ts": "2026-08-01T14:19:00",
-      "asset": "cta-book-demo"
-    },
-    {
-      "email": "anton.petrov@truenorthecom.com",
+      "email": "tnguyen@ninjavan.co",
       "type": "open",
-      "ts": "2026-08-06T19:30:00",
+      "ts": "2026-08-15T12:07:00",
       "asset": "thank-you-email"
     },
     {
-      "email": "anton.petrov@truenorthecom.com",
+      "email": "landerson@rippling.com",
       "type": "open",
-      "ts": "2026-08-11T15:12:00",
+      "ts": "2026-08-15T14:38:00",
       "asset": "thank-you-email"
     },
     {
-      "email": "anton.petrov@truenorthecom.com",
-      "type": "click",
-      "ts": "2026-07-20T00:55:00",
-      "asset": "case-study-link"
-    },
-    {
-      "email": "anton.petrov@truenorthecom.com",
-      "type": "click",
-      "ts": "2026-08-04T12:59:00",
-      "asset": "cta-book-demo"
-    },
-    {
-      "email": "anton.petrov@truenorthecom.com",
-      "type": "click",
-      "ts": "2026-08-12T11:24:00",
-      "asset": "recording-link"
-    },
-    {
-      "email": "anton.petrov@truenorthecom.com",
-      "type": "open",
-      "ts": "2026-08-02T01:58:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "anton.petrov@truenorthecom.com",
-      "type": "click",
-      "ts": "2026-07-25T06:48:00",
-      "asset": "case-study-link"
-    },
-    {
-      "email": "isabel.mahajan@gmail.com",
-      "type": "click",
-      "ts": "2026-08-18T23:22:00",
-      "asset": "cta-book-demo"
-    },
-    {
-      "email": "isabel.mahajan@gmail.com",
+      "email": "tnguyen@ninjavan.co",
       "type": "pageview",
-      "ts": "2026-08-09T22:23:00",
-      "asset": "/resources/revops-playbook"
+      "ts": "2026-08-15T15:06:00",
+      "asset": "/product/darwinbox-cortex"
     },
     {
-      "email": "isabel.mahajan@gmail.com",
+      "email": "landerson@rippling.com",
+      "type": "click",
+      "ts": "2026-08-15T15:50:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "nishap@rediffmail.com",
+      "type": "click",
+      "ts": "2026-08-15T16:02:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "ajay@bajajfinserv.in",
       "type": "open",
-      "ts": "2026-08-18T13:47:00",
+      "ts": "2026-08-15T16:54:00",
       "asset": "no-show-catchup-email"
     },
     {
-      "email": "isabel.mahajan@gmail.com",
+      "email": "budi87@hotmail.com",
       "type": "pageview",
-      "ts": "2026-07-21T11:40:00",
-      "asset": "/blog/pipeline-after-webinar"
+      "ts": "2026-08-15T17:45:00",
+      "asset": "/product/darwinbox-cortex"
     },
     {
-      "email": "isabel.mahajan@gmail.com",
-      "type": "open",
-      "ts": "2026-08-11T21:41:00",
-      "asset": "speaker-recap-email"
+      "email": "anjalik@infosys.com",
+      "type": "pageview",
+      "ts": "2026-08-15T17:59:00",
+      "asset": "/resources/webinar-how-to-start-and-scale-ai-in-hr"
     },
     {
-      "email": "isabel.mahajan@gmail.com",
-      "type": "open",
-      "ts": "2026-08-03T21:09:00",
-      "asset": "speaker-recap-email"
+      "email": "aisyah@airasia.com",
+      "type": "click",
+      "ts": "2026-08-15T18:06:00",
+      "asset": "cta-book-demo"
     },
     {
-      "email": "isabel.mahajan@gmail.com",
+      "email": "meerap@hcltech.com",
+      "type": "click",
+      "ts": "2026-08-15T19:19:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "ahmed.alsayed@hotmail.com",
+      "type": "form_fill",
+      "ts": "2026-08-15T19:59:00",
+      "asset": "pricing-request-form"
+    },
+    {
+      "email": "averma@asianpaints.com",
       "type": "open",
-      "ts": "2026-08-07T21:53:00",
+      "ts": "2026-08-15T20:09:00",
       "asset": "thank-you-email"
     },
     {
-      "email": "isabel.mahajan@gmail.com",
-      "type": "pageview",
-      "ts": "2026-08-13T02:41:00",
-      "asset": "/resources/revops-playbook"
-    },
-    {
-      "email": "isabel.mahajan@gmail.com",
-      "type": "form_fill",
-      "ts": "2026-08-01T22:37:00",
-      "asset": "demo-request-form"
-    },
-    {
-      "email": "isabel.mahajan@gmail.com",
+      "email": "huy@sea.com",
       "type": "click",
-      "ts": "2026-08-05T06:56:00",
+      "ts": "2026-08-15T20:44:00",
       "asset": "cta-book-demo"
     },
     {
-      "email": "isabel.mahajan@gmail.com",
+      "email": "sanjay.rao@hdfcbank.com",
+      "type": "pageview",
+      "ts": "2026-08-15T22:14:00",
+      "asset": "/blog/start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "snehad@infosys.com",
       "type": "click",
-      "ts": "2026-07-28T22:19:00",
+      "ts": "2026-08-15T22:50:00",
       "asset": "cta-book-demo"
     },
     {
-      "email": "isabel.mahajan@gmail.com",
+      "email": "divyar@hdfcbank.com",
       "type": "click",
-      "ts": "2026-08-07T09:46:00",
-      "asset": "recording-link"
+      "ts": "2026-08-15T23:00:00",
+      "asset": "cta-watch-recording"
     },
     {
-      "email": "aditya.bello@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-08-09T18:49:00",
-      "asset": "/pricing"
-    },
-    {
-      "email": "aditya.bello@palmettosaasgroup.com",
-      "type": "form_fill",
-      "ts": "2026-07-28T23:13:00",
-      "asset": "content-download-form"
-    },
-    {
-      "email": "aditya.bello@palmettosaasgroup.com",
-      "type": "form_fill",
-      "ts": "2026-08-11T09:00:00",
-      "asset": "content-download-form"
-    },
-    {
-      "email": "aditya.bello@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-07-20T03:04:00",
-      "asset": "/resources/revops-playbook"
-    },
-    {
-      "email": "aditya.bello@palmettosaasgroup.com",
+      "email": "sneham@phonepe.com",
       "type": "open",
-      "ts": "2026-08-05T13:41:00",
+      "ts": "2026-08-15T23:24:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "rgunawan@grab.com",
+      "type": "form_fill",
+      "ts": "2026-08-16T00:15:00",
+      "asset": "pricing-request-form"
+    },
+    {
+      "email": "siti@ocbc.com",
+      "type": "open",
+      "ts": "2026-08-16T01:49:00",
       "asset": "no-show-catchup-email"
     },
     {
-      "email": "aditya.bello@palmettosaasgroup.com",
+      "email": "ajay.kulkarni@icicibank.com",
       "type": "open",
-      "ts": "2026-07-25T05:23:00",
+      "ts": "2026-08-16T02:00:00",
       "asset": "thank-you-email"
     },
     {
-      "email": "tomas.haddad@anchorpointsaas.com",
-      "type": "form_fill",
-      "ts": "2026-08-04T05:32:00",
-      "asset": "content-download-form"
-    },
-    {
-      "email": "tomas.haddad@anchorpointsaas.com",
+      "email": "sneha.iyer@nmims.edu",
       "type": "open",
-      "ts": "2026-08-07T06:11:00",
-      "asset": "speaker-recap-email"
+      "ts": "2026-08-16T02:22:00",
+      "asset": "thank-you-email"
     },
     {
-      "email": "tomas.haddad@anchorpointsaas.com",
-      "type": "form_fill",
-      "ts": "2026-07-25T06:16:00",
-      "asset": "content-download-form"
+      "email": "nalsayed@emirates.com",
+      "type": "open",
+      "ts": "2026-08-16T02:35:00",
+      "asset": "thank-you-email"
     },
     {
-      "email": "tomas.haddad@anchorpointsaas.com",
+      "email": "vikram@zomato.com",
       "type": "click",
-      "ts": "2026-08-03T20:58:00",
-      "asset": "blog-post-link"
-    },
-    {
-      "email": "tomas.haddad@anchorpointsaas.com",
-      "type": "click",
-      "ts": "2026-07-22T09:05:00",
-      "asset": "case-study-link"
-    },
-    {
-      "email": "tomas.haddad@anchorpointsaas.com",
-      "type": "click",
-      "ts": "2026-07-22T10:01:00",
+      "ts": "2026-08-16T02:48:00",
       "asset": "cta-book-demo"
     },
     {
-      "email": "tomas.haddad@anchorpointsaas.com",
-      "type": "open",
-      "ts": "2026-08-04T21:48:00",
-      "asset": "thank-you-email"
+      "email": "nalfarsi@talabat.com",
+      "type": "form_fill",
+      "ts": "2026-08-16T03:17:00",
+      "asset": "pricing-request-form"
     },
     {
-      "email": "antonm@anchorpointsaas.com",
-      "type": "click",
-      "ts": "2026-08-13T00:42:00",
-      "asset": "recording-link"
-    },
-    {
-      "email": "antonm@anchorpointsaas.com",
+      "email": "siriporn@ninjavan.co",
       "type": "pageview",
-      "ts": "2026-07-23T06:33:00",
-      "asset": "/resources/revops-playbook"
+      "ts": "2026-08-16T03:25:00",
+      "asset": "/blog/start-and-scale-ai-in-hr"
     },
     {
-      "email": "antonm@anchorpointsaas.com",
+      "email": "sanjayg@keka.com",
       "type": "open",
-      "ts": "2026-08-08T16:48:00",
+      "ts": "2026-08-16T06:09:00",
       "asset": "no-show-catchup-email"
     },
     {
-      "email": "antonm@anchorpointsaas.com",
-      "type": "click",
-      "ts": "2026-08-04T10:38:00",
-      "asset": "case-study-link"
-    },
-    {
-      "email": "antonm@anchorpointsaas.com",
-      "type": "pageview",
-      "ts": "2026-08-10T10:20:00",
-      "asset": "/case-studies/meridian"
-    },
-    {
-      "email": "antonm@anchorpointsaas.com",
-      "type": "click",
-      "ts": "2026-08-10T12:24:00",
-      "asset": "case-study-link"
-    },
-    {
-      "email": "antonm@anchorpointsaas.com",
+      "email": "divyar@hdfcbank.com",
       "type": "open",
+      "ts": "2026-08-16T07:16:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "anan.wongsa@scg.com",
+      "type": "open",
+      "ts": "2026-08-16T07:34:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "nishap@rediffmail.com",
+      "type": "open",
+      "ts": "2026-08-16T08:02:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "laylaa@landmarkgroup.com",
+      "type": "open",
+      "ts": "2026-08-16T09:36:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "wati@bankmandiri.co.id",
+      "type": "click",
       "ts": "2026-08-16T10:51:00",
-      "asset": "no-show-catchup-email"
+      "asset": "cta-book-demo"
     },
     {
-      "email": "antonm@anchorpointsaas.com",
+      "email": "vikramn@darwinbox.com",
       "type": "pageview",
-      "ts": "2026-08-16T22:25:00",
-      "asset": "/pricing"
+      "ts": "2026-08-16T12:19:00",
+      "asset": "/blog/start-and-scale-ai-in-hr"
     },
     {
-      "email": "samuel.rao@anchorpointsaas.com",
-      "type": "click",
-      "ts": "2026-08-08T03:55:00",
-      "asset": "blog-post-link"
-    },
-    {
-      "email": "samuel.rao@anchorpointsaas.com",
+      "email": "snehad@infosys.com",
       "type": "pageview",
-      "ts": "2026-07-31T14:39:00",
-      "asset": "/resources/revops-playbook"
+      "ts": "2026-08-16T12:32:00",
+      "asset": "/product/darwinbox-cortex"
     },
     {
-      "email": "samuel.rao@anchorpointsaas.com",
-      "type": "open",
-      "ts": "2026-08-05T13:42:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "samuel.rao@anchorpointsaas.com",
-      "type": "click",
-      "ts": "2026-08-19T10:01:00",
-      "asset": "recording-link"
-    },
-    {
-      "email": "samuel.rao@anchorpointsaas.com",
+      "email": "emilyw@datadoghq.com",
       "type": "pageview",
-      "ts": "2026-08-14T23:20:00",
-      "asset": "/pricing"
+      "ts": "2026-08-16T12:54:00",
+      "asset": "/blog/start-and-scale-ai-in-hr"
     },
     {
-      "email": "samuel.rao@anchorpointsaas.com",
-      "type": "pageview",
-      "ts": "2026-08-08T15:25:00",
-      "asset": "/blog/pipeline-after-webinar"
-    },
-    {
-      "email": "axu@vectorcloudsystems.com",
-      "type": "pageview",
-      "ts": "2026-08-02T15:42:00",
-      "asset": "/blog/pipeline-after-webinar"
-    },
-    {
-      "email": "axu@vectorcloudsystems.com",
-      "type": "click",
-      "ts": "2026-08-12T12:18:00",
-      "asset": "blog-post-link"
-    },
-    {
-      "email": "axu@vectorcloudsystems.com",
-      "type": "click",
-      "ts": "2026-08-16T16:56:00",
-      "asset": "recording-link"
-    },
-    {
-      "email": "axu@vectorcloudsystems.com",
-      "type": "open",
-      "ts": "2026-07-24T15:50:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "axu@vectorcloudsystems.com",
-      "type": "pageview",
-      "ts": "2026-08-06T14:10:00",
-      "asset": "/blog/pipeline-after-webinar"
-    },
-    {
-      "email": "axu@vectorcloudsystems.com",
-      "type": "open",
-      "ts": "2026-08-04T21:34:00",
-      "asset": "thank-you-email"
-    },
-    {
-      "email": "axu@vectorcloudsystems.com",
-      "type": "open",
-      "ts": "2026-07-25T21:44:00",
-      "asset": "no-show-catchup-email"
-    },
-    {
-      "email": "axu@vectorcloudsystems.com",
+      "email": "robert.johnson@datadoghq.com",
       "type": "form_fill",
-      "ts": "2026-08-11T00:10:00",
-      "asset": "content-download-form"
-    },
-    {
-      "email": "marcof@harborviewsoftware.com",
-      "type": "pageview",
-      "ts": "2026-08-13T08:14:00",
-      "asset": "/resources/revops-playbook"
-    },
-    {
-      "email": "marcof@harborviewsoftware.com",
-      "type": "pageview",
-      "ts": "2026-08-19T21:07:00",
-      "asset": "/product/revenue-cloud"
-    },
-    {
-      "email": "marcof@harborviewsoftware.com",
-      "type": "open",
-      "ts": "2026-08-09T23:31:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "marcof@harborviewsoftware.com",
-      "type": "click",
-      "ts": "2026-07-30T07:59:00",
-      "asset": "recording-link"
-    },
-    {
-      "email": "marcof@harborviewsoftware.com",
-      "type": "form_fill",
-      "ts": "2026-08-09T10:24:00",
+      "ts": "2026-08-16T14:25:00",
       "asset": "contact-sales-form"
     },
     {
-      "email": "marcof@harborviewsoftware.com",
-      "type": "pageview",
-      "ts": "2026-08-12T23:24:00",
-      "asset": "/product/revenue-cloud"
-    },
-    {
-      "email": "marcof@harborviewsoftware.com",
-      "type": "open",
-      "ts": "2026-08-19T13:51:00",
-      "asset": "no-show-catchup-email"
-    },
-    {
-      "email": "marcof@harborviewsoftware.com",
-      "type": "open",
-      "ts": "2026-07-23T09:05:00",
-      "asset": "no-show-catchup-email"
-    },
-    {
-      "email": "marcof@harborviewsoftware.com",
-      "type": "open",
-      "ts": "2026-08-12T18:59:00",
-      "asset": "thank-you-email"
-    },
-    {
-      "email": "lmenon@bluepeakventures.com",
-      "type": "open",
-      "ts": "2026-07-31T04:54:00",
-      "asset": "no-show-catchup-email"
-    },
-    {
-      "email": "lmenon@bluepeakventures.com",
-      "type": "open",
-      "ts": "2026-08-07T23:00:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "lmenon@bluepeakventures.com",
+      "email": "vikram@zomato.com",
       "type": "click",
-      "ts": "2026-08-06T06:54:00",
+      "ts": "2026-08-16T14:34:00",
       "asset": "cta-book-demo"
     },
     {
-      "email": "lmenon@bluepeakventures.com",
-      "type": "pageview",
-      "ts": "2026-07-30T11:51:00",
-      "asset": "/pricing"
-    },
-    {
-      "email": "lmenon@bluepeakventures.com",
-      "type": "click",
-      "ts": "2026-08-05T21:38:00",
-      "asset": "recording-link"
-    },
-    {
-      "email": "lmenon@bluepeakventures.com",
-      "type": "pageview",
-      "ts": "2026-08-01T00:34:00",
-      "asset": "/case-studies/meridian"
-    },
-    {
-      "email": "ahmedt@quantarasoftware.com",
-      "type": "open",
-      "ts": "2026-08-15T09:53:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "ahmedt@quantarasoftware.com",
-      "type": "open",
-      "ts": "2026-08-03T04:38:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "ahmedt@quantarasoftware.com",
-      "type": "click",
-      "ts": "2026-08-10T22:02:00",
-      "asset": "case-study-link"
-    },
-    {
-      "email": "VICTORK@QUANTARASOFTWARE.COM",
+      "email": "ajay@techmahindra.com",
       "type": "form_fill",
-      "ts": "2026-08-11T03:17:00",
+      "ts": "2026-08-16T14:53:00",
+      "asset": "pricing-request-form"
+    },
+    {
+      "email": "amalhotra@havells.com",
+      "type": "pageview",
+      "ts": "2026-08-16T15:10:00",
+      "asset": "/product/darwinbox-cortex"
+    },
+    {
+      "email": "lalharthi@emirates.com",
+      "type": "pageview",
+      "ts": "2026-08-16T15:28:00",
+      "asset": "/product/darwinbox-cortex"
+    },
+    {
+      "email": "lalharthi@emirates.com",
+      "type": "pageview",
+      "ts": "2026-08-16T15:52:00",
+      "asset": "/blog/start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "amit@keka.com",
+      "type": "pageview",
+      "ts": "2026-08-16T16:18:00",
+      "asset": "/resources/webinar-how-to-start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "siripornw@ocbc.com",
+      "type": "click",
+      "ts": "2026-08-16T16:41:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "nishap@rediffmail.com",
+      "type": "form_fill",
+      "ts": "2026-08-16T16:47:00",
+      "asset": "pricing-request-form"
+    },
+    {
+      "email": "ahmed.alsayed@hotmail.com",
+      "type": "pageview",
+      "ts": "2026-08-16T16:54:00",
+      "asset": "/product/darwinbox-cortex"
+    },
+    {
+      "email": "aiyer@nykaa.com",
+      "type": "open",
+      "ts": "2026-08-16T17:38:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "robert.johnson@datadoghq.com",
+      "type": "click",
+      "ts": "2026-08-16T17:47:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "ejohnson@chewy.com",
+      "type": "click",
+      "ts": "2026-08-16T18:18:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "yalsayed@qatarairways.com",
+      "type": "click",
+      "ts": "2026-08-16T18:39:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "ahmad.hassan98@gmail.com",
+      "type": "open",
+      "ts": "2026-08-16T19:15:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "meerap@ril.com",
+      "type": "pageview",
+      "ts": "2026-08-16T19:27:00",
+      "asset": "/product/darwinbox-cortex"
+    },
+    {
+      "email": "sureshd@axisbank.com",
+      "type": "open",
+      "ts": "2026-08-16T19:32:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "nurul.osman@airasia.com",
+      "type": "pageview",
+      "ts": "2026-08-16T20:39:00",
+      "asset": "/product/darwinbox-cortex"
+    },
+    {
+      "email": "noura.alzaabi@alfuttaim.com",
+      "type": "click",
+      "ts": "2026-08-16T20:40:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "amit.pillai@ey.com",
+      "type": "open",
+      "ts": "2026-08-16T20:41:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "tnguyen@ninjavan.co",
+      "type": "open",
+      "ts": "2026-08-16T20:44:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "sanjay.rao@hdfcbank.com",
+      "type": "click",
+      "ts": "2026-08-16T21:07:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "divya.pillai@yahoo.com",
+      "type": "open",
+      "ts": "2026-08-16T21:48:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "sanjay.rao@hdfcbank.com",
+      "type": "open",
+      "ts": "2026-08-16T23:51:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "greyes@jollibee.com.ph",
+      "type": "open",
+      "ts": "2026-08-17T01:30:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "siriporn@ninjavan.co",
+      "type": "pageview",
+      "ts": "2026-08-17T09:02:00",
+      "asset": "/product/darwinbox-cortex"
+    },
+    {
+      "email": "nishap@rediffmail.com",
+      "type": "pageview",
+      "ts": "2026-08-17T10:20:00",
+      "asset": "/resources/webinar-how-to-start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "oalharthi54@outlook.com",
+      "type": "click",
+      "ts": "2026-08-17T12:57:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "divya@hdfcbank.com",
+      "type": "open",
+      "ts": "2026-08-17T13:54:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "lalharthi@emirates.com",
+      "type": "click",
+      "ts": "2026-08-17T13:59:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "amit.pillai@ey.com",
+      "type": "open",
+      "ts": "2026-08-17T17:42:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "nsharma@drreddys.com",
+      "type": "open",
+      "ts": "2026-08-17T20:08:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "deepakm@razorpay.com",
+      "type": "open",
+      "ts": "2026-08-17T22:19:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "laura.miller@sweetgreen.com",
+      "type": "open",
+      "ts": "2026-08-17T22:25:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "vikram@zomato.com",
+      "type": "click",
+      "ts": "2026-08-17T22:26:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "rahul.mukherjee@iimb.ac.in",
+      "type": "pageview",
+      "ts": "2026-08-18T00:37:00",
+      "asset": "/product/darwinbox-cortex"
+    },
+    {
+      "email": "eko@grab.com",
+      "type": "click",
+      "ts": "2026-08-18T01:18:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "joser@ayala.com",
+      "type": "pageview",
+      "ts": "2026-08-18T01:24:00",
+      "asset": "/blog/start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "snehad@infosys.com",
+      "type": "open",
+      "ts": "2026-08-18T02:46:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "laura.miller@sweetgreen.com",
+      "type": "pageview",
+      "ts": "2026-08-18T04:39:00",
+      "asset": "/resources/webinar-how-to-start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "amalhotra@havells.com",
+      "type": "click",
+      "ts": "2026-08-18T04:47:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "ajay@techmahindra.com",
+      "type": "open",
+      "ts": "2026-08-18T06:52:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "amalhotra@havells.com",
+      "type": "pageview",
+      "ts": "2026-08-18T11:45:00",
+      "asset": "/blog/start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "yalzaabi@landmarkgroup.com",
+      "type": "open",
+      "ts": "2026-08-18T12:13:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "aiyer@nykaa.com",
+      "type": "click",
+      "ts": "2026-08-18T14:56:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "siriporn@ninjavan.co",
+      "type": "form_fill",
+      "ts": "2026-08-18T16:01:00",
+      "asset": "pricing-request-form"
+    },
+    {
+      "email": "sneha.iyer@nmims.edu",
+      "type": "open",
+      "ts": "2026-08-18T20:04:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "nsharma@drreddys.com",
+      "type": "pageview",
+      "ts": "2026-08-18T20:04:00",
+      "asset": "/blog/start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "nsharma@drreddys.com",
+      "type": "form_fill",
+      "ts": "2026-08-18T22:09:00",
       "asset": "contact-sales-form"
     },
     {
-      "email": "VICTORK@QUANTARASOFTWARE.COM",
+      "email": "robert.johnson@datadoghq.com",
+      "type": "click",
+      "ts": "2026-08-18T22:22:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "sneham@phonepe.com",
       "type": "pageview",
-      "ts": "2026-08-07T15:40:00",
-      "asset": "/resources/revops-playbook"
+      "ts": "2026-08-19T00:12:00",
+      "asset": "/resources/webinar-how-to-start-and-scale-ai-in-hr"
     },
     {
-      "email": "VICTORK@QUANTARASOFTWARE.COM",
-      "type": "open",
-      "ts": "2026-07-29T22:24:00",
-      "asset": "no-show-catchup-email"
-    },
-    {
-      "email": "VICTORK@QUANTARASOFTWARE.COM",
-      "type": "pageview",
-      "ts": "2026-07-24T22:13:00",
-      "asset": "/pricing"
-    },
-    {
-      "email": "VICTORK@QUANTARASOFTWARE.COM",
+      "email": "omar.alfarsi@landmarkgroup.com",
       "type": "form_fill",
-      "ts": "2026-08-11T23:03:00",
-      "asset": "demo-request-form"
+      "ts": "2026-08-19T00:25:00",
+      "asset": "pricing-request-form"
     },
     {
-      "email": "VICTORK@QUANTARASOFTWARE.COM",
-      "type": "click",
-      "ts": "2026-08-16T15:46:00",
-      "asset": "blog-post-link"
-    },
-    {
-      "email": "RHADDAD@PINEHOLLOWSOFTWARE.COM",
-      "type": "click",
-      "ts": "2026-08-06T12:21:00",
-      "asset": "cta-book-demo"
-    },
-    {
-      "email": "RHADDAD@PINEHOLLOWSOFTWARE.COM",
-      "type": "open",
-      "ts": "2026-07-31T12:25:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "nadial@copperlineit.com",
-      "type": "open",
-      "ts": "2026-07-29T22:59:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "nadial@copperlineit.com",
-      "type": "open",
-      "ts": "2026-08-01T03:08:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "nadial@copperlineit.com",
-      "type": "form_fill",
-      "ts": "2026-08-16T01:54:00",
-      "asset": "content-download-form"
-    },
-    {
-      "email": "nadial@copperlineit.com",
-      "type": "click",
-      "ts": "2026-08-03T20:10:00",
-      "asset": "cta-book-demo"
-    },
-    {
-      "email": "diegoi@cascaderevops.com",
-      "type": "open",
-      "ts": "2026-07-29T04:13:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "diegoi@cascaderevops.com",
-      "type": "open",
-      "ts": "2026-07-26T23:41:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "diegoi@cascaderevops.com",
+      "email": "pooja@delhivery.com",
       "type": "pageview",
-      "ts": "2026-08-16T18:06:00",
-      "asset": "/pricing"
+      "ts": "2026-08-19T00:38:00",
+      "asset": "/product/darwinbox-cortex"
     },
     {
-      "email": "diegoi@cascaderevops.com",
-      "type": "pageview",
-      "ts": "2026-08-01T13:43:00",
-      "asset": "/blog/pipeline-after-webinar"
+      "email": "mkrishnan@darwinbox.com",
+      "type": "click",
+      "ts": "2026-08-19T01:15:00",
+      "asset": "cta-watch-recording"
     },
     {
-      "email": "diegoi@cascaderevops.com",
+      "email": "averma@asianpaints.com",
       "type": "open",
-      "ts": "2026-07-23T11:30:00",
+      "ts": "2026-08-19T04:37:00",
       "asset": "thank-you-email"
     },
     {
-      "email": "rnair@kestrelit.com",
-      "type": "click",
-      "ts": "2026-08-05T20:21:00",
-      "asset": "blog-post-link"
-    },
-    {
-      "email": "rnair@kestrelit.com",
+      "email": "sneha@freshworks.com",
       "type": "open",
-      "ts": "2026-08-09T23:25:00",
+      "ts": "2026-08-19T09:09:00",
       "asset": "thank-you-email"
     },
     {
-      "email": "wendya@pinehollowsoftware.com",
-      "type": "pageview",
-      "ts": "2026-08-01T15:19:00",
-      "asset": "/pricing"
-    },
-    {
-      "email": "wendya@pinehollowsoftware.com",
-      "type": "pageview",
-      "ts": "2026-08-09T23:24:00",
-      "asset": "/blog/pipeline-after-webinar"
-    },
-    {
-      "email": "wendya@pinehollowsoftware.com",
-      "type": "pageview",
-      "ts": "2026-08-13T14:55:00",
-      "asset": "/resources/revops-playbook"
-    },
-    {
-      "email": "sbose@ridgelinecommerce.com",
+      "email": "divyar@hdfcbank.com",
       "type": "click",
-      "ts": "2026-08-09T20:28:00",
-      "asset": "recording-link"
+      "ts": "2026-08-19T11:26:00",
+      "asset": "cta-book-demo"
     },
     {
-      "email": "sbose@ridgelinecommerce.com",
+      "email": "mkrishnan@darwinbox.com",
       "type": "click",
-      "ts": "2026-07-23T02:07:00",
-      "asset": "blog-post-link"
+      "ts": "2026-08-19T12:24:00",
+      "asset": "cta-watch-recording"
     },
     {
-      "email": "sbose@ridgelinecommerce.com",
-      "type": "form_fill",
-      "ts": "2026-07-20T18:36:00",
-      "asset": "content-download-form"
-    },
-    {
-      "email": "sbose@ridgelinecommerce.com",
-      "type": "open",
-      "ts": "2026-07-28T22:47:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "divya.verma@clarionanalytics.com",
-      "type": "pageview",
-      "ts": "2026-08-01T15:41:00",
-      "asset": "/case-studies/meridian"
-    },
-    {
-      "email": "divya.verma@clarionanalytics.com",
-      "type": "open",
-      "ts": "2026-08-07T04:06:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "divya.verma@clarionanalytics.com",
+      "email": "divya@hdfcbank.com",
       "type": "click",
-      "ts": "2026-08-18T17:11:00",
-      "asset": "recording-link"
+      "ts": "2026-08-19T12:46:00",
+      "asset": "cta-book-demo"
     },
     {
-      "email": "elena.kapoor@pinehollowsoftware.com",
-      "type": "pageview",
-      "ts": "2026-08-06T17:50:00",
-      "asset": "/resources/revops-playbook"
-    },
-    {
-      "email": "elena.kapoor@pinehollowsoftware.com",
-      "type": "click",
-      "ts": "2026-07-22T16:53:00",
-      "asset": "recording-link"
-    },
-    {
-      "email": "elena.kapoor@pinehollowsoftware.com",
-      "type": "pageview",
-      "ts": "2026-08-13T06:42:00",
-      "asset": "/pricing"
-    },
-    {
-      "email": "elena.kapoor@pinehollowsoftware.com",
+      "email": "neha.rao@havells.com",
       "type": "open",
-      "ts": "2026-08-16T19:44:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "elena.kapoor@pinehollowsoftware.com",
-      "type": "open",
-      "ts": "2026-08-03T10:07:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "obose@ridgelinecommerce.com",
-      "type": "click",
-      "ts": "2026-08-09T05:05:00",
-      "asset": "recording-link"
-    },
-    {
-      "email": "obose@ridgelinecommerce.com",
-      "type": "open",
-      "ts": "2026-07-22T03:32:00",
-      "asset": "speaker-recap-email"
-    },
-    {
-      "email": "obose@ridgelinecommerce.com",
-      "type": "open",
-      "ts": "2026-07-25T13:42:00",
+      "ts": "2026-08-19T12:55:00",
       "asset": "no-show-catchup-email"
     },
     {
-      "email": "kevin.ivanova@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-07-25T17:28:00",
-      "asset": "/pricing"
+      "email": "yousef@emirates.com",
+      "type": "form_fill",
+      "ts": "2026-08-19T15:07:00",
+      "asset": "contact-sales-form"
     },
     {
-      "email": "kevin.ivanova@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-07-25T18:31:00",
-      "asset": "/case-studies/meridian"
+      "email": "nalfarsi@talabat.com",
+      "type": "open",
+      "ts": "2026-08-19T17:35:00",
+      "asset": "no-show-catchup-email"
     },
     {
-      "email": "kevin.ivanova@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-07-25T17:58:00",
-      "asset": "/case-studies/meridian"
+      "email": "priya@sunpharma.com",
+      "type": "open",
+      "ts": "2026-08-19T17:52:00",
+      "asset": "no-show-catchup-email"
     },
     {
-      "email": "kevin.ivanova@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-07-25T18:34:00",
-      "asset": "/product/revenue-cloud"
+      "email": "amit.pillai@ey.com",
+      "type": "open",
+      "ts": "2026-08-19T17:57:00",
+      "asset": "thank-you-email"
     },
     {
-      "email": "kevin.ivanova@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-07-25T12:44:00",
-      "asset": "/blog/pipeline-after-webinar"
+      "email": "tnguyen@ninjavan.co",
+      "type": "click",
+      "ts": "2026-08-19T19:12:00",
+      "asset": "cta-watch-recording"
     },
     {
-      "email": "kevin.ivanova@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-07-25T09:15:00",
-      "asset": "/blog/pipeline-after-webinar"
+      "email": "poojak@icicibank.com",
+      "type": "form_fill",
+      "ts": "2026-08-19T19:46:00",
+      "asset": "pricing-request-form"
     },
     {
-      "email": "kevin.ivanova@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-07-25T12:09:00",
-      "asset": "/case-studies/meridian"
+      "email": "deepakm@razorpay.com",
+      "type": "click",
+      "ts": "2026-08-19T20:00:00",
+      "asset": "cta-book-demo"
     },
     {
-      "email": "kevin.ivanova@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-07-25T12:08:00",
-      "asset": "/product/revenue-cloud"
+      "email": "amandat@datadoghq.com",
+      "type": "form_fill",
+      "ts": "2026-08-19T20:04:00",
+      "asset": "contact-sales-form"
     },
     {
-      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "email": "meerap@ril.com",
       "type": "pageview",
-      "ts": "2026-07-25T17:13:00",
-      "asset": "/product/revenue-cloud"
+      "ts": "2026-08-19T20:19:00",
+      "asset": "/product/darwinbox-cortex"
     },
     {
-      "email": "kevin.ivanova@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-07-25T14:17:00",
-      "asset": "/pricing"
+      "email": "landerson@rippling.com",
+      "type": "click",
+      "ts": "2026-08-19T20:29:00",
+      "asset": "cta-book-demo"
     },
     {
-      "email": "kevin.ivanova@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-07-25T18:27:00",
-      "asset": "/blog/pipeline-after-webinar"
+      "email": "amit@apollohospitals.com",
+      "type": "form_fill",
+      "ts": "2026-08-19T21:42:00",
+      "asset": "contact-sales-form"
     },
     {
-      "email": "kevin.ivanova@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-07-25T17:16:00",
-      "asset": "/case-studies/meridian"
+      "email": "rbose@swiggy.com",
+      "type": "open",
+      "ts": "2026-08-19T22:09:00",
+      "asset": "thank-you-email"
     },
     {
-      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "email": "landerson@rippling.com",
       "type": "pageview",
-      "ts": "2026-07-25T15:41:00",
-      "asset": "/pricing"
+      "ts": "2026-08-20T02:32:00",
+      "asset": "/product/darwinbox-cortex"
     },
     {
-      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "email": "huy@sea.com",
       "type": "pageview",
-      "ts": "2026-07-25T15:29:00",
-      "asset": "/blog/pipeline-after-webinar"
+      "ts": "2026-08-20T04:06:00",
+      "asset": "/product/darwinbox-cortex"
     },
     {
-      "email": "kevin.ivanova@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-07-25T13:43:00",
-      "asset": "/resources/revops-playbook"
+      "email": "ejohnson@chewy.com",
+      "type": "open",
+      "ts": "2026-08-20T13:00:00",
+      "asset": "no-show-catchup-email"
     },
     {
-      "email": "kevin.ivanova@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-07-25T11:34:00",
-      "asset": "/pricing"
+      "email": "sanjay.rao@hdfcbank.com",
+      "type": "click",
+      "ts": "2026-08-20T13:59:00",
+      "asset": "cta-watch-recording"
     },
     {
-      "email": "kevin.ivanova@palmettosaasgroup.com",
-      "type": "pageview",
-      "ts": "2026-07-25T10:40:00",
-      "asset": "/case-studies/meridian"
+      "email": "anjalig@freshworks.com",
+      "type": "form_fill",
+      "ts": "2026-08-20T15:32:00",
+      "asset": "pricing-request-form"
     },
     {
-      "email": "lmenon@bluepeakventures.com",
-      "type": "pageview",
-      "ts": "2026-08-07T12:45:00",
-      "asset": "/case-studies/meridian"
+      "email": "ahassan@maybank.com",
+      "type": "open",
+      "ts": "2026-08-20T16:32:00",
+      "asset": "no-show-catchup-email"
     },
     {
-      "email": "lmenon@bluepeakventures.com",
-      "type": "pageview",
-      "ts": "2026-08-07T18:42:00",
-      "asset": "/product/revenue-cloud"
+      "email": "sanjayg@keka.com",
+      "type": "form_fill",
+      "ts": "2026-08-20T16:41:00",
+      "asset": "pricing-request-form"
     },
     {
-      "email": "lmenon@bluepeakventures.com",
-      "type": "pageview",
-      "ts": "2026-08-07T18:10:00",
-      "asset": "/resources/revops-playbook"
+      "email": "ppillai@techmahindra.com",
+      "type": "click",
+      "ts": "2026-08-20T20:19:00",
+      "asset": "cta-watch-recording"
     },
     {
-      "email": "lmenon@bluepeakventures.com",
-      "type": "pageview",
-      "ts": "2026-08-07T11:20:00",
-      "asset": "/resources/revops-playbook"
+      "email": "aiyer@nykaa.com",
+      "type": "click",
+      "ts": "2026-08-21T01:54:00",
+      "asset": "cta-watch-recording"
     },
     {
-      "email": "lmenon@bluepeakventures.com",
-      "type": "pageview",
-      "ts": "2026-08-07T15:01:00",
-      "asset": "/product/revenue-cloud"
+      "email": "neha.rao@havells.com",
+      "type": "open",
+      "ts": "2026-08-21T02:29:00",
+      "asset": "no-show-catchup-email"
     },
     {
-      "email": "lmenon@bluepeakventures.com",
+      "email": "sneha@freshworks.com",
       "type": "pageview",
-      "ts": "2026-08-07T12:04:00",
-      "asset": "/case-studies/meridian"
+      "ts": "2026-08-21T03:40:00",
+      "asset": "/blog/start-and-scale-ai-in-hr"
     },
     {
-      "email": "lmenon@bluepeakventures.com",
+      "email": "rahul.mukherjee@iimb.ac.in",
       "type": "pageview",
-      "ts": "2026-08-07T10:34:00",
-      "asset": "/blog/pipeline-after-webinar"
+      "ts": "2026-08-21T06:24:00",
+      "asset": "/product/darwinbox-cortex"
     },
     {
-      "email": "lmenon@bluepeakventures.com",
+      "email": "malfarsi@eand.com",
       "type": "pageview",
-      "ts": "2026-08-07T17:26:00",
-      "asset": "/blog/pipeline-after-webinar"
+      "ts": "2026-08-21T08:07:00",
+      "asset": "/blog/start-and-scale-ai-in-hr"
     },
     {
-      "email": "lmenon@bluepeakventures.com",
-      "type": "pageview",
-      "ts": "2026-08-07T14:40:00",
-      "asset": "/blog/pipeline-after-webinar"
+      "email": "yousef@emirates.com",
+      "type": "click",
+      "ts": "2026-08-21T14:23:00",
+      "asset": "cta-book-demo"
     },
     {
-      "email": "lmenon@bluepeakventures.com",
-      "type": "pageview",
-      "ts": "2026-08-07T14:58:00",
-      "asset": "/case-studies/meridian"
+      "email": "siriporn@ninjavan.co",
+      "type": "click",
+      "ts": "2026-08-21T14:50:00",
+      "asset": "cta-watch-recording"
     },
     {
-      "email": "lmenon@bluepeakventures.com",
-      "type": "pageview",
-      "ts": "2026-08-07T13:09:00",
-      "asset": "/pricing"
+      "email": "dnair@infosys.com",
+      "type": "click",
+      "ts": "2026-08-21T16:00:00",
+      "asset": "cta-watch-recording"
     },
     {
-      "email": "lmenon@bluepeakventures.com",
-      "type": "pageview",
-      "ts": "2026-08-07T13:00:00",
-      "asset": "/blog/pipeline-after-webinar"
+      "email": "snehad@infosys.com",
+      "type": "form_fill",
+      "ts": "2026-08-21T16:39:00",
+      "asset": "contact-sales-form"
     },
     {
-      "email": "lmenon@bluepeakventures.com",
-      "type": "pageview",
-      "ts": "2026-08-07T15:14:00",
-      "asset": "/resources/revops-playbook"
+      "email": "yalzaabi@landmarkgroup.com",
+      "type": "open",
+      "ts": "2026-08-21T17:58:00",
+      "asset": "no-show-catchup-email"
     },
     {
-      "email": "lmenon@bluepeakventures.com",
-      "type": "pageview",
-      "ts": "2026-08-07T10:50:00",
-      "asset": "/blog/pipeline-after-webinar"
+      "email": "noura.alzaabi@alfuttaim.com",
+      "type": "click",
+      "ts": "2026-08-21T21:04:00",
+      "asset": "cta-book-demo"
     },
     {
-      "email": "lmenon@bluepeakventures.com",
-      "type": "pageview",
-      "ts": "2026-08-07T11:33:00",
-      "asset": "/case-studies/meridian"
+      "email": "nalsayed@emirates.com",
+      "type": "form_fill",
+      "ts": "2026-08-21T21:13:00",
+      "asset": "contact-sales-form"
     },
     {
-      "email": "lmenon@bluepeakventures.com",
-      "type": "pageview",
-      "ts": "2026-08-07T18:52:00",
-      "asset": "/resources/revops-playbook"
+      "email": "yalsayed@qatarairways.com",
+      "type": "open",
+      "ts": "2026-08-21T23:04:00",
+      "asset": "thank-you-email"
     },
     {
-      "email": "lmenon@bluepeakventures.com",
-      "type": "pageview",
-      "ts": "2026-08-07T10:33:00",
-      "asset": "/case-studies/meridian"
+      "email": "rverma82@rediffmail.com",
+      "type": "click",
+      "ts": "2026-08-21T23:33:00",
+      "asset": "cta-book-demo"
     },
     {
-      "email": "lmenon@bluepeakventures.com",
+      "email": "neha.rao@havells.com",
       "type": "pageview",
-      "ts": "2026-08-07T18:55:00",
-      "asset": "/case-studies/meridian"
+      "ts": "2026-08-21T23:47:00",
+      "asset": "/product/darwinbox-cortex"
     },
     {
-      "email": "lmenon@bluepeakventures.com",
-      "type": "pageview",
-      "ts": "2026-08-07T17:17:00",
-      "asset": "/product/revenue-cloud"
+      "email": "deepakm@razorpay.com",
+      "type": "open",
+      "ts": "2026-08-22T02:17:00",
+      "asset": "thank-you-email"
     },
     {
-      "email": "lmenon@bluepeakventures.com",
+      "email": "emilyw@datadoghq.com",
+      "type": "form_fill",
+      "ts": "2026-08-22T04:18:00",
+      "asset": "pricing-request-form"
+    },
+    {
+      "email": "ahmed.alsayed@hotmail.com",
+      "type": "click",
+      "ts": "2026-08-22T05:23:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "divyar@hdfcbank.com",
+      "type": "form_fill",
+      "ts": "2026-08-22T08:36:00",
+      "asset": "pricing-request-form"
+    },
+    {
+      "email": "ejohnson@chewy.com",
+      "type": "form_fill",
+      "ts": "2026-08-22T10:15:00",
+      "asset": "pricing-request-form"
+    },
+    {
+      "email": "poojak@icicibank.com",
+      "type": "open",
+      "ts": "2026-08-22T10:18:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "rgunawan@grab.com",
+      "type": "open",
+      "ts": "2026-08-22T11:28:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "vikramn@darwinbox.com",
+      "type": "click",
+      "ts": "2026-08-22T13:40:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "divya@hdfcbank.com",
+      "type": "open",
+      "ts": "2026-08-22T14:49:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "omara62@rediffmail.com",
       "type": "pageview",
-      "ts": "2026-08-07T10:57:00",
-      "asset": "/blog/pipeline-after-webinar"
+      "ts": "2026-08-22T18:22:00",
+      "asset": "/product/darwinbox-cortex"
+    },
+    {
+      "email": "landerson@rippling.com",
+      "type": "click",
+      "ts": "2026-08-22T19:23:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "ppillai@techmahindra.com",
+      "type": "pageview",
+      "ts": "2026-08-22T23:20:00",
+      "asset": "/product/darwinbox-cortex"
+    },
+    {
+      "email": "fatimah@grab.com",
+      "type": "click",
+      "ts": "2026-08-23T01:43:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "greyes@jollibee.com.ph",
+      "type": "open",
+      "ts": "2026-08-23T03:18:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "rahul.mukherjee@iimb.ac.in",
+      "type": "pageview",
+      "ts": "2026-08-23T05:25:00",
+      "asset": "/product/darwinbox-cortex"
+    },
+    {
+      "email": "meeram@darwinbox.com",
+      "type": "pageview",
+      "ts": "2026-08-23T07:31:00",
+      "asset": "/product/darwinbox-cortex"
+    },
+    {
+      "email": "yousef@emirates.com",
+      "type": "open",
+      "ts": "2026-08-23T08:53:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "robert.johnson@datadoghq.com",
+      "type": "open",
+      "ts": "2026-08-23T19:56:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "ajay@techmahindra.com",
+      "type": "click",
+      "ts": "2026-08-23T20:08:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "divya@hdfcbank.com",
+      "type": "pageview",
+      "ts": "2026-08-24T08:25:00",
+      "asset": "/product/darwinbox-cortex"
+    },
+    {
+      "email": "ejohnson@chewy.com",
+      "type": "click",
+      "ts": "2026-08-24T08:45:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "ajay@techmahindra.com",
+      "type": "open",
+      "ts": "2026-08-24T10:38:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "nsharma@drreddys.com",
+      "type": "click",
+      "ts": "2026-08-25T05:02:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "dnair@infosys.com",
+      "type": "open",
+      "ts": "2026-08-25T05:15:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "mkrishnan@darwinbox.com",
+      "type": "open",
+      "ts": "2026-08-25T05:24:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "pooja@delhivery.com",
+      "type": "click",
+      "ts": "2026-08-25T09:00:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "sanjayg@keka.com",
+      "type": "click",
+      "ts": "2026-08-25T09:41:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "amit@apollohospitals.com",
+      "type": "open",
+      "ts": "2026-08-25T10:10:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "sneha@freshworks.com",
+      "type": "pageview",
+      "ts": "2026-08-25T10:58:00",
+      "asset": "/product/darwinbox-cortex"
+    },
+    {
+      "email": "ajay.kulkarni@icicibank.com",
+      "type": "click",
+      "ts": "2026-08-25T11:12:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "aiyer@nykaa.com",
+      "type": "open",
+      "ts": "2026-08-25T13:06:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "aisyah.abdullah@sea.com",
+      "type": "open",
+      "ts": "2026-08-25T20:13:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "divya.pillai@yahoo.com",
+      "type": "click",
+      "ts": "2026-08-25T22:43:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "abose@greythr.com",
+      "type": "click",
+      "ts": "2026-08-26T00:40:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "abose@greythr.com",
+      "type": "open",
+      "ts": "2026-08-26T01:54:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "abose@greythr.com",
+      "type": "open",
+      "ts": "2026-08-26T03:48:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "abose@greythr.com",
+      "type": "open",
+      "ts": "2026-08-26T06:37:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "abose@greythr.com",
+      "type": "click",
+      "ts": "2026-08-26T08:04:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "abose@greythr.com",
+      "type": "open",
+      "ts": "2026-08-26T08:36:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "abose@greythr.com",
+      "type": "form_fill",
+      "ts": "2026-08-26T09:13:00",
+      "asset": "contact-sales-form"
+    },
+    {
+      "email": "snehad@infosys.com",
+      "type": "click",
+      "ts": "2026-08-26T11:56:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "landerson@rippling.com",
+      "type": "click",
+      "ts": "2026-08-26T13:24:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "abose@greythr.com",
+      "type": "click",
+      "ts": "2026-08-26T19:37:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "abose@greythr.com",
+      "type": "pageview",
+      "ts": "2026-08-26T21:14:00",
+      "asset": "/blog/start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "abose@greythr.com",
+      "type": "click",
+      "ts": "2026-08-26T22:48:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "tnguyen@ninjavan.co",
+      "type": "click",
+      "ts": "2026-08-27T05:01:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "eko@grab.com",
+      "type": "pageview",
+      "ts": "2026-08-27T06:48:00",
+      "asset": "/resources/webinar-how-to-start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "amit@keka.com",
+      "type": "click",
+      "ts": "2026-08-27T10:00:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "nalsayed@emirates.com",
+      "type": "form_fill",
+      "ts": "2026-08-27T17:09:00",
+      "asset": "pricing-request-form"
+    },
+    {
+      "email": "meeram@darwinbox.com",
+      "type": "open",
+      "ts": "2026-08-27T23:13:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "mkrishnan@darwinbox.com",
+      "type": "click",
+      "ts": "2026-08-28T00:37:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "aisyah.abdullah@sea.com",
+      "type": "click",
+      "ts": "2026-08-28T02:33:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "nalfarsi@talabat.com",
+      "type": "form_fill",
+      "ts": "2026-08-28T02:47:00",
+      "asset": "contact-sales-form"
+    },
+    {
+      "email": "dnair@infosys.com",
+      "type": "pageview",
+      "ts": "2026-08-28T06:21:00",
+      "asset": "/resources/webinar-how-to-start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "neha.rao@havells.com",
+      "type": "open",
+      "ts": "2026-08-28T11:34:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "nurul.osman@airasia.com",
+      "type": "click",
+      "ts": "2026-08-28T13:43:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "budi87@hotmail.com",
+      "type": "click",
+      "ts": "2026-08-28T16:42:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "tnguyen@ninjavan.co",
+      "type": "pageview",
+      "ts": "2026-08-28T16:46:00",
+      "asset": "/blog/start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "fatimah@grab.com",
+      "type": "open",
+      "ts": "2026-08-28T19:03:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "amit@apollohospitals.com",
+      "type": "open",
+      "ts": "2026-08-29T04:11:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "anjalik@infosys.com",
+      "type": "pageview",
+      "ts": "2026-08-29T12:06:00",
+      "asset": "/product/darwinbox-cortex"
+    },
+    {
+      "email": "divya@hdfcbank.com",
+      "type": "pageview",
+      "ts": "2026-08-29T12:32:00",
+      "asset": "/resources/webinar-how-to-start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "wati@bankmandiri.co.id",
+      "type": "form_fill",
+      "ts": "2026-08-29T13:26:00",
+      "asset": "pricing-request-form"
+    },
+    {
+      "email": "divya.pillai@yahoo.com",
+      "type": "open",
+      "ts": "2026-08-29T16:35:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "priya.malhotra@techmahindra.com",
+      "type": "form_fill",
+      "ts": "2026-08-29T20:43:00",
+      "asset": "pricing-request-form"
+    },
+    {
+      "email": "deepak.gupta@deloitte.com",
+      "type": "pageview",
+      "ts": "2026-08-29T21:39:00",
+      "asset": "/resources/webinar-how-to-start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "sanjayg@keka.com",
+      "type": "pageview",
+      "ts": "2026-08-30T06:24:00",
+      "asset": "/resources/webinar-how-to-start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "aisyah.abdullah@sea.com",
+      "type": "click",
+      "ts": "2026-08-30T15:23:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "sanjay.rao@hdfcbank.com",
+      "type": "open",
+      "ts": "2026-08-30T19:48:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "tnguyen@ninjavan.co",
+      "type": "open",
+      "ts": "2026-08-31T01:20:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "dsmith@chewy.com",
+      "type": "open",
+      "ts": "2026-08-31T03:59:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "nalsayed@emirates.com",
+      "type": "pageview",
+      "ts": "2026-08-31T04:02:00",
+      "asset": "/product/darwinbox-cortex"
+    },
+    {
+      "email": "dsmith@chewy.com",
+      "type": "open",
+      "ts": "2026-08-31T04:19:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "dsmith@chewy.com",
+      "type": "pageview",
+      "ts": "2026-08-31T05:09:00",
+      "asset": "/blog/start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "dsmith@chewy.com",
+      "type": "form_fill",
+      "ts": "2026-08-31T06:38:00",
+      "asset": "pricing-request-form"
+    },
+    {
+      "email": "dsmith@chewy.com",
+      "type": "pageview",
+      "ts": "2026-08-31T08:02:00",
+      "asset": "/blog/start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "nalsayed@emirates.com",
+      "type": "click",
+      "ts": "2026-08-31T11:52:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "dsmith@chewy.com",
+      "type": "click",
+      "ts": "2026-08-31T15:17:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "dsmith@chewy.com",
+      "type": "pageview",
+      "ts": "2026-08-31T16:10:00",
+      "asset": "/product/darwinbox-cortex"
+    },
+    {
+      "email": "dsmith@chewy.com",
+      "type": "pageview",
+      "ts": "2026-08-31T18:15:00",
+      "asset": "/blog/start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "dsmith@chewy.com",
+      "type": "pageview",
+      "ts": "2026-08-31T18:30:00",
+      "asset": "/resources/webinar-how-to-start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "dsmith@chewy.com",
+      "type": "form_fill",
+      "ts": "2026-08-31T18:45:00",
+      "asset": "pricing-request-form"
+    },
+    {
+      "email": "dsmith@chewy.com",
+      "type": "open",
+      "ts": "2026-08-31T18:53:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "nalfarsi@talabat.com",
+      "type": "pageview",
+      "ts": "2026-08-31T21:15:00",
+      "asset": "/resources/webinar-how-to-start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "dsmith@chewy.com",
+      "type": "click",
+      "ts": "2026-08-31T21:18:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "rgunawan@grab.com",
+      "type": "click",
+      "ts": "2026-08-31T21:24:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "dsmith@chewy.com",
+      "type": "open",
+      "ts": "2026-08-31T21:42:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "averma@asianpaints.com",
+      "type": "pageview",
+      "ts": "2026-08-31T22:00:00",
+      "asset": "/product/darwinbox-cortex"
+    },
+    {
+      "email": "dsmith@chewy.com",
+      "type": "form_fill",
+      "ts": "2026-08-31T22:33:00",
+      "asset": "pricing-request-form"
+    },
+    {
+      "email": "vikram@zomato.com",
+      "type": "open",
+      "ts": "2026-09-01T07:31:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "divyar@hdfcbank.com",
+      "type": "click",
+      "ts": "2026-09-01T14:10:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "fatimah@grab.com",
+      "type": "form_fill",
+      "ts": "2026-09-01T15:10:00",
+      "asset": "pricing-request-form"
+    },
+    {
+      "email": "dnair@infosys.com",
+      "type": "open",
+      "ts": "2026-09-01T18:44:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "rverma82@rediffmail.com",
+      "type": "pageview",
+      "ts": "2026-09-02T06:38:00",
+      "asset": "/blog/start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "neha.rao@havells.com",
+      "type": "open",
+      "ts": "2026-09-02T15:29:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "ajay.kulkarni@icicibank.com",
+      "type": "form_fill",
+      "ts": "2026-09-02T17:19:00",
+      "asset": "contact-sales-form"
+    },
+    {
+      "email": "amit@keka.com",
+      "type": "click",
+      "ts": "2026-09-02T17:33:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "nisha.kulkarni@hcltech.com",
+      "type": "click",
+      "ts": "2026-09-03T05:41:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "nisha.kulkarni@hcltech.com",
+      "type": "open",
+      "ts": "2026-09-03T11:30:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "nisha.kulkarni@hcltech.com",
+      "type": "click",
+      "ts": "2026-09-03T11:33:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "nisha.kulkarni@hcltech.com",
+      "type": "open",
+      "ts": "2026-09-03T14:31:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "nisha.kulkarni@hcltech.com",
+      "type": "pageview",
+      "ts": "2026-09-03T16:32:00",
+      "asset": "/product/darwinbox-cortex"
+    },
+    {
+      "email": "nisha.kulkarni@hcltech.com",
+      "type": "click",
+      "ts": "2026-09-03T18:14:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "nisha.kulkarni@hcltech.com",
+      "type": "pageview",
+      "ts": "2026-09-03T20:15:00",
+      "asset": "/blog/start-and-scale-ai-in-hr"
+    },
+    {
+      "email": "nisha.kulkarni@hcltech.com",
+      "type": "form_fill",
+      "ts": "2026-09-03T22:05:00",
+      "asset": "pricing-request-form"
+    },
+    {
+      "email": "nisha.kulkarni@hcltech.com",
+      "type": "open",
+      "ts": "2026-09-03T22:12:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "nisha.kulkarni@hcltech.com",
+      "type": "open",
+      "ts": "2026-09-03T23:22:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "deepak.gupta@deloitte.com",
+      "type": "click",
+      "ts": "2026-09-04T06:31:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "mohammed.alsayed@majidalfuttaim.com",
+      "type": "form_fill",
+      "ts": "2026-09-04T10:13:00",
+      "asset": "pricing-request-form"
+    },
+    {
+      "email": "siti@ocbc.com",
+      "type": "form_fill",
+      "ts": "2026-09-04T13:49:00",
+      "asset": "pricing-request-form"
+    },
+    {
+      "email": "divya.pillai@yahoo.com",
+      "type": "click",
+      "ts": "2026-09-04T16:34:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "mohammed.alsayed@majidalfuttaim.com",
+      "type": "open",
+      "ts": "2026-09-04T21:02:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "anan.wongsa@scg.com",
+      "type": "open",
+      "ts": "2026-09-05T05:44:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "emilyw@datadoghq.com",
+      "type": "pageview",
+      "ts": "2026-09-05T17:04:00",
+      "asset": "/product/darwinbox-cortex"
+    },
+    {
+      "email": "snehad@infosys.com",
+      "type": "click",
+      "ts": "2026-09-05T21:12:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "siti@ocbc.com",
+      "type": "open",
+      "ts": "2026-09-06T10:34:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "vikramn@darwinbox.com",
+      "type": "click",
+      "ts": "2026-09-06T14:58:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "amit.pillai@ey.com",
+      "type": "click",
+      "ts": "2026-09-07T03:46:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "amalhotra@havells.com",
+      "type": "form_fill",
+      "ts": "2026-09-07T15:02:00",
+      "asset": "contact-sales-form"
+    },
+    {
+      "email": "rahul.mukherjee@iimb.ac.in",
+      "type": "form_fill",
+      "ts": "2026-09-07T17:00:00",
+      "asset": "contact-sales-form"
+    },
+    {
+      "email": "joser@ayala.com",
+      "type": "click",
+      "ts": "2026-09-07T19:31:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "siti@ocbc.com",
+      "type": "click",
+      "ts": "2026-09-08T03:15:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "eko@grab.com",
+      "type": "open",
+      "ts": "2026-09-08T05:31:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "noura.alzaabi@alfuttaim.com",
+      "type": "form_fill",
+      "ts": "2026-09-08T07:21:00",
+      "asset": "contact-sales-form"
+    },
+    {
+      "email": "siripornw@ocbc.com",
+      "type": "pageview",
+      "ts": "2026-09-08T09:32:00",
+      "asset": "/product/darwinbox-cortex"
+    },
+    {
+      "email": "joser@ayala.com",
+      "type": "form_fill",
+      "ts": "2026-09-08T19:18:00",
+      "asset": "contact-sales-form"
+    },
+    {
+      "email": "meerap@ril.com",
+      "type": "click",
+      "ts": "2026-09-09T00:30:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "eko@grab.com",
+      "type": "form_fill",
+      "ts": "2026-09-09T06:53:00",
+      "asset": "contact-sales-form"
+    },
+    {
+      "email": "ajay.kulkarni@icicibank.com",
+      "type": "form_fill",
+      "ts": "2026-09-09T11:25:00",
+      "asset": "contact-sales-form"
+    },
+    {
+      "email": "nurul.osman@airasia.com",
+      "type": "click",
+      "ts": "2026-09-09T20:19:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "nishap@rediffmail.com",
+      "type": "click",
+      "ts": "2026-09-10T10:25:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "ejohnson@chewy.com",
+      "type": "click",
+      "ts": "2026-09-10T10:41:00",
+      "asset": "cta-book-demo"
+    },
+    {
+      "email": "priya.malhotra@techmahindra.com",
+      "type": "open",
+      "ts": "2026-09-10T19:38:00",
+      "asset": "no-show-catchup-email"
+    },
+    {
+      "email": "anjalik@infosys.com",
+      "type": "pageview",
+      "ts": "2026-09-11T02:54:00",
+      "asset": "/product/darwinbox-cortex"
+    },
+    {
+      "email": "amit@apollohospitals.com",
+      "type": "pageview",
+      "ts": "2026-09-11T04:13:00",
+      "asset": "/product/darwinbox-cortex"
+    },
+    {
+      "email": "divya.pillai@yahoo.com",
+      "type": "click",
+      "ts": "2026-09-11T11:01:00",
+      "asset": "cta-watch-recording"
+    },
+    {
+      "email": "meerap@ril.com",
+      "type": "pageview",
+      "ts": "2026-09-11T17:47:00",
+      "asset": "/product/darwinbox-cortex"
+    },
+    {
+      "email": "huy@sea.com",
+      "type": "open",
+      "ts": "2026-09-12T05:51:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "aisyah.abdullah@sea.com",
+      "type": "form_fill",
+      "ts": "2026-09-12T09:01:00",
+      "asset": "contact-sales-form"
+    },
+    {
+      "email": "omar.alfarsi@landmarkgroup.com",
+      "type": "form_fill",
+      "ts": "2026-09-12T09:33:00",
+      "asset": "pricing-request-form"
+    },
+    {
+      "email": "tnguyen@ninjavan.co",
+      "type": "open",
+      "ts": "2026-09-12T11:40:00",
+      "asset": "thank-you-email"
+    },
+    {
+      "email": "ejohnson@chewy.com",
+      "type": "click",
+      "ts": "2026-09-12T20:47:00",
+      "asset": "cta-watch-recording"
     }
   ],
   "lifecycle_changes": [
     {
-      "email": "alice.lin@harborviewsoftware.com",
+      "email": "anjalik@infosys.com",
       "from": "subscriber",
       "to": "lead",
-      "ts": "2026-07-24T00:00:00"
+      "ts": "2026-08-18T11:00:00"
     },
     {
-      "email": "alice.lin@harborviewsoftware.com",
+      "email": "anjalik@infosys.com",
       "from": "lead",
       "to": "marketingqualifiedlead",
-      "ts": "2026-08-04T22:00:00"
+      "ts": "2026-08-20T11:00:00"
     },
     {
-      "email": "alice.lin@harborviewsoftware.com",
-      "from": "marketingqualifiedlead",
-      "to": "salesqualifiedlead",
-      "ts": "2026-08-03T21:00:00"
-    },
-    {
-      "email": "juliaf@anchorpointsaas.com",
+      "email": "divya@hdfcbank.com",
       "from": "subscriber",
       "to": "lead",
-      "ts": "2026-07-25T18:00:00"
+      "ts": "2026-08-18T11:00:00"
     },
     {
-      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "email": "divya@hdfcbank.com",
       "from": "lead",
       "to": "marketingqualifiedlead",
-      "ts": "2026-07-22T23:00:00"
+      "ts": "2026-08-20T11:00:00"
     },
     {
-      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "email": "rgunawan@grab.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-16T11:00:00"
+    },
+    {
+      "email": "rgunawan@grab.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-08-19T11:00:00"
+    },
+    {
+      "email": "yalzaabi@landmarkgroup.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-16T11:00:00"
+    },
+    {
+      "email": "sneham@phonepe.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-17T11:00:00"
+    },
+    {
+      "email": "siriporn@ninjavan.co",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-17T11:00:00"
+    },
+    {
+      "email": "siriporn@ninjavan.co",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-08-19T11:00:00"
+    },
+    {
+      "email": "ejohnson@chewy.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-17T11:00:00"
+    },
+    {
+      "email": "ejohnson@chewy.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-08-20T11:00:00"
+    },
+    {
+      "email": "ejohnson@chewy.com",
       "from": "marketingqualifiedlead",
       "to": "salesqualifiedlead",
-      "ts": "2026-08-01T22:00:00"
+      "ts": "2026-08-22T11:00:00"
     },
     {
-      "email": "kevin.ivanova@palmettosaasgroup.com",
+      "email": "averma@asianpaints.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-18T11:00:00"
+    },
+    {
+      "email": "robert.johnson@datadoghq.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-16T11:00:00"
+    },
+    {
+      "email": "robert.johnson@datadoghq.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-08-21T11:00:00"
+    },
+    {
+      "email": "yalsayed@qatarairways.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-16T11:00:00"
+    },
+    {
+      "email": "ahassan@maybank.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-17T11:00:00"
+    },
+    {
+      "email": "nurul.osman@airasia.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-18T11:00:00"
+    },
+    {
+      "email": "meerap@hcltech.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-16T11:00:00"
+    },
+    {
+      "email": "tnguyen@ninjavan.co",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-16T11:00:00"
+    },
+    {
+      "email": "tnguyen@ninjavan.co",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-08-20T11:00:00"
+    },
+    {
+      "email": "tnguyen@ninjavan.co",
+      "from": "marketingqualifiedlead",
+      "to": "salesqualifiedlead",
+      "ts": "2026-08-24T11:00:00"
+    },
+    {
+      "email": "meeram@darwinbox.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-18T11:00:00"
+    },
+    {
+      "email": "rahul.mukherjee@iimb.ac.in",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-16T11:00:00"
+    },
+    {
+      "email": "sanjay.rao@hdfcbank.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-18T11:02:00"
+    },
+    {
+      "email": "sanjay.rao@hdfcbank.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-08-19T11:02:00"
+    },
+    {
+      "email": "pooja@delhivery.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-16T11:34:00"
+    },
+    {
+      "email": "neha.rao@havells.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-18T13:28:00"
+    },
+    {
+      "email": "neha.rao@havells.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-08-20T13:28:00"
+    },
+    {
+      "email": "fatimah@grab.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-16T14:17:00"
+    },
+    {
+      "email": "poojak@icicibank.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-16T15:01:00"
+    },
+    {
+      "email": "laura.miller@sweetgreen.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-16T16:45:00"
+    },
+    {
+      "email": "emilyw@datadoghq.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-18T17:31:00"
+    },
+    {
+      "email": "eko@grab.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-18T18:01:00"
+    },
+    {
+      "email": "eko@grab.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-08-20T18:01:00"
+    },
+    {
+      "email": "yousef@emirates.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-17T18:59:00"
+    },
+    {
+      "email": "lalharthi@emirates.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-16T21:21:00"
+    },
+    {
+      "email": "meerap@ril.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-18T03:30:00"
+    },
+    {
+      "email": "meerap@ril.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-08-20T03:30:00"
+    },
+    {
+      "email": "amit@keka.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-19T03:33:00"
+    },
+    {
+      "email": "ajay.kulkarni@icicibank.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-18T04:37:00"
+    },
+    {
+      "email": "sanjayg@keka.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-19T04:49:00"
+    },
+    {
+      "email": "anjalig@freshworks.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-17T05:36:00"
+    },
+    {
+      "email": "ppillai@techmahindra.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-18T06:34:00"
+    },
+    {
+      "email": "nishap@rediffmail.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-18T10:00:00"
+    },
+    {
+      "email": "nishap@rediffmail.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-08-21T10:00:00"
+    },
+    {
+      "email": "deepakm@razorpay.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-19T11:16:00"
+    },
+    {
+      "email": "omar.alfarsi@landmarkgroup.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-19T13:12:00"
+    },
+    {
+      "email": "mohammed.alsayed@majidalfuttaim.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-17T13:30:00"
+    },
+    {
+      "email": "divya.pillai@yahoo.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-18T13:31:00"
+    },
+    {
+      "email": "divya.pillai@yahoo.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-08-20T13:31:00"
+    },
+    {
+      "email": "noura.alzaabi@alfuttaim.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-19T19:33:00"
+    },
+    {
+      "email": "divyar@hdfcbank.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-18T20:14:00"
+    },
+    {
+      "email": "divyar@hdfcbank.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-08-20T20:14:00"
+    },
+    {
+      "email": "deepak.gupta@deloitte.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-19T22:06:00"
+    },
+    {
+      "email": "aisyah.abdullah@sea.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-19T22:31:00"
+    },
+    {
+      "email": "ajay@techmahindra.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-19T23:05:00"
+    },
+    {
+      "email": "joser@ayala.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-18T01:40:00"
+    },
+    {
+      "email": "aiyer@nykaa.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-20T03:11:00"
+    },
+    {
+      "email": "amalhotra@havells.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-20T04:10:00"
+    },
+    {
+      "email": "snehad@infosys.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-20T05:23:00"
+    },
+    {
+      "email": "snehad@infosys.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-08-22T05:23:00"
+    },
+    {
+      "email": "landerson@rippling.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-20T14:38:00"
+    },
+    {
+      "email": "landerson@rippling.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-08-21T14:38:00"
+    },
+    {
+      "email": "ahmed.alsayed@hotmail.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-20T19:59:00"
+    },
+    {
+      "email": "huy@sea.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-20T20:44:00"
+    },
+    {
+      "email": "siti@ocbc.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-21T01:49:00"
+    },
+    {
+      "email": "nalsayed@emirates.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-21T02:35:00"
+    },
+    {
+      "email": "vikram@zomato.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-20T02:48:00"
+    },
+    {
+      "email": "nalfarsi@talabat.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-19T03:17:00"
+    },
+    {
+      "email": "vikramn@darwinbox.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-20T12:19:00"
+    },
+    {
+      "email": "amit.pillai@ey.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-19T20:41:00"
+    },
+    {
+      "email": "nsharma@drreddys.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-22T20:08:00"
+    },
+    {
+      "email": "mkrishnan@darwinbox.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-23T01:15:00"
+    },
+    {
+      "email": "sneha@freshworks.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-23T09:09:00"
+    },
+    {
+      "email": "amit@apollohospitals.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-24T21:42:00"
+    },
+    {
+      "email": "dnair@infosys.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-25T16:00:00"
+    },
+    {
+      "email": "abose@greythr.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-08-30T00:40:00"
+    },
+    {
+      "email": "abose@greythr.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-09-02T00:40:00"
+    },
+    {
+      "email": "abose@greythr.com",
+      "from": "marketingqualifiedlead",
+      "to": "salesqualifiedlead",
+      "ts": "2026-09-05T00:40:00"
+    },
+    {
+      "email": "dsmith@chewy.com",
+      "from": "subscriber",
+      "to": "lead",
+      "ts": "2026-09-04T03:59:00"
+    },
+    {
+      "email": "dsmith@chewy.com",
+      "from": "lead",
+      "to": "marketingqualifiedlead",
+      "ts": "2026-09-08T03:59:00"
+    },
+    {
+      "email": "dsmith@chewy.com",
+      "from": "marketingqualifiedlead",
+      "to": "salesqualifiedlead",
+      "ts": "2026-09-10T03:59:00"
+    },
+    {
+      "email": "dsmith@chewy.com",
       "from": "salesqualifiedlead",
       "to": "opportunity",
-      "ts": "2026-08-13T07:00:00"
+      "ts": "2026-09-12T23:00:00"
     },
     {
-      "email": "zmoreau@vectorcloudsystems.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-27T14:00:00"
-    },
-    {
-      "email": "zmoreau@vectorcloudsystems.com",
-      "from": "marketingqualifiedlead",
-      "to": "salesqualifiedlead",
-      "ts": "2026-07-29T14:00:00"
-    },
-    {
-      "email": "zmoreau@vectorcloudsystems.com",
-      "from": "salesqualifiedlead",
-      "to": "opportunity",
-      "ts": "2026-08-06T14:00:00"
-    },
-    {
-      "email": "pmalik@palmettosaasgroup.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-24T13:00:00"
-    },
-    {
-      "email": "pmalik@palmettosaasgroup.com",
-      "from": "marketingqualifiedlead",
-      "to": "salesqualifiedlead",
-      "ts": "2026-08-04T22:00:00"
-    },
-    {
-      "email": "pmalik@palmettosaasgroup.com",
-      "from": "salesqualifiedlead",
-      "to": "opportunity",
-      "ts": "2026-08-04T09:00:00"
-    },
-    {
-      "email": "jamesb@palmettosaasgroup.com",
+      "email": "nisha.kulkarni@hcltech.com",
       "from": "subscriber",
       "to": "lead",
-      "ts": "2026-07-24T13:00:00"
+      "ts": "2026-09-08T05:41:00"
     },
     {
-      "email": "jamesb@palmettosaasgroup.com",
+      "email": "nisha.kulkarni@hcltech.com",
       "from": "lead",
       "to": "marketingqualifiedlead",
-      "ts": "2026-08-01T02:00:00"
+      "ts": "2026-09-10T05:41:00"
     },
     {
-      "email": "jamesb@palmettosaasgroup.com",
+      "email": "nisha.kulkarni@hcltech.com",
       "from": "marketingqualifiedlead",
       "to": "salesqualifiedlead",
-      "ts": "2026-08-11T02:00:00"
-    },
-    {
-      "email": "ninaj@palmettosaasgroup.com",
-      "from": "subscriber",
-      "to": "lead",
-      "ts": "2026-07-22T05:00:00"
-    },
-    {
-      "email": "nina.haddad@outlook.com",
-      "from": "subscriber",
-      "to": "lead",
-      "ts": "2026-07-22T23:00:00"
-    },
-    {
-      "email": "nina.haddad@outlook.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-31T17:00:00"
-    },
-    {
-      "email": "nina.haddad@outlook.com",
-      "from": "marketingqualifiedlead",
-      "to": "salesqualifiedlead",
-      "ts": "2026-08-08T00:00:00"
-    },
-    {
-      "email": "lingb@truenorthecom.com",
-      "from": "subscriber",
-      "to": "lead",
-      "ts": "2026-07-25T15:00:00"
-    },
-    {
-      "email": "lingb@truenorthecom.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-08-04T21:00:00"
-    },
-    {
-      "email": "nwong@truenorthecom.com",
-      "from": "subscriber",
-      "to": "lead",
-      "ts": "2026-07-25T00:00:00"
-    },
-    {
-      "email": "nwong@truenorthecom.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-08-05T06:00:00"
-    },
-    {
-      "email": "nwong@truenorthecom.com",
-      "from": "marketingqualifiedlead",
-      "to": "salesqualifiedlead",
-      "ts": "2026-08-12T00:00:00"
-    },
-    {
-      "email": "marcot@anchorpointsaas.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-27T17:00:00"
-    },
-    {
-      "email": "marcot@anchorpointsaas.com",
-      "from": "marketingqualifiedlead",
-      "to": "salesqualifiedlead",
-      "ts": "2026-08-01T07:00:00"
-    },
-    {
-      "email": "marcot@anchorpointsaas.com",
-      "from": "salesqualifiedlead",
-      "to": "opportunity",
-      "ts": "2026-08-12T21:00:00"
-    },
-    {
-      "email": "vbello@truenorthecom.com",
-      "from": "subscriber",
-      "to": "lead",
-      "ts": "2026-07-26T14:00:00"
-    },
-    {
-      "email": "vbello@truenorthecom.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-29T21:00:00"
-    },
-    {
-      "email": "vbello@truenorthecom.com",
-      "from": "marketingqualifiedlead",
-      "to": "salesqualifiedlead",
-      "ts": "2026-08-13T16:00:00"
-    },
-    {
-      "email": "meib@palmettosaasgroup.com",
-      "from": "subscriber",
-      "to": "lead",
-      "ts": "2026-07-22T11:00:00"
-    },
-    {
-      "email": "aditya.joshi@anchorpointsaas.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-22T13:00:00"
-    },
-    {
-      "email": "vmehta@anchorpointsaas.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-23T11:00:00"
-    },
-    {
-      "email": "vmehta@anchorpointsaas.com",
-      "from": "marketingqualifiedlead",
-      "to": "salesqualifiedlead",
-      "ts": "2026-07-28T10:00:00"
-    },
-    {
-      "email": "laura.patel@yahoo.com",
-      "from": "subscriber",
-      "to": "lead",
-      "ts": "2026-07-28T17:00:00"
-    },
-    {
-      "email": "laura.patel@yahoo.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-28T09:00:00"
-    },
-    {
-      "email": "laura.patel@yahoo.com",
-      "from": "marketingqualifiedlead",
-      "to": "salesqualifiedlead",
-      "ts": "2026-08-05T15:00:00"
-    },
-    {
-      "email": "priyanka.marsh@zenithmarketinggroup.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-23T00:00:00"
-    },
-    {
-      "email": "priyanka.marsh@zenithmarketinggroup.com",
-      "from": "marketingqualifiedlead",
-      "to": "salesqualifiedlead",
-      "ts": "2026-08-05T12:00:00"
-    },
-    {
-      "email": "nadia.moreau@zenithmarketinggroup.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-27T16:00:00"
-    },
-    {
-      "email": "hivanova@palmettosaasgroup.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-26T15:00:00"
-    },
-    {
-      "email": "tomf@palmettosaasgroup.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-22T19:00:00"
-    },
-    {
-      "email": "sara.reddy@zenithmarketinggroup.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-24T11:00:00"
-    },
-    {
-      "email": "sara.reddy@zenithmarketinggroup.com",
-      "from": "marketingqualifiedlead",
-      "to": "salesqualifiedlead",
-      "ts": "2026-07-28T00:00:00"
-    },
-    {
-      "email": "zoe.moreau@hotmail.com",
-      "from": "subscriber",
-      "to": "lead",
-      "ts": "2026-07-25T11:00:00"
-    },
-    {
-      "email": "zoe.moreau@hotmail.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-27T03:00:00"
-    },
-    {
-      "email": "victor.bello@truenorthecom.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-23T02:00:00"
-    },
-    {
-      "email": "victor.bello@truenorthecom.com",
-      "from": "marketingqualifiedlead",
-      "to": "salesqualifiedlead",
-      "ts": "2026-08-04T16:00:00"
-    },
-    {
-      "email": "katie.sato@yahoo.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-22T15:00:00"
-    },
-    {
-      "email": "marcob@palmettosaasgroup.com",
-      "from": "subscriber",
-      "to": "lead",
-      "ts": "2026-07-28T21:00:00"
-    },
-    {
-      "email": "anton.petrov@truenorthecom.com",
-      "from": "subscriber",
-      "to": "lead",
-      "ts": "2026-07-25T12:00:00"
-    },
-    {
-      "email": "anton.petrov@truenorthecom.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-08-01T09:00:00"
-    },
-    {
-      "email": "isabel.mahajan@gmail.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-23T17:00:00"
-    },
-    {
-      "email": "isabel.mahajan@gmail.com",
-      "from": "marketingqualifiedlead",
-      "to": "salesqualifiedlead",
-      "ts": "2026-07-31T03:00:00"
-    },
-    {
-      "email": "aditya.bello@palmettosaasgroup.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-23T04:00:00"
-    },
-    {
-      "email": "aditya.bello@palmettosaasgroup.com",
-      "from": "marketingqualifiedlead",
-      "to": "salesqualifiedlead",
-      "ts": "2026-08-01T23:00:00"
-    },
-    {
-      "email": "tomas.haddad@anchorpointsaas.com",
-      "from": "subscriber",
-      "to": "lead",
-      "ts": "2026-07-24T22:00:00"
-    },
-    {
-      "email": "tomas.haddad@anchorpointsaas.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-30T03:00:00"
-    },
-    {
-      "email": "antonm@anchorpointsaas.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-22T04:00:00"
-    },
-    {
-      "email": "samuel.rao@anchorpointsaas.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-27T10:00:00"
-    },
-    {
-      "email": "samuel.rao@anchorpointsaas.com",
-      "from": "marketingqualifiedlead",
-      "to": "salesqualifiedlead",
-      "ts": "2026-07-27T05:00:00"
-    },
-    {
-      "email": "axu@vectorcloudsystems.com",
-      "from": "subscriber",
-      "to": "lead",
-      "ts": "2026-07-25T21:00:00"
-    },
-    {
-      "email": "axu@vectorcloudsystems.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-31T03:00:00"
-    },
-    {
-      "email": "axu@vectorcloudsystems.com",
-      "from": "marketingqualifiedlead",
-      "to": "salesqualifiedlead",
-      "ts": "2026-08-07T15:00:00"
-    },
-    {
-      "email": "marcof@harborviewsoftware.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-28T21:00:00"
-    },
-    {
-      "email": "marcof@harborviewsoftware.com",
-      "from": "marketingqualifiedlead",
-      "to": "salesqualifiedlead",
-      "ts": "2026-07-29T10:00:00"
-    },
-    {
-      "email": "marcof@harborviewsoftware.com",
-      "from": "salesqualifiedlead",
-      "to": "opportunity",
-      "ts": "2026-08-13T12:00:00"
-    },
-    {
-      "email": "VICTORK@QUANTARASOFTWARE.COM",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-23T03:00:00"
-    },
-    {
-      "email": "VICTORK@QUANTARASOFTWARE.COM",
-      "from": "marketingqualifiedlead",
-      "to": "salesqualifiedlead",
-      "ts": "2026-07-28T00:00:00"
-    },
-    {
-      "email": "VICTORK@QUANTARASOFTWARE.COM",
-      "from": "salesqualifiedlead",
-      "to": "opportunity",
-      "ts": "2026-08-03T04:00:00"
-    },
-    {
-      "email": "diegoi@cascaderevops.com",
-      "from": "subscriber",
-      "to": "lead",
-      "ts": "2026-07-28T21:00:00"
-    },
-    {
-      "email": "diegoi@cascaderevops.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-30T01:00:00"
-    },
-    {
-      "email": "rnair@kestrelit.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-25T19:00:00"
-    },
-    {
-      "email": "rnair@kestrelit.com",
-      "from": "marketingqualifiedlead",
-      "to": "salesqualifiedlead",
-      "ts": "2026-07-27T13:00:00"
-    },
-    {
-      "email": "rnair@kestrelit.com",
-      "from": "salesqualifiedlead",
-      "to": "opportunity",
-      "ts": "2026-08-08T09:00:00"
-    },
-    {
-      "email": "obose@ridgelinecommerce.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-22T13:00:00"
-    },
-    {
-      "email": "obose@ridgelinecommerce.com",
-      "from": "marketingqualifiedlead",
-      "to": "salesqualifiedlead",
-      "ts": "2026-07-30T19:00:00"
-    },
-    {
-      "email": "elena.kapoor@pinehollowsoftware.com",
-      "from": "subscriber",
-      "to": "lead",
-      "ts": "2026-07-23T08:00:00"
-    },
-    {
-      "email": "divya.verma@clarionanalytics.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-27T07:00:00"
-    },
-    {
-      "email": "wendya@pinehollowsoftware.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-23T15:00:00"
-    },
-    {
-      "email": "wendya@pinehollowsoftware.com",
-      "from": "marketingqualifiedlead",
-      "to": "salesqualifiedlead",
-      "ts": "2026-07-28T22:00:00"
-    },
-    {
-      "email": "wendya@pinehollowsoftware.com",
-      "from": "salesqualifiedlead",
-      "to": "opportunity",
-      "ts": "2026-08-12T16:00:00"
-    },
-    {
-      "email": "nadial@copperlineit.com",
-      "from": "subscriber",
-      "to": "lead",
-      "ts": "2026-07-23T18:00:00"
-    },
-    {
-      "email": "nadial@copperlineit.com",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-29T07:00:00"
-    },
-    {
-      "email": "nadial@copperlineit.com",
-      "from": "marketingqualifiedlead",
-      "to": "salesqualifiedlead",
-      "ts": "2026-08-02T04:00:00"
-    },
-    {
-      "email": "RHADDAD@PINEHOLLOWSOFTWARE.COM",
-      "from": "subscriber",
-      "to": "lead",
-      "ts": "2026-07-24T06:00:00"
-    },
-    {
-      "email": "RHADDAD@PINEHOLLOWSOFTWARE.COM",
-      "from": "lead",
-      "to": "marketingqualifiedlead",
-      "ts": "2026-07-29T13:00:00"
-    },
-    {
-      "email": "ahmedt@quantarasoftware.com",
-      "from": "subscriber",
-      "to": "lead",
-      "ts": "2026-07-22T01:00:00"
+      "ts": "2026-09-12T05:41:00"
     }
   ],
   "_meta": {
     "hot_accounts": [
-      "harborview software",
-      "palmetto saas group",
-      "zenith marketing group",
-      "truenorth ecommerce",
-      "anchorpoint saas",
-      "vector cloud systems"
+      "infosys",
+      "hdfc bank",
+      "grab",
+      "emirates group"
     ],
     "anomaly_contacts": [
-      "kevin.ivanova@palmettosaasgroup.com",
-      "lmenon@bluepeakventures.com"
+      "abose@greythr.com",
+      "dsmith@chewy.com",
+      "nisha.kulkarni@hcltech.com"
     ]
   }
 }

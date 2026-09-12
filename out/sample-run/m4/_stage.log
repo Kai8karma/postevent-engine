@@ -1,9 +1,0 @@
-$ /opt/homebrew/opt/python@3.14/bin/python3.14 /Users/kiran/Desktop/Claude GOD/career/postevent-engine/modules/m4-dashboard/build_dashboard.py --out out/sample-run/m4 --enriched out/sample-run/m1/hubspot_ready.csv --engagement /Users/kiran/Desktop/Claude GOD/career/postevent-engine/data/fixtures/engagement.json --segments /Users/kiran/Desktop/Claude GOD/career/postevent-engine/data/fixtures/segments.json
-exit=0 seconds=0.07
---- stdout ---
-wrote out/sample-run/m4/index.html
-  registrants=133 attendees=74 engaged=31 mql_plus=12 attendee_to_mql_pct=16.2
-  top_accounts=10 committee_accounts=5 anomalies=2
-
---- stderr ---
-

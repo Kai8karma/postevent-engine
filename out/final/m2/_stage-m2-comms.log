@@ -1,8 +1,0 @@
-$ /opt/homebrew/opt/python@3.14/bin/python3.14 /Users/kiran/Desktop/Claude GOD/career/postevent-engine/modules/m2-comms/comms.py --out out/final/m2 --enriched out/final/m1/hubspot_ready.csv --event /Users/kiran/Desktop/Claude GOD/career/postevent-engine/data/incoming/event.json --transcript /Users/kiran/Desktop/Claude GOD/career/postevent-engine/data/incoming/transcript.md
-exit=0 seconds=0.13
---- stdout ---
-M2 comms: 3 email variants rendered (138 recipients: 76 attendee, 59 no-show, 3 speaker) -> out/final/m2/emails ; approval_gate=pending_human_approval
-M2 recipients: 153 registrant/speaker rows (segments.json) -> 138 unique attendee/no-show contacts (M1 enriched output (out/final/m1/hubspot_ready.csv)) -> 135 mailable (3 suppressed: ["competitor domain ('cascaderevops.com')", "competitor domain ('cascaderevops.com')", "host company domain ('acmerevenue.example') -- internal staff, not a prospect"])
-
---- stderr ---
-

@@ -1,66 +1,60 @@
-# ICP config — placeholder until hiring company named.
-# Swap this file + data/incoming/ to re-run entire pipeline on their real event.
+# ICP config — Darwinbox (HCM / HR-tech SaaS). Buyer = HR and people leaders at
+# enterprises of 500+ employees across India, Southeast Asia, the Middle East and
+# North America. Swap this file + data/incoming/ to run the pipeline on another event.
 company:
-  name: "ACME Revenue Cloud"        # synthetic host company
-  domain: "acmerevenue.example"
-  product: "B2B revenue-operations SaaS"
+  name: "Darwinbox"
+  domain: "darwinbox.com"
+  product: "AI-native HCM platform (core HR, payroll, talent, Cortex AI agents)"
 icp:
   tiers:
     tier1:
-      titles: ["VP Marketing", "Head of Demand Gen", "Director Marketing Ops", "CMO"]
-      company_size: [200, 5000]
-      industries: ["SaaS", "Fintech", "IT Services"]
+      titles: ["CHRO", "Chief People Officer", "VP Human Resources", "VP People", "Head of People",
+               "Head of HR", "Director HR", "HR Digital Transformation Lead", "HRIS Lead",
+               "HRIS Manager", "Head of Shared Services"]
+      company_size: [500, 1000000]
+      industries: ["IT/ITES", "BFSI", "Manufacturing", "Pharma", "Retail", "Consumer Goods",
+                   "Hospitality", "Healthcare", "Telecom", "Energy", "Aviation", "Conglomerate",
+                   "Internet", "Fintech", "SaaS", "Logistics", "Real Estate"]
     tier2:
-      titles: ["Marketing Manager", "Growth Manager", "RevOps Manager"]
-      company_size: [50, 200]
-      industries: ["SaaS", "Fintech", "IT Services", "Ecommerce"]
+      titles: ["HR Business Partner", "Senior HRBP", "HR Operations Manager", "Head of Talent Acquisition",
+               "TA Manager", "Payroll Manager", "Head of L&D", "Compensation & Benefits Manager",
+               "People Analytics Lead", "CFO", "COO", "CIO", "IT Director", "Digital Transformation Head"]
+      company_size: [200, 1000000]
+      industries: ["IT/ITES", "BFSI", "Manufacturing", "Pharma", "Retail", "Consumer Goods",
+                   "Hospitality", "Healthcare", "Telecom", "Energy", "Aviation", "Conglomerate",
+                   "Internet", "Fintech", "SaaS", "Logistics", "Real Estate", "Fitness"]
     tier3:
       titles: ["*"]
-      company_size: [1, 50]
+      company_size: [1, 200]
       industries: ["*"]
+  # Region = Darwinbox sales pods. Country values are normalised to ISO-2 upstream.
   regions:
-    AMER: ["US", "CA", "BR", "MX"]
-    EMEA: ["UK", "DE", "FR", "AE", "ZA"]
-    APAC: ["IN", "SG", "AU", "JP"]
+    INDIA: ["IN"]
+    SEA: ["SG", "MY", "ID", "PH", "TH", "VN"]
+    MENA: ["AE", "SA", "QA", "KW", "OM", "BH", "EG"]
+    NA: ["US", "CA"]
+    UKEU: ["UK", "GB", "DE", "FR", "NL", "IE"]
   owners:
-    AMER: "sdr.amer@acmerevenue.example"
-    EMEA: "sdr.emea@acmerevenue.example"
-    APAC: "sdr.apac@acmerevenue.example"
-  # Real portal ownership routing (distinct from `owners:` above, which
-  # stays the fictional-SDR routing LABEL -- route computation itself is
-  # unchanged). push_to_hubspot.py resolves this map's email -> a real
-  # HubSpot ownerId via GET /crm/v3/owners and sets hubspot_owner_id on the
-  # contact upsert. Sandbox portal 247135551 has exactly one owner (Kai's
-  # own portal user, verified live) -- all three buckets map to it for this
-  # demo; swap per-bucket for a real SDR team on a real portal.
+    INDIA: "sdr.india@darwinbox.com"
+    SEA: "sdr.sea@darwinbox.com"
+    MENA: "sdr.mena@darwinbox.com"
+    NA: "sdr.na@darwinbox.com"
+    UKEU: "sdr.ukeu@darwinbox.com"
+  # Sandbox portal 247135551 has one owner (Kai's portal user); every pod maps to
+  # it for the demo. On a real portal each pod maps to its SDR's HubSpot owner.
   owner_map:
-    AMER: "kai8karma@gmail.com"
-    EMEA: "kai8karma@gmail.com"
-    APAC: "kai8karma@gmail.com"
-  # No longer applied as a blanket stage (that produced a fake 91.4%
-  # attendee-to-MQL rate -- judge fix #2). enrich.py now derives lifecyclestage
-  # per-row from a pinned rubric (tier1+attended+session>=25min -> MQL;
-  # tier1/tier2 (attended or no-show) -> lead; everyone else -> subscriber),
-  # never demoting a pre-existing HubSpot stage. This key is kept for
-  # backward-compat/documentation only; see enrich.py::lifecycle_target().
+    INDIA: "kai8karma@gmail.com"
+    SEA: "kai8karma@gmail.com"
+    MENA: "kai8karma@gmail.com"
+    NA: "kai8karma@gmail.com"
+    UKEU: "kai8karma@gmail.com"
+  # Lifecycle stage is derived per row (see enrich.py::lifecycle_target); this key is documentation only.
   lifecycle_default: "marketingqualifiedlead_pending"
 
-# Suppression -- P0 fix (judge audit #4): a real GTM control, distinct from
-# the freemail cascade below. Registrant rows on the host's own domain (an
-# internal employee registered) or a named competitor domain are flagged
-# `suppression_reason` and excluded from M2's mailable set, but are NEVER
-# dropped from the CRM export (enrich.py::apply_suppression() -- CRM/sales
-# still wants visibility into "a competitor SDR attended"). Swap these lists
-# per real event; empty lists disable suppression entirely (fail open, not
-# closed -- a misconfigured list must never accidentally suppress everyone).
+# Registrants on the host's own domain (internal staff) or a competitor domain are
+# flagged `suppression_reason`, excluded from M2's mailable set, never dropped from
+# the CRM export. Freemail is handled separately in enrich.py and is never, by itself,
+# a suppression reason.
 suppression:
-  host_domains: ["acmerevenue.example"]
-  # cascaderevops.com is a real hit in this fixture (2 registrants, both
-  # Attended=Yes) -- direct B2B RevOps-SaaS competitor of the host. The
-  # second entry is an unmatched starter-list placeholder to show the list
-  # is meant to be maintained, not just fit to this fixture.
-  competitor_domains: ["cascaderevops.com", "rivalrevops.example"]
-  # Freemail (gmail.com, yahoo.com, ...) is handled separately -- see
-  # FREEMAIL_DOMAINS in enrich.py. It backfills company/industry signal for
-  # personal-email registrants; a freemail address is never, by itself, a
-  # suppression reason.
+  host_domains: ["darwinbox.com"]
+  competitor_domains: ["keka.com", "greythr.com", "peoplestrong.com", "rippling.com", "zoho.com", "workday.com", "ukg.com"]

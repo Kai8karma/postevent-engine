@@ -1,31 +1,31 @@
 {
-  "event_name": "Pipeline After the Webinar: Turning Event Engagement into Revenue",
-  "date": "2026-07-20",
-  "host_company": "ACME Revenue Cloud",
-  "host_domain": "acmerevenue.example",
-  "topic": "Post-event follow-up strategy: speed-to-lead, segmentation, content repurposing ROI, and attribution for B2B revenue teams",
-  "duration_min": 62,
+  "event_name": "From Hype to High-Impact: How to Start and Scale AI in HR",
+  "date": "2026-08-13",
+  "start_time_local": "09:00",
+  "timezone": "America/New_York",
+  "host_company": "Darwinbox",
+  "host_domain": "darwinbox.com",
+  "topic": "What it really takes to start, scale and govern AI in HR across the employee lifecycle, for HR and people leaders",
+  "audience": "CHROs, VP/Head of HR, HR operations, HRIS and people-analytics leaders at enterprises across India, Southeast Asia, the Middle East and North America",
+  "duration_min": 33,
   "platform": "Zoom Webinars",
-  "recording_url": "https://drive.example/rec/pipeline-after-webinar.mp4",
-  "registration_page": "https://acmerevenue.example/webinars/pipeline-after-webinar",
+  "recording_url": "https://explore.darwinbox.com/lp/resources/events/webinar-how-to-start-and-scale-ai-in-hr",
+  "recording_files": [
+    {"chapter": 1, "url": "https://5451430.fs1.hubspotusercontent-na1.net/hubfs/5451430/webinar-with-q-on-ai_chapter1.mp4", "duration_sec": 697},
+    {"chapter": 2, "url": "https://5451430.fs1.hubspotusercontent-na1.net/hubfs/5451430/webinar-with-q-on-ai_chapter2.mp4", "duration_sec": 735},
+    {"chapter": 3, "url": "https://5451430.fs1.hubspotusercontent-na1.net/hubfs/5451430/webinar-with-q-on-ai_chapter3.mp4", "duration_sec": 560}
+  ],
+  "registration_page": "https://explore.darwinbox.com/lp/resources/events/webinar-how-to-start-and-scale-ai-in-hr",
+  "og_image": "https://explore.darwinbox.com/hubfs/hrci_webinar_02.webp",
   "speakers": [
-    {
-      "name": "Priya Nair",
-      "title": "VP Marketing",
-      "company": "ACME Revenue Cloud",
-      "linkedin": "https://www.linkedin.com/in/priya-nair-example"
-    },
-    {
-      "name": "Daniel Kim",
-      "title": "Head of Demand Gen",
-      "company": "Northwind Analytics",
-      "linkedin": "https://www.linkedin.com/in/daniel-kim-example"
-    },
-    {
-      "name": "Sara Alvarez",
-      "title": "RevOps Lead",
-      "company": "Meridian Software",
-      "linkedin": "https://www.linkedin.com/in/sara-alvarez-example"
-    }
-  ]
+    {"name": "Q Hamirani", "title": "Chief People Officer", "company": "HighLevel", "role": "guest speaker", "email": "kai8karma+speaker-qhamirani@gmail.com"},
+    {"name": "Sudi Bjornstad Korba", "title": "Senior Vice President of Sales, North America", "company": "Darwinbox", "role": "host", "email": "kai8karma+speaker-sudikorba@gmail.com"}
+  ],
+  "_provenance": {
+    "event": "Real public Darwinbox on-demand webinar. Title, speakers, bios, recording files and image are taken from the public event page; the recording is hosted on Darwinbox's HubSpot file CDN (portal 5451430).",
+    "date": "The page does not publish an air date. 2026-08-13 is assumed so the 7/14/30-day dashboard windows have data by the demo run; every downstream artifact treats it as the event date.",
+    "duration": "33 min measured from the three chapter files (page copy says ~45).",
+    "registrants": "Registrant and attendee people are synthetic (invented names and addresses); employer companies and domains are real so enrichment returns real data. No real person's contact data is used.",
+    "speaker_emails": "Speakers' real addresses are not public; the demo routes speaker mail to Kai-controlled aliases."
+  }
 }
