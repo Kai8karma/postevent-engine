@@ -13,6 +13,7 @@ out/webinar2-test/
 out/wf-check-*/
 out/verify-*/
 out/regress-check/
+out/api/
 
 # caches
 __pycache__/

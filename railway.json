@@ -1,0 +1,4 @@
+{
+  "build": {"builder": "DOCKERFILE"},
+  "deploy": {"healthcheckPath": "/health", "restartPolicyType": "ON_FAILURE"}
+}

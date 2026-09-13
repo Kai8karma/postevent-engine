@@ -1,0 +1,642 @@
+{
+  "name": "M1 \u2014 Lead Enrichment (Railway)",
+  "nodes": [
+    {
+      "id": "m1-run-webhook",
+      "name": "M1 Run (webhook)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        200,
+        400
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "m1-run",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "webhookId": "m1-run-webhook-0001",
+      "notes": "Entry point. Body: {registrants_csv_url?, event_slug, skip_clay?}. Responds via 'Respond Run Started' AFTER 'Call Module API - Prepare' returns, not on receipt -- so a reviewer's curl gets back the real run_id, not just an ack."
+    },
+    {
+      "id": "call-module-api---prepare",
+      "name": "Call Module API - Prepare",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        460,
+        400
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.MODULE_API_URL }}/run",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.MODULE_API_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { module: \"m1\", phase: \"prepare\", live: true, inputs: { registrants_csv_url: $json.body.registrants_csv_url, event_slug: $json.body.event_slug } } }}",
+        "options": {
+          "timeout": 1800000
+        }
+      },
+      "retryOnFail": false,
+      "notes": "Module API /run, phase=prepare. timeout=1800000ms (1800s) per spec. retryOnFail=false deliberately: prepare does dedupe + LLM inference + writes interim state, so a blind retry on a slow-but-succeeding call risks a duplicate run rather than a clean failure. Auth is a bearer header built from $env.MODULE_API_TOKEN, not an n8n credential -- module API has no per-request credential, just the shared token."
+    },
+    {
+      "id": "prepare-ok",
+      "name": "Prepare OK?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        700,
+        400
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "cond-prepare-ok",
+              "leftValue": "={{ $json.ok }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "notes": "True = prepare's JSON body has ok:true (HTTP 200 either way per module-api.md -- app-level failure is still HTTP 200 with ok:false). False routes to 'Stop: Prepare Failed' so the execution shows red with the API's own error string, per the no-silent-failure design rule."
+    },
+    {
+      "id": "stop-prepare-failed",
+      "name": "Stop: Prepare Failed",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        700,
+        680
+      ],
+      "parameters": {
+        "errorMessage": "=m1 prepare failed for event {{ $('M1 Run (webhook)').item.json.body.event_slug }}: {{ $json.error || 'module API returned ok:false with no error message' }}"
+      },
+      "notes": "Terminal failure node -- same pattern as v1's 'Stop with Clear Error'. Surfaces the module API's own error string in the execution log."
+    },
+    {
+      "id": "respond-run-started",
+      "name": "Respond Run Started",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        940,
+        400
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { run_id: $json.run_id, status: \"started\" } }}",
+        "options": {}
+      },
+      "notes": "Fires only after prepare succeeds, so the reviewer's curl gets the real run_id. Execution keeps running after this node (Respond to Webhook does not terminate the workflow) -- the Clay leg and finalize continue in the background."
+    },
+    {
+      "id": "skip-clay",
+      "name": "Skip Clay?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1180,
+        400
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "cond-skip-flag",
+              "leftValue": "={{ $('M1 Run (webhook)').item.json.body.skip_clay }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "cond-no-domains",
+              "leftValue": "={{ ($('Call Module API - Prepare').item.json.next && $('Call Module API - Prepare').item.json.next.clay_domains || []).length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "notes": "True (skip) = caller passed skip_clay:true OR prepare returned no clay_domains -- jump straight to finalize with clay_results:{}. False = at least one domain needs Clay enrichment."
+    },
+    {
+      "id": "build-finalize-body-no-clay",
+      "name": "Build Finalize Body (No Clay)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1420,
+        600
+      ],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const runId = $('Call Module API - Prepare').item.json.run_id;\nreturn [{ json: { run_id: runId, clay_results: {} } }];"
+      },
+      "notes": "No-Clay path body for the finalize call. Same output shape as 'Assemble Clay Results' below so both branches can feed 'Call Module API - Finalize' directly without a merge node."
+    },
+    {
+      "id": "split-domains-to-items",
+      "name": "Split Domains to Items",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1420,
+        220
+      ],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const domains = ($('Call Module API - Prepare').item.json.next || {}).clay_domains || [];\nconst runId = $('Call Module API - Prepare').item.json.run_id;\nreturn domains.map(domain => ({ json: { domain, run_id: runId } }));"
+      },
+      "notes": "One item per domain still missing/low-confidence firmographics. 'Skip Clay?' already guarantees this list is non-empty on this branch."
+    },
+    {
+      "id": "push-domain-to-clay",
+      "name": "Push Domain to Clay",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1660,
+        220
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.CLAY_WEBHOOK_URL }}",
+        "authentication": "none",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { domain: $json.domain, run_id: $json.run_id, callback_url: $env.WEBHOOK_URL + \"/webhook/m1-clay-callback\" } }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "notes": "Fires once per domain (n8n loops an httpRequest node over each input item automatically). Clay's table-level HTTP-API enrichment column reads {domain, run_id} off the row and later posts the enriched result back to callback_url. continueOnFail is left at its default (false/stop) -- a failed push should show red, not vanish silently. retryOnFail covers transient network faults only."
+    },
+    {
+      "id": "wait-for-clay-enrichment-10-min",
+      "name": "Wait for Clay Enrichment (10 min)",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1900,
+        220
+      ],
+      "parameters": {
+        "resume": "timeInterval",
+        "amount": 10,
+        "unit": "minutes",
+        "options": {}
+      },
+      "notes": "TIME-BASED wait, not webhook-resume -- see 'Sticky Note: Why Not Wait-Webhook-Resume'. Gives Clay up to 10 minutes to enrich and call every domain back; whatever has landed in the static-data accumulator by then is what ships to finalize."
+    },
+    {
+      "id": "assemble-clay-results",
+      "name": "Assemble Clay Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2140,
+        220
+      ],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const runId = $('Call Module API - Prepare').item.json.run_id;\nconst staticData = $getWorkflowStaticData('global');\nconst stored = (staticData.clayResults && staticData.clayResults[runId]) || {};\nconst domainsSent = (($('Call Module API - Prepare').item.json.next || {}).clay_domains) || [];\nconst clay_results = {};\nfor (const domain of domainsSent) {\n  clay_results[domain] = stored[domain] || null;\n}\nif (staticData.clayResults) delete staticData.clayResults[runId];\nreturn [{ json: { run_id: runId, clay_results, clay_domains_sent: domainsSent.length, clay_domains_returned: Object.keys(stored).length } }];"
+      },
+      "notes": "Reads whatever 'Accumulate Clay Result' wrote into workflow static data for this run_id, fills any domain that never called back with null (finalize's phase='finalize' logic already treats missing clay data as 'fall back to LLM/rules' per module-api.md precedence). Clears the accumulator entry afterward so static data doesn't grow unbounded across runs."
+    },
+    {
+      "id": "call-module-api---finalize",
+      "name": "Call Module API - Finalize",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2380,
+        400
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.MODULE_API_URL }}/run",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.MODULE_API_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { module: \"m1\", phase: \"finalize\", run_id: $json.run_id, inputs: { clay_results: $json.clay_results } } }}",
+        "options": {
+          "timeout": 1800000
+        }
+      },
+      "retryOnFail": false,
+      "notes": "Module API /run, phase=finalize. Fed by either 'Build Finalize Body (No Clay)' or 'Assemble Clay Results' -- both emit {run_id, clay_results}. retryOnFail=false: finalize pushes to HubSpot, so a blind retry could double-upsert. Response includes the HubSpot push receipt artifact URL per spec."
+    },
+    {
+      "id": "finalize-ok",
+      "name": "Finalize OK?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2620,
+        400
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "cond-finalize-ok",
+              "leftValue": "={{ $json.ok }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "notes": "Same ok:true gate as 'Prepare OK?', on the finalize response."
+    },
+    {
+      "id": "stop-finalize-failed",
+      "name": "Stop: Finalize Failed",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        2620,
+        680
+      ],
+      "parameters": {
+        "errorMessage": "=m1 finalize failed for run {{ $('Call Module API - Prepare').item.json.run_id }}: {{ $json.error || 'module API returned ok:false with no error message' }}"
+      },
+      "notes": "Terminal failure node for a finalize-side failure (e.g. HubSpot push rejected)."
+    },
+    {
+      "id": "build-evidence-summary",
+      "name": "Build Evidence Summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2860,
+        400
+      ],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const prepare = $('Call Module API - Prepare').item.json;\nconst finalize = $json;\n\nlet clayDomainsSent = 0;\nlet clayDomainsReturned = 0;\ntry {\n  const clayNode = $('Assemble Clay Results').item.json;\n  clayDomainsSent = clayNode.clay_domains_sent;\n  clayDomainsReturned = clayNode.clay_domains_returned;\n} catch (e) {\n  // 'Assemble Clay Results' did not execute on this run -- the no-clay branch was taken instead.\n}\n\nconst receipts = [].concat(prepare.receipts || [], finalize.receipts || []);\n\nconst summary = {\n  run_id: finalize.run_id || prepare.run_id,\n  lane: finalize.lane || prepare.lane,\n  input_rows: (prepare.summary || {}).input_rows ?? null,\n  output_rows: (prepare.summary || {}).output_rows ?? null,\n  hubspot_matches: (prepare.summary || {}).hubspot_matches ?? null,\n  llm_calls: (prepare.summary || {}).llm_calls ?? null,\n  clay_domains_sent: clayDomainsSent,\n  clay_domains_returned: clayDomainsReturned,\n  contacts_upserted: (finalize.summary || {}).contacts_upserted ?? null,\n  verified_contact_pct: (finalize.summary || {}).verified_contact_pct ?? null,\n  verified_company_pct: (finalize.summary || {}).verified_company_pct ?? null,\n  receipts\n};\n\nconst fileContent = Buffer.from(JSON.stringify(summary, null, 2), 'utf8').toString('base64');\n\nreturn [{\n  json: summary,\n  binary: {\n    data: {\n      data: fileContent,\n      mimeType: 'application/json',\n      fileName: `${summary.run_id}.json`\n    }\n  }\n}];"
+      },
+      "notes": "input_rows/output_rows/hubspot_matches/llm_calls come from prepare's summary (per module-api.md's shown example); contacts_upserted/verified_*_pct are assumed to live in finalize's summary since module-api.md doesn't show a finalize response example -- verify field names against a live finalize call and adjust if they differ. clay_domains_sent/returned are read defensively via try/catch since 'Assemble Clay Results' never executes on the no-clay branch."
+    },
+    {
+      "id": "write-run-summary-to-disk",
+      "name": "Write Run Summary to Disk",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        3100,
+        400
+      ],
+      "parameters": {
+        "operation": "write",
+        "fileName": "=/home/node/.n8n/runs/{{ $json.run_id }}.json",
+        "dataPropertyName": "data",
+        "options": {}
+      },
+      "notes": "UNVERIFIED against a live instance -- flagging per this skill's own audit rule. The brief named this a 'Write Binary File node'; n8n's dedicated Write Binary File node is deprecated/removed in current 1.x/2.x, folded into 'Read/Write Files from Disk' (n8n-nodes-base.readWriteFile, operation=write). Reads the binary property built by 'Build Evidence Summary' and writes it to /home/node/.n8n/runs/<run_id>.json inside the container -- confirm the parameter names (fileName, dataPropertyName) against your instance's node panel before relying on this in production."
+    },
+    {
+      "id": "run-summary-final",
+      "name": "Run Summary (Final)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3340,
+        400
+      ],
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{ $('Build Evidence Summary').item.json }}",
+        "options": {}
+      },
+      "notes": "Re-emits the clean evidence summary (no binary payload) as the workflow's last node, so the n8n execution log shows the full receipt object per the spec's requirement."
+    },
+    {
+      "id": "clay-result-callback-webhook",
+      "name": "Clay Result Callback (webhook)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        1660,
+        900
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "m1-clay-callback",
+        "responseMode": "onReceived",
+        "responseData": "{\"status\": \"received\"}",
+        "options": {}
+      },
+      "webhookId": "m1-clay-callback-webhook-0001",
+      "notes": "Separate always-on trigger, NOT the Wait node's own resume webhook. Clay's HTTP-API enrichment column posts here once per row (once per domain) -- see the accumulator sticky note for why a Wait-node webhook-resume can't be used for this instead."
+    },
+    {
+      "id": "accumulate-clay-result",
+      "name": "Accumulate Clay Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1900,
+        900
+      ],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const body = $json.body || {};\nconst runId = body.run_id;\nconst domain = body.domain;\nconst staticData = $getWorkflowStaticData('global');\nif (!staticData.clayResults) staticData.clayResults = {};\nif (runId && domain) {\n  if (!staticData.clayResults[runId]) staticData.clayResults[runId] = {};\n  staticData.clayResults[runId][domain] = {\n    industry: body.industry ?? null,\n    employee_count: body.employee_count ?? null,\n    country: body.country ?? null,\n    source: 'clay',\n    run_url: body.run_url ?? null\n  };\n}\nreturn [{ json: { stored: Boolean(runId && domain), run_id: runId, domain } }];"
+      },
+      "notes": "Writes into $getWorkflowStaticData('global'), which n8n persists on the WORKFLOW (shared across all executions of this workflow, not per-execution) -- this is what lets N independent Clay callbacks accumulate somewhere the main execution's 'Assemble Clay Results' node can read back after its time-based Wait elapses."
+    },
+    {
+      "id": "sticky-note-why-not-wait-webhook-resume",
+      "name": "Sticky Note: Why Not Wait-Webhook-Resume",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1420,
+        780
+      ],
+      "parameters": {
+        "content": "## WHY THIS ISN'T A WAIT-NODE WEBHOOK RESUME\nv1's Wait node used resume:webhook and relied on Clay's TABLE-LEVEL 'run complete' trigger posting once with every row bundled ({rows:[...]})  -- that only works because it is a single POST.\n\nThis brief's Clay leg pushes ONE ROW AT A TIME and expects Clay's HTTP-API COLUMN to call back once PER ROW. A Wait node in resume:webhook mode resumes on the FIRST POST to its resume URL and tears the webhook down -- callbacks 2..N for the other domains would arrive at a dead URL and be lost.\n\nFix: 'Wait for Clay Enrichment (10 min)' uses resume:timeInterval instead (a plain timer, not tied to any webhook), and a SEPARATE always-on webhook ('Clay Result Callback (webhook)') collects every per-domain callback into $getWorkflowStaticData('global'), keyed by run_id. 'Assemble Clay Results' reads that accumulator once the timer elapses. This is the standard n8n pattern for 'collect N async callbacks then continue' -- workflow static data is shared across executions of the same workflow.",
+        "height": 400,
+        "width": 560,
+        "color": 5
+      }
+    },
+    {
+      "id": "sticky-note-env-vars-+-credentials",
+      "name": "Sticky Note: Env Vars + Credentials",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        200,
+        120
+      ],
+      "parameters": {
+        "content": "## ENV VARS (no n8n credentials needed)\nMODULE_API_URL, MODULE_API_TOKEN, CLAY_WEBHOOK_URL, WEBHOOK_URL -- all read via $env, so self-hosted n8n needs N8N_BLOCK_ENV_ACCESS_IN_NODE=false or every $env reference in this workflow (including inside httpRequest URL/body fields) resolves to nothing.\n\nNo HubSpot/Clay credential objects are referenced anywhere in this file -- the module API holds the HubSpot token server-side, and Clay auth is just an unguessable table-webhook URL.",
+        "height": 260,
+        "width": 480,
+        "color": 4
+      }
+    }
+  ],
+  "connections": {
+    "M1 Run (webhook)": {
+      "main": [
+        [
+          {
+            "node": "Call Module API - Prepare",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Module API - Prepare": {
+      "main": [
+        [
+          {
+            "node": "Prepare OK?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare OK?": {
+      "main": [
+        [
+          {
+            "node": "Respond Run Started",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop: Prepare Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond Run Started": {
+      "main": [
+        [
+          {
+            "node": "Skip Clay?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Skip Clay?": {
+      "main": [
+        [
+          {
+            "node": "Build Finalize Body (No Clay)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Split Domains to Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Domains to Items": {
+      "main": [
+        [
+          {
+            "node": "Push Domain to Clay",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Push Domain to Clay": {
+      "main": [
+        [
+          {
+            "node": "Wait for Clay Enrichment (10 min)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Clay Enrichment (10 min)": {
+      "main": [
+        [
+          {
+            "node": "Assemble Clay Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assemble Clay Results": {
+      "main": [
+        [
+          {
+            "node": "Call Module API - Finalize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Finalize Body (No Clay)": {
+      "main": [
+        [
+          {
+            "node": "Call Module API - Finalize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Module API - Finalize": {
+      "main": [
+        [
+          {
+            "node": "Finalize OK?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Finalize OK?": {
+      "main": [
+        [
+          {
+            "node": "Build Evidence Summary",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop: Finalize Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Evidence Summary": {
+      "main": [
+        [
+          {
+            "node": "Write Run Summary to Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Run Summary to Disk": {
+      "main": [
+        [
+          {
+            "node": "Run Summary (Final)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clay Result Callback (webhook)": {
+      "main": [
+        [
+          {
+            "node": "Accumulate Clay Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": [
+    "postevent",
+    "m1"
+  ]
+}

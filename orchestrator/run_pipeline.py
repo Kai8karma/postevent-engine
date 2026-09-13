@@ -120,8 +120,42 @@ def event_slug_for(event_dir: Path) -> str:
         return "event"
 
 
+_SCRIPT_HELP_CACHE = {}
+
+
+def _script_help(script_path: Path) -> str:
+    """--help text for one module script, cached per path (each script's
+    --help costs a real subprocess spawn, no reason to pay it twice in one
+    run)."""
+    key = str(script_path)
+    if key not in _SCRIPT_HELP_CACHE:
+        try:
+            proc = subprocess.run([sys.executable, key, "--help"], capture_output=True, text=True, timeout=15)
+            _SCRIPT_HELP_CACHE[key] = (proc.stdout or "") + (proc.stderr or "")
+        except (OSError, subprocess.TimeoutExpired):
+            _SCRIPT_HELP_CACHE[key] = ""
+    return _SCRIPT_HELP_CACHE[key]
+
+
+def lane_flags(script_path: Path, live: bool) -> list:
+    """Flip-default lane flag for one module script, detected from its own
+    --help rather than hardcoded here -- modules gain --offline support on
+    their own schedule (see enrich.py's in-progress --offline), independent
+    of this file. A script that already knows --offline: this file's own
+    default is now live, so only pass --offline when the offline lane was
+    requested. A script that still only knows --live (comms.py/repurpose.py
+    as of this writing): pass --live only when the live lane was requested
+    -- its own no-flag default stays offline, unchanged. Neither flag
+    supported (build_dashboard.py): no flag either way."""
+    help_text = _script_help(script_path)
+    if "--offline" in help_text:
+        return [] if live else ["--offline"]
+    if "--live" in help_text:
+        return ["--live"] if live else []
+    return []
+
+
 def build_stages(out_dir: Path, live: bool, event_dir: Path):
-    live_flag = ["--live"] if live else []
     m1_out = out_dir / "m1"
     m2_out = out_dir / "m2"
     m3_out = out_dir / "m3"
@@ -135,25 +169,35 @@ def build_stages(out_dir: Path, live: bool, event_dir: Path):
     transcript_md = event_dir / "transcript.md"
     registrants_csv = event_dir / "registrants.csv"
 
+    m1_script = REPO_ROOT / "modules" / "m1-enrichment" / "enrich.py"
+    m2_script = REPO_ROOT / "modules" / "m2-comms" / "comms.py"
+    m3_script = REPO_ROOT / "modules" / "m3-repurpose" / "repurpose.py"
+
     return {
         "m1": {
             "stage": "M1 enrich",
-            "cmd": [sys.executable, str(REPO_ROOT / "modules" / "m1-enrichment" / "enrich.py"),
-                    *live_flag, "--in", str(registrants_csv), "--out", str(m1_out)],
+            "cmd": [sys.executable, str(m1_script), *lane_flags(m1_script, live),
+                    "--in", str(registrants_csv), "--out", str(m1_out)],
             "key_output": m1_hubspot_ready,
         },
         "m2": {
             "stage": "M2 comms",
-            "cmd": [sys.executable, str(REPO_ROOT / "modules" / "m2-comms" / "comms.py"),
-                    *live_flag, "--out", str(m2_out), "--enriched", str(m1_hubspot_ready),
-                    "--event", str(event_json), "--transcript", str(transcript_md)],
+            # --allow-stale offline only: comms.py's cached sample_output is
+            # fingerprint-guarded against event.json/transcript.md and fails
+            # loud on a mismatch -- same offline-only exception api/run.py's
+            # stage_m2() already makes (see its comment there).
+            "cmd": [sys.executable, str(m2_script), *lane_flags(m2_script, live),
+                    "--out", str(m2_out), "--enriched", str(m1_hubspot_ready),
+                    "--event", str(event_json), "--transcript", str(transcript_md),
+                    *([] if live else ["--allow-stale"])],
             "key_output": m2_comms,
         },
         "m3": {
             "stage": "M3 repurpose",
-            "cmd": [sys.executable, str(REPO_ROOT / "modules" / "m3-repurpose" / "repurpose.py"),
-                    *live_flag, "--out", str(m3_out),
-                    "--event", str(event_json), "--transcript", str(transcript_md)],
+            "cmd": [sys.executable, str(m3_script), *lane_flags(m3_script, live),
+                    "--out", str(m3_out),
+                    "--event", str(event_json), "--transcript", str(transcript_md),
+                    *([] if live else ["--allow-stale"])],
             "key_output": m3_manifest,
         },
         "m4": {
@@ -278,6 +322,28 @@ def build_publish_stage(out_dir: Path, args) -> tuple:
     return ("run", {"stage": "M3 publish", "cmd": cmd, "key_output": m3_out / "publish_manifest.json"})
 
 
+def build_m1_push_stage(out_dir: Path, args) -> tuple:
+    """('skip', stage_name, reason) or ('run', stage-dict) for the real HubSpot
+    push (modules/m1-enrichment/push_to_hubspot.py), run right after M1.
+    Gated only on HUBSPOT_TOKEN presence, independent of top-level
+    --offline/live -- with no token, runs --dry-run (zero network, loud
+    stderr note) instead of skipping outright, so the receipt file still
+    gets written on every run (see docs/module-api.md's m1-push contract)."""
+    m1_out = out_dir / "m1"
+    companies_csv = m1_out / "hubspot_companies.csv"
+    if not companies_csv.exists():
+        return ("skip", "M1 push", f"{companies_csv} not found -- M1 must run and pass first")
+    receipt_path = out_dir / "receipts" / "m1_hubspot_push.json"
+    cmd = [sys.executable, str(REPO_ROOT / "modules" / "m1-enrichment" / "push_to_hubspot.py"),
+           "--in", str(out_dir), "--include-speakers", "--verify",
+           "--receipt", str(receipt_path), "--event-tag", args.event_tag]
+    if not os.environ.get("HUBSPOT_TOKEN"):
+        cmd.append("--dry-run")
+        print("[m1-push] HUBSPOT_TOKEN not set -- running --dry-run (zero network) instead of a real push",
+              file=sys.stderr)
+    return ("run", {"stage": "M1 push", "cmd": cmd, "key_output": receipt_path})
+
+
 def last_summary_line(text: str) -> str:
     for line in reversed(text.strip().splitlines()):
         line = line.strip()
@@ -344,6 +410,9 @@ EXTRA_STAGE_BANNERS = {
     "M3 publish": "real local file copy to a shared-drive directory, always, zero network -- plus a real "
                   "Google Drive upload if an OAuth token is present, else that lane is skipped honestly -- "
                   "unaffected by top-level --live",
+    "M1 push": "real push_to_hubspot.py call against the real dev/test HubSpot portal if HUBSPOT_TOKEN is "
+               "present, else --dry-run (zero network, loud stderr note) -- unaffected by top-level "
+               "--offline/live",
 }
 
 
@@ -424,7 +493,13 @@ def print_receipt(rows: list):
 
 def main():
     parser = argparse.ArgumentParser(description="Post-event engine: run M1->M2->M3->M4 end to end.")
-    parser.add_argument("--live", action="store_true", help="Use real LLM calls instead of offline fixtures.")
+    parser.add_argument("--offline", action="store_true",
+                         help="Replay offline fixtures instead of real LLM calls. Stages run live by "
+                              "default now -- pass --offline to get the old fixture-replay behaviour "
+                              "back (see lane_flags()).")
+    parser.add_argument("--event-tag", default=None,
+                         help="postevent_event slug passed to the m1-push stage's push_to_hubspot.py "
+                              "--event-tag (default: event_slug_for(--event-dir)).")
     parser.add_argument("--event-dir", default=str(REPO_ROOT / "data" / "incoming"),
                          help='Directory with this event\'s registrants.csv/event.json/transcript.md '
                               '(default: data/incoming/, the original fixture event). Point a second '
@@ -465,6 +540,7 @@ def main():
                          help="Env var holding a Google Drive OAuth access token for the publish stage's "
                               "optional Drive lane (default: GOOGLE_DRIVE_ACCESS_TOKEN).")
     args = parser.parse_args()
+    live = not args.offline
 
     event_dir = Path(args.event_dir)
     selected = [m.strip() for m in args.modules.split(",") if m.strip()]
@@ -474,8 +550,10 @@ def main():
 
     out_dir = Path(args.out) if args.out is not None else Path("out") / event_slug_for(event_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
+    if not args.event_tag:
+        args.event_tag = event_slug_for(event_dir)
 
-    all_stages = build_stages(out_dir, args.live, event_dir)
+    all_stages = build_stages(out_dir, live, event_dir)
     # M3's own script now generates visuals inline when --live-visuals is
     # passed (repurpose.py's --live-visuals flag, see modules/m3-repurpose/
     # repurpose.py's run_visuals_live()) -- pass the pipeline's existing
@@ -485,7 +563,7 @@ def main():
     # relying on the separate build_visuals_stage() post-stage below, which
     # writes files without updating M3's manifest at all. No effect without
     # --live (matches repurpose.py's own gating).
-    if args.live and args.live_visuals:
+    if live and args.live_visuals:
         all_stages["m3"]["cmd"].append("--live-visuals")
     # (kind, payload) queue: "module" runs one of the fixed M1-M4 stages;
     # "extra" lazily BUILDS one of the optional M3 stages (a zero-arg
@@ -502,11 +580,13 @@ def main():
         if m == "m3":
             queue.append(("extra", lambda: build_transcribe_stage(event_dir, out_dir, args)))
         queue.append(("module", all_stages[m]))
+        if m == "m1":
+            queue.append(("extra", lambda: build_m1_push_stage(out_dir, args)))
         if m == "m3":
             queue.append(("extra", lambda: build_visuals_stage(out_dir, args)))
             queue.append(("extra", lambda: build_publish_stage(out_dir, args)))
 
-    if not args.live:
+    if not live:
         print_module_lane_banner()
 
     rows = []
@@ -521,8 +601,8 @@ def main():
             print_extra_stage_banner(stage["stage"])
         else:
             stage = payload
-            print_stage_banner(stage["stage"], args.live)
-        row = run_stage(stage, live=args.live)
+            print_stage_banner(stage["stage"], live)
+        row = run_stage(stage, live=live)
         rows.append(row)
         if row["status"] == "FAIL":
             break
