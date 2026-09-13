@@ -1,0 +1,105 @@
+{
+  "premise": "How to start, scale, and govern AI in HR across the employee lifecycle.",
+  "takeaways": [
+    {
+      "headline": "Hypergrowth necessitates a scalable HRIS for global operations.",
+      "body": "HighLevel experienced hypergrowth, leading them to seek a scalable HRIS to manage their global employee base and unify disparate systems. Q Hamirani highlights the need for a solution that is user-friendly, globally capable, and locally nuanced. [01:17]",
+      "timestamp": "01:17"
+    },
+    {
+      "headline": "AI's core HR metric: doing more with less.",
+      "body": "The fundamental business impact of AI in HR is the ability to achieve more with fewer resources, preventing exponential team growth alongside company expansion. Q Hamirani emphasizes this as a universal metric for all functions. [04:47]",
+      "timestamp": "04:47"
+    },
+    {
+      "headline": "AI in HR requires cautious experimentation and controlled environments.",
+      "body": "When implementing AI, especially with sensitive data, Q Hamirani advocates for a step-by-step approach, starting with controlled environments and enterprise-grade tools to mitigate risks before full deployment. [12:05]",
+      "timestamp": "12:05"
+    },
+    {
+      "headline": "AI as a capacity unlock, not a job replacement.",
+      "body": "Q Hamirani views AI as a tool that unlocks capacity, allowing individuals to focus on higher-value tasks rather than replacing roles entirely, drawing parallels to previous technological revolutions. [24:10]",
+      "timestamp": "24:10"
+    },
+    {
+      "headline": "Human connection remains vital in AI-augmented HR functions.",
+      "body": "While AI can automate tasks and provide data, Q Hamirani believes that true human connection, empathy, and nuanced understanding are irreplaceable in areas like business partnership and performance coaching. [29:19]",
+      "timestamp": "29:19"
+    }
+  ],
+  "quotes": [
+    {
+      "speaker": "Q Hamirani",
+      "timestamp": "00:17",
+      "text": "Yeah, so one of the, I guess the underlying reason on why we were exploring an HRIS to begin with as I zoom out into our journey, was we have experienced tremendous hyper growth in the last year or two."
+    },
+    {
+      "speaker": "Q Hamirani",
+      "timestamp": "01:17",
+      "text": "Um, so we embarked on a journey to pick the next HRIS for us. Um, for our journey, um, through what I call is kind of the inflection point on us growing up."
+    },
+    {
+      "speaker": "Q Hamirani",
+      "timestamp": "04:47",
+      "text": "Yeah, so I think like a lot of us even I think in the in the poll kind of reflected. I think we are all in various journeys of AI within different processes in the HR space as well. So there isn't one single metric, well if there is one single metric I would say, it's can we do more with less, right?"
+    },
+    {
+      "speaker": "Q Hamirani",
+      "timestamp": "12:05",
+      "text": "Yeah, so I think if we step out of AI for a second because the same kind of mindset and philosophy should apply whether it's AI or not, right? In terms of we are all responsible for very sensitive employee information that if it gets misused, is not good for anyone, right?"
+    },
+    {
+      "speaker": "Q Hamirani",
+      "timestamp": "24:10",
+      "text": "I mean, I think this is a general theme across, you know, it's not just internal to an organization. I talk to colleagues and friends and it's a general theme. Um, and I guess to my point, um, earlier on generally trying to be more optimistic."
+    }
+  ],
+  "no_show_moments": [
+    {
+      "timestamp": "00:17",
+      "label": "Hypergrowth drivers",
+      "why": "Understand the rapid growth that led HighLevel to seek a new HRIS solution."
+    },
+    {
+      "timestamp": "04:47",
+      "label": "AI impact metrics",
+      "why": "Learn the key metrics for measuring the business impact of AI in HR."
+    },
+    {
+      "timestamp": "12:05",
+      "label": "AI risk and governance",
+      "why": "Discover the guardrails and frameworks for managing AI risks and compliance."
+    }
+  ],
+  "by_function": {
+    "marketing": {
+      "headline": "Leverage AI for enhanced employee insights.",
+      "body": "AI can provide deeper insights into employee sentiment and engagement, allowing marketing to tailor internal communications and employer branding efforts more effectively. Understanding AI's capacity unlock can help reallocate resources to strategic initiatives. [28:16]"
+    },
+    "revops": {
+      "headline": "Streamline HR processes for operational efficiency.",
+      "body": "AI can automate and optimize HR processes like compensation analysis and audits, freeing up RevOps to focus on strategic revenue-generating activities by ensuring HR data is accurate and accessible. [09:17]"
+    },
+    "sales": {
+      "headline": "AI enhances data-driven decision-making for sales strategy.",
+      "body": "AI's ability to quickly analyze market data and provide real-time insights, particularly in compensation, can inform sales compensation strategies and ensure competitiveness, allowing sales teams to focus on closing deals. [08:17]"
+    },
+    "executive": {
+      "headline": "Drive organizational agility with AI-powered HR insights.",
+      "body": "AI enables faster access to critical people data, allowing executives to make more agile, data-informed decisions about workforce planning, talent acquisition, and overall business strategy. [09:27]"
+    },
+    "customer_success": {
+      "headline": "Improve employee experience through AI-driven tools.",
+      "body": "By automating mundane tasks and providing user-friendly tools, AI can enhance the employee experience, leading to higher adoption and efficiency, which indirectly benefits customer success by having a more engaged workforce. [10:43]"
+    },
+    "general": {
+      "headline": "Embrace AI as a new teammate for capacity and growth.",
+      "body": "AI is a powerful new teammate that can unlock capacity, allowing individuals and teams to achieve more and focus on higher-value, strategic work. By experimenting with AI tools and upskilling, you can drive innovation and accelerate organizational growth. [28:16]"
+    }
+  },
+  "by_industry": {
+    "saas": "For SaaS companies experiencing rapid growth, adopting a scalable HRIS with embedded AI capabilities is crucial for managing a global workforce and gaining real-time people analytics to inform strategic decisions. [01:17]",
+    "services_it": "IT services firms can leverage AI to streamline HR operations, from compensation analysis to compliance audits, enabling them to focus on core service delivery and client management with greater efficiency. [09:17]",
+    "other_commercial": "Commercial organizations can benefit from AI by unlocking employee capacity, enhancing data-driven decision-making, and ensuring ethical AI implementation to foster agility and innovation across the employee lifecycle. [28:16]"
+  }
+}

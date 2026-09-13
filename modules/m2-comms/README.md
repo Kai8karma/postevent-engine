@@ -1,54 +1,96 @@
 # M2 — Post-Event Communications
 
-Renders the attendee / no-show / speaker thank-you emails and gates every send behind human approval.
+Turns the recording, the transcript and M1's enriched contacts into three segment-specific emails
+and one fully rendered message per recipient, ready for n8n to dispatch inside 24 hours of event
+close. Live by default: nothing here replays cached copy unless you ask for it.
 
-- `python3 comms.py --out <dir>` — offline, reads cached `sample_output/*.json` takeaways.
-- `python3 comms.py --out <dir> --enriched <hubspot_ready.csv|.json> --live` — live copy via `claude -p`.
-- Falls back to `data/incoming/registrants.csv` when `--enriched` is missing (M1 not run yet) -- this is a *personalization* fallback only (job title/company for the copy). See the recipient-list rule below, which is separate and stricter.
-- Output: `emails/*.md` (3 variants, UTM-tagged), `sends_log.json` (HubSpot-shaped -- `sample_sends[]` per segment covers every mailable contact, not a preview slice, so "all logged to HubSpot" is literally true once approved and pushed), `approval_gate.json` (blocks all sends until a human sets `approved: true`). Nothing in this module ever calls a send API -- see `hubspot_wiring.md` for what fires downstream of the gate and exactly what "logged" does and doesn't mean.
+## Input
 
-## Who gets mailed (judge fix #1 + #4)
+| file | what it carries |
+|---|---|
+| `data/incoming/event.json` | event name, date, `start_time_local` + `timezone` + `duration_min` (→ `event_close_ts`), recording URL, registration page, speakers |
+| `data/incoming/transcript.md` | the real transcript, `[MM:SS] **Speaker:** text` turns |
+| `data/incoming/speakers.json` | speaker bios and the inbox each speaker's mail goes to (`email`) |
+| `data/fixtures/segments.json` | attendee / no-show / speaker address lists |
+| `--enriched out/<run>/m1/hubspot_ready.csv` | M1's contacts: `firstname`, `jobtitle`, `company`, `industry`, `function`, `icp_tier`, `attendance_status`, `time_in_session_minutes`, `hubspot_contact_id`, `suppression_reason` |
 
-The attendee/no-show recipient list is **not** `data/fixtures/segments.json`'s
-raw registrant lists by default -- it is derived from M1's `--enriched`
-output (`segment_from_enriched()` in `comms.py`), keyed on that file's
-`attendance_status` column. Two consequences fall out of that on purpose:
+Without `--enriched` M2 falls back to `segments.json`, which is neither deduped nor
+suppression-filtered, and says so on stderr. Rows M1 flagged with a `suppression_reason` are
+excluded from `recipients` and counted in `counts.suppressed`.
 
-1. **Duplicate registrants are mailed once, not per address.** M1's fuzzy
-   dedupe (`enrich.py::dedupe_within_batch`) collapses a same-person cluster
-   to one surviving primary row before `hubspot_ready.csv` is ever written --
-   the merged-away duplicate email(s) never get a row there. Since M2 now
-   segments strictly off that row set, an alternate address that got merged
-   away is never a recipient. **Deliberate choice: the alternates are
-   suppressed, not multi-mailed** -- only the single surviving primary
-   address gets the send. The alternate email is not silently lost, though:
-   it's still recorded in M1's `dedupe_report.json` (`within_batch_duplicates`,
-   `primary_email`/`duplicate_email` pairs) as the audit trail.
-2. **Host/competitor domains are excluded from the mailable set, not from
-   the CRM.** A row M1 flagged `suppression_reason` (host company staff or a
-   named competitor domain, see `config/icp.yaml`'s `suppression` key) is
-   still a Contact in `hubspot_ready.csv`/`hubspot_contacts.csv` -- it's just
-   dropped from M2's send list. Counted in `comms.json`'s
-   `recipient_pipeline.suppressed` and printed in the run summary.
+## AI role
 
-**Fallback**: if `--enriched` is absent or its path doesn't exist, M2 falls
-back to `segments.json`'s raw lists and prints a `WARNING` to stderr -- that
-fallback list is undeduped and unsuppressed (M1 hasn't run, so there's
-nothing to defer to). This should only happen when M1 hasn't run yet; in the
-orchestrated pipeline (`orchestrator/run_pipeline.py`), M1 always runs
-before M2 and `--enriched` is always passed.
+Four calls, budget five (`MAX_LLM_CALLS`), one retry in reserve:
 
-Speakers are unaffected by any of this -- they're matched by name against
-`event.json`'s named speakers via `match_speaker_emails()`, sourced from
-`segments.json`'s `speakers` list (a separate, small, hand-curated list;
-speakers are never in `registrants.csv` and so never flow through M1 at all).
-**Consequence for HubSpot logging** (traced 2026-08-24, see `hubspot_wiring.md`
-§6): because speakers never flow through M1, they're never in
-`hubspot_contacts.csv` either, so `push_to_hubspot.py --log-emails` has no
-contact ID to associate their engagement to -- their `sample_sends` entries
-are built and flagged (`hubspot_log_emails_note`) but will not actually log in
-a live run until M1's lane also upserts speakers as contacts.
-- Prompts in `prompts/`, production send path in `hubspot_wiring.md`.
-- `--live` LLM backend: `LLM_BACKEND` env selects `auto` (default, tries `claude -p` then falls back to OpenRouter if a key exists), `claude`, or `openrouter`.
-- OpenRouter key: `OPENROUTER_API_KEY` env, else a `OPENROUTER_API_KEY=...` line in `~/.config/postevent/llm.env`; never printed.
-- `OPENROUTER_MODEL` overrides the default model id (falls back through `anthropic/claude-sonnet-5` → `4.6` → `4.5` on 400/404 model errors).
+1. **Extraction** (the only call that sees the transcript) → `extraction.json`: 5–7 takeaways with
+   `[MM:SS]` anchors, 4–6 verbatim quotes with speaker + timestamp, the 3 moments worth the click
+   for a no-show, a one-line premise, and the personalisation matrix — one angle per CRM `function`
+   (6) and one follow-on sentence per industry bucket (3).
+2. **One call per segment** (attendee / no-show / speaker), each seeing only the extraction, each
+   returning `subject_a`, `subject_b`, `preheader`, `body_md` and `takeaways[]`. The body is a
+   template: `{{firstname}}`, `{{takeaway_headline}}`, `{{takeaway_body}}`, `{{recording_link}}`,
+   `{{cta_link}}`, and for speakers the `{{snapshot_*}}` fields. Prompts live in `prompts/`.
+
+**Grounding gate.** Every quoted span and every `[MM:SS]` in the extraction, the variants and the
+rendered bodies is matched against the transcript (case- and punctuation-insensitive for quotes,
+exact for timestamps). A quote that cannot be matched at extraction time is dropped and listed; a
+miss anywhere in generated copy fails the run before a plan is written. Result: `grounding.json`.
+
+**Personalisation.** `takeaway_headline` / `takeaway_body` resolve per contact from their M1
+`function` (primary) plus an industry-bucket sentence (appended). The speaker email carries a
+performance snapshot computed from M1 + segments — registrants, attendees, attendance rate, average
+and median minutes in session, no-show count, top 5 accounts by attendee count — plus that
+speaker's own quotes. A lint refuses any speaker email that refers to its own recipient in the
+third person.
+
+## Tools
+
+- LLM: OpenRouter (`OPENROUTER_API_KEY` env or `~/.config/postevent/llm.env`; never printed),
+  `OPENROUTER_MODEL` as a comma-separated chain. `LLM_BACKEND=openrouter|claude|auto`.
+  `LLM_BATCH_DEADLINE_S` (default 120) is a per-call wall clock: a hung request is abandoned and
+  the next model in the chain is tried. `LLM_MAX_TOKENS` (default 8000) also sets the reservation
+  OpenRouter's affordability check bills against — lower it on a near-empty key. All models failing
+  fails the run — stale copy is never shipped as live.
+- n8n orchestration and HubSpot send/logging are downstream and are documented by their owners:
+  [`docs/module-api.md` §M2](../../docs/module-api.md) (phases `generate` / `approve` / `log`, and
+  the `dispatch_plan.json` contract) and
+  [`orchestrator/n8n/railway/README.md`](../../orchestrator/n8n/railway/README.md).
+
+## Output
+
+- `dispatch_plan.json` — the contract in `docs/module-api.md` §M2: `run_id`, `event_slug`,
+  `generated_at`, `lane`, `event_close_ts`, `variants` (3 × two subjects + preheader + body +
+  takeaways; speaker also `snapshot`), `recipients[]` (one rendered message per mailable contact:
+  subject alternating A/B by row index, `body_html`, `body_text`, UTM-tagged `links`, `utm`,
+  `hubspot_contact_id`, `demo_redirect_to`), `approval`, `counts`.
+- `emails/<segment>.md` — the draft a human reads: frontmatter + body with merge fields intact,
+  plus the personalisation preview for the two bulk segments.
+- `approval_gate.json` — `pending_human_approval`. This module never sends.
+- `extraction.json`, `grounding.json`, `comms.json`, `receipts/m2_llm_calls.json`.
+
+UTM on every link: `utm_source=webinar`, `utm_medium=email`, `utm_campaign=<event_slug>`,
+`utm_content=<segment>-<a|b>` (`shared/utm.py`).
+
+## Run
+
+```bash
+set -a; . ~/.config/postevent/llm.env; set +a          # never echo the key
+export OPENROUTER_MODEL="nvidia/nemotron-3-super-120b-a12b:free"
+
+python3 modules/m2-comms/comms.py --out out/w2/m2 --enriched out/w2/m1/hubspot_ready.csv
+python3 modules/m2-comms/comms.py --out out/w2/m2-dry --live-dry-run   # prints the 4 prompts, no network
+python3 modules/m2-comms/comms.py --out out/w2/m2-replay --offline     # replays sample_output/
+python3 modules/m2-comms/test_plan_schema.py out/w2/m2                 # schema + grounding gate
+```
+
+A successful live run refreshes `sample_output/extraction.json`, `variants.json` and
+`.fingerprint.json`, so a reviewer without keys can replay exactly what the model produced.
+`--offline` refuses — with the sha mismatch printed — if that cache came from a different
+transcript or event.
+
+## Receipts
+
+`receipts/m2_llm_calls.json` logs every HTTP attempt: `ts`, `backend`, `model`, `purpose`,
+`prompt_chars`, `latency_ms`, `http_status`, `parse_ok`, `error`. It is written even when the run
+fails, so the cost of a failed run is visible. `grounding.json` lists every check and its verdict;
+`comms.json` carries the lane, model, call count, snapshot and the suppressed-contact trail.

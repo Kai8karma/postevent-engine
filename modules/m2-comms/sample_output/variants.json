@@ -1,0 +1,41 @@
+{
+  "attendee": {
+    "subject_a": "AI in HR: From Hype to High-Impact",
+    "subject_b": "Q Hamirani on AI's core HR metric: 'Do more with less'",
+    "preheader": "Key takeaways on scaling AI in HR from our live session.",
+    "body_md": "Hi {{firstname}},\n\nThank you for joining us live for \"From Hype to High-Impact: How to Start and Scale AI in HR.\" It was a valuable discussion on what it really takes to start, scale, and govern AI in HR across the employee lifecycle.\n\n**{{takeaway_headline}}** {{takeaway_body}}\n\nHere are a few key takeaways from the session:\n\n*   Hypergrowth necessitates a scalable HRIS for global operations. [01:17]\n*   AI's core HR metric: doing more with less. [04:47]\n*   AI in HR requires cautious experimentation and controlled environments. [12:05]\n\nAs Q Hamirani shared, \"Yeah, so I think like a lot of us even I think in the in the poll kind of reflected. I think we are all in various journeys of AI within different processes in the HR space as well. So there isn't one single metric, well if there is one single metric I would say, it's can we do more with less, right?\" [04:47]\n\nWatch the full recording here: [Session Recording]({{recording_link}})\n\nReady to explore how AI can transform your HR operations? [Learn More]({{cta_link}})\n\nThe Darwinbox Team",
+    "takeaways": [
+      "Hypergrowth necessitates a scalable HRIS for global operations. [01:17]",
+      "AI's core HR metric: doing more with less. [04:47]",
+      "AI in HR requires cautious experimentation and controlled environments. [12:05]",
+      "AI as a capacity unlock, not a job replacement. [24:10]",
+      "Human connection remains vital in AI-augmented HR functions. [29:19]"
+    ]
+  },
+  "no_show": {
+    "subject_a": "Missed AI in HR? Recording available",
+    "subject_b": "AI in HR recording is ready",
+    "preheader": "Key moments from \"From Hype to High-Impact: How to Start and Scale AI in HR\".",
+    "body_md": "Hi {{firstname}},\n\nThe recording of our recent event, \"From Hype to High-Impact: How to Start and Scale AI in HR,\" is now available.\n\nHere are a few key moments you might find valuable:\n\n*   **Hypergrowth drivers** [00:17]\n*   **AI impact metrics** [04:47]\n*   **AI risk and governance** [12:05]\n\n{{takeaway_headline}}\n{{takeaway_body}}\n\nWatch the full recording here: {{recording_link}}\n\nReady to explore how Darwinbox can support your AI initiatives? {{cta_link}}",
+    "takeaways": [
+      "Hypergrowth necessitates a scalable HRIS for global operations. [01:17]",
+      "AI's core HR metric: doing more with less. [04:47]",
+      "AI in HR requires cautious experimentation and controlled environments. [12:05]",
+      "AI as a capacity unlock, not a job replacement. [24:10]",
+      "Human connection remains vital in AI-augmented HR functions. [29:19]"
+    ]
+  },
+  "speaker": {
+    "subject_a": "AI in HR: 55% attendance & 30 min avg watch time",
+    "subject_b": "Thank you for speaking at Darwinbox!",
+    "preheader": "Thank you for your contribution to our \"From Hype to High-Impact: How to Start and Scale AI in HR\" event.",
+    "body_md": "Hi {{firstname}},\n\nThank you for your valuable contribution to our recent event, \"From Hype to High-Impact: How to Start and Scale AI in HR\". Your insights were instrumental in exploring what it really takes to start, scale, and govern AI in HR.\n\nHere's a snapshot of how the session performed:\n\n*   **Registrants:** {{snapshot_registrants}}\n*   **Attendees:** {{snapshot_attendees}}\n*   **Attendance Rate:** {{snapshot_attendance_rate}}%\n*   **Average Watch Time:** {{snapshot_avg_minutes}} minutes\n\n{{snapshot_your_quotes}}\n\nWe've made the recording available here: {{recording_link}}\n\nWe encourage you to share the recording with your network. You can find a direct link to the recording here: {{cta_link}}\n\nWe look forward to collaborating with you again soon.",
+    "takeaways": [
+      "Hypergrowth necessitates a scalable HRIS for global operations. [01:17]",
+      "AI's core HR metric: doing more with less. [04:47]",
+      "AI in HR requires cautious experimentation and controlled environments. [12:05]",
+      "AI as a capacity unlock, not a job replacement. [24:10]",
+      "Human connection remains vital in AI-augmented HR functions. [29:19]"
+    ]
+  }
+}

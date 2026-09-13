@@ -1,0 +1,665 @@
+{
+  "transcript_sha256": "727b07e7f4315b6261878b1dd8099458394182755db085091006082c0c4b3495",
+  "transcript_timestamps": 84,
+  "checks_total": 81,
+  "passed": 81,
+  "failed": 0,
+  "quotes_dropped_at_extraction": [
+    {
+      "speaker": "Q Hamirani",
+      "timestamp": "29:19",
+      "text": "So I think AI right now can touch almost everything. The question is or or the thought I have is can it replace everything and I think the answer is no for me there."
+    }
+  ],
+  "status": "pass",
+  "checks": [
+    {
+      "scope": "extraction",
+      "field": "quote[0:Q Hamirani]",
+      "kind": "quote",
+      "value": "Yeah, so one of the, I guess the underlying reason on why we were exploring an HRIS to begin with as I zoom out into our journey, was we have experienced tremen",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "quote[0:Q Hamirani]",
+      "kind": "timestamp",
+      "value": "00:17",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "quote[1:Q Hamirani]",
+      "kind": "quote",
+      "value": "Um, so we embarked on a journey to pick the next HRIS for us. Um, for our journey, um, through what I call is kind of the inflection point on us growing up.",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "quote[1:Q Hamirani]",
+      "kind": "timestamp",
+      "value": "01:17",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "quote[2:Q Hamirani]",
+      "kind": "quote",
+      "value": "Yeah, so I think like a lot of us even I think in the in the poll kind of reflected. I think we are all in various journeys of AI within different processes in ",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "quote[2:Q Hamirani]",
+      "kind": "timestamp",
+      "value": "04:47",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "quote[3:Q Hamirani]",
+      "kind": "quote",
+      "value": "Yeah, so I think if we step out of AI for a second because the same kind of mindset and philosophy should apply whether it's AI or not, right? In terms of we ar",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "quote[3:Q Hamirani]",
+      "kind": "timestamp",
+      "value": "12:05",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "quote[4:Q Hamirani]",
+      "kind": "quote",
+      "value": "I mean, I think this is a general theme across, you know, it's not just internal to an organization. I talk to colleagues and friends and it's a general theme. ",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "quote[4:Q Hamirani]",
+      "kind": "timestamp",
+      "value": "24:10",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "takeaway[0]",
+      "kind": "timestamp",
+      "value": "01:17",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "takeaway[0]",
+      "kind": "timestamp",
+      "value": "01:17",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "takeaway[1]",
+      "kind": "timestamp",
+      "value": "04:47",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "takeaway[1]",
+      "kind": "timestamp",
+      "value": "04:47",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "takeaway[2]",
+      "kind": "timestamp",
+      "value": "12:05",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "takeaway[2]",
+      "kind": "timestamp",
+      "value": "12:05",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "takeaway[3]",
+      "kind": "timestamp",
+      "value": "24:10",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "takeaway[3]",
+      "kind": "timestamp",
+      "value": "24:10",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "takeaway[4]",
+      "kind": "timestamp",
+      "value": "29:19",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "takeaway[4]",
+      "kind": "timestamp",
+      "value": "29:19",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "no_show_moment[0]",
+      "kind": "timestamp",
+      "value": "00:17",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "no_show_moment[1]",
+      "kind": "timestamp",
+      "value": "04:47",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "no_show_moment[2]",
+      "kind": "timestamp",
+      "value": "12:05",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "by_function[marketing]",
+      "kind": "timestamp",
+      "value": "28:16",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "by_function[revops]",
+      "kind": "timestamp",
+      "value": "09:17",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "by_function[sales]",
+      "kind": "timestamp",
+      "value": "08:17",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "by_function[executive]",
+      "kind": "timestamp",
+      "value": "09:27",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "by_function[customer_success]",
+      "kind": "timestamp",
+      "value": "10:43",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "by_function[general]",
+      "kind": "timestamp",
+      "value": "28:16",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "by_industry[saas]",
+      "kind": "timestamp",
+      "value": "01:17",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "by_industry[services_it]",
+      "kind": "timestamp",
+      "value": "09:17",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "extraction",
+      "field": "by_industry[other_commercial]",
+      "kind": "timestamp",
+      "value": "28:16",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "variant:attendee",
+      "field": "body_md",
+      "kind": "quote",
+      "value": "From Hype to High-Impact: How to Start and Scale AI in HR.",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "variant:attendee",
+      "field": "body_md",
+      "kind": "quote",
+      "value": "Yeah, so I think like a lot of us even I think in the in the poll kind of reflected. I think we are all in various journeys of AI within different processes in ",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "variant:attendee",
+      "field": "body_md",
+      "kind": "timestamp",
+      "value": "01:17",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "variant:attendee",
+      "field": "body_md",
+      "kind": "timestamp",
+      "value": "04:47",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "variant:attendee",
+      "field": "body_md",
+      "kind": "timestamp",
+      "value": "12:05",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "variant:attendee",
+      "field": "body_md",
+      "kind": "timestamp",
+      "value": "04:47",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "variant:attendee",
+      "field": "takeaway[0]",
+      "kind": "timestamp",
+      "value": "01:17",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "variant:attendee",
+      "field": "takeaway[1]",
+      "kind": "timestamp",
+      "value": "04:47",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "variant:attendee",
+      "field": "takeaway[2]",
+      "kind": "timestamp",
+      "value": "12:05",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "variant:attendee",
+      "field": "takeaway[3]",
+      "kind": "timestamp",
+      "value": "24:10",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "variant:attendee",
+      "field": "takeaway[4]",
+      "kind": "timestamp",
+      "value": "29:19",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "variant:no_show",
+      "field": "preheader",
+      "kind": "quote",
+      "value": "From Hype to High-Impact: How to Start and Scale AI in HR",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "variant:no_show",
+      "field": "body_md",
+      "kind": "quote",
+      "value": "From Hype to High-Impact: How to Start and Scale AI in HR,",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "variant:no_show",
+      "field": "body_md",
+      "kind": "timestamp",
+      "value": "00:17",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "variant:no_show",
+      "field": "body_md",
+      "kind": "timestamp",
+      "value": "04:47",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "variant:no_show",
+      "field": "body_md",
+      "kind": "timestamp",
+      "value": "12:05",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "variant:no_show",
+      "field": "takeaway[0]",
+      "kind": "timestamp",
+      "value": "01:17",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "variant:no_show",
+      "field": "takeaway[1]",
+      "kind": "timestamp",
+      "value": "04:47",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "variant:no_show",
+      "field": "takeaway[2]",
+      "kind": "timestamp",
+      "value": "12:05",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "variant:no_show",
+      "field": "takeaway[3]",
+      "kind": "timestamp",
+      "value": "24:10",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "variant:no_show",
+      "field": "takeaway[4]",
+      "kind": "timestamp",
+      "value": "29:19",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "variant:speaker",
+      "field": "preheader",
+      "kind": "quote",
+      "value": "From Hype to High-Impact: How to Start and Scale AI in HR",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "variant:speaker",
+      "field": "body_md",
+      "kind": "quote",
+      "value": "From Hype to High-Impact: How to Start and Scale AI in HR",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "variant:speaker",
+      "field": "takeaway[0]",
+      "kind": "timestamp",
+      "value": "01:17",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "variant:speaker",
+      "field": "takeaway[1]",
+      "kind": "timestamp",
+      "value": "04:47",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "variant:speaker",
+      "field": "takeaway[2]",
+      "kind": "timestamp",
+      "value": "12:05",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "variant:speaker",
+      "field": "takeaway[3]",
+      "kind": "timestamp",
+      "value": "24:10",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "variant:speaker",
+      "field": "takeaway[4]",
+      "kind": "timestamp",
+      "value": "29:19",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "rendered:attendee",
+      "field": "body_md",
+      "kind": "quote",
+      "value": "From Hype to High-Impact: How to Start and Scale AI in HR.",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "rendered:attendee",
+      "field": "body_md",
+      "kind": "quote",
+      "value": "Yeah, so I think like a lot of us even I think in the in the poll kind of reflected. I think we are all in various journeys of AI within different processes in ",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "rendered:attendee",
+      "field": "body_md",
+      "kind": "timestamp",
+      "value": "28:16",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "rendered:attendee",
+      "field": "body_md",
+      "kind": "timestamp",
+      "value": "28:16",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "rendered:attendee",
+      "field": "body_md",
+      "kind": "timestamp",
+      "value": "01:17",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "rendered:attendee",
+      "field": "body_md",
+      "kind": "timestamp",
+      "value": "04:47",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "rendered:attendee",
+      "field": "body_md",
+      "kind": "timestamp",
+      "value": "12:05",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "rendered:attendee",
+      "field": "body_md",
+      "kind": "timestamp",
+      "value": "04:47",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "rendered:no_show",
+      "field": "body_md",
+      "kind": "quote",
+      "value": "From Hype to High-Impact: How to Start and Scale AI in HR,",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "rendered:no_show",
+      "field": "body_md",
+      "kind": "timestamp",
+      "value": "00:17",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "rendered:no_show",
+      "field": "body_md",
+      "kind": "timestamp",
+      "value": "04:47",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "rendered:no_show",
+      "field": "body_md",
+      "kind": "timestamp",
+      "value": "12:05",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "rendered:no_show",
+      "field": "body_md",
+      "kind": "timestamp",
+      "value": "28:16",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "rendered:no_show",
+      "field": "body_md",
+      "kind": "timestamp",
+      "value": "28:16",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "rendered:speaker",
+      "field": "body_md",
+      "kind": "quote",
+      "value": "From Hype to High-Impact: How to Start and Scale AI in HR",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "rendered:speaker",
+      "field": "body_md",
+      "kind": "quote",
+      "value": "Yeah, so one of the, I guess the underlying reason on why we were exploring an HRIS to begin with as I zoom out into our journey, was we have experienced tremen",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "rendered:speaker",
+      "field": "body_md",
+      "kind": "quote",
+      "value": "Um, so we embarked on a journey to pick the next HRIS for us. Um, for our journey, um, through what I call is kind of the inflection point on us growing up.",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "rendered:speaker",
+      "field": "body_md",
+      "kind": "quote",
+      "value": "Yeah, so I think like a lot of us even I think in the in the poll kind of reflected. I think we are all in various journeys of AI within different processes in ",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "rendered:speaker",
+      "field": "body_md",
+      "kind": "timestamp",
+      "value": "00:17",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "rendered:speaker",
+      "field": "body_md",
+      "kind": "timestamp",
+      "value": "01:17",
+      "pass": true,
+      "reason": ""
+    },
+    {
+      "scope": "rendered:speaker",
+      "field": "body_md",
+      "kind": "timestamp",
+      "value": "04:47",
+      "pass": true,
+      "reason": ""
+    }
+  ]
+}

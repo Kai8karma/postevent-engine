@@ -1,45 +1,47 @@
-# Prompt: Speaker Thank-You Email
+# Prompt: speaker thank-you (one call per event, not per speaker)
 
-Used by `comms.py --live` to regenerate the speaker-segment email template. Speakers are named
-individuals (`data/incoming/speakers.json`, `event.json`), not a bulk list — this prompt is invoked
-once per event, then `comms.py` fills the same template for each of the (typically 2-4) speakers.
+Write the thank-you email that goes to each person who spoke. The context block carries the event
+facts, the extraction from call 1 (including `quotes_by_speaker`), and `performance_snapshot` —
+real numbers computed from the CRM, not by you. One template serves every speaker, so it must never
+name a speaker: the recipient is always "you".
 
-## Personalization variables
+## Merge fields — copy these tokens verbatim into `body_md`
 
-- `{{first_name}}`, `{{title}}`, `{{company}}` — from `event.json` speakers list.
-- `{{attendance_count}}`, `{{registered_count}}`, `{{avg_watch_minutes}}`, `{{duration_min}}`,
-  `{{watch_pct}}` — computed by `comms.py` from `data/fixtures/segments.json` and
-  `data/incoming/registrants.csv`. The model must NOT invent these; leave the tokens in place.
-- `{{top_quote}}` — one verbatim, timestamp-attributable quote said BY this specific speaker in the
-  transcript, chosen for being the most quotable/resharable line they said (per Sara Alvarez's
-  advice at [19:06] that a speaker thank-you should include "a top quote of theirs that resonated").
-- `{{internal_or_external_note}}` — one sentence whose TONE differs by whether the speaker is
-  internal (host company) or external, per the segmentation rule stated live on the call at
-  [30:52]: internal speakers get a recognition/metrics-loop note; external speakers get a
-  relationship-maintenance note (invite-back, resharing ask).
+- `{{firstname}}` — the recipient speaker's first name.
+- `{{snapshot_registrants}}`, `{{snapshot_attendees}}`, `{{snapshot_attendance_rate}}`,
+  `{{snapshot_avg_minutes}}`, `{{snapshot_median_minutes}}`, `{{snapshot_no_shows}}`,
+  `{{snapshot_top_accounts}}` — the performance snapshot. Use at least four of them, each exactly
+  once, in a short labelled list. Never write the numbers yourself; the context values are there so
+  you can phrase the labels, not so you can inline them.
+- `{{snapshot_your_quotes}}` — required. Renders as a blockquote list of that speaker's own quotes
+  with timestamps. Put it on its own line and introduce it in the second person ("the lines people
+  are already pulling out of your session").
+- `{{recording_link}}`, `{{cta_link}}` — already UTM-tagged.
 
-## Takeaway-injection contract
+No other `{{...}}` token is fillable; using one fails the run.
 
-For `{{top_quote}}`: search the transcript for lines spoken by the named speaker, rank by how
-standalone/shareable the line is (a claim or observation that reads well with zero surrounding
-context — per Daniel Kim's point at [43:22] that standalone quote posts outperform), and return
-exactly one with its `[MM:SS]` timestamp for auditability. Do not paraphrase — quote verbatim.
+## Rules
 
-Output as JSON:
+- Under 250 words. Thank, report, hand over the assets, ask for the reshare. No flattery inflation.
+- **Never name the recipient or attribute anything to them in the third person** — no "Q made the
+  point", no "Sudi walked us through". Everything they did is "you". This is enforced by a lint.
+- Do not inline any quote text: their quotes arrive through `{{snapshot_your_quotes}}`.
+- Any `[MM:SS]` you write must be copied exactly from the extraction. Use double quotes only for a
+  verbatim quote from `quotes[]`.
+- Do not invent attendance, watch-time or pipeline numbers; the snapshot tokens are the only numbers
+  allowed in this email.
+- Subject lines: `subject_a` leads with the performance numbers, `subject_b` leads with the thank
+  you. Both under 60 characters, different from each other, and neither may contain a speaker name.
+- `preheader`: under 90 characters.
+
+## Output — one JSON object, nothing else
+
 ```json
 {
-  "by_speaker": {
-    "<speaker name>": {"top_quote": "...", "timestamp": "MM:SS", "internal_or_external_note": "..."}
-  },
-  "subject_a": "performance-numbers-led subject line",
-  "subject_b": "personal-thank-you-led subject line"
+  "subject_a": "...",
+  "subject_b": "...",
+  "preheader": "...",
+  "body_md": "markdown with the merge fields in place",
+  "takeaways": ["3-5 short strings, each ending with its [MM:SS] anchor"]
 }
 ```
-
-## Guardrails
-
-- `{{top_quote}}` must be traceable to an exact transcript line. If no strong standalone line
-  exists for a speaker, say so rather than inventing one — fall back to their highest-signal
-  numeric claim instead.
-- Never fabricate attendance or watch-time figures; those are computed, not generated.
-- Draft only, subject to human approval before send.

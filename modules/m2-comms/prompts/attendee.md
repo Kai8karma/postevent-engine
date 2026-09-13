@@ -1,70 +1,44 @@
-# Prompt: Attendee Thank-You Email
+# Prompt: attendee thank-you (one call per event, not per contact)
 
-Used by `comms.py --live` to regenerate the attendee-segment email. Invoked once per event
-(not once per contact) — output is a personalized *template* with token placeholders, which
-`comms.py` then fills per contact. This keeps LLM calls to one per segment regardless of list size.
+Write the thank-you email for people who attended live. The context block carries the event facts
+and the extraction from call 1 — the takeaways, verbatim quotes and premise. You do not have the
+transcript; everything you claim must come from that extraction.
 
-## Personalization variables (the model must preserve these tokens verbatim in its output)
+The output is a template. `comms.py` renders it once per contact by substituting the merge fields,
+so per-recipient copy lives in the merge fields, not in your prose.
 
-- `{{first_name}}`, `{{company}}` — from the enriched contact record.
-- `{{takeaway_headline}}` / `{{takeaway_body}}` — filled by the takeaway-injection contract below,
-  keyed by the contact's `function`. Do not write generic copy into these two tokens — leave the
-  tokens in place; `comms.py` substitutes them after generation.
-- `{{recording_cta}}`, `{{recording_link}}`, `{{unsubscribe_link}}` — wired by `comms.py` with UTM
-  params already attached. Never invent a URL.
+## Merge fields — copy these tokens verbatim into `body_md`
 
-## Takeaway-injection contract
+- `{{firstname}}` — recipient's first name.
+- `{{takeaway_headline}}` and `{{takeaway_body}}` — required, exactly once each. These are resolved
+  per contact from their CRM `function` and industry bucket. Write the sentence around them so they
+  read as the personalised takeaway: `**{{takeaway_headline}}** {{takeaway_body}}`. Do not write
+  your own text inside them and do not repeat that takeaway elsewhere in the body.
+- `{{recording_link}}` — the recording URL, already UTM-tagged. Use it as a markdown link target.
+- `{{cta_link}}` — the call-to-action URL, already UTM-tagged.
 
-Input to the model: the full transcript (`data/incoming/transcript.md`) plus the list of distinct
-`function` values present in this event's attendee segment (e.g. `marketing`, `revops`, `sales`,
-`executive`, `customer_success`, `general`) and the list of `industry` buckets present (`saas`,
-`services_it`, `other_commercial` — comms.py derives these from M1's enriched `industry` column;
-see `classify_industry()`).
+No other `{{...}}` token is fillable; using one fails the run.
 
-For each function, extract exactly ONE takeaway that:
-1. Is a real number or claim actually said in the transcript — quote-attributable to a named
-   speaker with a `[MM:SS]` timestamp. No invented statistics.
-2. Is the takeaway most relevant to that function's day-to-day (e.g. RevOps cares about
-   multi-threading/attribution; Sales cares about reply-rate lift; Marketing cares about
-   segmentation lift; Executives care about ROI multiples).
-3. Fits in one sentence for `{{takeaway_headline}}` (bolded lead-in) and 1-2 sentences for
-   `{{takeaway_body}}` (the supporting detail, with speaker name and timestamp).
+## Rules
 
-Then, for each industry bucket, write exactly ONE additional sentence (`by_industry.<bucket>`) —
-grounded the same way (transcript-attributable, `[MM:SS]` timestamp, no invented stats). Anchor
-point: Daniel Kim's fourth-layer point at [26:15]–[26:52] — "the takeaways we pull out of the same
-transcript literally change based on who's reading them" — applied per industry rather than per
-company size. This sentence is never sent standalone: `comms.py`'s selection rule is role takeaway
-primary, industry sentence appended second (see `resolve_takeaway()`), so write it to read naturally
-as a follow-on sentence, not a second headline.
+- Under 250 words of markdown. Short paragraphs, one bulleted block of 2-3 takeaways, one clear CTA.
+- Every `[MM:SS]` and every quoted span must be copied exactly from the extraction — a checker
+  matches both against the transcript. Use double quotes only for a verbatim quote from `quotes[]`.
+- Attribute a quote to the speaker who said it, with its `[MM:SS]`.
+- No invented statistics, no attendance numbers, no promises about future events.
+- Do not sign off with an invented person's name; close as the host company's team.
+- Subject lines: `subject_a` leads with the substance of the session, `subject_b` leads with a
+  speaker or a quote. Both under 60 characters, different from each other, no emoji, no "RE:".
+- `preheader`: under 90 characters, adds information rather than repeating the subject.
 
-Output as JSON:
+## Output — one JSON object, nothing else
+
 ```json
 {
-  "by_function": {
-    "marketing": {"headline": "...", "body": "..."},
-    "revops": {"headline": "...", "body": "..."},
-    "sales": {"headline": "...", "body": "..."},
-    "executive": {"headline": "...", "body": "..."},
-    "customer_success": {"headline": "...", "body": "..."},
-    "general": {"headline": "...", "body": "..."}
-  },
-  "by_industry": {
-    "saas": "one grounded, timestamped follow-on sentence",
-    "services_it": "one grounded, timestamped follow-on sentence",
-    "other_commercial": "one grounded, timestamped follow-on sentence"
-  },
-  "subject_a": "stat-led subject line (Daniel Kim's finding: stat-led subjects beat name-led by ~14pp open rate, see [18:15])",
-  "subject_b": "speaker-name-led subject line, as the A/B counterpart"
+  "subject_a": "...",
+  "subject_b": "...",
+  "preheader": "...",
+  "body_md": "markdown with the merge fields in place",
+  "takeaways": ["3-5 short strings, each ending with its [MM:SS] anchor"]
 }
 ```
-
-## Guardrails
-
-- Ground every claim in the transcript. If a function has no clearly relevant moment, fall back to
-  the segmentation-lift stat (Sara Alvarez, [28:20]) rather than inventing one.
-- Same rule for `by_industry`: if a bucket has no distinct transcript moment, fall back to the
-  [26:15]–[26:52] fourth-layer point rather than inventing an industry-specific stat.
-- Never fabricate attendance numbers, company names, or quotes not present in the transcript.
-- Output must stay inside the approval gate — this prompt produces a draft for human review, not a
-  send.

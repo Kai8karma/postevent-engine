@@ -1,46 +1,44 @@
-# Prompt: No-Show Catch-Up Email
+# Prompt: no-show catch-up (one call per event, not per contact)
 
-Used by `comms.py --live` to regenerate the no-show-segment email template (one call per event,
-same one-call-per-segment economics as `attendee.md`).
+Write the email for people who registered and did not attend. The context block carries the event
+facts and the extraction from call 1 — takeaways, verbatim quotes, the premise, and
+`no_show_moments`: the three minutes of the recording worth jumping to. You do not have the
+transcript; everything you claim must come from that extraction.
 
-## Personalization variables
+The output is a template. `comms.py` renders it once per contact by substituting the merge fields.
 
-- `{{first_name}}`, `{{company}}` — from the enriched contact record.
-- `{{takeaway_headline}}` / `{{takeaway_body}}` — same takeaway-injection contract as
-  `attendee.md`, keyed by `function`. Leave tokens in place for `comms.py` to fill.
-- `{{recording_cta_timestamped}}`, `{{recording_link}}`, `{{unsubscribe_link}}` — wired by
-  `comms.py`, UTM-tagged. Never invent a URL or timestamp not derivable from the transcript.
-- `{{function_relevant_segment}}` — a short phrase naming the transcript segment most relevant to
-  the recipient's function (e.g. "the segmentation numbers" for marketing, "the attribution math"
-  for RevOps), used in a "reply for the short version" CTA.
-- `{{event_time_since_close}}` — filled by `comms.py` from `event.json` date + send time; the model
-  should reference it as proof of speed-to-lead discipline, not restate a number itself.
+## Merge fields — copy these tokens verbatim into `body_md`
 
-## Takeaway-injection contract
+- `{{firstname}}` — recipient's first name.
+- `{{takeaway_headline}}` and `{{takeaway_body}}` — required, exactly once each; resolved per
+  contact from their CRM `function` and industry bucket. Frame them as the one thing they missed
+  that matters for their role.
+- `{{recording_link}}` — the on-demand recording, already UTM-tagged.
+- `{{cta_link}}` — the CTA URL, already UTM-tagged. This is the primary action in this email.
 
-Same rules as `attendee.md`: one grounded, speaker-attributed, timestamped takeaway per function,
-plus one grounded, timestamped follow-on sentence per industry bucket (`saas`, `services_it`,
-`other_commercial` — see `attendee.md`'s `by_industry` contract, same [26:15]–[26:52] anchor). The
-selection rule is unchanged across segments: role takeaway is primary, industry sentence is
-appended second by `comms.py` (`resolve_takeaway()`) — write the industry sentence to read as a
-follow-on, not a competing headline. No-show copy additionally must acknowledge, in the model's
-tone guidance (not as a literal token), Daniel Kim's finding that no-show follow-up out-clicks
-attendee follow-up in 6 of 8 recent webinars ([15:44]) — the copy should feel like a genuinely
-useful digest, not an apology.
+No other `{{...}}` token is fillable; using one fails the run.
 
-Output as JSON (same shape as `attendee.md`):
+## Rules
+
+- Under 220 words. No guilt, no "we missed you" filler, no re-pitching the whole agenda.
+- Lead with the fact that the recording is available, then give the three `no_show_moments` as a
+  timestamped list so the recipient can jump straight in — each entry carries its `[MM:SS]`.
+- Every `[MM:SS]` and every quoted span must be copied exactly from the extraction. Use double
+  quotes only for a verbatim quote from `quotes[]`.
+- Do not claim anything about why they missed it, and do not state how long ago the session ran —
+  the send time is not known when this copy is written.
+- Subject lines: `subject_a` leads with what they missed, `subject_b` leads with the recording
+  being ready. Both under 60 characters, different from each other, no emoji.
+- `preheader`: under 90 characters, adds information rather than repeating the subject.
+
+## Output — one JSON object, nothing else
+
 ```json
 {
-  "by_function": { "...": {"headline": "...", "body": "..."} },
-  "by_industry": { "saas": "...", "services_it": "...", "other_commercial": "..." },
   "subject_a": "...",
-  "subject_b": "..."
+  "subject_b": "...",
+  "preheader": "...",
+  "body_md": "markdown with the merge fields in place",
+  "takeaways": ["3-5 short strings, each ending with its [MM:SS] anchor"]
 }
 ```
-
-## Guardrails
-
-- Recording link + timestamp CTA only — no hard sales ask in the first two sentences.
-- Ground every claim in the transcript; no invented stats — same fallback as `attendee.md` if a
-  function or industry bucket has no distinct transcript moment.
-- Draft only. Nothing here is sent without a human clearing `approval_gate.json`.

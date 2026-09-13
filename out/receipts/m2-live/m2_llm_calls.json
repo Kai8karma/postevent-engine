@@ -1,0 +1,42 @@
+[
+  {
+    "ts": "2026-09-13T11:15:28.347368+00:00",
+    "backend": "openrouter",
+    "model": "google/gemini-2.5-flash-lite",
+    "purpose": "extraction",
+    "prompt_chars": 39198,
+    "latency_ms": 7021,
+    "http_status": 200,
+    "parse_ok": true
+  },
+  {
+    "ts": "2026-09-13T11:15:30.571262+00:00",
+    "backend": "openrouter",
+    "model": "google/gemini-2.5-flash-lite",
+    "purpose": "variant_attendee",
+    "prompt_chars": 6833,
+    "latency_ms": 2222,
+    "http_status": 200,
+    "parse_ok": true
+  },
+  {
+    "ts": "2026-09-13T11:15:32.637800+00:00",
+    "backend": "openrouter",
+    "model": "google/gemini-2.5-flash-lite",
+    "purpose": "variant_no_show",
+    "prompt_chars": 7286,
+    "latency_ms": 2064,
+    "http_status": 200,
+    "parse_ok": true
+  },
+  {
+    "ts": "2026-09-13T11:15:34.957021+00:00",
+    "backend": "openrouter",
+    "model": "google/gemini-2.5-flash-lite",
+    "purpose": "variant_speaker",
+    "prompt_chars": 9440,
+    "latency_ms": 2318,
+    "http_status": 200,
+    "parse_ok": true
+  }
+]
