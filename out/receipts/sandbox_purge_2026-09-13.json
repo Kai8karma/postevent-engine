@@ -1,0 +1,19 @@
+{
+  "portal_id": 247135551,
+  "account_type": "DEVELOPER_TEST",
+  "ts": "2026-09-13T10:48:09Z",
+  "objects": {
+    "contacts": {
+      "before": 137,
+      "archived": 137,
+      "after": 0,
+      "errors": []
+    },
+    "companies": {
+      "before": 33,
+      "archived": 33,
+      "after": 0,
+      "errors": []
+    }
+  }
+}
