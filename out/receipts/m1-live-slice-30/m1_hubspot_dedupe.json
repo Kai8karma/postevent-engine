@@ -1,0 +1,12 @@
+[
+  {
+    "ts": "2026-09-13T09:39:32.084525+00:00",
+    "endpoint": "https://api.hubapi.com/crm/v3/objects/contacts/search",
+    "filter_chunks": 2,
+    "candidates_returned": 21,
+    "matches": 0,
+    "gray_zone_pairs": 0,
+    "source": "live",
+    "error": ""
+  }
+]

@@ -143,8 +143,10 @@ INDUSTRY_KEYWORDS = [
 GENERIC_TITLE_FALLBACK = "Attendee"
 
 # live-lane batching + validation
-BATCH_SIZE = 25
-FIRMOGRAPHICS_BATCH_SIZE = 40  # companies, not rows -- one company is ~4 lines of JSON
+# Both overridable from the environment: free-tier models time out on large
+# prompts, paid models take the defaults comfortably.
+BATCH_SIZE = int(os.environ.get("LLM_BATCH_ROWS") or 25)
+FIRMOGRAPHICS_BATCH_SIZE = int(os.environ.get("LLM_FIRMO_BATCH") or 40)  # companies, not rows -- one company is ~4 lines of JSON
 NON_ASCII_DOMINANCE_THRESHOLD = 0.5  # share of alpha chars outside ASCII
 INFERENCE_PROMPT_FILE = "inference.md"
 ICP_SCORING_PROMPT_FILE = "icp_scoring.md"

@@ -1,0 +1,192 @@
+{
+  "generated_at": "2026-09-13T09:44:22.228098+00:00",
+  "row_count": 32,
+  "lane": "live",
+  "lane_reason": "",
+  "backend": "openrouter",
+  "llm_calls": 10,
+  "llm_calls_parsed_ok": 7,
+  "fields": {
+    "email": 100.0,
+    "firstname": 100.0,
+    "lastname": 100.0,
+    "jobtitle": 100.0,
+    "company": 96.9,
+    "industry": 100.0,
+    "numemployees": 100.0,
+    "function": 100.0,
+    "seniority": 100.0,
+    "country": 93.8,
+    "region": 100.0,
+    "hubspot_owner_email": 90.6,
+    "lifecyclestage": 100.0,
+    "icp_tier": 100.0
+  },
+  "raw_fill": {
+    "fields": {
+      "email": 100.0,
+      "firstname": 100.0,
+      "lastname": 100.0,
+      "jobtitle": 100.0,
+      "company": 96.9,
+      "industry": 100.0,
+      "numemployees": 100.0,
+      "function": 100.0,
+      "seniority": 100.0,
+      "country": 93.8,
+      "region": 100.0,
+      "hubspot_owner_email": 90.6,
+      "lifecyclestage": 100.0,
+      "icp_tier": 100.0
+    },
+    "overall_pct": 98.7
+  },
+  "verified_fill": {
+    "fields": {
+      "email": 100.0,
+      "firstname": 100.0,
+      "lastname": 100.0,
+      "jobtitle": 84.4,
+      "company": 96.9,
+      "industry": 90.6,
+      "numemployees": 100.0,
+      "function": 100.0,
+      "seniority": 100.0,
+      "country": 93.8,
+      "region": 100.0,
+      "hubspot_owner_email": 90.6,
+      "lifecyclestage": 100.0,
+      "icp_tier": 100.0
+    },
+    "overall_pct": 96.9
+  },
+  "overall_completeness_pct": 98.7,
+  "threshold_required_pct": 90.0,
+  "pass": true,
+  "pass_raw": true,
+  "pass_basis": "spec_completeness.contact + .company spec_completeness_verified_pct >= 90",
+  "pass_verified": true,
+  "needs_review_count": 0,
+  "needs_review_pct": 0.0,
+  "needs_review_broadened_count": 8,
+  "needs_review_broadened_pct": 25.0,
+  "needs_review_note": "needs_review_count/pct mirror the per-row `needs_review` export column (narrow -- non-ASCII industry fallback, plus icp_disagreement); needs_review_broadened_count/pct also fire on any row still carrying a generic fallback (jobtitle=='Attendee' or industry=='Other') that no LLM pass or --clay-results backfill resolved -- the honest count. See needs_review_reason on each row for which applies.",
+  "suppressed_count": 1,
+  "suppressed_pct": 3.1,
+  "mailable_count": 31,
+  "suppressed": [
+    {
+      "email": "vikramn@darwinbox.com",
+      "company": "Darwinbox",
+      "reason": "host company domain ('darwinbox.com') -- internal staff, not a prospect"
+    }
+  ],
+  "spec_completeness": {
+    "contact": {
+      "fields": {
+        "jobtitle": 100.0,
+        "function": 100.0,
+        "seniority": 100.0,
+        "company": 96.9,
+        "numemployees": 100.0,
+        "industry": 100.0,
+        "region": 100.0,
+        "icp_tier": 100.0,
+        "lifecyclestage": 100.0,
+        "hubspot_owner_email": 90.6
+      },
+      "completeness_pct": 98.8,
+      "pass_90": true,
+      "fields_verified": {
+        "jobtitle": 84.4,
+        "function": 100.0,
+        "seniority": 100.0,
+        "company": 96.9,
+        "numemployees": 100.0,
+        "industry": 90.6,
+        "region": 100.0,
+        "icp_tier": 100.0,
+        "lifecyclestage": 100.0,
+        "hubspot_owner_email": 90.6
+      },
+      "spec_completeness_raw_pct": 98.8,
+      "spec_completeness_verified_pct": 96.2,
+      "pass_90_verified": true
+    },
+    "company": {
+      "fields": {
+        "name": 96.9,
+        "domain": 84.4,
+        "size_band": 100.0,
+        "industry": 100.0
+      },
+      "completeness_pct": 95.3,
+      "pass_90": true,
+      "fields_verified": {
+        "name": 96.9,
+        "domain": 84.4,
+        "size_band": 100.0,
+        "industry": 90.6
+      },
+      "spec_completeness_raw_pct": 95.3,
+      "spec_completeness_verified_pct": 93.0,
+      "pass_90_verified": true,
+      "caveat": "RAW company completeness counts any non-blank cell, including an offline synthetic size band and a keyword-classifier 'Other'. spec_completeness_verified_pct is the number to read: industry and numemployees count only when sourced from Clay, or from the LLM at confidence >= 0.7. `domain` is capped below 100% by construction -- a freemail registrant has no company domain to verify and one is never invented."
+    },
+    "synthetic_or_fallback_fields": {
+      "jobtitle_generic_fallback_count": 5,
+      "industry_generic_fallback_count": 3,
+      "numemployees_synthetic_count": 0,
+      "numemployees_unresolved_count": 0,
+      "low_confidence_firmographics_count": 0
+    },
+    "source_mix": {
+      "industry_source": {
+        "rules": 3,
+        "llm": 29
+      },
+      "numemployees_source": {
+        "llm": 32
+      },
+      "icp_source": {
+        "rules": 32
+      }
+    }
+  },
+  "next": {
+    "clay_domains": [
+      "name:self-employed",
+      "name:self-employed ltd"
+    ]
+  },
+  "llm": {
+    "mode": "live",
+    "backend": "openrouter",
+    "model_chain": [
+      "nvidia/nemotron-3-super-120b-a12b:free"
+    ],
+    "inference_batches": 1,
+    "inference_rows_flagged": 6,
+    "inference_rows_patched": 1,
+    "inference_parse_failures": 0,
+    "firmographics_batches": 4,
+    "firmographics_companies": 27,
+    "firmographics_companies_resolved": 27,
+    "firmographics_parse_failures": 0,
+    "icp_batches": 3,
+    "icp_rows_flagged": 32,
+    "icp_rows_annotated": 0,
+    "icp_rows_scored_by_llm": 0,
+    "icp_rows_rules_fallback": 32,
+    "icp_parse_failures": 3,
+    "icp_rows_agreeing_with_rules": 0,
+    "icp_disagreements_flagged": 0
+  },
+  "clay": {
+    "clay_domains_supplied": 0,
+    "clay_domains_applied": 0,
+    "numemployees_verified_domains": [],
+    "industry_verified_domains": [],
+    "run_urls": {}
+  }
+}
