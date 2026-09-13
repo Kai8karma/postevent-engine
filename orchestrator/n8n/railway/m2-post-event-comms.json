@@ -1,0 +1,936 @@
+{
+  "name": "M2 — Post-Event Comms (Railway)",
+  "nodes": [
+    {
+      "id": "m2-run-webhook",
+      "name": "M2 Run (webhook)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        200,
+        400
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "m2-run",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "webhookId": "m2-run-webhook-0001",
+      "notes": "Entry point. Body: {m1_run_id?, event_slug, mode: \"demo\"|\"full\", approver_email}. Responds via 'Respond Awaiting Approval' AFTER 'Call Module API - Generate' returns, so the caller gets the real run_id and approve_url, not a bare ack."
+    },
+    {
+      "id": "call-module-api---generate",
+      "name": "Call Module API - Generate",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        460,
+        400
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.MODULE_API_URL }}/run",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.MODULE_API_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { module: \"m2\", phase: \"generate\", live: true, inputs: { m1_run_id: $json.body.m1_run_id, event_slug: $json.body.event_slug, mode: $json.body.mode } } }}",
+        "options": {
+          "timeout": 900000
+        }
+      },
+      "retryOnFail": false,
+      "notes": "Module API /run, phase=generate. timeout=900000ms (900s) per spec. retryOnFail=false deliberately: generate writes dispatch_plan.json + approval_gate.json, so a blind retry on a slow-but-succeeding call risks a second plan for the same event rather than a clean failure -- same reasoning m1 uses for prepare/finalize."
+    },
+    {
+      "id": "generate-ok",
+      "name": "Generate OK?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        700,
+        400
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "cond-generate-ok",
+              "leftValue": "={{ $json.ok }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "notes": "True = generate's JSON body has ok:true (HTTP 200 either way per module-api.md -- app-level failure is still HTTP 200 with ok:false). False routes to 'Stop: Generate Failed'."
+    },
+    {
+      "id": "stop-generate-failed",
+      "name": "Stop: Generate Failed",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        700,
+        680
+      ],
+      "parameters": {
+        "errorMessage": "=m2 generate failed for event {{ $('M2 Run (webhook)').item.json.body.event_slug }}: {{ $json.error || 'module API returned ok:false with no error message' }}"
+      },
+      "notes": "Terminal failure node -- same pattern as m1's 'Stop: Prepare Failed'."
+    },
+    {
+      "id": "respond-awaiting-approval",
+      "name": "Respond Awaiting Approval",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        940,
+        400
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { run_id: $json.run_id, status: \"awaiting_approval\", approve_url: $execution.resumeUrl } }}",
+        "options": {}
+      },
+      "notes": "approve_url = $execution.resumeUrl, which n8n can resolve here even though 'Wait for Approval' hasn't executed yet -- the resume URL is derived from this execution's id, which exists from the moment the webhook fired, not from the Wait node having run. This is the same URL the approver's curl in the README hits. Execution keeps running after this node (Respond to Webhook does not terminate the workflow) -- the approval-email send and Wait continue in the background."
+    },
+    {
+      "id": "build-approval-email-body",
+      "name": "Build Approval Email Body",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1180,
+        400
+      ],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const gen = $('Call Module API - Generate').item.json;\nconst plan = gen.summary || {};\nconst counts = plan.counts || {};\nconst variants = plan.variants || {};\nfunction pickSubject(seg) {\n  const v = variants[seg] || {};\n  return v.subject_a || v.subject || 'n/a';\n}\nconst resumeUrl = $('Respond Awaiting Approval').item.json.approve_url;\nconst eventSlug = $('M2 Run (webhook)').item.json.body.event_slug;\nconst lines = [\n  'M2 dispatch plan ready for ' + eventSlug + ' (run ' + gen.run_id + ').',\n  '',\n  'Counts: attendee=' + (counts.attendee ?? '?') + ', no_show=' + (counts.no_show ?? '?') + ', speaker=' + (counts.speaker ?? '?') + ', mailable=' + (counts.mailable ?? '?') + ', suppressed=' + (counts.suppressed ?? '?'),\n  '',\n  'Subjects:',\n  '  attendee: ' + pickSubject('attendee'),\n  '  no_show: ' + pickSubject('no_show'),\n  '  speaker: ' + pickSubject('speaker'),\n  '',\n  'Approve within 24h by running:',\n  'curl -X POST ' + resumeUrl + ' -H \"Content-Type: application/json\" -d \\'{\"approved_by\":\"<you>\",\"mode\":\"demo\"}\\''\n];\nreturn [{ json: {\n  to: $('M2 Run (webhook)').item.json.body.approver_email,\n  subject: '[M2 Approval] ' + eventSlug + ' dispatch ready',\n  body_text: lines.join('\\n')\n} }];"
+      },
+      "notes": "UNVERIFIED field mapping, flagged per this skill's audit rule: module-api.md shows dispatch_plan.json's own shape (counts, variants.<segment>.subject_a) but not the generate-phase API response's summary object directly, so this assumes summary mirrors dispatch_plan.json's counts/variants. Verify against a live generate call and adjust the paths if the response nests these differently."
+    },
+    {
+      "id": "send-approval-request-gmail",
+      "name": "Send Approval Request (Gmail)",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1420,
+        400
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $json.to }}",
+        "subject": "={{ $json.subject }}",
+        "emailType": "text",
+        "message": "={{ $json.body_text }}",
+        "options": {}
+      },
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "PLACEHOLDER_GMAIL_OAUTH2",
+          "name": "Gmail account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "continueOnFail": true,
+      "notes": "The 'approval request' mail -- summary counts + 3 subjects + the resume URL from 'Build Approval Email Body'. continueOnFail:true so a missing/unauthorized Gmail credential doesn't block the demo run; the Wait node still opens and the operator can approve via curl even if this send fails silently red on this node only."
+    },
+    {
+      "id": "wait-for-approval",
+      "name": "Wait for Approval",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1660,
+        400
+      ],
+      "parameters": {
+        "resume": "webhook",
+        "httpMethod": "POST",
+        "limitWaitTime": true,
+        "limitType": "afterTimeInterval",
+        "resumeAmount": 24,
+        "resumeUnit": "hours",
+        "options": {}
+      },
+      "notes": "Resume: On Webhook Call, 24h limit. Resume URL is $execution.resumeUrl, already handed to the approver as 'approve_url' in step 1's response and in the approval-request email. The approver's POST body ({approved_by, mode}) becomes this execution's $json.body on the node right after resume, same shape n8n uses for a normal webhook trigger."
+    },
+    {
+      "id": "call-module-api---approve",
+      "name": "Call Module API - Approve",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1900,
+        400
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.MODULE_API_URL }}/run",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.MODULE_API_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { module: \"m2\", phase: \"approve\", run_id: $('Call Module API - Generate').item.json.run_id, approved_by: $json.body.approved_by, mode: $json.body.mode } }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "retryOnFail": false,
+      "notes": "Module API /run, phase=approve. Fires on Wait resume; $json.body is the approver's curl payload ({approved_by, mode}). retryOnFail=false: approve flips approval_gate.json state, a blind retry could double-flip. Returns recipients[] per module-api.md's 'approve' phase description."
+    },
+    {
+      "id": "approve-ok",
+      "name": "Approve OK?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2140,
+        400
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "cond-approve-ok",
+              "leftValue": "={{ $json.ok }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "notes": "Same ok:true gate as 'Generate OK?', on the approve response."
+    },
+    {
+      "id": "stop-approve-failed",
+      "name": "Stop: Approve Failed",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        2140,
+        680
+      ],
+      "parameters": {
+        "errorMessage": "=m2 approve failed for run {{ $('Call Module API - Generate').item.json.run_id }}: {{ $json.error || 'module API returned ok:false with no error message' }}"
+      },
+      "notes": "Terminal failure node for an approve-side failure."
+    },
+    {
+      "id": "split-recipients-to-items",
+      "name": "Split Recipients to Items",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2380,
+        400
+      ],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const recipients = $json.recipients || [];\nreturn recipients.map(r => ({ json: r }));"
+      },
+      "notes": "One item per recipient returned by approve (demo = redirect-aliased attendee/no_show + speakers; full = everyone mailable, per module-api.md)."
+    },
+    {
+      "id": "batch-recipients-1",
+      "name": "Batch Recipients (1)",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2620,
+        400
+      ],
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "notes": "Loop, one recipient per iteration. Output 0 ('done') fires once every recipient has looped through; output 1 ('loop') feeds the send branch for the current recipient. 'Map HubSpot Result' and 'Map Gmail Result' both connect back into this node's input to continue the loop."
+    },
+    {
+      "id": "hubspot-send-enabled",
+      "name": "HubSpot Send Enabled?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2860,
+        220
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "cond-hubspot-enabled",
+              "leftValue": "={{ $env.HUBSPOT_SEND_ENABLED }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "notes": "True = HubSpot transactional single-send path (Marketing Hub Pro + transactional email add-on required). False = Gmail direct path -- e.g. HUBSPOT_SEND_ENABLED left unset because the portal lacks the add-on."
+    },
+    {
+      "id": "hubspot-single-send",
+      "name": "HubSpot Single Send",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3100,
+        80
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.hubapi.com/marketing/v3/transactional/single-email/send",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.HUBSPOT_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { emailId: $env.HUBSPOT_TEMPLATE_ID, message: { to: $('Batch Recipients (1)').item.json.demo_redirect_to || $('Batch Recipients (1)').item.json.email, subject: $('Batch Recipients (1)').item.json.subject }, contactProperties: { firstname: $('Batch Recipients (1)').item.json.firstname, function: $('Batch Recipients (1)').item.json.function, industry_bucket: $('Batch Recipients (1)').item.json.industry_bucket }, customProperties: { body_html: $('Batch Recipients (1)').item.json.body_html } } }}",
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "onError": "continueRegularOutput",
+      "continueOnFail": true,
+      "notes": "HubSpot marketing/v3/transactional/single-email/send. fullResponse+neverError so a non-2xx lands as normal data (statusCode inspected by 'HubSpot Send OK?') instead of throwing -- continueOnFail:true is the belt-and-braces per the brief. 'to' redirects to demo_redirect_to when set (demo mode), else the plan's real email."
+    },
+    {
+      "id": "hubspot-send-ok",
+      "name": "HubSpot Send OK?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        3340,
+        80
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "cond-hs-status-gte",
+              "leftValue": "={{ $json.statusCode }}",
+              "rightValue": 200,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "cond-hs-status-lt",
+              "leftValue": "={{ $json.statusCode }}",
+              "rightValue": 300,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "notes": "2xx = success -> 'Map HubSpot Result'. Anything else (4xx/5xx, or no statusCode at all because the request itself errored) -> 'Gmail Send (Recipient)' as the fallback send, per the brief's 'route non-2xx to the Gmail branch'."
+    },
+    {
+      "id": "map-hubspot-result",
+      "name": "Map HubSpot Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3580,
+        0
+      ],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const recipient = $('Batch Recipients (1)').item.json;\nconst resp = $json.body || $json;\nreturn [{ json: {\n  email: recipient.email,\n  segment: recipient.segment,\n  provider: 'hubspot',\n  message_id: resp.statusId || null,\n  sent_to: recipient.demo_redirect_to || recipient.email,\n  sent_at: new Date().toISOString(),\n  status: 'sent',\n  error: null\n} }];"
+      },
+      "notes": "dispatch_results.json row. message_id = HubSpot's statusId per the brief. email is the plan's real email (not the redirect) -- sent_to carries where it actually went."
+    },
+    {
+      "id": "gmail-send-recipient",
+      "name": "Gmail Send (Recipient)",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        3100,
+        340
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $('Batch Recipients (1)').item.json.demo_redirect_to || $('Batch Recipients (1)').item.json.email }}",
+        "subject": "={{ $('Batch Recipients (1)').item.json.subject }}",
+        "emailType": "html",
+        "message": "={{ $('Batch Recipients (1)').item.json.body_html }}",
+        "options": {}
+      },
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "PLACEHOLDER_GMAIL_OAUTH2",
+          "name": "Gmail account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "continueOnFail": true,
+      "notes": "Two inbound paths land here: the direct path when HubSpot sending is disabled, and the fallback from 'HubSpot Send OK?' when HubSpot returned non-2xx. All fields are read from 'Batch Recipients (1)' (the loop's current recipient) rather than $json, so this node behaves identically regardless of which upstream branch fired. continueOnFail:true -- a failed send here still needs to produce a 'failed' dispatch_results.json row, never a dead execution (per the brief's 'never dropped')."
+    },
+    {
+      "id": "map-gmail-result",
+      "name": "Map Gmail Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3340,
+        340
+      ],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const recipient = $('Batch Recipients (1)').item.json;\nconst resp = $json;\nconst failed = Boolean(resp.error);\nreturn [{ json: {\n  email: recipient.email,\n  segment: recipient.segment,\n  provider: 'gmail',\n  message_id: resp.id || null,\n  sent_to: recipient.demo_redirect_to || recipient.email,\n  sent_at: new Date().toISOString(),\n  status: failed ? 'failed' : 'sent',\n  error: failed ? (resp.error.message || String(resp.error)) : null\n} }];"
+      },
+      "notes": "dispatch_results.json row. message_id = Gmail's own 'id' field per the brief. Handles both a clean send and a continueOnFail-caught error on the same node -- failures still produce a status:'failed' row instead of being dropped."
+    },
+    {
+      "id": "aggregate-dispatch-results",
+      "name": "Aggregate Dispatch Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2860,
+        640
+      ],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const hubspotRows = $('Map HubSpot Result').all().map(i => i.json);\nconst gmailRows = $('Map Gmail Result').all().map(i => i.json);\nconst results = [...hubspotRows, ...gmailRows];\nconst runId = $('Call Module API - Approve').item.json.run_id || $('Call Module API - Generate').item.json.run_id;\nreturn [{ json: { run_id: runId, results } }];"
+      },
+      "notes": "Fires once, from 'Batch Recipients (1)' output 0 ('done'), after every recipient has looped through. $('NodeName').all() collects every run of that named node across all loop iterations in this execution -- the standard n8n pattern for aggregating a splitInBatches loop's per-iteration output."
+    },
+    {
+      "id": "call-module-api---log",
+      "name": "Call Module API - Log",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3100,
+        640
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.MODULE_API_URL }}/run",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.MODULE_API_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { module: \"m2\", phase: \"log\", run_id: $json.run_id, results: $json.results } }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "retryOnFail": false,
+      "notes": "Module API /run, phase=log. Creates one HubSpot email engagement per real message_id per module-api.md. retryOnFail=false: log writes CRM engagements, a blind retry could double-log a send."
+    },
+    {
+      "id": "log-ok",
+      "name": "Log OK?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        3340,
+        640
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "cond-log-ok",
+              "leftValue": "={{ $json.ok }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "notes": "Same ok:true gate as the earlier phases, on the log response."
+    },
+    {
+      "id": "stop-log-failed",
+      "name": "Stop: Log Failed",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        3340,
+        900
+      ],
+      "parameters": {
+        "errorMessage": "=m2 log failed for run {{ $('Call Module API - Approve').item.json.run_id }}: {{ $json.error || 'module API returned ok:false with no error message' }}"
+      },
+      "notes": "Terminal failure node for a log-side failure. Sends already happened by this point -- this stop is about the HubSpot engagement record, not the dispatch itself."
+    },
+    {
+      "id": "build-evidence-summary",
+      "name": "Build Evidence Summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3580,
+        640
+      ],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const gen = $('Call Module API - Generate').item.json;\nconst appr = $('Call Module API - Approve').item.json;\nconst logResp = $json;\nconst rows = $('Aggregate Dispatch Results').item.json.results || [];\n\nconst sentRows = rows.filter(r => r.status === 'sent');\nconst failedRows = rows.filter(r => r.status === 'failed');\nconst sentTimes = sentRows.map(r => Date.parse(r.sent_at)).filter(t => !isNaN(t));\nconst firstSendTs = sentTimes.length ? new Date(Math.min.apply(null, sentTimes)).toISOString() : null;\n\nconst eventCloseTs = (gen.summary || {}).event_close_ts || null;\nlet hoursAfterClose = null;\nif (firstSendTs && eventCloseTs) {\n  hoursAfterClose = (Date.parse(firstSendTs) - Date.parse(eventCloseTs)) / 3600000;\n}\n\nconst providers = Array.from(new Set(rows.map(r => r.provider)));\n\nconst summary = {\n  run_id: gen.run_id,\n  mode: $('M2 Run (webhook)').item.json.body.mode,\n  event_close_ts: eventCloseTs,\n  first_send_ts: firstSendTs,\n  hours_after_close: hoursAfterClose,\n  sent: sentRows.length,\n  failed: failedRows.length,\n  logged: (logResp.summary || {}).logged ?? sentRows.length,\n  skipped: rows.length - sentRows.length - failedRows.length,\n  providers: providers,\n  receipts: [].concat(gen.receipts || [], appr.receipts || [], logResp.receipts || [])\n};\n\nconst fileName = summary.run_id + '-m2.json';\nconst fileContent = Buffer.from(JSON.stringify(summary, null, 2), 'utf8').toString('base64');\n\nreturn [{ json: summary, binary: { data: { data: fileContent, mimeType: 'application/json', fileName: fileName } } }];"
+      },
+      "notes": "event_close_ts is read from generate's response summary -- UNVERIFIED against a live call (module-api.md shows this field on dispatch_plan.json, not confirmed on the generate-phase API response envelope); adjust the path if it differs. hours_after_close is the 'within 24 hours' proof: first successful send timestamp minus event_close_ts. rows come from 'Aggregate Dispatch Results', already collected via .all() across the send loop."
+    },
+    {
+      "id": "write-m2-run-summary-to-disk",
+      "name": "Write M2 Run Summary to Disk",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        3820,
+        640
+      ],
+      "parameters": {
+        "operation": "write",
+        "fileName": "=/home/node/.n8n/runs/{{ $json.run_id }}-m2.json",
+        "dataPropertyName": "data",
+        "options": {}
+      },
+      "notes": "UNVERIFIED against a live instance, same caveat m1's equivalent node carries: n8n's dedicated Write Binary File node is deprecated, folded into Read/Write Files from Disk (n8n-nodes-base.readWriteFile, operation=write). Confirm fileName/dataPropertyName parameter names against your instance's node panel."
+    },
+    {
+      "id": "m2-run-summary-final",
+      "name": "M2 Run Summary (Final)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4060,
+        640
+      ],
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{ $('Build Evidence Summary').item.json }}",
+        "options": {}
+      },
+      "notes": "Re-emits the clean evidence summary (no binary payload) as the workflow's last node, so the n8n execution log shows the full receipt object."
+    },
+    {
+      "id": "sticky-note-env-vars-+-credentials",
+      "name": "Sticky Note: Env Vars + Credentials",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        200,
+        120
+      ],
+      "parameters": {
+        "content": "## ENV VARS\nMODULE_API_URL, MODULE_API_TOKEN -- module API calls (generate/approve/log), same pattern as m1-lead-enrichment.json.\nHUBSPOT_TOKEN, HUBSPOT_TEMPLATE_ID -- HubSpot transactional single-send only, used directly by this workflow (not the module API, which holds its own HubSpot token server-side for the 'log' phase's engagement writes).\nHUBSPOT_SEND_ENABLED -- \"true\" to take the HubSpot send path; unset/anything else falls through to Gmail.\nWEBHOOK_URL -- not referenced directly by this workflow (approve_url uses n8n's own $execution.resumeUrl); listed for parity with m1's env table.\nAll read via $env -- self-hosted n8n needs N8N_BLOCK_ENV_ACCESS_IN_NODE=false, same requirement as m1.\n\n## CREDENTIALS\nOne Gmail OAuth2 credential, named exactly 'Gmail account' in the n8n UI, used by both Gmail nodes. No HubSpot credential object here -- the transactional-send call authenticates with a raw Bearer header from $env.HUBSPOT_TOKEN.",
+        "height": 320,
+        "width": 520,
+        "color": 4
+      }
+    },
+    {
+      "id": "sticky-note-approval-gate-+-send-loop",
+      "name": "Sticky Note: Approval Gate + Send Loop",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1180,
+        780
+      ],
+      "parameters": {
+        "content": "## APPROVAL GATE\n'Wait for Approval' resumes on webhook call, not on a timer -- the approve_url handed back in step 1's response and in the approval email IS $execution.resumeUrl. The approver's curl body ({approved_by, mode}) becomes $json.body on 'Call Module API - Approve', same shape n8n gives any webhook payload. 24h limit; past that the wait node's own timeout behaviour applies (no separate not-approved branch is wired -- out of scope for this workflow).\n\n## SEND LOOP\n'Batch Recipients (1)' processes one recipient per iteration. HubSpot is tried first only when HUBSPOT_SEND_ENABLED==\"true\"; any non-2xx (or HubSpot disabled entirely) falls through to the SAME 'Gmail Send (Recipient)' node, which always reads its To/Subject/Body from 'Batch Recipients (1)' rather than $json so it behaves identically from either inbound path. Both terminal mapper nodes ('Map HubSpot Result', 'Map Gmail Result') loop back into 'Batch Recipients (1)'; after the loop's 'done' output fires, 'Aggregate Dispatch Results' collects every iteration via $('NodeName').all() -- no manual accumulator needed, unlike m1's Clay leg (which needed one only because Clay's callback is genuinely async across separate webhook calls).",
+        "height": 380,
+        "width": 620,
+        "color": 5
+      }
+    }
+  ],
+  "connections": {
+    "M2 Run (webhook)": {
+      "main": [
+        [
+          {
+            "node": "Call Module API - Generate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Module API - Generate": {
+      "main": [
+        [
+          {
+            "node": "Generate OK?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate OK?": {
+      "main": [
+        [
+          {
+            "node": "Respond Awaiting Approval",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop: Generate Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond Awaiting Approval": {
+      "main": [
+        [
+          {
+            "node": "Build Approval Email Body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Approval Email Body": {
+      "main": [
+        [
+          {
+            "node": "Send Approval Request (Gmail)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Approval Request (Gmail)": {
+      "main": [
+        [
+          {
+            "node": "Wait for Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Approval": {
+      "main": [
+        [
+          {
+            "node": "Call Module API - Approve",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Module API - Approve": {
+      "main": [
+        [
+          {
+            "node": "Approve OK?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approve OK?": {
+      "main": [
+        [
+          {
+            "node": "Split Recipients to Items",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop: Approve Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Recipients to Items": {
+      "main": [
+        [
+          {
+            "node": "Batch Recipients (1)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Batch Recipients (1)": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Dispatch Results",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HubSpot Send Enabled?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HubSpot Send Enabled?": {
+      "main": [
+        [
+          {
+            "node": "HubSpot Single Send",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gmail Send (Recipient)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HubSpot Single Send": {
+      "main": [
+        [
+          {
+            "node": "HubSpot Send OK?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HubSpot Send OK?": {
+      "main": [
+        [
+          {
+            "node": "Map HubSpot Result",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gmail Send (Recipient)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Send (Recipient)": {
+      "main": [
+        [
+          {
+            "node": "Map Gmail Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Map HubSpot Result": {
+      "main": [
+        [
+          {
+            "node": "Batch Recipients (1)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Map Gmail Result": {
+      "main": [
+        [
+          {
+            "node": "Batch Recipients (1)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Dispatch Results": {
+      "main": [
+        [
+          {
+            "node": "Call Module API - Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Module API - Log": {
+      "main": [
+        [
+          {
+            "node": "Log OK?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log OK?": {
+      "main": [
+        [
+          {
+            "node": "Build Evidence Summary",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop: Log Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Evidence Summary": {
+      "main": [
+        [
+          {
+            "node": "Write M2 Run Summary to Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write M2 Run Summary to Disk": {
+      "main": [
+        [
+          {
+            "node": "M2 Run Summary (Final)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": [
+    "postevent",
+    "m2"
+  ]
+}

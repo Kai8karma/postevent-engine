@@ -84,3 +84,95 @@ full verification you don't have):
   `summary.verified_contact_pct`, `summary.verified_company_pct` — `docs/module-api.md` only
   shows a `prepare`-phase response example, not `finalize`'s, so this is inferred from the phase
   description, not confirmed against a real response.
+
+## §M2 — Post-Event Comms (Railway)
+
+`m2-post-event-comms.json` — n8n owns orchestration, the approval gate, the send (HubSpot or
+Gmail), and the evidence receipt; the module API owns copy generation and the HubSpot engagement
+log. Import the same way as M1 (Workflows → Import from File), then activate it.
+
+### Nodes (28: 25 logic + 3 non-connecting: 2 sticky notes, the trigger)
+
+| node | type | purpose |
+|---|---|---|
+| M2 Run (webhook) | webhook v2 | `POST /webhook/m2-run`, body `{m1_run_id?, event_slug, mode, approver_email}` |
+| Call Module API - Generate | httpRequest v4.2 | `phase=generate`, timeout 900s |
+| Generate OK? / Stop: Generate Failed | if v2 / stopAndError v1 | `ok:true` gate |
+| Respond Awaiting Approval | respondToWebhook v1.1 | `{run_id, status, approve_url}` — `approve_url` = `$execution.resumeUrl`, resolvable before the Wait node has run |
+| Build Approval Email Body | code v2 | counts + 3 subjects + resume-URL curl, from generate's response |
+| Send Approval Request (Gmail) | gmail v2.1 | cred `Gmail account`, `continueOnFail:true` |
+| Wait for Approval | wait v1.1 | resume: On Webhook Call, 24h limit |
+| Call Module API - Approve | httpRequest v4.2 | `phase=approve`, body from the resume webhook's `$json.body` |
+| Approve OK? / Stop: Approve Failed | if v2 / stopAndError v1 | `ok:true` gate |
+| Split Recipients to Items | code v2 | `recipients[]` → one item each |
+| Batch Recipients (1) | splitInBatches v3 | loop, 1 recipient/iteration |
+| HubSpot Send Enabled? | if v2 | `$env.HUBSPOT_SEND_ENABLED == "true"` |
+| HubSpot Single Send | httpRequest v4.2 | transactional single-send; `continueOnFail:true`, `neverError` so non-2xx is inspectable |
+| HubSpot Send OK? | if v2 | 2xx → `Map HubSpot Result`; else → `Gmail Send (Recipient)` (fallback) |
+| Map HubSpot Result / Map Gmail Result | code v2 | build the `dispatch_results.json` row; both loop back into `Batch Recipients (1)` |
+| Gmail Send (Recipient) | gmail v2.1 | cred `Gmail account`, `continueOnFail:true`; fed by both the HubSpot-disabled path and the HubSpot-failure fallback |
+| Aggregate Dispatch Results | code v2 | `$('Map HubSpot Result').all()` + `$('Map Gmail Result').all()` after the loop's `done` output |
+| Call Module API - Log / Log OK? / Stop: Log Failed | httpRequest v4.2 / if v2 / stopAndError v1 | `phase=log` with `results[]` |
+| Build Evidence Summary | code v2 | the within-24h receipt object |
+| Write M2 Run Summary to Disk | readWriteFile v1 | `/home/node/.n8n/runs/<run_id>-m2.json` |
+| M2 Run Summary (Final) | set v3.4 | re-emits the receipt as the execution's last node |
+
+### Env vars (n8n service)
+
+| var | used for |
+|---|---|
+| `MODULE_API_URL`, `MODULE_API_TOKEN` | module API calls (generate/approve/log) |
+| `HUBSPOT_TOKEN` | Bearer auth on the HubSpot transactional single-send call only |
+| `HUBSPOT_SEND_ENABLED` | `"true"` to take the HubSpot path; unset → Gmail |
+| `HUBSPOT_TEMPLATE_ID` | HubSpot transactional `emailId` |
+| `WEBHOOK_URL` | not read by this workflow directly (`approve_url` uses `$execution.resumeUrl`); listed for parity with M1 |
+| `N8N_BLOCK_ENV_ACCESS_IN_NODE=false` | required, same as M1 |
+
+### Trigger it
+
+```bash
+curl -X POST https://<your-n8n-host>/webhook/m2-run \
+  -H "Content-Type: application/json" \
+  -d '{"m1_run_id": "m1-20260913-1522", "event_slug": "darwinbox-ai-in-hr-2026-08-13", "mode": "demo", "approver_email": "kai8karma@gmail.com"}'
+```
+Returns `{"run_id": "...", "status": "awaiting_approval", "approve_url": "..."}` once `generate`
+succeeds. The approval email (if the Gmail credential is set up) carries the same `approve_url`.
+
+### Approve it (within 24h)
+
+```bash
+curl -X POST <approve_url> \
+  -H "Content-Type: application/json" \
+  -d '{"approved_by": "kai8karma@gmail.com", "mode": "demo"}'
+```
+This resumes the Wait node, calls `phase=approve`, and runs the send loop over the returned
+`recipients[]`.
+
+### Gmail OAuth2 credential setup (n8n UI)
+
+Credentials → New → Gmail OAuth2 API → connect the sending Google account → **name it exactly
+`Gmail account`** (both Gmail nodes reference this name, not an id). Used for the approval-request
+mail and as the send/fallback path when HubSpot sending is off or fails.
+
+### HubSpot single-send prerequisites
+
+`HubSpot Single Send` needs **Marketing Hub Pro + the transactional email add-on** and a portal
+with the `transactional-email` scope on its access token. If your portal doesn't have that: leave
+`HUBSPOT_SEND_ENABLED` unset — every recipient goes out via Gmail instead, and engagements are
+still logged to HubSpot by the module API's `log` phase regardless of which provider sent the
+mail (same as M1, no n8n-side HubSpot credential object is used for sending; only a raw Bearer
+token from `$env.HUBSPOT_TOKEN`).
+
+### "Within 24 hours" evidence
+
+`Build Evidence Summary` writes `hours_after_close` = the first successful send's timestamp minus
+`event_close_ts` (read from generate's plan) — a negative-if-early, small-positive-if-fast number
+that IS the SLA proof, written to
+`/home/node/.n8n/runs/<run_id>-m2.json` and returned as the execution's final output. `providers`
+lists which of `hubspot`/`gmail` actually carried traffic; `failed` counts rows that never
+succeeded but were still logged, never dropped, per the brief.
+
+**Flagged as unverified against a live instance**: `Build Approval Email Body` and `Build Evidence
+Summary` both assume the `generate` phase's response `summary` mirrors `dispatch_plan.json`'s
+`counts`/`variants`/`event_close_ts` fields — `docs/module-api.md` shows the plan file's own shape
+but not the API envelope around it for this phase, so these paths are inferred, not confirmed.
