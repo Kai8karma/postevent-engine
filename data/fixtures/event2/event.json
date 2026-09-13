@@ -1,25 +1,23 @@
 {
-  "event_name": "Speed to Lead: Fixing the First 5 Minutes After a Demo Request",
-  "date": "2026-08-10",
-  "host_company": "ACME Revenue Cloud",
-  "host_domain": "acmerevenue.example",
-  "topic": "Response-time benchmarks, routing automation, and the handoff choreography between marketing and SDR teams",
-  "duration_min": 48,
+  "event_name": "Payroll Compliance Across the GCC: What HR Teams Get Wrong",
+  "date": "2026-09-03",
+  "start_time_local": "10:00",
+  "timezone": "Asia/Dubai",
+  "host_company": "Darwinbox",
+  "host_domain": "darwinbox.com",
+  "topic": "Where GCC payroll compliance breaks in practice -- WPS filings, End of Service Gratuity calculations, GOSI/GPSSA pension contributions, and multi-country payroll governance for HR and payroll teams operating across the UAE, Saudi Arabia and Qatar",
+  "audience": "CHROs, VP/Head of HR, Payroll and Compensation leaders, HR Shared Services and HRIS leaders at enterprises operating across the GCC and wider MENA region",
+  "duration_min": 40,
   "platform": "Zoom Webinars",
-  "recording_url": "https://drive.example/rec/speed-to-lead.mp4",
-  "registration_page": "https://acmerevenue.example/webinars/speed-to-lead",
+  "recording_url": "https://explore.darwinbox.com/lp/resources/events/webinar-payroll-compliance-gcc",
+  "registration_page": "https://explore.darwinbox.com/lp/resources/events/webinar-payroll-compliance-gcc",
   "speakers": [
-    {
-      "name": "Priya Nair",
-      "title": "VP Marketing",
-      "company": "ACME Revenue Cloud",
-      "linkedin": "https://www.linkedin.com/in/priya-nair-example"
-    },
-    {
-      "name": "Owen Marsh",
-      "title": "Director of SDR",
-      "company": "ACME Revenue Cloud",
-      "linkedin": "https://www.linkedin.com/in/owen-marsh-example"
-    }
-  ]
+    {"name": "Q Hamirani", "title": "Chief People Officer", "company": "HighLevel", "role": "guest speaker", "email": "kai8karma+speaker-qhamirani@gmail.com"},
+    {"name": "Sudi Bjornstad Korba", "title": "Senior Vice President of Sales, North America", "company": "Darwinbox", "role": "host", "email": "kai8karma+speaker-sudikorba@gmail.com"}
+  ],
+  "_provenance": {
+    "event": "Synthetic second Darwinbox webinar, authored only for orchestrator/test_webinar2.py's M1 idempotency proof -- unlike data/incoming/event.json's event 1 (a real Darwinbox webinar page), this event does not exist. Speakers are reused from event 1 for fixture continuity, not because they presented this session.",
+    "registrants": "Registrant people are synthetic (invented names/addresses); employer companies and domains are real, drawn from data/incoming/tools/gen_registrants.py's company pools so enrichment returns real firmographics. No real person's contact data is used.",
+    "date": "2026-09-03 is invented to postdate event 1 (2026-08-13), for the idempotency test's 'second webinar, same alumni' scenario."
+  }
 }

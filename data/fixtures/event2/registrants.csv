@@ -1,31 +1,41 @@
 First Name,Last Name,Email,Job Title,Company,Country/Region,Registration Time,Attended,Time in Session (minutes)
-amit,Nunes,anunes@northfielddata.com,,NORTHFIELD DATA CO,MX,2026-08-04T09:12:00,Yes,55
-Tomas,Ivanov,tivanov@everlinetech.com,RevOps Manager,Everline Technologies,UK,2026-08-04T09:20:00,Yes,58
-Alice,Ali,aali@quantarasoftware.com,Growth Manager,Quantara Software,SG,2026-08-04T09:25:00,No,
-Miguel,Iyer,miguel.iyer@hotmail.com,Content Specialist,BLUEPEAK VENTURES,MX,2026-08-05T11:02:00,Yes,49
-Anna,Mahajan,annam@lumen8marketing.com,,Lumen8 Marketing,US,2026-08-05T15:31:00,No,
-Layla,Zhang,lzhang@kestrelit.com,Marketing Intern,KESTREL IT SERVICES,AU,2026-08-06T08:14:00,Yes,60
-Aditya,Kaur,adityak@alderwoodfintech.com,,Alderwood Fintech,SG,2026-08-06T09:47:00,Yes,44
-Maria,Sato,maria.sato@wavecrestit.com,Marketing Analyst,Wavecrest IT Services,BR,2026-08-07T18:22:00,No,
-Ravi,Nair,rnair@kestrelit.com,Customer Success Manager,Kestrel IT Services,US,2026-08-07T19:05:00,Yes,38
-Rahul,Alvarez,rahul.alvarez@clarionanalytics.com,Head of Demand Gen,Clarion Analytics,JP,2026-08-08T05:51:00,Yes,52
-Anton,Moreau,anton.moreau@anchorpointsaas.com,Digital Marketing Specialist,Anchorpoint SaaS,SG,2026-08-08T21:03:00,Yes,47
-Ibrahim,Braun,ibrahimb@sableridgeanalytics.com,RevOps Manager,Sable Ridge Analytics,SG,2026-08-09T14:10:00,No,
-Priya,Deshpande,pdeshpande@fernwoodcloud.com,Demand Gen Manager,Fernwood Cloud,IN,2026-08-03T07:15:00,Yes,50
-karl,Voss,kvoss@brambleworks.io,,Bramble Works,DE,2026-08-03T08:40:00,No,
-Sofia,Reyes,sofia.reyes@harkonenlabs.com,Marketing Ops Lead,Harkonen Labs,ES,2026-08-03T10:05:00,Yes,41
-Owen,Blackwood,oblackwood@tessellatedata.com,VP Marketing,Tessella Data,CA,2026-08-04T13:00:00,Yes,58
-Mei,Lin,mei.lin@copperfieldcx.com,Customer Success Lead,Copperfield CX,SG,2026-08-04T14:22:00,No,
-Dmitri,Sokolov,dsokolov@yahoo.com,Sales Development Rep,GRANITE PEAK ANALYTICS,RU,2026-08-05T06:48:00,Yes,29
-Chiamaka,Obi,cobi@lodestarrevenue.com,Head of RevOps,Lodestar Revenue,NG,2026-08-05T16:10:00,Yes,60
-jonas,Petit,jpetit@brightloomsoftware.com,,Brightloom Software,FR,2026-08-05T17:33:00,No,
-Hana,Kobayashi,hana.kobayashi@driftpointsaas.com,Growth Marketing Manager,Driftpoint SaaS,JP,2026-08-06T02:11:00,Yes,36
-Marcus,Whitfield,mwhitfield@gmail.com,Founder,Cinderfield Ventures,US,2026-08-06T12:47:00,Yes,55
-Beatriz,Nunes,bnunes@saltmarshfintech.com,Marketing Analyst,Saltmarsh Fintech,BR,2026-08-06T19:02:00,No,
-Ahmed,Farouk,afarouk@nimbusgateit.com,IT Services Analyst,Nimbus Gate IT,AE,2026-08-07T09:19:00,Yes,44
-Wren,Callahan,wcallahan@thistlegrovecrm.com,Customer Marketing Manager,Thistlegrove CRM,IE,2026-08-07T15:55:00,Yes,50
-Tariq,Osei,tosei@birchlanecommerce.com,Ecommerce Growth Lead,Birchlane Commerce,GH,2026-08-08T08:03:00,No,
-Ingrid,Halvorsen,ihalvorsen@outlook.com,Account Executive,PALEBROOK ANALYTICS,NO,2026-08-08T11:41:00,Yes,39
-Renata,Vasquez,rvasquez@cindermossmedia.com,,Cindermoss Media,MX,2026-08-09T09:27:00,No,
-Felix,Andrade,felix.andrade@driftwoodsaaslabs.com,RevOps Analyst,Driftwood SaaS Labs,PT,2026-08-09T16:16:00,Yes,45
-Noor,Haddad,nhaddad@quarrystonefintech.com,Marketing Manager,Quarrystone Fintech,JO,2026-08-10T10:00:00,Yes,58
+Noura,Al-Sayed,nalsayed@emirates.com,,Emirates Group,AE,2026-08-19T09:12:00,Yes,35
+Maryam,Al-Farsi,malfarsi@eand.com,CIO,e&,ae,2026-08-19T10:05:00,Yes,40
+Noura,Al-Zaabi,noura.alzaabi@alfuttaim.com,Head of Shared Services,Al-Futtaim Group,AE,2026-08-20T07:41:00,Yes,29
+David,Smith,dsmith@chewy.com,TA Manager,Chewy,united states,2026-08-20T14:22:00,No,
+Robert,Johnson,robert.johnson@datadoghq.com,Senior HRBP,Datadog,US,2026-08-21T11:15:00,Yes,38
+Divya,Nair,dnair@infosys.com,Founder,Infosys,IN,2026-08-21T16:03:00,Yes,22
+Anjali,Kapoor,anjalik@infosys.com,N/A,Infosys,IN,2026-08-22T05:44:00,Yes,31
+Sneha,Chatterjee,sneha@freshworks.com,,Freshworks,in,2026-08-22T12:30:00,No,
+Thao,Nguyen,tnguyen@ninjavan.co,,Ninja Van,SG,2026-08-23T03:18:00,Yes,27
+Deepak,Kapoor,deepakk@flipkart.com,Senior HRBP,Flipkart,India,2026-08-23T09:52:00,Yes,40
+Yousef,Al-Farsi,y.alfarsi@emirates.com,HR Business Partner,Emirates Group,AE,2026-08-24T08:19:00,Yes,33
+Amit,Patel,amit.patel@apollohospitals.com,HRIS Manager,Apollo Hospitals,in,2026-08-24T13:47:00,Yes,36
+Ahmed,Al-Mansouri,aalmansouri@almarai.com,People Analytics Lead,Almarai,SA,2026-08-25T06:05:00,Yes,40
+Aisha,Al-Suwaidi,aisha@emaar.com,Director HR,Emaar Properties,AE,2026-08-25T10:33:00,No,
+Pooja,Gupta,pooja.gupta@narayanahealth.org,TA Manager,Narayana Health,IN,2026-08-26T04:12:00,Yes,24
+Salim,Al-Otaibi,salim.alotaibi@damacproperties.com,Head of Talent Acquisition,DAMAC Properties,AE,2026-08-26T09:00:00,Yes,40
+Fatima,Al-Harthi,falharthi@majidalfuttaim.com,Compensation & Benefits Manager,Majid Al Futtaim,AE,2026-08-27T07:22:00,Yes,31
+Omar,Al-Qahtani,omar.alqahtani@chalhoubgroup.com,HR Operations Manager,Chalhoub Group,AE,2026-08-27T11:48:00,No,
+Mariam,Al-Otaibi,malotaibi@landmarkgroup.com,Payroll Manager,Landmark Group,AE,2026-08-28T05:15:00,Yes,40
+Khalid,Al-Sayed,khalid.alsayed@careem.com,People Analytics Lead,Careem,AE,2026-08-28T14:02:00,Yes,19
+Layla,Al-Mansouri,lalmansouri@noon.com,HRIS Lead,noon,AE,2026-08-29T06:37:00,Yes,28
+Ahmed,Al-Zaabi,ahmed.alzaabi@talabat.com,Head of Talent Acquisition,Talabat,AE,2026-08-29T12:11:00,No,
+Noura,Al-Qahtani,nalqahtani@aramco.com,VP Human Resources,Saudi Aramco,SA,2026-08-30T08:29:00,Yes,40
+Mohammed,Al-Otaibi,mohammed.alotaibi@stc.com.sa,Compensation & Benefits Manager,stc,SA,2026-08-30T13:56:00,Yes,34
+Aisha,Al-Farsi,aisha.alfarsi@qatarairways.com,Head of L&D,Qatar Airways,QA,2026-08-31T07:04:00,No,
+Fatima,Al-Suwaidi,fatima.alsuwaidi@almarai.com,Payroll Manager,Almarai,SA,2026-08-31T15:41:00,Yes,37
+Rohan,Verma,rverma@cipla.com,Payroll Manager,Cipla,IN,2026-09-01T04:20:00,Yes,40
+Kavya,Reddy,kavya.reddy@biocon.com,HR Business Partner,Biocon,in,2026-09-01T09:58:00,Yes,21
+Arjun,Krishnan,arjun.krishnan@hdfclife.com,Compensation & Benefits Manager,HDFC Life,IN,2026-09-01T14:33:00,No,
+Priya,Desai,priya.desai@marico.com,HRIS Manager,Marico,India,2026-09-02T05:10:00,Yes,39
+Sanjay,Iyer,sanjay.iyer@lenskart.com,Head of People,Lenskart,in,2026-09-02T10:47:00,Yes,26
+Neha,Menon,neha.menon@oyorooms.com,TA Manager,OYO,IN,2026-09-02T16:02:00,No,
+Farid,Rahman,farid.rahman@dbs.com,HR Operations Manager,DBS Bank,SG,2026-08-23T08:15:00,Yes,30
+Nurul,Ismail,nurul.ismail@petronas.com,HRIS Lead,Petronas,MY,2026-08-24T06:40:00,Yes,25
+Rina,Kusuma,rina.kusuma@telkom.co.id,Payroll Manager,Telkom Indonesia,ID,2026-08-25T13:22:00,No,
+Siriporn,Boonmee,siriporn.boonmee@centralgroup.com,Compensation & Benefits Manager,Central Group,TH,2026-08-26T11:05:00,Yes,33
+James,Miller,james.miller@toasttab.com,HR Business Partner,Toast,US,2026-08-27T15:30:00,Yes,40
+Sarah,Anderson,sarah.anderson@wayfair.com,VP Human Resources,Wayfair,US,2026-08-28T09:44:00,Yes,29
+Michael,Taylor,michael.taylor@carvana.com,Head of People,Carvana,United States,2026-08-29T04:58:00,No,
+Laura,Brown,laura.brown@deliveroo.co.uk,HRIS Manager,Deliveroo,UK,2026-08-30T12:17:00,Yes,36

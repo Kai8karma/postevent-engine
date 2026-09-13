@@ -1,0 +1,51 @@
+{
+  "_note": "speakers use kai8karma+speaker-* demo-routed aliases, not real panelist inboxes; same 2 speakers as event 1 (see event.json _provenance)",
+  "attendees": [
+    "aalmansouri@almarai.com",
+    "amit.patel@apollohospitals.com",
+    "anjalik@infosys.com",
+    "deepakk@flipkart.com",
+    "dnair@infosys.com",
+    "falharthi@majidalfuttaim.com",
+    "farid.rahman@dbs.com",
+    "fatima.alsuwaidi@almarai.com",
+    "james.miller@toasttab.com",
+    "kavya.reddy@biocon.com",
+    "khalid.alsayed@careem.com",
+    "lalmansouri@noon.com",
+    "laura.brown@deliveroo.co.uk",
+    "malfarsi@eand.com",
+    "malotaibi@landmarkgroup.com",
+    "mohammed.alotaibi@stc.com.sa",
+    "nalqahtani@aramco.com",
+    "nalsayed@emirates.com",
+    "noura.alzaabi@alfuttaim.com",
+    "nurul.ismail@petronas.com",
+    "pooja.gupta@narayanahealth.org",
+    "priya.desai@marico.com",
+    "robert.johnson@datadoghq.com",
+    "rverma@cipla.com",
+    "salim.alotaibi@damacproperties.com",
+    "sanjay.iyer@lenskart.com",
+    "sarah.anderson@wayfair.com",
+    "siriporn.boonmee@centralgroup.com",
+    "tnguyen@ninjavan.co",
+    "y.alfarsi@emirates.com"
+  ],
+  "no_shows": [
+    "ahmed.alzaabi@talabat.com",
+    "aisha.alfarsi@qatarairways.com",
+    "aisha@emaar.com",
+    "arjun.krishnan@hdfclife.com",
+    "dsmith@chewy.com",
+    "michael.taylor@carvana.com",
+    "neha.menon@oyorooms.com",
+    "omar.alqahtani@chalhoubgroup.com",
+    "rina.kusuma@telkom.co.id",
+    "sneha@freshworks.com"
+  ],
+  "speakers": [
+    "kai8karma+speaker-qhamirani@gmail.com",
+    "kai8karma+speaker-sudikorba@gmail.com"
+  ]
+}

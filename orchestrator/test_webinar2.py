@@ -46,24 +46,24 @@ EVENT1_AS_CRM = OUT_ROOT / "event1_hubspot_state.json"
 
 # The 12 event-1 alumni re-registering for event 2, as authored into
 # data/fixtures/event2/registrants.csv. 10 are exact repeats of their event-1
-# email; 2 (Anton Moreau, Ibrahim Braun) are deliberate near-dupe variants --
+# email; 2 (Yousef Al-Farsi, Amit Patel) are deliberate near-dupe variants --
 # same name + company, DIFFERENT email -- to prove the fuzzy matcher (not
 # just an email-equality check) resolves them against the CRM state.
 ALUMNI_EXACT_EMAILS = [
-    "anunes@northfielddata.com",
-    "tivanov@everlinetech.com",
-    "aali@quantarasoftware.com",
-    "miguel.iyer@hotmail.com",
-    "annam@lumen8marketing.com",
-    "lzhang@kestrelit.com",
-    "adityak@alderwoodfintech.com",
-    "maria.sato@wavecrestit.com",
-    "rnair@kestrelit.com",
-    "rahul.alvarez@clarionanalytics.com",
+    "nalsayed@emirates.com",
+    "malfarsi@eand.com",
+    "noura.alzaabi@alfuttaim.com",
+    "dsmith@chewy.com",
+    "robert.johnson@datadoghq.com",
+    "dnair@infosys.com",
+    "anjalik@infosys.com",
+    "sneha@freshworks.com",
+    "tnguyen@ninjavan.co",
+    "deepakk@flipkart.com",
 ]
 ALUMNI_NEAR_DUPE_EMAILS = [
-    "anton.moreau@anchorpointsaas.com",   # event 1 CRM record: antonm@anchorpointsaas.com
-    "ibrahimb@sableridgeanalytics.com",   # event 1 CRM record: ibrahim.braun@sableridgeanalytics.com
+    "y.alfarsi@emirates.com",              # event 1 CRM record: yousef@emirates.com
+    "amit.patel@apollohospitals.com",      # event 1 CRM record: amit@apollohospitals.com
 ]
 ALL_ALUMNI_EMAILS = ALUMNI_EXACT_EMAILS + ALUMNI_NEAR_DUPE_EMAILS
 
@@ -78,7 +78,8 @@ def fail(msg: str):
 def run_m1(in_csv: Path, out_dir: Path, hubspot_json: Path):
     out_dir.mkdir(parents=True, exist_ok=True)
     cmd = [sys.executable, str(ENRICH_PY), "--in", str(in_csv),
-           "--hubspot", str(hubspot_json), "--out", str(out_dir)]
+           "--hubspot", str(hubspot_json), "--out", str(out_dir),
+           "--offline", "--hubspot-fixture"]
     proc = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
     print(f"$ {' '.join(cmd)}")
     if proc.stdout.strip():
@@ -169,7 +170,7 @@ def main():
             print(f"[ok] {email} ({tag}) -> {action}")
 
     # (c) sanity: a genuinely-new event-2-only registrant still creates fresh
-    fresh_candidate = "nhaddad@quarrystonefintech.com"
+    fresh_candidate = "salim.alotaibi@damacproperties.com"
     fresh_row = event2_by_email.get(fresh_candidate)
     if fresh_row is None:
         fail(f"sanity-check registrant {fresh_candidate} missing from event 2 output")
