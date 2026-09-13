@@ -7,9 +7,13 @@ modules build in parallel, see PLAN.md):
         --out <dir>
         writes <dir>/hubspot_ready.csv (filename fixed by M4's real consumer
         below -- do not rename without updating M4 too).
-  - M2 modules/m2-comms/comms.py [--live] --out <dir> --enriched <m1_csv>
-        --event <event-dir>/event.json --transcript <event-dir>/transcript.md
-        writes <dir>/comms.json
+  - M2 modules/m2-comms/comms.py [--offline] --out <dir> --enriched <m1_csv>
+        --event <event-dir>/event.json --segments data/fixtures/segments.json
+        --transcript <event-dir>/transcript.md
+        writes <dir>/dispatch_plan.json (generate phase only -- this
+        pipeline never dispatches; see docs/module-api.md's M2 phase table
+        and modules/m2-comms/log_dispatch.py for the approve/log phases,
+        which are api/server.py + n8n's job, not this file's)
   - M3 modules/m3-repurpose/repurpose.py [--live] --out <dir>
         --event <event-dir>/event.json --transcript <event-dir>/transcript.md
   - M4 modules/m4-dashboard/build_dashboard.py --enriched <m1_csv>
@@ -161,7 +165,7 @@ def build_stages(out_dir: Path, live: bool, event_dir: Path):
     m3_out = out_dir / "m3"
     m4_out = out_dir / "m4"
     m1_hubspot_ready = m1_out / "hubspot_ready.csv"
-    m2_comms = m2_out / "comms.json"
+    m2_dispatch_plan = m2_out / "dispatch_plan.json"
     m3_manifest = m3_out / "manifest.json"
     m4_index = m4_out / "index.html"
 
@@ -182,15 +186,16 @@ def build_stages(out_dir: Path, live: bool, event_dir: Path):
         },
         "m2": {
             "stage": "M2 comms",
-            # --allow-stale offline only: comms.py's cached sample_output is
-            # fingerprint-guarded against event.json/transcript.md and fails
-            # loud on a mismatch -- same offline-only exception api/run.py's
-            # stage_m2() already makes (see its comment there).
+            # dispatch is n8n's job (see log_dispatch.py / api/server.py's m2
+            # log phase) -- this stage only ever runs comms.py's generate
+            # step, never a send. --segments is the same global (not
+            # per-event) fixture m4 passes below, not event_dir-scoped.
             "cmd": [sys.executable, str(m2_script), *lane_flags(m2_script, live),
                     "--out", str(m2_out), "--enriched", str(m1_hubspot_ready),
-                    "--event", str(event_json), "--transcript", str(transcript_md),
-                    *([] if live else ["--allow-stale"])],
-            "key_output": m2_comms,
+                    "--event", str(event_json), "--segments", str(REPO_ROOT / "data" / "fixtures" / "segments.json"),
+                    "--transcript", str(transcript_md)],
+            "key_output": m2_dispatch_plan,
+            "summary_fn": m2_summary,
         },
         "m3": {
             "stage": "M3 repurpose",
@@ -353,6 +358,21 @@ def last_summary_line(text: str) -> str:
     return ""
 
 
+def m2_summary(stdout: str, stderr: str, key_output: Path) -> str:
+    """M2's key_output is dispatch_plan.json itself -- prefer its own
+    'counts' block (attendee/no_show/speaker/mailable/suppressed) as the
+    receipt-row summary; fall back to the old last-stdout-line behaviour
+    when the file is missing or has no counts (e.g. a failed run)."""
+    if key_output.exists():
+        try:
+            counts = json.loads(key_output.read_text(encoding="utf-8")).get("counts", {})
+            if counts:
+                return " ".join(f"{k}={v}" for k, v in counts.items())
+        except (OSError, json.JSONDecodeError):
+            pass
+    return last_summary_line(stdout) or last_summary_line(stderr)
+
+
 MODULE_LANES = [
     ("M1 Enrichment", "Deterministic rules: difflib dedupe + lookup-table field inference. No LLM call.",
      "Real LLM field inference via --live (claude -p or OpenRouter, per LLM_BACKEND); Clay waterfall enrichment in production."),
@@ -429,7 +449,9 @@ def run_stage(stage: dict, live: bool = False) -> dict:
         proc = subprocess.run(stage["cmd"], capture_output=True, text=True, timeout=stage_timeout)
         elapsed = time.perf_counter() - start
         ok = proc.returncode == 0
-        summary = last_summary_line(proc.stdout) or last_summary_line(proc.stderr)
+        summary_fn = stage.get("summary_fn")
+        summary = (summary_fn(proc.stdout, proc.stderr, Path(stage["key_output"])) if summary_fn
+                   else last_summary_line(proc.stdout) or last_summary_line(proc.stderr))
         # Full module stdout/stderr next to its outputs so a FAIL is diagnosable
         # from disk (the receipt table truncates to 50 chars). Filename is
         # slugified per stage, not a fixed "_stage.log" -- M3's extra stages
