@@ -1,148 +1,120 @@
 # M4 — Lead Intelligence Dashboard
 
-Local build (offline, stdlib only, contacts from --enriched's CSV):
-    python3 build_dashboard.py --enriched <hubspot_ready.csv> --engagement ../../data/fixtures/engagement.json --segments ../../data/fixtures/segments.json --out dist/
-    open dist/index.html
+HubSpot in, dashboard out. `dashboard.py` runs in four phases — `seed`, `sync`, `analyze`,
+`render` — and the portal is the source of truth: M1 pushed this event's contacts (tagged with
+the `postevent_event` property), M2 logged the email engagements as CRM `emails` objects, and M4
+writes the engagement stream and the lifecycle changes **into** HubSpot before reading anything
+back. Live is the default lane; `--offline` is the labelled fixture lane.
 
-Live build (contacts read from HubSpot instead of the CSV — see "Input source" below):
-    python3 build_dashboard.py --hubspot --enriched <hubspot_ready.csv> --engagement ../../data/fixtures/engagement.json --segments ../../data/fixtures/segments.json --out dist/
+## 1. What M4 produces
 
-Live build with advisory annotations (optional LLM call over the already-computed
-findings — see "Optional advisory annotation layer" below; requires OPENROUTER_API_KEY):
-    python3 build_dashboard.py --enriched <hubspot_ready.csv> --engagement ../../data/fixtures/engagement.json --segments ../../data/fixtures/segments.json --out dist/ --live-annotations
+| Brief output | Where it lands |
+|---|---|
+| Attendee → MQL conversion | `analysis.json` → `deterministic.mql_rate` + `attendee_to_mql {attendees, mqls}`; funnel + KPI widgets on the page |
+| Top engaged accounts and contacts | `deterministic.top_accounts` / `top_contacts` (weighted engagement: form fill 10, click 3, pageview 1, open 0.5) |
+| 7 / 14 / 30-day lifecycle movement | `deterministic.movement` — transitions counted from each contact's `lifecycle_history`, each window stating its own `source_mix` (`seeded` vs `hubspot_history`) |
+| AI narrative, refreshed on load | `analysis.movement_narrative` + `narrative_source`; the page re-fetches it from `window.NARRATIVE_ENDPOINT` on load when the module API injects one |
+| Anomalies with their evidence | `deterministic.anomalies` + the LLM's rationale per anomaly; the anomaly panel prints the evidence rows |
+| Buying-committee map | `deterministic.committees` (≥2 engaged contacts at one company), with the LLM's "why" when the live lane ran |
 
-Deploy the narrative API to Vercel (dashboard works fully offline without this step):
-    npm i -g vercel        # one-time
-    cd modules/m4-dashboard
-    vercel link && vercel env add ANTHROPIC_API_KEY
-    vercel --prod
+## 2. How the AI is the engine — and the maths is the validator
 
-Env var required: `ANTHROPIC_API_KEY` (console.anthropic.com), or set `OPENROUTER_API_KEY`
-instead — `api/narrative.js` calls OpenRouter's chat-completions API with the same
-prompt/contract when `ANTHROPIC_API_KEY` is unset. `OPENROUTER_MODEL` overrides the
-default model id (falls back through `anthropic/claude-sonnet-5` → `4.6` → `4.5` on
-400/404 model errors). Without either key, or if `/api/narrative` is unreachable/slow
-(client gives it 25s, then aborts), the dashboard renders the embedded
-`fallback_narrative.md` instead — the page never ships blank. Verified live 2026-08-24
-(no ANTHROPIC_API_KEY, real OPENROUTER_API_KEY, via `api/_local_invoke.js`): the
-default paid chain (`anthropic/claude-sonnet-5`) returned a clean 200 with two
-well-formed paragraphs in ~10s; a free-tier model (`OPENROUTER_MODEL` override) also
-returned 200 in ~30s, though small/free models are less reliable at the strict-JSON
-contract than the default Claude chain. Fixed as part of that verification pass:
-`callOpenRouterModel` was requesting `max_tokens: 4000` unconditionally, which
-OpenRouter hard-rejects with a 402 the moment the account can't afford the full
-ceiling even if it can afford the actual answer (~700 tokens) — lowered to 800 to
-match what a two-paragraph narrative actually needs.
+Live `analyze` spends up to `--budget` (default 3) OpenRouter calls over `snapshot.json`, with
+prompts built from real snapshot rows (`prompts/*.md`, no hard-coded companies):
 
-## Input source — HubSpot vs. fixture
+1. `anomalies_and_scores.md` — judges the outlier fence's shortlist (accept, reject with a
+   reason, or add one it missed) and scores every engaged contact 0–100 with a rationale and the
+   evidence values behind it.
+2. `movement_narrative.md` — narrates what moved across 7 / 14 / 30 days, what did not, and where
+   the movement is seeded rather than organic.
+3. `committees.md` — decides which multi-contact accounts are real buying committees and why.
 
-The spec's M4 input is "HubSpot data on event contacts" — `--hubspot` reads contacts
-live via `POST /crm/v3/objects/contacts/search` filtered on `event_tag`, the same
-Bearer-token idiom `modules/m1-enrichment/push_to_hubspot.py` uses (that script is
-what put the contacts there in the first place — this is the same API in reverse,
-verified against the same event_tag the live sandbox push used:
-`acmerevenue-2026-07-20`). `--enriched`'s CSV is still required even with `--hubspot`
-— its directory is also where `dedupe_report.json` / `quality_report.json` live
-(alias canonicalization and completeness KPIs are local-run artifacts HubSpot doesn't
-store, so those stay sourced from the CSV's sibling files regardless of where the
-contact rows themselves came from). `--hubspot` degrades to the CSV on no token
-found, a network/HTTP error, or zero search results — never a hard failure. The
-dashboard's footer and the `source` key in the embedded JSON always say which lane
-actually produced a given build.
+Nothing the model returns overwrites a number. `build_validator()` compares its top-5 contacts,
+top-5 accounts, committee list, anomaly list and window counts against the deterministic block and
+writes every mismatch to `analysis.llm.validator.disagreements` (plus any contact it scored that
+is not in the snapshot). The dashboard prints that panel. Deterministic-only pieces: the outlier
+fence (Tukey Q3 + 1.5×IQR over this run's own distribution), the weighted engagement score, the
+funnel, the movement windows, and a rules lead-interest score (0–100, normalised) so the rules
+lane still fills that brief cell.
 
-Token resolution: env `HUBSPOT_TOKEN`, else `~/.config/postevent/hubspot.env`
-(`HUBSPOT_TOKEN=...`) — same file `push_to_hubspot.py` reads. Never printed.
+With `--offline` or no `OPENROUTER_API_KEY`, `analyze` writes `lane: "rules"`, `llm: null`, and a
+`movement_narrative` templated from the deterministic counts — labelled `narrative_source: "rules"`
+in the file, in `dashboard_data.json` and on the page's badge. It never pretends to be a model.
 
-## AI boundary — what's a model call here and what isn't
+## 3. Phases and CLI
 
-Every number on this dashboard up through account/contact scoring, the funnel,
-completeness percentages, and lifecycle movement is plain deterministic arithmetic
-over the input rows, and has to reconcile exactly with what HubSpot itself would
-report for the same data — no model, statistical or generative, ever touches a
-count. Two places carry real judgment instead of counting:
+```
+python3 modules/m4-dashboard/dashboard.py <phase> --out <dir> \
+    [--event data/incoming/event.json] [--event-tag <slug>] \
+    [--offline] [--live-dry-run] [--budget N]
 
-- **Anomaly threshold** (`compute_anomaly_threshold` in `build_dashboard.py`): what
-  counts as "anomalous" engagement used to be a hardcoded `>=15 events/day` guess
-  with no relationship to the data it screened. It's now a Tukey IQR outlier fence
-  (`threshold = ceil(Q3 + 1.5×IQR)`) computed fresh from *this run's own*
-  distribution of per-contact event totals, with the computed `threshold_rationale`
-  (median/Q1/Q3/IQR and the resulting number) embedded in the output JSON and shown
-  on the page above the anomaly cards. This is a **statistical model, not a
-  generative-AI call** — deliberately: "how unusual is this count, for this event"
-  is a distribution-shape question with one mechanically correct answer, not a
-  question needing linguistic judgment, and this file's contract is zero network
-  calls by default. Forcing an LLM call into what is actually still counting would
-  contradict the assignment's own principle ("AI must be the engine, not a wrapper")
-  in the other direction — busywork dressed as AI.
-- **Narrative summary** (`api/narrative.js`): the one real LLM call in this module —
-  a fresh two-paragraph GTM-analyst read of the computed stats, regenerated on
-  demand. This is where "narrate stage movement" (the spec's actual AI-role text for
-  M4) lives.
+phases: seed | sync | analyze | render | all
+```
 
-Lead-interest scoring (`WEIGHTS` in `build_dashboard.py`) stays a fixed, auditable
-weighted sum by design, not an oversight — a score a RevOps user can't hand-verify
-against the raw event list, or that changes on every run for the same input, is
-worse than a simple deterministic one for this use case.
+| phase | live behaviour |
+|---|---|
+| `seed` | matches portal contacts (search on `postevent_event`, paged) to this event's engagement stream by email, tries `POST /events/v3/event-definitions` once, and on a scopes refusal falls back to contact properties `postevent_opens/clicks/pageviews/form_fills` + `postevent_last_engaged` (created if missing, group `contactinformation`), then batch-updates ≤100 contacts per call with the totals and each contact's final `lifecyclestage`. Totals are **set**, never incremented: re-running yields the same values. |
+| `sync` | contacts via search + `batch/read` with `propertiesWithHistory=lifecyclestage`; companies via associations + batch read; email engagements via contact→`emails` associations + batch read (subject, `hs_timestamp`). |
+| `analyze` | deterministic block + the LLM pass above + the validator. |
+| `render` | `index.html` (self-contained, zero network at rest) + `dashboard_data.json` — the exact rows the page draws. |
 
-### Optional advisory annotation layer (`--live-annotations`)
+`--offline` is zero network: the snapshot is rebuilt from `data/fixtures/engagement.json`,
+`hubspot_existing.json` and `segments.json`, every record labelled `source: "fixture"`, and region
+and owner come from `config/icp.yaml`'s routing tables (the same ones M1 applies).
+`--live-dry-run` prints every HubSpot request (method, URL, body size) and every prompt the live
+lane would send, writes only `receipts/m4_dry_run.json` plus the prompts under `dry-run/`, sends
+nothing and exits 0. Every phase's last stdout line is
+`M4 <phase> (<lane>): <numbers> -> <out>`; any failure exits non-zero.
 
-The spec's M4 AI-role bullet also asks the dashboard to "detect anomalies…, score
-lead interest…, surface top accounts and buying committees" — work this module has
-always done with the deterministic rule code above, on purpose (see "AI boundary"
-above). `--live-annotations` adds a second, **opt-in** real LLM call
-(`generate_live_annotations` / `attach_live_annotations` in `build_dashboard.py`)
-that **annotates** those already-computed anomaly and top-account findings with a
-one-line "why it matters / what an SDR should do" note — it never recomputes or
-overrides a number. Same advisory-only shape as
-`modules/m1-enrichment/enrich.py`'s `apply_icp_second_opinion()` (appends a
-rationale string, never rewrites `icp_tier`): the model sees only a cheap
-projection of the run's own anomaly candidates, top accounts, and lifecycle-window
-stats — never the full contact roster — and every annotation is
-**grounded-by-construction**: a post-check (`_grounded()`) rejects (and counts, in
-`annotations_rejected`) any annotation that cites a number not already present
-somewhere in the payload it was given, before it's ever attached. Output JSON gets
-four new top-level fields regardless of whether the flag is passed —
-`annotations_source` (`"llm_live"` | `"none"`), `annotations_model`,
-`annotations_generated_at`, `annotations_rejected` — plus an `annotation` string on
-individual `anomalies[]` / `top_accounts[]` entries that got one; the dashboard
-renders these as a small italic line under the relevant card/row, and the
-provenance next to the `engagement_source` label in the header, only when present
-— absent (the default), the page renders exactly as it always has.
+Env var names (read from the environment, else `~/.config/postevent/*.env`; never printed):
+`HUBSPOT_TOKEN`, `OPENROUTER_API_KEY`, `OPENROUTER_MODEL`, `LLM_BATCH_DEADLINE_S`, `LLM_REASONING`.
 
-Off by default; requires `OPENROUTER_API_KEY` (env or
-`~/.config/postevent/llm.env`, same read pattern as everywhere else in this repo).
-Defaults to the README's free nemotron chain (`ANNOTATION_MODEL_FALLBACKS` —
-`nemotron-3.5-lightning` → `nemotron-3-super-120b` → `nemotron-3-ultra-550b`, all
-`:free`), not a paid model, since this is a new opt-in step rather than something
-on the pipeline's critical path; `OPENROUTER_MODEL` still overrides/prepends.
-Degrades to no annotations — never a hard failure — on a missing key, a network
-error, an unparseable response, or a response that parses but has every annotation
-grounding-rejected; each of those hands off to the next model in the chain before
-giving up, not just an HTTP-level failure.
+## 4. Files written under `--out`
 
-Verified live 2026-08-24 against this repo's own fixture-lane payload
-(`out/final/m1/hubspot_ready.csv` + `data/fixtures/engagement.json` +
-`data/fixtures/segments.json`, 2 anomaly candidates + 10 top accounts = 12 items):
-the chain's first-choice model, `nemotron-3.5-lightning:free`, reliably failed
-against this prompt's constraint density — either burning its whole completion
-budget on a visible "Here's a thinking process:" preamble before ever emitting
-JSON, or degenerating into a repetition loop (`finish_reason:"stop"`, zero valid
-JSON) — so `generate_live_annotations()` now hands off to the next model on an
-unparseable/unusable response, not only on an HTTP-level error (this file's
-earlier version didn't, and silently produced `annotations_source:"none"` on a
-technically-200 response). `nemotron-3-super-120b-a12b:free` and
-`nemotron-3-ultra-550b-a55b:free` each answered cleanly in ~26s and ~86s
-respectively — 12/12 items annotated, 0 rejected after a second live-discovered
-fix: the grounding check originally compared numbers as literal strings, which
-falsely rejected correct annotations that wrote a JSON `100.0`/`50.0` as natural
-prose "100%"/"50%" (`"100" != "100.0"`) — `_numbers_in_text()` now parses to
-`float` before comparing. Sample annotation (`nemotron-3-super-120b-a12b:free`,
-grounded): *"Palmetto SaaS Group leads with a score of 201.5, 9 of 10 contacts
-engaged and 90.0% committee coverage—prioritize multi-threaded outreach to close
-the deal."* Both fixes are covered above; the checked-in `out/final/m4/index.html`
-itself currently shows `annotations_source:"none"` because the account's shared
-free-tier daily quota (50 requests/day, `openrouter_free_tier_daily`, one bucket
-across every `:free` model, not per-model) was exhausted by this same debugging
-pass before a final rebuild could complete — re-running the "Live build with
-advisory annotations" command above after the daily reset (`X-RateLimit-Reset`,
-UTC midnight) reproduces the live-populated result.
+| file | contents |
+|---|---|
+| `receipts/m4_seed.json` | `event_slug`, `lane`, `method` (`custom_events` / `contact_properties` / `offline`), `source: "seeded"`, `contacts_matched`, `events_written`, `lifecycle_updates`, `errors`, `endpoints`, `timestamps` |
+| `snapshot.json` | `contacts` (ids, properties, `lifecycle_history` with per-row source, `engagement` counters with source), `companies`, `email_engagements`, `events`, `method`, `lane`, `notes` |
+| `receipts/m4_hubspot_sync.json` | `endpoints` (method, url, pages, count, status) + `totals` |
+| `analysis.json` | `deterministic`, `llm` (or null), `validator` inside `llm`, `movement_narrative`, `narrative_source`, `model`, `lane` |
+| `receipts/m4_llm_calls.json` | one row per HTTP attempt: model, purpose, prompt chars, tokens, latency, HTTP status |
+| `dashboard_data.json` | exactly what the page renders; every number reconciles to `snapshot.json` |
+| `index.html` | the dashboard, data embedded, no external assets |
+
+## 5. Seeded data — what is real and what is not
+
+The registrant people for this demo are synthetic (real employer domains, invented humans), so
+their post-event opens, clicks, pageviews, form fills and stage changes did not happen by
+themselves: `seed` writes that stream into HubSpot through the public API, and HubSpot's own
+property history then holds the movement. Everything that came from it is labelled
+`source: "seeded"` in the seed receipt, on every snapshot engagement block, inside each movement
+window's `source_mix`, and on the page's badges. What is not seeded: the contacts and companies
+themselves (M1's push), the email engagements (M2's real sends), the CRM property history
+(HubSpot's), and every number on the dashboard (computed from what the API returned).
+
+## 6. Tests
+
+```
+python3 modules/m4-dashboard/test_dashboard.py     # 33 tests, stdlib unittest, no network
+python3 -m py_compile modules/m4-dashboard/dashboard.py
+```
+
+`urllib.request.urlopen` is replaced module-wide with a raiser, so a test that reached for the
+network fails instead of calling HubSpot or OpenRouter. Covered: snapshot shape from the fixtures,
+the movement windows including the boundary instant, the committee rule, the MQL rate, a planted
+validator disagreement, the rendered page (every widget id, the source badge, and the embedded
+JSON equalling `dashboard_data.json`), `--live-dry-run` printing requests and prompts while
+sending nothing, and the live `seed` / `sync` / `analyze` / `render` paths driven against an
+in-memory fake portal (403 fallback, idempotent re-seed, history/company/email reads, receipts).
+
+## 7. How the module API and n8n call it
+
+`api/server.py` shells out to this CLI once per phase and reads the files above — it never
+recomputes a number — then serves `GET /dashboard/<run_id>/` with
+`window.NARRATIVE_ENDPOINT = "/narrative/<run_id>"` injected before the page's first `<script>`
+tag, which is what turns on refresh-on-load. `GET /narrative/<run_id>?refresh=1` re-runs `analyze`
+and answers `{narrative, source, generated_at, model, …}`; on any failure the page keeps the
+narrative it was rendered with and its badge. Contract: [`docs/module-api.md`](../../docs/module-api.md)
+(§"M4 — phases and files"). The n8n workflow that drives the schedule is
+`orchestrator/n8n/railway/m4-lead-intelligence.json` — see
+[`orchestrator/n8n/railway/README.md`](../../orchestrator/n8n/railway/README.md).

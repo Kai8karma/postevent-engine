@@ -29,10 +29,7 @@
   body{padding:0 0 64px;}
   a{color:var(--accent);}
   .wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
-  header.top{
-    background:var(--surface);border-bottom:1px solid var(--border);
-    padding:22px 0;
-  }
+  header.top{background:var(--surface);border-bottom:1px solid var(--border);padding:22px 0;}
   header.top .wrap{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:16px;}
   .event-meta h1{font-size:19px;margin:0 0 4px;font-weight:650;letter-spacing:-.01em;}
   .event-meta .sub{color:var(--text-muted);font-size:13px;}
@@ -54,6 +51,7 @@
     background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
     box-shadow:var(--shadow);
   }
+  .note{font-size:11.5px;color:var(--text-muted);line-height:1.5;max-width:860px;margin:-6px 0 14px;}
 
   /* KPI row */
   .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;}
@@ -84,11 +82,10 @@
   tr:last-child td{border-bottom:none;}
   .table-scroll{overflow-x:auto;}
   .mono{font-family:var(--mono);font-size:12px;color:var(--text-muted);}
-  .badge{
-    display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;font-weight:600;
-  }
+  .badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;font-weight:600;}
   .badge.committee{background:var(--accent-soft);color:var(--accent);}
   .badge.stage{background:var(--surface-alt);color:var(--text-muted);border:1px solid var(--border);}
+  .badge.seeded{background:var(--warn-soft);color:var(--warn);}
   .contact-pill{
     display:inline-flex;align-items:center;gap:5px;font-size:11.5px;background:var(--surface-alt);
     border:1px solid var(--border);border-radius:999px;padding:2px 8px 2px 6px;margin:2px 4px 2px 0;
@@ -98,16 +95,14 @@
   .score-bar-fill{height:100%;background:var(--accent);}
   .two-col{display:grid;grid-template-columns:1.6fr 1fr;gap:20px;align-items:start;}
   @media (max-width:860px){ .two-col{grid-template-columns:1fr;} }
+  .rationale{font-style:italic;color:var(--text-muted);font-size:11.5px;line-height:1.45;margin-top:6px;}
 
   /* committee grid */
-  .committee-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;}
+  .committee-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;}
   .committee-card{padding:14px;}
   .committee-card .acct{font-weight:650;font-size:13.5px;}
   .committee-card .dom{color:var(--text-muted);font-size:11.5px;margin-bottom:8px;}
-  .coverage-dots{display:flex;gap:3px;flex-wrap:wrap;margin:8px 0;}
-  .coverage-dots span{width:9px;height:9px;border-radius:2px;background:var(--surface-alt);border:1px solid var(--border);}
-  .coverage-dots span.filled{background:var(--accent);border-color:var(--accent);}
-  .committee-card .pct{font-size:12px;color:var(--text-muted);}
+  .committee-card .members{font-size:11.5px;color:var(--text-muted);line-height:1.6;}
 
   /* movement */
   .movement-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px;}
@@ -124,20 +119,13 @@
   .anomaly-card .head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
   .anomaly-card .who{font-weight:650;font-size:13.5px;}
   .anomaly-card .co{font-size:12px;color:var(--text-muted);}
-  .anomaly-card .headline{font-size:13px;margin:10px 0;line-height:1.5;}
-  .anomaly-card .metrics{display:flex;gap:14px;font-size:11.5px;color:var(--text-muted);flex-wrap:wrap;}
-  .anomaly-card .assets{margin-top:8px;}
+  .anomaly-card .metrics{display:flex;gap:14px;font-size:11.5px;color:var(--text-muted);flex-wrap:wrap;margin-top:8px;}
+  .anomaly-card .evidence{margin-top:8px;font-size:11px;line-height:1.6;}
   .status-pill{font-size:10.5px;font-weight:650;padding:2px 7px;border-radius:999px;}
   .status-pill.progressed{background:var(--good-soft);color:var(--good);}
   .status-pill.stalled{background:var(--danger-soft);color:var(--danger);}
-  .anomaly-threshold-note{font-size:11.5px;color:var(--text-muted);margin:-6px 0 14px;line-height:1.5;max-width:760px;}
 
-  /* live annotations -- advisory-only, see build_dashboard.py's
-     generate_live_annotations() / README's AI-boundary section */
-  .annotation{font-style:italic;color:var(--text-muted);font-size:11.5px;line-height:1.45;margin-top:6px;}
-  .anomaly-card .annotation{margin:2px 0 8px;}
-
-  /* narrative */
+  /* narrative + validator */
   .narrative-card{padding:20px 22px;}
   .narrative-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;}
   .narrative-head h2.section-title{margin:0;}
@@ -147,8 +135,8 @@
   }
   .source-badge .dot{width:6px;height:6px;border-radius:50%;}
   .source-badge.live .dot{background:var(--good);}
-  .source-badge.deterministic .dot{background:var(--accent);}
-  .source-badge.cached .dot{background:var(--warn);}
+  .source-badge.rules .dot{background:var(--accent);}
+  .source-badge.seeded .dot{background:var(--warn);}
   .source-badge.loading .dot{background:var(--text-muted);}
   .narrative-body p{font-size:14px;line-height:1.65;margin:0 0 12px;}
   .narrative-body p:last-child{margin-bottom:0;}
@@ -158,8 +146,10 @@
   }
   .refresh-btn:hover{color:var(--text);border-color:var(--accent);}
   .refresh-btn:disabled{opacity:.6;cursor:default;}
-  .skeleton{color:var(--text-muted);font-size:13px;}
-  .narrative-error{font-size:11px;color:var(--danger);max-width:280px;text-align:right;line-height:1.4;}
+  .narrative-error{font-size:11px;color:var(--danger);max-width:300px;text-align:right;line-height:1.4;}
+  .validator-card{padding:16px 18px;margin-top:14px;}
+  .validator-card .n{font-weight:650;font-size:13px;}
+  .validator-row{font-size:11.5px;color:var(--text-muted);line-height:1.6;margin-top:6px;}
 
   footer{padding:24px 0;text-align:center;color:var(--text-muted);font-size:11.5px;}
 </style>
@@ -175,9 +165,9 @@
     </div>
     <div class="gen-meta">
       Dashboard built <code id="generated-at">—</code><br>
-      Engagement as of <code id="as-of">—</code><br>
-      Engagement source <code id="engagement-source">—</code><br>
-      Annotations <code id="annotations-source">—</code>
+      Data as of <code id="as-of">—</code><br>
+      Data lane <code id="data-lane">—</code><br>
+      Engagement <code id="engagement-source">—</code>
     </div>
   </div>
 </header>
@@ -190,7 +180,7 @@
   </section>
 
   <section class="divider">
-    <h2 class="section-title">Attendee &rarr; MQL Funnel</h2>
+    <h2 class="section-title">Attendee &rarr; MQL Conversion</h2>
     <div class="card">
       <div class="funnel-wrap" style="padding:20px;">
         <div class="funnel-svg-box" id="funnel-svg"></div>
@@ -205,7 +195,7 @@
       <div class="card table-scroll">
         <table id="accounts-table">
           <thead>
-            <tr><th>Account</th><th>Score</th><th>Committee</th><th>Top contacts</th></tr>
+            <tr><th>Account</th><th>Score</th><th>Engaged</th><th>Top contacts</th></tr>
           </thead>
           <tbody id="accounts-tbody"></tbody>
         </table>
@@ -221,11 +211,12 @@
 
   <section class="divider">
     <h2 class="section-title">Buying Committee Map</h2>
+    <div class="note" id="committee-note"></div>
     <div class="committee-grid" id="committee-grid"></div>
   </section>
 
   <section class="divider">
-    <h2 class="section-title">Lifecycle Movement</h2>
+    <h2 class="section-title">Lifecycle Movement &mdash; 7 / 14 / 30 days</h2>
     <div class="movement-grid" id="movement-grid"></div>
     <div class="card sparkline-box">
       <div id="sparkline-svg"></div>
@@ -234,90 +225,81 @@
 
   <section class="divider">
     <h2 class="section-title">Anomaly Callouts</h2>
-    <div class="anomaly-threshold-note" id="anomaly-threshold-note"></div>
+    <div class="note" id="anomaly-threshold-note"></div>
     <div class="anomaly-grid" id="anomaly-grid"></div>
   </section>
 
   <section class="divider">
     <div class="card narrative-card">
       <div class="narrative-head">
-        <h2 class="section-title">AI Narrative Summary</h2>
+        <h2 class="section-title">AI Narrative &mdash; stage movement</h2>
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
           <span class="narrative-error" id="narrative-error" hidden></span>
-          <span class="source-badge loading" id="narrative-badge"><span class="dot"></span><span id="narrative-badge-text">loading&hellip;</span></span>
+          <span class="source-badge" id="narrative-badge"><span class="dot"></span><span id="narrative-badge-text">—</span></span>
           <button class="refresh-btn" id="narrative-refresh">Regenerate</button>
         </div>
       </div>
-      <div class="narrative-body" id="narrative-body">
-        <p class="skeleton">Fetching live narrative&hellip;</p>
-      </div>
+      <div class="narrative-body" id="narrative-body"></div>
     </div>
+    <div class="card validator-card" id="validator-panel"></div>
   </section>
 
 </main>
 
 <footer id="source-footer">Post-Event Engine &middot; Module 4</footer>
 
+<!-- The module API injects `window.NARRATIVE_ENDPOINT` (a string) before this block to
+     turn on refresh-on-load; with nothing injected it stays null and the page makes
+     zero network requests. -->
+<script id="narrative-endpoint">window.NARRATIVE_ENDPOINT = window.NARRATIVE_ENDPOINT || null;</script>
 <script type="application/json" id="dashboard-data">__DASHBOARD_DATA_JSON__</script>
 <script>
 (function(){
   "use strict";
   var DATA = JSON.parse(document.getElementById('dashboard-data').textContent);
+  var ENDPOINT = (typeof window.NARRATIVE_ENDPOINT === 'string' && window.NARRATIVE_ENDPOINT) ? window.NARRATIVE_ENDPOINT : null;
 
-  function fmtDate(iso){
-    if(!iso) return "—";
-    try{
-      var d = new Date(iso);
-      return d.toISOString().slice(0,16).replace('T',' ') + ' UTC';
-    }catch(e){ return iso; }
-  }
   function esc(s){
     return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
       return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
     });
+  }
+  function fmtDate(iso){
+    if(!iso) return "—";
+    try{ return new Date(iso).toISOString().slice(0,16).replace('T',' ') + ' UTC'; }
+    catch(e){ return iso; }
   }
   function pct(n){ return (n == null ? "—" : n + "%"); }
 
   // ---------------- header ----------------
   document.getElementById('event-name').textContent = DATA.event.name;
   document.getElementById('event-sub').textContent =
-    DATA.event.host_company + " (" + DATA.event.host_domain + ") · " + DATA.event.date;
+    DATA.event.host_company + " (" + DATA.event.host_domain + ") · " + DATA.event.date + " · " + DATA.event.slug;
   document.getElementById('generated-at').textContent = fmtDate(DATA.generated_at);
   document.getElementById('as-of').textContent = fmtDate(DATA.as_of);
-  document.getElementById('engagement-source').textContent = DATA.engagement_source || 'fixture';
-  // Advisory annotation-layer provenance -- see build_dashboard.py's
-  // generate_live_annotations()/attach_live_annotations(). "none" when
-  // --live-annotations wasn't passed, no key was found, or the call/parse
-  // failed; every failure mode degrades here, never a blank/broken page.
-  (function renderAnnotationsProvenance(){
-    var src = DATA.annotations_source || 'none';
-    var text = src === 'llm_live' ? ('llm_live (' + (DATA.annotations_model || '?') + ')') : 'none';
-    if(DATA.annotations_rejected){ text += ' · ' + DATA.annotations_rejected + ' rejected'; }
-    document.getElementById('annotations-source').textContent = text;
-  })();
-  (function renderSourceFooter(){
-    var src = DATA.source || {contacts: 'fixture', detail: 'local CSV (offline)'};
-    var label = src.contacts === 'hubspot' ? 'contacts read live from HubSpot' : 'contacts from local CSV fixture';
-    document.getElementById('source-footer').textContent =
-      'Post-Event Engine · Module 4 · ' + label + ' (' + src.detail + ') · ' +
-      'zero external requests except /api/narrative';
-  })();
-  var chipsHtml = DATA.event.speakers.map(function(s){
+  document.getElementById('data-lane').textContent = DATA.lane.data + " · " + (DATA.source.method || "—");
+  document.getElementById('engagement-source').textContent = DATA.lane.engagement;
+  document.getElementById('speaker-chips').innerHTML = (DATA.event.speakers || []).map(function(s){
     return '<span class="chip">' + esc(s.name) + ' &middot; ' + esc(s.title) + ', ' + esc(s.company) + '</span>';
   }).join('');
-  document.getElementById('speaker-chips').innerHTML = chipsHtml;
+  document.getElementById('source-footer').textContent =
+    'Post-Event Engine · Module 4 · contacts ' + DATA.source.contacts + ' · engagement ' +
+    DATA.lane.engagement + ' · narrative ' + DATA.lane.narrative +
+    (DATA.lane.engagement === 'seeded'
+      ? ' · the engagement stream was written into the CRM by this pipeline for a synthetic registrant list'
+      : '');
 
   // ---------------- KPI row ----------------
   var K = DATA.kpis;
   var kpiDefs = [
-    {label:"Registrants", val: K.total_registrants},
-    {label:"Attendees", val: K.total_attendees, sub: pct(K.attendance_rate_pct) + " attendance"},
-    {label:"Engaged post-event", val: K.engaged_post_event},
-    {label:"MQL+", val: K.mql_plus, sub: pct(K.attendee_to_mql_pct) + " of attendees"},
-    {label:"SQL+", val: K.sql_plus},
-    {label:"Buying-committee accounts", val: K.buying_committee_accounts},
-    {label:"Avg contact completeness", val: pct(K.avg_contact_completeness_pct)},
-    {label:"Avg company completeness", val: pct(K.avg_company_completeness_pct)},
+    {label:"Tagged contacts", val: K.contacts},
+    {label:"Attendees", val: K.attendees},
+    {label:"Engaged post-event", val: K.engaged_contacts},
+    {label:"MQL+", val: K.mqls, sub: pct(K.mql_rate_pct) + " of attendees"},
+    {label:"SQL+", val: K.sqls},
+    {label:"Companies", val: K.companies},
+    {label:"Buying committees", val: K.committees},
+    {label:"Stage moves (30d)", val: K.movement_30d},
   ];
   document.getElementById('kpi-grid').innerHTML = kpiDefs.map(function(k){
     return '<div class="card kpi"><div class="val">' + esc(k.val) + '</div>' +
@@ -333,25 +315,24 @@
     var h = stages.length * (barH + gap) + padTop;
     var svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" style="max-width:100%;height:auto;">';
     stages.forEach(function(s, i){
-      var bw = Math.max(6, (s.count / max) * (w - 160));
+      var bw = Math.max(6, (s.count / max) * (w - 200));
       var y = padTop + i * (barH + gap);
       var pctOfFirst = stages[0].count ? Math.round(100 * s.count / stages[0].count) : 0;
-      svg += '<rect x="160" y="' + y + '" width="' + bw + '" height="' + barH +
+      svg += '<rect x="180" y="' + y + '" width="' + bw + '" height="' + barH +
         '" rx="5" fill="var(--accent)" opacity="' + (0.45 + 0.55 * (i === 0 ? 1 : s.count/max)) + '"></rect>';
-      svg += '<text x="150" y="' + (y + barH/2 + 4) + '" text-anchor="end" class="funnel-label">' + esc(s.stage) + '</text>';
-      svg += '<text x="' + (170 + bw) + '" y="' + (y + barH/2 + 4) + '" class="funnel-count">' + s.count + '</text>';
-      svg += '<text x="' + (170 + bw) + '" y="' + (y + barH/2 + 16) + '" class="funnel-pct">' + pctOfFirst + '% of registrants</text>';
+      svg += '<text x="170" y="' + (y + barH/2 + 4) + '" text-anchor="end" class="funnel-label">' + esc(s.stage) + '</text>';
+      svg += '<text x="' + (190 + bw) + '" y="' + (y + barH/2 + 4) + '" class="funnel-count">' + s.count + '</text>';
+      svg += '<text x="' + (190 + bw) + '" y="' + (y + barH/2 + 16) + '" class="funnel-pct">' + pctOfFirst + '% of tagged contacts</text>';
     });
     svg += '</svg>';
     document.getElementById('funnel-svg').innerHTML = svg;
-
-    var sideHtml = '<div class="card funnel-stat"><div class="n">' + pct(K.attendee_to_mql_pct) + '</div>' +
-      '<div class="l">Attendee &rarr; MQL+ conversion</div></div>' +
-      '<div class="card funnel-stat"><div class="n">' + pct(K.attendance_rate_pct) + '</div>' +
-      '<div class="l">Registrant &rarr; attendee show rate</div></div>' +
-      '<div class="card funnel-stat"><div class="n">' + K.sql_plus + '</div>' +
-      '<div class="l">Attendees now SQL or later stage</div></div>';
-    document.getElementById('funnel-side').innerHTML = sideHtml;
+    document.getElementById('funnel-side').innerHTML =
+      '<div class="card funnel-stat"><div class="n">' + pct(K.mql_rate_pct) + '</div>' +
+      '<div class="l">Attendee &rarr; MQL+ conversion (' + K.mqls + ' of ' + K.attendees + ')</div></div>' +
+      '<div class="card funnel-stat"><div class="n">' + K.sqls + '</div>' +
+      '<div class="l">Attendees now SQL or later</div></div>' +
+      '<div class="card funnel-stat"><div class="n">' + K.email_engagements + '</div>' +
+      '<div class="l">Email engagements logged on these contacts</div></div>';
   })();
 
   // ---------------- top accounts / contacts ----------------
@@ -359,71 +340,76 @@
     return '<span class="contact-pill"><span class="dot"></span>' + esc(c.name) +
       ' <span class="mono">' + c.score + '</span></span>';
   }
+  var maxAccountScore = (DATA.top_accounts[0] && DATA.top_accounts[0].score) || 1;
   document.getElementById('accounts-tbody').innerHTML = DATA.top_accounts.map(function(a){
-    var maxScore = DATA.top_accounts[0].score || 1;
-    var barPct = Math.round(100 * a.score / maxScore);
+    var barPct = Math.round(100 * a.score / maxAccountScore);
     return '<tr>' +
-      '<td><div style="font-weight:600;">' + esc(a.account) + '</div>' +
-      '<div class="mono">' + esc(a.domain) + '</div>' +
-      (a.annotation ? '<div class="annotation">' + esc(a.annotation) + '</div>' : '') +
-      '</td>' +
+      '<td><div style="font-weight:600;">' + esc(a.company) + '</div>' +
+      '<div class="mono">' + esc(a.domain) + '</div></td>' +
       '<td><span class="score-bar-track"><span class="score-bar-fill" style="width:' + barPct + '%"></span></span>' + a.score + '</td>' +
-      '<td>' + (a.is_buying_committee ?
-        '<span class="badge committee">' + a.engaged_contact_count + '/' + a.total_known_contact_count + ' &middot; ' + a.committee_coverage_pct + '%</span>' :
-        '<span class="badge stage">' + a.engaged_contact_count + '/' + a.total_known_contact_count + '</span>') + '</td>' +
+      '<td>' + (a.is_committee ?
+        '<span class="badge committee">' + a.engaged_contacts + '/' + a.known_contacts + ' &middot; ' + a.coverage_pct + '%</span>' :
+        '<span class="badge stage">' + a.engaged_contacts + '/' + a.known_contacts + '</span>') + '</td>' +
       '<td>' + a.contacts.slice(0,3).map(contactPill).join('') + '</td>' +
       '</tr>';
-  }).join('');
+  }).join('') || '<tr><td colspan="4">No account engagement in this snapshot.</td></tr>';
 
   document.getElementById('contacts-tbody').innerHTML = DATA.top_contacts.map(function(c){
     return '<tr>' +
-      '<td><div style="font-weight:600;">' + esc(c.name) + '</div><div class="mono">' + esc(c.email) + '</div></td>' +
-      '<td><span class="badge stage">' + esc(c.lifecyclestage) + '</span></td>' +
-      '<td class="mono">' + c.score + '</td>' +
+      '<td><div style="font-weight:600;">' + esc(c.name) + '</div>' +
+      '<div class="mono">' + esc(c.email) + '</div>' +
+      (c.title ? '<div class="mono">' + esc(c.title) + '</div>' : '') +
+      (c.llm_rationale ? '<div class="rationale">' + esc(c.llm_rationale) + '</div>' : '') +
+      '</td>' +
+      '<td><span class="badge stage">' + esc(c.stage || 'unknown') + '</span></td>' +
+      '<td class="mono">' + c.score +
+      (c.llm_score != null ? '<br>AI ' + esc(c.llm_score) + '/100'
+        : c.rules_score != null ? '<br>rules ' + esc(c.rules_score) + '/100' : '') + '</td>' +
       '</tr>';
-  }).join('');
+  }).join('') || '<tr><td colspan="3">No engaged contacts in this snapshot.</td></tr>';
 
-  // ---------------- committee grid ----------------
-  document.getElementById('committee-grid').innerHTML = (DATA.committee_accounts.length ? DATA.committee_accounts : DATA.top_accounts.filter(function(a){return a.is_buying_committee;})).map(function(a){
-    var dots = '';
-    var total = Math.max(a.total_known_contact_count, a.engaged_contact_count, 1);
-    for(var i=0;i<total;i++){
-      dots += '<span class="' + (i < a.engaged_contact_count ? 'filled' : '') + '"></span>';
-    }
+  // ---------------- committee map ----------------
+  document.getElementById('committee-note').textContent =
+    'An account qualifies as a buying committee at ' + (DATA.committees.length ? '' : '') +
+    '2+ engaged contacts. "Why" comes from the AI pass when the live lane ran, and from the ' +
+    'deterministic rule otherwise — each card says which.';
+  document.getElementById('committee-grid').innerHTML = DATA.committees.map(function(c){
     return '<div class="card committee-card">' +
-      '<div class="acct">' + esc(a.account) + '</div>' +
-      '<div class="dom">' + esc(a.domain) + '</div>' +
-      '<div class="coverage-dots">' + dots + '</div>' +
-      '<div class="pct">' + a.engaged_contact_count + ' of ' + a.total_known_contact_count +
-        ' known contacts engaged &middot; ' + a.committee_coverage_pct + '% coverage</div>' +
+      '<div class="acct">' + esc(c.company) + '</div>' +
+      '<div class="dom">' + esc(c.domain) + ' · ' + c.contacts.length + ' engaged</div>' +
+      '<div class="members">' + c.contacts.map(esc).join('<br>') + '</div>' +
+      '<div class="rationale">' + esc(c.why) + ' <span class="badge stage">' + esc(c.why_source) + '</span></div>' +
       '</div>';
-  }).join('') || '<div class="card" style="padding:16px;color:var(--text-muted);">No account has reached 3+ engaged contacts yet.</div>';
+  }).join('') || '<div class="card" style="padding:16px;color:var(--text-muted);">No account has 2+ engaged contacts yet.</div>';
 
   // ---------------- movement ----------------
   var windows = [["7d","Last 7 days"],["14d","Last 14 days"],["30d","Last 30 days"]];
   document.getElementById('movement-grid').innerHTML = windows.map(function(w){
-    var m = DATA.movement[w[0]];
+    var m = DATA.movement[w[0]] || {transitions:0, contacts:0, by_stage:{}, source_mix:{}};
     var stagesHtml = Object.keys(m.by_stage).map(function(k){
       return '<span>' + esc(k) + ': ' + m.by_stage[k] + '</span>';
     }).join('');
-    return '<div class="card movement-card"><div class="n">' + m.total + '</div>' +
-      '<div class="l">' + w[1] + ' &middot; lifecycle moves</div>' +
-      '<div class="stages">' + (stagesHtml || '<span>none</span>') + '</div></div>';
+    var mixHtml = Object.keys(m.source_mix).map(function(k){
+      return '<span class="badge ' + (k === 'seeded' ? 'seeded' : 'stage') + '">' + esc(k) + ' ' + m.source_mix[k] + '</span>';
+    }).join(' ');
+    return '<div class="card movement-card"><div class="n">' + m.transitions + '</div>' +
+      '<div class="l">' + w[1] + ' &middot; stage transitions across ' + m.contacts + ' contacts</div>' +
+      '<div class="stages">' + (stagesHtml || '<span>none</span>') + '</div>' +
+      '<div class="stages">' + (mixHtml || '') + '</div></div>';
   }).join('');
 
   (function renderSparkline(){
-    var pts = DATA.movement_timeline;
+    var pts = DATA.movement_timeline || [];
     if(!pts.length){
-      document.getElementById('sparkline-svg').innerHTML = '<div style="color:var(--text-muted);font-size:12px;">No lifecycle movement recorded.</div>';
+      document.getElementById('sparkline-svg').innerHTML =
+        '<div style="color:var(--text-muted);font-size:12px;">No lifecycle movement recorded.</div>';
       return;
     }
     var w = 1000, h = 140, padX = 10, padY = 20;
     var max = Math.max.apply(null, pts.map(function(p){return p.count;})) || 1;
     var step = (w - padX*2) / Math.max(1, pts.length - 1);
     var coords = pts.map(function(p,i){
-      var x = padX + i*step;
-      var y = h - padY - (p.count/max) * (h - padY*2);
-      return [x,y];
+      return [padX + i*step, h - padY - (p.count/max) * (h - padY*2)];
     });
     var path = coords.map(function(c,i){ return (i===0?'M':'L') + c[0].toFixed(1) + ',' + c[1].toFixed(1); }).join(' ');
     var area = path + ' L ' + coords[coords.length-1][0].toFixed(1) + ',' + (h-padY) +
@@ -431,7 +417,7 @@
     var svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" style="max-width:100%;height:140px;">' +
       '<path d="' + area + '" fill="var(--accent-soft)" stroke="none"></path>' +
       '<path d="' + path + '" fill="none" stroke="var(--accent)" stroke-width="2"></path>';
-    coords.forEach(function(c,i){
+    coords.forEach(function(c){
       svg += '<circle cx="' + c[0].toFixed(1) + '" cy="' + c[1].toFixed(1) + '" r="2.5" fill="var(--accent)"></circle>';
     });
     svg += '<text x="' + padX + '" y="' + (h-4) + '" class="funnel-pct">' + esc(pts[0].date) + '</text>';
@@ -441,131 +427,109 @@
   })();
 
   // ---------------- anomalies ----------------
-  // Threshold is a statistical (Tukey IQR) model over this run's own event
-  // distribution, not a hardcoded guess and not a generative-AI call --
-  // see build_dashboard.py's AI BOUNDARY note / README for why. Shown here
-  // so the rationale is visible on the page, not just in the JSON.
-  if(DATA.anomaly_detection){
-    document.getElementById('anomaly-threshold-note').textContent =
-      'Threshold: ' + DATA.anomaly_detection.threshold + '+ total events to qualify as a candidate — ' +
-      DATA.anomaly_detection.threshold_rationale;
-  }
+  document.getElementById('anomaly-threshold-note').textContent =
+    'Threshold: ' + DATA.anomaly_detection.threshold + '+ interactions to qualify — ' +
+    DATA.anomaly_detection.rationale + ' ' + DATA.anomaly_detection.engaged_contacts +
+    ' engaged contact(s) were considered; ' + DATA.anomaly_detection.flagged + ' flagged.';
   document.getElementById('anomaly-grid').innerHTML = DATA.anomalies.map(function(a){
+    var stalled = a.metric === 'stalled_high_engagement';
+    var evidence = (a.evidence_rows || []).slice(0,8).map(function(e){
+      return '<span class="mono">' + esc(e.metric) + '=' + esc(e.value) + '</span>';
+    }).join(' · ');
     return '<div class="card anomaly-card">' +
-      '<div class="head"><div><div class="who">' + esc(a.contact.name) + '</div>' +
+      '<div class="head"><div><div class="who">' + esc(a.contact) + '</div>' +
       '<div class="co">' + esc(a.company) + '</div></div>' +
-      '<span class="status-pill ' + (a.lifecycle_progressed ? 'progressed' : 'stalled') + '">' +
-      (a.lifecycle_progressed ? 'Stage moved' : 'Stalled') + '</span></div>' +
-      '<div class="headline">' + esc(a.headline) + '</div>' +
-      (a.annotation ? '<div class="annotation">' + esc(a.annotation) + '</div>' : '') +
-      '<div class="metrics"><span>' + a.events_that_day + ' touches on ' + esc(a.date) + '</span>' +
-      '<span>' + a.events_total + ' total touches</span>' +
-      '<span>' + a.share_of_activity_pct + '% same-day share</span></div>' +
-      '<div class="assets mono">' + a.top_assets.map(esc).join(', ') + '</div>' +
+      '<span class="status-pill ' + (stalled ? 'stalled' : 'progressed') + '">' +
+      (stalled ? 'No stage movement' : 'Outlier') + '</span></div>' +
+      '<div class="metrics"><span>' + esc(a.metric) + ' = ' + esc(a.value) + '</span>' +
+      '<span>threshold ' + esc(a.threshold) + '</span></div>' +
+      (a.llm_rationale ? '<div class="rationale">' + esc(a.llm_rationale) + '</div>' : '') +
+      '<div class="evidence">' + evidence + '</div>' +
       '</div>';
-  }).join('') || '<div class="card" style="padding:16px;color:var(--text-muted);">No anomalies detected in this window.</div>';
+  }).join('') || '<div class="card" style="padding:16px;color:var(--text-muted);">No contact clears the outlier fence in this snapshot.</div>';
 
-  // ---------------- narrative panel ----------------
-  function renderNarrative(paragraphs, source, generatedAt, provider){
-    document.getElementById('narrative-body').innerHTML = paragraphs.map(function(p){
-      return '<p>' + esc(p) + '</p>';
-    }).join('');
+  // ---------------- narrative + validator ----------------
+  function paragraphs(text){
+    return String(text || '').split(/\n{2,}/).map(function(p){ return p.trim(); }).filter(Boolean);
+  }
+  function renderNarrative(text, source, generatedAt, model){
+    var body = paragraphs(text);
+    document.getElementById('narrative-body').innerHTML =
+      (body.length ? body : ['(no narrative)']).map(function(p){ return '<p>' + esc(p) + '</p>'; }).join('');
     var badge = document.getElementById('narrative-badge');
-    var text = document.getElementById('narrative-badge-text');
-    badge.className = 'source-badge ' + source;
-    text.textContent = (source === 'live' ? 'Live narrative' + (provider ? ' (' + provider + ')' : '')
-      : source === 'deterministic' ? 'Deterministic summary (AI lane unavailable)'
-      : 'Cached narrative') + ' · ' + fmtDate(generatedAt);
+    badge.className = 'source-badge ' + (source === 'live' ? 'live' : source === 'seeded' ? 'seeded' : 'rules');
+    document.getElementById('narrative-badge-text').textContent =
+      (source === 'live' ? 'live' + (model ? ' · ' + model : '')
+        : source === 'seeded' ? 'seeded data'
+        : 'rules (templated from the deterministic counts)') + ' · ' + fmtDate(generatedAt);
   }
+  renderNarrative(DATA.narrative.text, DATA.narrative.source, DATA.narrative.generated_at, DATA.narrative.model);
 
-  function summaryPayload(){
-    return {
-      event: DATA.event.name,
-      host_company: DATA.event.host_company,
-      kpis: DATA.kpis,
-      top_accounts: DATA.top_accounts.slice(0,3).map(function(a){
-        return {account: a.account, score: a.score, engaged_contact_count: a.engaged_contact_count,
-                committee_coverage_pct: a.committee_coverage_pct};
-      }),
-      committee_account_count: DATA.committee_accounts.length,
-      anomalies: DATA.anomalies.map(function(a){ return a.headline; })
-    };
-  }
+  (function renderValidator(){
+    var v = DATA.validator || {agreements:0, disagreements:[]};
+    var rows = (v.disagreements || []).map(function(d){
+      return '<div class="validator-row"><span class="mono">' + esc(d.field) + '</span> — deterministic: ' +
+        esc(JSON.stringify(d.deterministic)) + ' · AI: ' + esc(JSON.stringify(d.llm)) + '</div>';
+    }).join('');
+    document.getElementById('validator-panel').innerHTML =
+      '<div class="n">Deterministic validator · ' + v.agreements + ' agreement(s), ' +
+      (v.disagreements || []).length + ' disagreement(s)</div>' +
+      '<div class="validator-row">Every count on this page is computed arithmetic. The AI pass is ' +
+      'compared against it field by field; disagreements are listed, never silently overwritten.</div>' +
+      (rows || '<div class="validator-row">No disagreement recorded' +
+        (DATA.lane.narrative === 'rules' ? ' (rules lane: no AI pass ran).' : '.') + '</div>');
+  })();
 
-  // isManual: true when the user clicked Regenerate, false on the initial
-  // page-load fetch. Both lanes hit the same /api/narrative and fall back to
-  // the same cached fallback_narrative.md on failure, but a manual failure
-  // needs to be VISIBLE -- without ANTHROPIC_API_KEY/OPENROUTER_API_KEY
-  // configured on the deployment, /api/narrative 500s in well under a
-  // second, so the old code's loading-state -> fallback-content flip
-  // happened too fast to notice, and since the fallback content is
-  // identical every time, a click looked like a no-op. See the narrative-error
-  // span next to the timestamp below.
-  function loadNarrative(isManual){
-    var errEl = document.getElementById('narrative-error');
-    errEl.hidden = true;
-    errEl.textContent = '';
-
-    document.getElementById('narrative-badge').className = 'source-badge loading';
-    document.getElementById('narrative-badge-text').textContent = 'loading…';
-    var btn = document.getElementById('narrative-refresh');
-    if(isManual){
-      btn.disabled = true;
-      btn.textContent = 'Regenerating…';
-    } else {
-      document.getElementById('narrative-body').innerHTML = '<p class="skeleton">Fetching live narrative…</p>';
+  // ---------------- refresh-on-load ----------------
+  // With window.NARRATIVE_ENDPOINT injected by the module API, the page asks it for a
+  // fresh narrative on load (25s timeout). Any failure keeps the embedded narrative and
+  // its badge — the page never blanks and never claims a source it did not get.
+  function refreshNarrative(isManual){
+    if(!ENDPOINT){
+      if(isManual){
+        var e = document.getElementById('narrative-error');
+        e.textContent = 'No narrative endpoint injected — showing the narrative built with this page.';
+        e.hidden = false;
+      }
+      return;
     }
+    var errEl = document.getElementById('narrative-error');
+    errEl.hidden = true; errEl.textContent = '';
+    var badge = document.getElementById('narrative-badge');
+    var prevClass = badge.className, prevText = document.getElementById('narrative-badge-text').textContent;
+    badge.className = 'source-badge loading';
+    document.getElementById('narrative-badge-text').textContent = 'refreshing…';
+    var btn = document.getElementById('narrative-refresh');
+    btn.disabled = true;
 
     var controller = ('AbortController' in window) ? new AbortController() : null;
-    var timer = setTimeout(function(){ if(controller) controller.abort(); }, 25000); // 25s: free OpenRouter models answer in 2-8s; reasoning models won't make it and fall back (labeled)
-
-    var fetchOpts = {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify(summaryPayload())
-    };
-    if(controller) fetchOpts.signal = controller.signal;
+    var timer = setTimeout(function(){ if(controller) controller.abort(); }, 25000);
+    var opts = controller ? {signal: controller.signal} : {};
 
     Promise.resolve()
-      .then(function(){ return fetch('/api/narrative', fetchOpts); })
+      .then(function(){ return fetch(ENDPOINT + '?refresh=1', opts); })
       .then(function(res){
         clearTimeout(timer);
-        if(!res.ok){
-          // Best-effort: /api/narrative answers errors as {error: "..."} JSON
-          // (see api/narrative.js) -- surface that instead of a bare status
-          // code when possible, but never let a body-parse failure mask the
-          // original HTTP status.
-          return res.json().catch(function(){ return null; }).then(function(body){
-            var detail = (body && body.error) ? body.error : ('HTTP ' + res.status);
-            throw new Error(detail);
-          });
-        }
+        if(!res.ok){ throw new Error('HTTP ' + res.status); }
         return res.json();
       })
       .then(function(json){
-        if(!json || !json.paragraphs || !json.paragraphs.length){ throw new Error('empty narrative response'); }
-        renderNarrative(json.paragraphs, json.source === 'deterministic' ? 'deterministic' : 'live', json.generated_at || new Date().toISOString(), json.provider);
+        if(!json || !json.narrative){ throw new Error('empty narrative response'); }
+        renderNarrative(json.narrative, json.source || 'live', json.generated_at || new Date().toISOString(), json.model);
       })
       .catch(function(err){
         clearTimeout(timer);
+        badge.className = prevClass;
+        document.getElementById('narrative-badge-text').textContent = prevText;
         var reason = (err && err.name === 'AbortError') ? 'timed out after 25s' : ((err && err.message) || 'request failed');
-        var fb = DATA.narrative_fallback;
-        renderNarrative(fb.paragraphs, 'cached', fb.generated_at);
-        if(isManual){
-          errEl.textContent = 'Regeneration failed (' + reason + ') — showing cached narrative.';
-          errEl.hidden = false;
-        }
+        errEl.textContent = 'Refresh failed (' + reason + ') — showing the narrative built with this page.';
+        errEl.hidden = false;
       })
-      .then(function(){
-        if(isManual){
-          btn.disabled = false;
-          btn.textContent = 'Regenerate';
-        }
-      });
+      .then(function(){ btn.disabled = false; });
   }
 
-  document.getElementById('narrative-refresh').addEventListener('click', function(){ loadNarrative(true); });
-  loadNarrative(false);
+  document.getElementById('narrative-refresh').addEventListener('click', function(){ refreshNarrative(true); });
+  refreshNarrative(false);
 
 })();
 </script>
