@@ -1,0 +1,499 @@
+{
+  "name": "M4 — Lead Intelligence (Railway)",
+  "nodes": [
+    {
+      "id": "m4-schedule-trigger",
+      "name": "Schedule Trigger (Every 6h)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        200,
+        280
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "notes": "Production cadence -- fires phase=sync -> analyze -> render every 6h so the dashboard and narrative stay fresh against HubSpot without a human triggering each run. Emits an item with no useful body fields, same as any schedule trigger -- 'Build Run Params' supplies every field this workflow actually needs downstream."
+    },
+    {
+      "id": "m4-manual-trigger",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        200,
+        500
+      ],
+      "parameters": {},
+      "notes": "For the one-time seed run (see README's seed-once rule) and ad-hoc backfills/testing. This workflow has no webhook leg, so there is no request body to carry an event_slug/seed override -- to run with non-default values, pin custom output data on THIS node (n8n UI: right-click -> 'Pin data', e.g. {\"event_slug\": \"...\", \"seed\": true}) before hitting 'Execute workflow'; 'Build Run Params' reads $json.event_slug / $json.seed with fallbacks to the defaults, so pinned data here is the override mechanism for both triggers. UNVERIFIED assumption: that pinned-data-on-manual-execute is an acceptable override UX for the operator -- the brief doesn't specify how 'overridable' is meant to work without a webhook body, this is the most direct n8n-native mechanism available given the two triggers specified."
+    },
+    {
+      "id": "build-run-params",
+      "name": "Build Run Params",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        460,
+        390
+      ],
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{ { run_id: 'm4-' + $now.toFormat('yyyyMMdd-HHmm'), event_slug: $json.event_slug || 'darwinbox-ai-in-hr-2026-08-13', seed: $json.seed === true } }}",
+        "options": {}
+      },
+      "notes": "Single source of truth for run_id/event_slug/seed for the rest of the execution -- every downstream node reads these three fields off THIS node by name ($('Build Run Params')), never off $json, so it doesn't matter which trigger fired or which IF branch is live. run_id = 'm4-<yyyyMMdd-HHmm>' via Luxon's $now.toFormat (n8n's expression 'now' is a Luxon DateTime). event_slug defaults to the Darwinbox fixture slug per module-api.md's M3 section (same default event this whole repo is built around); seed defaults to false so a normal scheduled run never re-seeds. 'mode: raw' / 'jsonOutput' is the exact Set-node parameter shape already used by m1/m2/m3's own final Set nodes in this file family -- reused here rather than the alternative 'manual assignments' Set shape, which this skill hasn't verified a live parameter name for."
+    },
+    {
+      "id": "seed-requested",
+      "name": "Seed Requested?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        700,
+        390
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "cond-seed-requested",
+              "leftValue": "={{ $json.seed }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "notes": "True = 'Build Run Params' resolved seed:true (pinned on a manual run per the seed-once rule) -- run phase=seed first. False (the default/scheduled path) skips straight to phase=sync, since the engagement stream this run would seed is expected to already exist in HubSpot from the one hand-run seed call."
+    },
+    {
+      "id": "call-module-api---seed",
+      "name": "Call Module API - Seed",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        940,
+        220
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.MODULE_API_URL }}/run",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.MODULE_API_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { module: \"m4\", phase: \"seed\", live: true, run_id: $('Build Run Params').item.json.run_id, inputs: { event_slug: $('Build Run Params').item.json.event_slug } } }}",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "retryOnFail": false,
+      "notes": "Module API /run, phase=seed. run_id/event_slug read from 'Build Run Params' by name (not $json) so this node's body is identical regardless of which upstream branch fired -- same cross-branch-reference pattern as m3's 'Call Module API - Run'. timeout=300000ms (300s): the brief states 300s explicitly for sync/analyze/render; applied to seed too for consistency -- seed's own timeout isn't spelled out in the brief, and HubSpot property/event writes are not LLM- or transcription-slow like m1/m3's phases, so 300s is a reasonable, not confirmed, default. retryOnFail=false: every m4 phase mutates state (HubSpot writes, or re-running an LLM analyze pass) -- same write-once reasoning as every POST /run call in m1/m2/m3."
+    },
+    {
+      "id": "assert-seed-ok",
+      "name": "Assert Seed OK",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1180,
+        220
+      ],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const resp = $json;\nif (resp.ok !== true) {\n  const runId = $('Build Run Params').item.json.run_id;\n  throw new Error(`m4 seed failed for run ${runId}: ${resp.error || 'module API returned ok:false with no error message'}`);\n}\nreturn [{ json: resp }];"
+      },
+      "notes": "Per the brief: 'a Code node after each asserts ok === true and throws with the API's error otherwise' -- replaces the IF+stopAndError pair m1/m2/m3 use for the same ok:true gate. A thrown error inside a Code node (no continueOnFail/onError set on this node) halts the execution and marks it failed -- that IS the 'fails the execution loudly' behaviour the brief asks for, no separate stopAndError node needed. Passes the response through unchanged on success so downstream nodes can still read it via $('Call Module API - Seed').item.json if needed, though this workflow's later nodes re-read each phase's response by node name directly instead."
+    },
+    {
+      "id": "call-module-api---sync",
+      "name": "Call Module API - Sync",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1420,
+        390
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.MODULE_API_URL }}/run",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.MODULE_API_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { module: \"m4\", phase: \"sync\", live: true, run_id: $('Build Run Params').item.json.run_id, inputs: { event_slug: $('Build Run Params').item.json.event_slug } } }}",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "retryOnFail": false,
+      "notes": "Module API /run, phase=sync. run_id/event_slug read from 'Build Run Params' by name (not $json) so this node's body is identical regardless of which upstream branch fired -- same cross-branch-reference pattern as m3's 'Call Module API - Run'. timeout=300000ms (300s): the brief states 300s explicitly for sync/analyze/render; applied to seed too for consistency -- seed's own timeout isn't spelled out in the brief, and HubSpot property/event writes are not LLM- or transcription-slow like m1/m3's phases, so 300s is a reasonable, not confirmed, default. retryOnFail=false: every m4 phase mutates state (HubSpot writes, or re-running an LLM analyze pass) -- same write-once reasoning as every POST /run call in m1/m2/m3."
+    },
+    {
+      "id": "assert-sync-ok",
+      "name": "Assert Sync OK",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1660,
+        390
+      ],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const resp = $json;\nif (resp.ok !== true) {\n  const runId = $('Build Run Params').item.json.run_id;\n  throw new Error(`m4 sync failed for run ${runId}: ${resp.error || 'module API returned ok:false with no error message'}`);\n}\nreturn [{ json: resp }];"
+      },
+      "notes": "Per the brief: 'a Code node after each asserts ok === true and throws with the API's error otherwise' -- replaces the IF+stopAndError pair m1/m2/m3 use for the same ok:true gate. A thrown error inside a Code node (no continueOnFail/onError set on this node) halts the execution and marks it failed -- that IS the 'fails the execution loudly' behaviour the brief asks for, no separate stopAndError node needed. Passes the response through unchanged on success so downstream nodes can still read it via $('Call Module API - Sync').item.json if needed, though this workflow's later nodes re-read each phase's response by node name directly instead."
+    },
+    {
+      "id": "call-module-api---analyze",
+      "name": "Call Module API - Analyze",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1900,
+        390
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.MODULE_API_URL }}/run",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.MODULE_API_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { module: \"m4\", phase: \"analyze\", live: true, run_id: $('Build Run Params').item.json.run_id, inputs: { event_slug: $('Build Run Params').item.json.event_slug } } }}",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "retryOnFail": false,
+      "notes": "Module API /run, phase=analyze. run_id/event_slug read from 'Build Run Params' by name (not $json) so this node's body is identical regardless of which upstream branch fired -- same cross-branch-reference pattern as m3's 'Call Module API - Run'. timeout=300000ms (300s): the brief states 300s explicitly for sync/analyze/render; applied to seed too for consistency -- seed's own timeout isn't spelled out in the brief, and HubSpot property/event writes are not LLM- or transcription-slow like m1/m3's phases, so 300s is a reasonable, not confirmed, default. retryOnFail=false: every m4 phase mutates state (HubSpot writes, or re-running an LLM analyze pass) -- same write-once reasoning as every POST /run call in m1/m2/m3."
+    },
+    {
+      "id": "assert-analyze-ok",
+      "name": "Assert Analyze OK",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2140,
+        390
+      ],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const resp = $json;\nif (resp.ok !== true) {\n  const runId = $('Build Run Params').item.json.run_id;\n  throw new Error(`m4 analyze failed for run ${runId}: ${resp.error || 'module API returned ok:false with no error message'}`);\n}\nreturn [{ json: resp }];"
+      },
+      "notes": "Per the brief: 'a Code node after each asserts ok === true and throws with the API's error otherwise' -- replaces the IF+stopAndError pair m1/m2/m3 use for the same ok:true gate. A thrown error inside a Code node (no continueOnFail/onError set on this node) halts the execution and marks it failed -- that IS the 'fails the execution loudly' behaviour the brief asks for, no separate stopAndError node needed. Passes the response through unchanged on success so downstream nodes can still read it via $('Call Module API - Analyze').item.json if needed, though this workflow's later nodes re-read each phase's response by node name directly instead."
+    },
+    {
+      "id": "call-module-api---render",
+      "name": "Call Module API - Render",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2380,
+        390
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.MODULE_API_URL }}/run",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.MODULE_API_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { module: \"m4\", phase: \"render\", live: true, run_id: $('Build Run Params').item.json.run_id, inputs: { event_slug: $('Build Run Params').item.json.event_slug } } }}",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "retryOnFail": false,
+      "notes": "Module API /run, phase=render. run_id/event_slug read from 'Build Run Params' by name (not $json) so this node's body is identical regardless of which upstream branch fired -- same cross-branch-reference pattern as m3's 'Call Module API - Run'. timeout=300000ms (300s): the brief states 300s explicitly for sync/analyze/render; applied to seed too for consistency -- seed's own timeout isn't spelled out in the brief, and HubSpot property/event writes are not LLM- or transcription-slow like m1/m3's phases, so 300s is a reasonable, not confirmed, default. retryOnFail=false: every m4 phase mutates state (HubSpot writes, or re-running an LLM analyze pass) -- same write-once reasoning as every POST /run call in m1/m2/m3."
+    },
+    {
+      "id": "assert-render-ok",
+      "name": "Assert Render OK",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2620,
+        390
+      ],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const resp = $json;\nif (resp.ok !== true) {\n  const runId = $('Build Run Params').item.json.run_id;\n  throw new Error(`m4 render failed for run ${runId}: ${resp.error || 'module API returned ok:false with no error message'}`);\n}\nreturn [{ json: resp }];"
+      },
+      "notes": "Per the brief: 'a Code node after each asserts ok === true and throws with the API's error otherwise' -- replaces the IF+stopAndError pair m1/m2/m3 use for the same ok:true gate. A thrown error inside a Code node (no continueOnFail/onError set on this node) halts the execution and marks it failed -- that IS the 'fails the execution loudly' behaviour the brief asks for, no separate stopAndError node needed. Passes the response through unchanged on success so downstream nodes can still read it via $('Call Module API - Render').item.json if needed, though this workflow's later nodes re-read each phase's response by node name directly instead."
+    },
+    {
+      "id": "build-evidence-summary",
+      "name": "Build Evidence Summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2860,
+        390
+      ],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const params = $('Build Run Params').item.json;\nconst sync = $('Call Module API - Sync').item.json;\nconst analyze = $('Call Module API - Analyze').item.json;\nconst render = $('Call Module API - Render').item.json;\nconst base = $env.MODULE_API_URL;\n\nconst summary = {\n  run_id: params.run_id,\n  event_slug: params.event_slug,\n  sync: sync.summary || {},\n  analyze: analyze.summary || {},\n  render: render.summary || {},\n  dashboard_url: `${base}/dashboard/${params.run_id}/`,\n  narrative_refresh_url: `${base}/narrative/${params.run_id}?refresh=1`,\n  finished_at: new Date().toISOString()\n};\n\nreturn [{ json: summary }];"
+      },
+      "notes": "One JSON item, exact shape from the brief. sync.summary = {contacts, companies, engagements, events, lifecycle_changes, method}; analyze.summary = {anomalies, scored, committees, model, lane}; render.summary = {mql_rate, top_accounts, narrative_source} -- all three shapes taken verbatim from docs/module-api.md's M4 section, read straight off each phase's own HTTP node by name (same $('Node').item.json pattern as m1/m2/m3's own Build Evidence Summary nodes) rather than threaded through the Assert nodes. dashboard_url/narrative_refresh_url are built from $env.MODULE_API_URL + the module-api.md routes GET /dashboard/<run_id>/ and GET /narrative/<run_id>?refresh=1 given in the brief. UNVERIFIED: that $env is readable inside a Code node the same way it is inside an expression field -- this is documented n8n behaviour (subject to the same N8N_BLOCK_ENV_ACCESS_IN_NODE=false requirement as every $env.* reference in m1/m2/m3), not something this skill confirmed against a live instance."
+    },
+    {
+      "id": "send-evidence-gmail",
+      "name": "Send Evidence (Gmail)",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        3100,
+        390
+      ],
+      "disabled": true,
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $env.EVIDENCE_EMAIL }}",
+        "subject": "=M4 evidence -- {{ $json.run_id }} ({{ $json.event_slug }})",
+        "emailType": "text",
+        "message": "={{ JSON.stringify($json, null, 2) }}",
+        "options": {}
+      },
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "PLACEHOLDER_GMAIL_OAUTH2",
+          "name": "Gmail account"
+        }
+      },
+      "onError": "continueRegularOutput",
+      "continueOnFail": true,
+      "notes": "Disabled by default per the brief -- toggle on in the n8n UI once $env.EVIDENCE_EMAIL and the 'Gmail account' OAuth2 credential (same credential name m2/m3 use) are set up. Mails the full evidence JSON from 'Build Evidence Summary' as plaintext. continueOnFail:true / onError:continueRegularOutput so a missing credential or disabled state never fails the run -- same reasoning as m2's approval-request Gmail node."
+    },
+    {
+      "id": "sticky-note-env-vars-+-seed-once-rule",
+      "name": "Sticky Note: Env Vars + Seed-Once Rule",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        200,
+        100
+      ],
+      "parameters": {
+        "content": "## ENV VARS\nMODULE_API_URL, MODULE_API_TOKEN -- module API calls (seed/sync/analyze/render), same pattern as m1/m2/m3.\nEVIDENCE_EMAIL -- recipient for the optional 'Send Evidence (Gmail)' node (disabled by default).\nAll read via $env -- self-hosted n8n needs N8N_BLOCK_ENV_ACCESS_IN_NODE=false, same requirement as m1/m2/m3.\n\n## SEED-ONCE RULE\n'seed' defaults to false on both triggers. Run phase=seed exactly once by hand after the M1 push (pin {\"seed\": true} on 'Manual Trigger' and execute) -- it writes the event's simulated engagement stream into HubSpot. Every recurring run after that (scheduled or manual) should leave seed=false; re-seeding on every 6h tick would duplicate/re-simulate engagement history each time.\n\n## CREDENTIALS\nOne Gmail OAuth2 credential, named exactly 'Gmail account' (same name m2/m3 use), for the optional evidence-mail node only. No credential object for the module API calls -- auth is a raw Bearer header from $env.MODULE_API_TOKEN.",
+        "height": 340,
+        "width": 560,
+        "color": 4
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger (Every 6h)": {
+      "main": [
+        [
+          {
+            "node": "Build Run Params",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Build Run Params",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Run Params": {
+      "main": [
+        [
+          {
+            "node": "Seed Requested?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Seed Requested?": {
+      "main": [
+        [
+          {
+            "node": "Call Module API - Seed",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call Module API - Sync",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Module API - Seed": {
+      "main": [
+        [
+          {
+            "node": "Assert Seed OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assert Seed OK": {
+      "main": [
+        [
+          {
+            "node": "Call Module API - Sync",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Module API - Sync": {
+      "main": [
+        [
+          {
+            "node": "Assert Sync OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assert Sync OK": {
+      "main": [
+        [
+          {
+            "node": "Call Module API - Analyze",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Module API - Analyze": {
+      "main": [
+        [
+          {
+            "node": "Assert Analyze OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assert Analyze OK": {
+      "main": [
+        [
+          {
+            "node": "Call Module API - Render",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Module API - Render": {
+      "main": [
+        [
+          {
+            "node": "Assert Render OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assert Render OK": {
+      "main": [
+        [
+          {
+            "node": "Build Evidence Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Evidence Summary": {
+      "main": [
+        [
+          {
+            "node": "Send Evidence (Gmail)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": [
+    "postevent",
+    "m4"
+  ]
+}

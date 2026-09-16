@@ -267,3 +267,43 @@ unresolved references, 0 duplicate names).
   doesn't document this resolution path.
 - `webViewLink` on both Drive nodes' responses is assumed to be the Drive API's own field name,
   carried through unchanged by the n8n node — not confirmed against a live call.
+
+## §M4 — Lead Intelligence (Railway)
+
+`m4-lead-intelligence.json` — n8n owns the trigger and phase sequencing (seed → sync → analyze →
+render); the module API owns every HubSpot read/write, the LLM analysis, and the dashboard render.
+Re-runs sync → analyze → render against the live HubSpot portal on a schedule to keep the
+dashboard/narrative fresh, and (once, by hand) seeds the event's simulated engagement stream first.
+
+**Trigger cadence**: Schedule Trigger every 6h, OR Manual Trigger for the seed run / backfills.
+Both feed `Build Run Params`, which builds `run_id` (`m4-<yyyyMMdd-HHmm>`), `event_slug` (default
+`darwinbox-ai-in-hr-2026-08-13`, overridable by pinning data on `Manual Trigger` — no webhook body
+here), and `seed` (default `false`). **Seed-once rule**: run `phase=seed` once, by hand, after the
+M1 push (pin `{"seed": true}`, execute); every later run should leave `seed=false` — re-seeding
+every 6h would duplicate the simulated engagement history.
+
+**Env vars (n8n service)**: `MODULE_API_URL`, `MODULE_API_TOKEN` (module API calls, all 4 phases),
+`EVIDENCE_EMAIL` (recipient for the optional, disabled evidence email).
+
+**Import (REST)**:
+```bash
+curl -X POST https://<your-n8n-host>/api/v1/workflows \
+  -H "X-N8N-API-KEY: <your n8n API key>" -H "Content-Type: application/json" \
+  -d @m4-lead-intelligence.json
+```
+Then set the env vars above; for the evidence mail, connect a Gmail OAuth2 credential named exactly
+`Gmail account` and enable `Send Evidence (Gmail)`.
+
+**Evidence item** (`Build Evidence Summary`'s output, no disk write unlike M1–M3): `{run_id,
+event_slug, sync: {contacts, companies, engagements, events, lifecycle_changes, method}, analyze:
+{anomalies, scored, committees, model, lane}, render: {mql_rate, top_accounts, narrative_source},
+dashboard_url, narrative_refresh_url, finished_at}`.
+
+**Audit result**: `validate.py` → GREEN, 0 failures, 2 warnings (orphan on the sticky note,
+expected; `${...}` false positive inside `Assert * OK`'s `jsCode`, same as m1/m2/m3) — 15 nodes, 0
+unresolved `$('Node')` refs, 0 duplicates.
+
+**Unverified until import**: `$env.*` readable inside a Code node like an expression field; the
+`Assert * OK` throw halting the execution like `stopAndError` does elsewhere; pinning data on
+`Manual Trigger` as the override path (no webhook exists otherwise); `scheduleTrigger`'s
+`rule.interval` shape — none confirmed against a live instance.
