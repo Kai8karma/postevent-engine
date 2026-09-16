@@ -92,3 +92,19 @@ input/output ids. The dashboard and README link to these; nothing in prose witho
 Demo dispatch = the recipients whose `demo_redirect_to` is set (one attendee, one no-show, redirected to Kai-controlled aliases because registrant people are synthetic) plus the two speakers (already alias addresses). HubSpot engagements are logged on the real synthetic contact with `sent_to` recorded, so the CRM shows the send on the right record.
 
 `api/server.py`'s `/run` response `summary` for each M2 phase (read straight from the files above, never recomputed — a missing file lands in `notes` instead of failing the field): `generate` → `{recipients, counts, approval_status, event_close_ts, event_slug, subjects}` where `counts`/`event_close_ts`/`event_slug` are copied verbatim from `dispatch_plan.json` and `subjects` is `{attendee|no_show|speaker: [subject_a, subject_b]}` built from its `variants` block; `approve` → top-level `recipients` (the filtered list per the `demo`/`full` rule above) plus `summary.counts = {selected, mode}`; `log` → `summary = {logged, skipped, errors}` plus the full receipt under `receipt` (same shape `log_dispatch.py` writes to `receipts/m2_hubspot_log.json`).
+
+## M3 — phases and files (W3)
+
+| phase | what runs | writes |
+|---|---|---|
+| `transcribe` | `transcribe_batch.py` (Sarvam saaras:v3 batch, diarization + timestamps) on `event.json.recording_files` (downloaded from the public CDN if not local) → `build_transcript.py` → `transcript.md` + `.vtt` | `transcript.md`, `receipts/transcription.json`, `receipts/transcription/*.sarvam.json` |
+| `run` | `repurpose.py` (live default): one LLM extraction over the transcript → blog (800–1200, hard gate with one retry), YouTube chapters + description + thumbnail brief, infographic outline with data points, 5–10 social posts (LinkedIn + X, distinct hooks), grounding verifier over every quote/timestamp; **image generation** (thumbnail + 2 social visuals) via OpenRouter image-capable model; **clips**: top 3 moments from the extraction cut with ffmpeg from the recording, 30–60 s, 16:9 and 9:16 (centre crop), captions SRT built from the Sarvam word timestamps and burned into the 9:16 | `extraction.json`, `blog.md`, `youtube.md`, `infographic.md`, `social.md`, `visuals/*.png`, `clips/*.mp4` + `*.srt`, `grounding_report.json`, `manifest.json`, `receipts/m3_llm_calls.json`, `receipts/m3_images.json`, `receipts/m3_clips.json` |
+| `record` | takes the Drive upload results from n8n and writes them into the manifest | `drive_manifest.json`, `manifest.json.shared_drive` |
+
+`run` response: `summary` = `{blog_words, chapters, posts: {linkedin, x}, images, clips, grounding: {checked, passed}, lane, models}`,
+`artifacts` map as usual, and `next.files` = `[{name, path, url, mime, kind: "blog|youtube|infographic|social|extraction|visual|clip|caption|manifest"}]`
+for n8n's Google Drive node. `record` body: `{run_id, drive: {folder_url, folder_id, files: [{name, drive_file_id, web_view_link}]}}`.
+
+`manifest.json`: `{event_slug, generated_at, lane, models: {text, image}, files: [{name, kind, bytes, source: "llm|image_model|ffmpeg|sarvam", grounded: true|false|null}], shared_drive: {folder_url, files: [...]}}` — every file names its source; nothing pretends a CSS render is a generated image.
+
+Fuel rules: text calls run on the free nemotron model with small prompts when no credits exist; image generation needs a paid model and is skipped with a `notes` entry (never a placeholder PNG) when the key has no credits; clips need only ffmpeg.
