@@ -1,0 +1,2684 @@
+{
+  "event_slug": "darwinbox-ai-in-hr-2026-08-13",
+  "generated_at": "2026-09-16T16:25:33",
+  "lane": "live",
+  "model": "nvidia/nemotron-3-super-120b-a12b:free",
+  "narrative_source": "live",
+  "movement_narrative": "In the last seven days, the pipeline saw six transitions, all seeded, concentrated in marketingqualifiedlead (two), salesqualifiedlead (two), and opportunity (one), with two contacts driving the movement: Vikramn@darwinbox.com moving to lead and Abose@greythr.com progressing from marketingqualifiedlead to salesqualifiedlead on 2026-09-05. This represents a continuation of the trend seen over the prior 14 days, where ten transitions\u2014also all seeded\u2014showed steady progression across lead, marketingqualifiedlead, and salesqualifiedlead stages, indicating consistent nurturing without acceleration. Over the full 30-day window, 88 seeded transitions reveal a broad initial influx into the lead stage (63 contacts), but only a small fraction advanced beyond marketingqualifiedlead, with just five reaching salesqualifiedlead and one opportunity created, signaling a stall in mid-to-late funnel conversion despite strong top-of-funnel volume. The accounts carrying recent movement include Vikramn@darwinbox.com (Darwinbox) moving to lead, Abose@greythr.com (Greythr) advancing from marketingqualifiedlead to salesqualifiedlead, and Dsmith@chewy.com (Chewy) progressing from marketingqualifiedlead to salesqualifiedlead and finally to opportunity on 2026-09-12. Meanwhile, numerous engaged contacts such as Vikkram@zomato.com, Aiyer@nykaa.com, Meerap@ril.com, Amalhotra@havells.com, Snehad@infosys.com, Anjalik@infosys.com, Divya@hdfcbank.com, Ejohnson@chewy.com, Tnguyen@ninjavan.co, Neha.rao@havells.com, Divya.pillai@yahoo.com, Landerson@rippling.com, Eko@grab.com, Ahmed.alsayed@hotmail.com, Divyar@hdfcbank.com, Huy@sea.com, Siti@ocbc.com, Nalsayed@emirates.com, Nishap@rediffmail.com, Robert.johnson@datadoghq.com, Snehad@infosys.com (again), Nsharma@drreddys.com, Mkrishnan@darwinbox.com, Sneha@freshworks.com, Amit@apollohospitals.com, Dnair@infosys.com, and others who engaged but never changed stage\u2014remaining in lead or marketingqualifiedlead\u2014have not moved, highlighting a gap between engagement and progression. All movement described is sourced from seeded engagements, not organic CRM history, to avoid misattribution.",
+  "deterministic": {
+    "as_of": "2026-09-12T23:00:00",
+    "mql_rate": 0.1867,
+    "attendee_to_mql": {
+      "attendees": 75,
+      "mqls": 14,
+      "sqls": 6
+    },
+    "movement": {
+      "7d": {
+        "transitions": 6,
+        "contacts": 2,
+        "by_stage": {
+          "marketingqualifiedlead": 2,
+          "lead": 1,
+          "salesqualifiedlead": 2,
+          "opportunity": 1
+        },
+        "source_mix": {
+          "seeded": 6
+        },
+        "window_start": "2026-09-05T23:00:00",
+        "window_end": "2026-09-12T23:00:00"
+      },
+      "14d": {
+        "transitions": 10,
+        "contacts": 3,
+        "by_stage": {
+          "lead": 3,
+          "marketingqualifiedlead": 3,
+          "salesqualifiedlead": 3,
+          "opportunity": 1
+        },
+        "source_mix": {
+          "seeded": 10
+        },
+        "window_start": "2026-08-29T23:00:00",
+        "window_end": "2026-09-12T23:00:00"
+      },
+      "30d": {
+        "transitions": 88,
+        "contacts": 63,
+        "by_stage": {
+          "lead": 63,
+          "marketingqualifiedlead": 19,
+          "salesqualifiedlead": 5,
+          "opportunity": 1
+        },
+        "source_mix": {
+          "seeded": 88
+        },
+        "window_start": "2026-08-13T23:00:00",
+        "window_end": "2026-09-12T23:00:00"
+      }
+    },
+    "movement_timeline": [
+      {
+        "date": "2026-08-16",
+        "count": 12
+      },
+      {
+        "date": "2026-08-17",
+        "count": 7
+      },
+      {
+        "date": "2026-08-18",
+        "count": 16
+      },
+      {
+        "date": "2026-08-19",
+        "count": 13
+      },
+      {
+        "date": "2026-08-20",
+        "count": 17
+      },
+      {
+        "date": "2026-08-21",
+        "count": 5
+      },
+      {
+        "date": "2026-08-22",
+        "count": 3
+      },
+      {
+        "date": "2026-08-23",
+        "count": 2
+      },
+      {
+        "date": "2026-08-24",
+        "count": 2
+      },
+      {
+        "date": "2026-08-25",
+        "count": 1
+      },
+      {
+        "date": "2026-08-30",
+        "count": 1
+      },
+      {
+        "date": "2026-09-02",
+        "count": 1
+      },
+      {
+        "date": "2026-09-04",
+        "count": 1
+      },
+      {
+        "date": "2026-09-05",
+        "count": 1
+      },
+      {
+        "date": "2026-09-08",
+        "count": 2
+      },
+      {
+        "date": "2026-09-10",
+        "count": 2
+      },
+      {
+        "date": "2026-09-12",
+        "count": 2
+      }
+    ],
+    "top_accounts": [
+      {
+        "company": "Chewy",
+        "domain": "chewy.com",
+        "score": 77.5,
+        "engaged_contacts": 2,
+        "known_contacts": 3,
+        "coverage_pct": 66.7,
+        "contacts": [
+          {
+            "email": "dsmith@chewy.com",
+            "name": "David Smith",
+            "title": "TA Manager",
+            "company": "Chewy",
+            "stage": "opportunity",
+            "score": 43.0,
+            "engagement": {
+              "opens": 4,
+              "clicks": 2,
+              "pageviews": 5,
+              "form_fills": 3,
+              "last_engaged": "2026-08-31T22:33:00",
+              "source": "fixture"
+            }
+          },
+          {
+            "email": "ejohnson@chewy.com",
+            "name": "Ejohnson",
+            "title": "",
+            "company": "Chewy",
+            "stage": "salesqualifiedlead",
+            "score": 34.5,
+            "engagement": {
+              "opens": 1,
+              "clicks": 4,
+              "pageviews": 2,
+              "form_fills": 2,
+              "last_engaged": "2026-09-12T20:47:00",
+              "source": "fixture"
+            }
+          }
+        ]
+      },
+      {
+        "company": "Datadog",
+        "domain": "datadoghq.com",
+        "score": 55.0,
+        "engaged_contacts": 3,
+        "known_contacts": 3,
+        "coverage_pct": 100.0,
+        "contacts": [
+          {
+            "email": "emilyw@datadoghq.com",
+            "name": "Emilyw",
+            "title": "",
+            "company": "Datadog",
+            "stage": "lead",
+            "score": 22.0,
+            "engagement": {
+              "opens": 0,
+              "clicks": 0,
+              "pageviews": 2,
+              "form_fills": 2,
+              "last_engaged": "2026-09-05T17:04:00",
+              "source": "fixture"
+            }
+          },
+          {
+            "email": "robert.johnson@datadoghq.com",
+            "name": "Robert Johnosn",
+            "title": "Senior HRBP",
+            "company": "Datadog",
+            "stage": "marketingqualifiedlead",
+            "score": 22.0,
+            "engagement": {
+              "opens": 2,
+              "clicks": 3,
+              "pageviews": 2,
+              "form_fills": 1,
+              "last_engaged": "2026-08-23T19:56:00",
+              "source": "fixture"
+            }
+          },
+          {
+            "email": "amandat@datadoghq.com",
+            "name": "Amandat",
+            "title": "",
+            "company": "Datadog",
+            "stage": "",
+            "score": 11.0,
+            "engagement": {
+              "opens": 0,
+              "clicks": 0,
+              "pageviews": 1,
+              "form_fills": 1,
+              "last_engaged": "2026-08-19T20:04:00",
+              "source": "fixture"
+            }
+          }
+        ]
+      },
+      {
+        "company": "Hdfcbank",
+        "domain": "hdfcbank.com",
+        "score": 51.0,
+        "engaged_contacts": 3,
+        "known_contacts": 4,
+        "coverage_pct": 75.0,
+        "contacts": [
+          {
+            "email": "divyar@hdfcbank.com",
+            "name": "Divyar",
+            "title": "",
+            "company": "Hdfcbank",
+            "stage": "marketingqualifiedlead",
+            "score": 23.5,
+            "engagement": {
+              "opens": 1,
+              "clicks": 4,
+              "pageviews": 1,
+              "form_fills": 1,
+              "last_engaged": "2026-09-01T14:10:00",
+              "source": "fixture"
+            }
+          },
+          {
+            "email": "divya@hdfcbank.com",
+            "name": "Divya",
+            "title": "",
+            "company": "Hdfcbank",
+            "stage": "marketingqualifiedlead",
+            "score": 16.0,
+            "engagement": {
+              "opens": 2,
+              "clicks": 1,
+              "pageviews": 2,
+              "form_fills": 1,
+              "last_engaged": "2026-08-29T12:32:00",
+              "source": "fixture"
+            }
+          },
+          {
+            "email": "sanjay.rao@hdfcbank.com",
+            "name": "Sanjay Rao",
+            "title": "",
+            "company": "Hdfcbank",
+            "stage": "marketingqualifiedlead",
+            "score": 11.5,
+            "engagement": {
+              "opens": 3,
+              "clicks": 3,
+              "pageviews": 1,
+              "form_fills": 0,
+              "last_engaged": "2026-08-30T19:48:00",
+              "source": "fixture"
+            }
+          }
+        ]
+      },
+      {
+        "company": "Grab",
+        "domain": "grab.com",
+        "score": 48.5,
+        "engaged_contacts": 3,
+        "known_contacts": 5,
+        "coverage_pct": 60.0,
+        "contacts": [
+          {
+            "email": "fatimah@grab.com",
+            "name": "Fatimah",
+            "title": "",
+            "company": "Grab",
+            "stage": "lead",
+            "score": 17.0,
+            "engagement": {
+              "opens": 2,
+              "clicks": 2,
+              "pageviews": 0,
+              "form_fills": 1,
+              "last_engaged": "2026-09-01T15:10:00",
+              "source": "fixture"
+            }
+          },
+          {
+            "email": "rgunawan@grab.com",
+            "name": "Rgunawan",
+            "title": "",
+            "company": "Grab",
+            "stage": "marketingqualifiedlead",
+            "score": 16.0,
+            "engagement": {
+              "opens": 2,
+              "clicks": 1,
+              "pageviews": 2,
+              "form_fills": 1,
+              "last_engaged": "2026-08-31T21:24:00",
+              "source": "fixture"
+            }
+          },
+          {
+            "email": "eko@grab.com",
+            "name": "Eko",
+            "title": "",
+            "company": "Grab",
+            "stage": "marketingqualifiedlead",
+            "score": 15.5,
+            "engagement": {
+              "opens": 3,
+              "clicks": 1,
+              "pageviews": 1,
+              "form_fills": 1,
+              "last_engaged": "2026-09-09T06:53:00",
+              "source": "fixture"
+            }
+          }
+        ]
+      },
+      {
+        "company": "Emirates Group",
+        "domain": "emirates.com",
+        "score": 47.0,
+        "engaged_contacts": 3,
+        "known_contacts": 6,
+        "coverage_pct": 50.0,
+        "contacts": [
+          {
+            "email": "nalsayed@emirates.com",
+            "name": "Noura Al-Sayed",
+            "title": "HR Manager",
+            "company": "Emirates Group",
+            "stage": "lead",
+            "score": 24.5,
+            "engagement": {
+              "opens": 1,
+              "clicks": 1,
+              "pageviews": 1,
+              "form_fills": 2,
+              "last_engaged": "2026-08-31T11:52:00",
+              "source": "fixture"
+            }
+          },
+          {
+            "email": "yousef@emirates.com",
+            "name": "Yousef",
+            "title": "",
+            "company": "Emirates Group",
+            "stage": "lead",
+            "score": 16.5,
+            "engagement": {
+              "opens": 1,
+              "clicks": 2,
+              "pageviews": 0,
+              "form_fills": 1,
+              "last_engaged": "2026-08-23T08:53:00",
+              "source": "fixture"
+            }
+          },
+          {
+            "email": "lalharthi@emirates.com",
+            "name": "Lalharthi",
+            "title": "",
+            "company": "Emirates Group",
+            "stage": "lead",
+            "score": 6.0,
+            "engagement": {
+              "opens": 2,
+              "clicks": 1,
+              "pageviews": 2,
+              "form_fills": 0,
+              "last_engaged": "2026-08-17T13:59:00",
+              "source": "fixture"
+            }
+          }
+        ]
+      },
+      {
+        "company": "Infosys",
+        "domain": "infosys.com",
+        "score": 40.0,
+        "engaged_contacts": 3,
+        "known_contacts": 3,
+        "coverage_pct": 100.0,
+        "contacts": [
+          {
+            "email": "snehad@infosys.com",
+            "name": "Snehad",
+            "title": "",
+            "company": "Infosys",
+            "stage": "marketingqualifiedlead",
+            "score": 21.0,
+            "engagement": {
+              "opens": 2,
+              "clicks": 3,
+              "pageviews": 1,
+              "form_fills": 1,
+              "last_engaged": "2026-09-05T21:12:00",
+              "source": "fixture"
+            }
+          },
+          {
+            "email": "anjalik@infosys.com",
+            "name": "Anjali Kapoor",
+            "title": "Senior HRBP",
+            "company": "Infosys",
+            "stage": "marketingqualifiedlead",
+            "score": 14.0,
+            "engagement": {
+              "opens": 2,
+              "clicks": 0,
+              "pageviews": 3,
+              "form_fills": 1,
+              "last_engaged": "2026-09-11T02:54:00",
+              "source": "fixture"
+            }
+          },
+          {
+            "email": "dnair@infosys.com",
+            "name": "Divya Nair",
+            "title": "Founder",
+            "company": "Infosys",
+            "stage": "lead",
+            "score": 5.0,
+            "engagement": {
+              "opens": 2,
+              "clicks": 1,
+              "pageviews": 1,
+              "form_fills": 0,
+              "last_engaged": "2026-09-01T18:44:00",
+              "source": "fixture"
+            }
+          }
+        ]
+      },
+      {
+        "company": "Icicibank",
+        "domain": "icicibank.com",
+        "score": 38.0,
+        "engaged_contacts": 2,
+        "known_contacts": 3,
+        "coverage_pct": 66.7,
+        "contacts": [
+          {
+            "email": "ajay.kulkarni@icicibank.com",
+            "name": "Ajay Kulkarni",
+            "title": "",
+            "company": "Icicibank",
+            "stage": "lead",
+            "score": 26.5,
+            "engagement": {
+              "opens": 1,
+              "clicks": 2,
+              "pageviews": 0,
+              "form_fills": 2,
+              "last_engaged": "2026-09-09T11:25:00",
+              "source": "fixture"
+            }
+          },
+          {
+            "email": "poojak@icicibank.com",
+            "name": "Poojak",
+            "title": "",
+            "company": "Icicibank",
+            "stage": "lead",
+            "score": 11.5,
+            "engagement": {
+              "opens": 1,
+              "clicks": 0,
+              "pageviews": 1,
+              "form_fills": 1,
+              "last_engaged": "2026-08-22T10:18:00",
+              "source": "fixture"
+            }
+          }
+        ]
+      },
+      {
+        "company": "Keka",
+        "domain": "keka.com",
+        "score": 35.5,
+        "engaged_contacts": 2,
+        "known_contacts": 2,
+        "coverage_pct": 100.0,
+        "contacts": [
+          {
+            "email": "amit@keka.com",
+            "name": "Amit",
+            "title": "",
+            "company": "Keka",
+            "stage": "lead",
+            "score": 20.0,
+            "engagement": {
+              "opens": 0,
+              "clicks": 3,
+              "pageviews": 1,
+              "form_fills": 1,
+              "last_engaged": "2026-09-02T17:33:00",
+              "source": "fixture"
+            }
+          },
+          {
+            "email": "sanjayg@keka.com",
+            "name": "Sanjayg",
+            "title": "",
+            "company": "Keka",
+            "stage": "lead",
+            "score": 15.5,
+            "engagement": {
+              "opens": 1,
+              "clicks": 1,
+              "pageviews": 2,
+              "form_fills": 1,
+              "last_engaged": "2026-08-30T06:24:00",
+              "source": "fixture"
+            }
+          }
+        ]
+      },
+      {
+        "company": "Ninja Van",
+        "domain": "ninjavan.co",
+        "score": 32.5,
+        "engaged_contacts": 2,
+        "known_contacts": 2,
+        "coverage_pct": 100.0,
+        "contacts": [
+          {
+            "email": "siriporn@ninjavan.co",
+            "name": "Siriporn",
+            "title": "",
+            "company": "Ninja Van",
+            "stage": "marketingqualifiedlead",
+            "score": 19.0,
+            "engagement": {
+              "opens": 2,
+              "clicks": 2,
+              "pageviews": 2,
+              "form_fills": 1,
+              "last_engaged": "2026-08-21T14:50:00",
+              "source": "fixture"
+            }
+          },
+          {
+            "email": "tnguyen@ninjavan.co",
+            "name": "Thao Nguyen",
+            "title": "HR Manager",
+            "company": "Ninja Van",
+            "stage": "salesqualifiedlead",
+            "score": 13.5,
+            "engagement": {
+              "opens": 5,
+              "clicks": 3,
+              "pageviews": 2,
+              "form_fills": 0,
+              "last_engaged": "2026-09-12T11:40:00",
+              "source": "fixture"
+            }
+          }
+        ]
+      },
+      {
+        "company": "Tech Mahindra",
+        "domain": "techmahindra.com",
+        "score": 32.0,
+        "engaged_contacts": 3,
+        "known_contacts": 3,
+        "coverage_pct": 100.0,
+        "contacts": [
+          {
+            "email": "ajay@techmahindra.com",
+            "name": "Ajay",
+            "title": "",
+            "company": "Tech Mahindra",
+            "stage": "lead",
+            "score": 14.5,
+            "engagement": {
+              "opens": 3,
+              "clicks": 1,
+              "pageviews": 0,
+              "form_fills": 1,
+              "last_engaged": "2026-08-24T10:38:00",
+              "source": "fixture"
+            }
+          },
+          {
+            "email": "priya.malhotra@techmahindra.com",
+            "name": "Priya Malhotra",
+            "title": "",
+            "company": "Tech Mahindra",
+            "stage": "",
+            "score": 10.5,
+            "engagement": {
+              "opens": 1,
+              "clicks": 0,
+              "pageviews": 0,
+              "form_fills": 1,
+              "last_engaged": "2026-09-10T19:38:00",
+              "source": "fixture"
+            }
+          },
+          {
+            "email": "ppillai@techmahindra.com",
+            "name": "Pirya Pillai",
+            "title": "Senior HRBP",
+            "company": "Tech Mahindra",
+            "stage": "lead",
+            "score": 7.0,
+            "engagement": {
+              "opens": 0,
+              "clicks": 2,
+              "pageviews": 1,
+              "form_fills": 0,
+              "last_engaged": "2026-08-22T23:20:00",
+              "source": "fixture"
+            }
+          }
+        ]
+      }
+    ],
+    "top_contacts": [
+      {
+        "email": "dsmith@chewy.com",
+        "name": "David Smith",
+        "title": "TA Manager",
+        "company": "Chewy",
+        "stage": "opportunity",
+        "score": 43.0,
+        "engagement": {
+          "opens": 4,
+          "clicks": 2,
+          "pageviews": 5,
+          "form_fills": 3,
+          "last_engaged": "2026-08-31T22:33:00",
+          "source": "fixture"
+        },
+        "interactions": 14
+      },
+      {
+        "email": "ejohnson@chewy.com",
+        "name": "Ejohnson",
+        "title": "",
+        "company": "Chewy",
+        "stage": "salesqualifiedlead",
+        "score": 34.5,
+        "engagement": {
+          "opens": 1,
+          "clicks": 4,
+          "pageviews": 2,
+          "form_fills": 2,
+          "last_engaged": "2026-09-12T20:47:00",
+          "source": "fixture"
+        },
+        "interactions": 9
+      },
+      {
+        "email": "ajay.kulkarni@icicibank.com",
+        "name": "Ajay Kulkarni",
+        "title": "",
+        "company": "Icicibank",
+        "stage": "lead",
+        "score": 26.5,
+        "engagement": {
+          "opens": 1,
+          "clicks": 2,
+          "pageviews": 0,
+          "form_fills": 2,
+          "last_engaged": "2026-09-09T11:25:00",
+          "source": "fixture"
+        },
+        "interactions": 5
+      },
+      {
+        "email": "abose@greythr.com",
+        "name": "Abose",
+        "title": "",
+        "company": "Greythr",
+        "stage": "salesqualifiedlead",
+        "score": 25.0,
+        "engagement": {
+          "opens": 4,
+          "clicks": 4,
+          "pageviews": 1,
+          "form_fills": 1,
+          "last_engaged": "2026-08-26T22:48:00",
+          "source": "fixture"
+        },
+        "interactions": 10
+      },
+      {
+        "email": "nalsayed@emirates.com",
+        "name": "Noura Al-Sayed",
+        "title": "HR Manager",
+        "company": "Emirates Group",
+        "stage": "lead",
+        "score": 24.5,
+        "engagement": {
+          "opens": 1,
+          "clicks": 1,
+          "pageviews": 1,
+          "form_fills": 2,
+          "last_engaged": "2026-08-31T11:52:00",
+          "source": "fixture"
+        },
+        "interactions": 5
+      },
+      {
+        "email": "divyar@hdfcbank.com",
+        "name": "Divyar",
+        "title": "",
+        "company": "Hdfcbank",
+        "stage": "marketingqualifiedlead",
+        "score": 23.5,
+        "engagement": {
+          "opens": 1,
+          "clicks": 4,
+          "pageviews": 1,
+          "form_fills": 1,
+          "last_engaged": "2026-09-01T14:10:00",
+          "source": "fixture"
+        },
+        "interactions": 7
+      },
+      {
+        "email": "nisha.kulkarni@hcltech.com",
+        "name": "Nisha Kulkarni",
+        "title": "",
+        "company": "Hcltech",
+        "stage": "salesqualifiedlead",
+        "score": 23.0,
+        "engagement": {
+          "opens": 4,
+          "clicks": 3,
+          "pageviews": 2,
+          "form_fills": 1,
+          "last_engaged": "2026-09-03T23:22:00",
+          "source": "fixture"
+        },
+        "interactions": 10
+      },
+      {
+        "email": "omar.alfarsi@landmarkgroup.com",
+        "name": "Omar Alfarsi",
+        "title": "",
+        "company": "Landmarkgroup",
+        "stage": "lead",
+        "score": 23.0,
+        "engagement": {
+          "opens": 0,
+          "clicks": 1,
+          "pageviews": 0,
+          "form_fills": 2,
+          "last_engaged": "2026-09-12T09:33:00",
+          "source": "fixture"
+        },
+        "interactions": 3
+      },
+      {
+        "email": "emilyw@datadoghq.com",
+        "name": "Emilyw",
+        "title": "",
+        "company": "Datadog",
+        "stage": "lead",
+        "score": 22.0,
+        "engagement": {
+          "opens": 0,
+          "clicks": 0,
+          "pageviews": 2,
+          "form_fills": 2,
+          "last_engaged": "2026-09-05T17:04:00",
+          "source": "fixture"
+        },
+        "interactions": 4
+      },
+      {
+        "email": "robert.johnson@datadoghq.com",
+        "name": "Robert Johnosn",
+        "title": "Senior HRBP",
+        "company": "Datadog",
+        "stage": "marketingqualifiedlead",
+        "score": 22.0,
+        "engagement": {
+          "opens": 2,
+          "clicks": 3,
+          "pageviews": 2,
+          "form_fills": 1,
+          "last_engaged": "2026-08-23T19:56:00",
+          "source": "fixture"
+        },
+        "interactions": 8
+      }
+    ],
+    "interest_scores": [
+      {
+        "contact_id": "dsmith@chewy.com",
+        "score": 100,
+        "rationale": "weighted engagement 43.0 of this run's top score 43.0 (form fills 3, clicks 2, pageviews 5, opens 4)",
+        "evidence": [
+          "opens=4",
+          "clicks=2",
+          "pageviews=5",
+          "form_fills=3"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "ejohnson@chewy.com",
+        "score": 80,
+        "rationale": "weighted engagement 34.5 of this run's top score 43.0 (form fills 2, clicks 4, pageviews 2, opens 1)",
+        "evidence": [
+          "opens=1",
+          "clicks=4",
+          "pageviews=2",
+          "form_fills=2"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "ajay.kulkarni@icicibank.com",
+        "score": 62,
+        "rationale": "weighted engagement 26.5 of this run's top score 43.0 (form fills 2, clicks 2, pageviews 0, opens 1)",
+        "evidence": [
+          "opens=1",
+          "clicks=2",
+          "pageviews=0",
+          "form_fills=2"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "abose@greythr.com",
+        "score": 58,
+        "rationale": "weighted engagement 25.0 of this run's top score 43.0 (form fills 1, clicks 4, pageviews 1, opens 4)",
+        "evidence": [
+          "opens=4",
+          "clicks=4",
+          "pageviews=1",
+          "form_fills=1"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "nalsayed@emirates.com",
+        "score": 57,
+        "rationale": "weighted engagement 24.5 of this run's top score 43.0 (form fills 2, clicks 1, pageviews 1, opens 1)",
+        "evidence": [
+          "opens=1",
+          "clicks=1",
+          "pageviews=1",
+          "form_fills=2"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "divyar@hdfcbank.com",
+        "score": 55,
+        "rationale": "weighted engagement 23.5 of this run's top score 43.0 (form fills 1, clicks 4, pageviews 1, opens 1)",
+        "evidence": [
+          "opens=1",
+          "clicks=4",
+          "pageviews=1",
+          "form_fills=1"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "nisha.kulkarni@hcltech.com",
+        "score": 53,
+        "rationale": "weighted engagement 23.0 of this run's top score 43.0 (form fills 1, clicks 3, pageviews 2, opens 4)",
+        "evidence": [
+          "opens=4",
+          "clicks=3",
+          "pageviews=2",
+          "form_fills=1"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "omar.alfarsi@landmarkgroup.com",
+        "score": 53,
+        "rationale": "weighted engagement 23.0 of this run's top score 43.0 (form fills 2, clicks 1, pageviews 0, opens 0)",
+        "evidence": [
+          "opens=0",
+          "clicks=1",
+          "pageviews=0",
+          "form_fills=2"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "emilyw@datadoghq.com",
+        "score": 51,
+        "rationale": "weighted engagement 22.0 of this run's top score 43.0 (form fills 2, clicks 0, pageviews 2, opens 0)",
+        "evidence": [
+          "opens=0",
+          "clicks=0",
+          "pageviews=2",
+          "form_fills=2"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "robert.johnson@datadoghq.com",
+        "score": 51,
+        "rationale": "weighted engagement 22.0 of this run's top score 43.0 (form fills 1, clicks 3, pageviews 2, opens 2)",
+        "evidence": [
+          "opens=2",
+          "clicks=3",
+          "pageviews=2",
+          "form_fills=1"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "nalfarsi@talabat.com",
+        "score": 50,
+        "rationale": "weighted engagement 21.5 of this run's top score 43.0 (form fills 2, clicks 0, pageviews 1, opens 1)",
+        "evidence": [
+          "opens=1",
+          "clicks=0",
+          "pageviews=1",
+          "form_fills=2"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "snehad@infosys.com",
+        "score": 49,
+        "rationale": "weighted engagement 21.0 of this run's top score 43.0 (form fills 1, clicks 3, pageviews 1, opens 2)",
+        "evidence": [
+          "opens=2",
+          "clicks=3",
+          "pageviews=1",
+          "form_fills=1"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "amit@keka.com",
+        "score": 47,
+        "rationale": "weighted engagement 20.0 of this run's top score 43.0 (form fills 1, clicks 3, pageviews 1, opens 0)",
+        "evidence": [
+          "opens=0",
+          "clicks=3",
+          "pageviews=1",
+          "form_fills=1"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "siriporn@ninjavan.co",
+        "score": 44,
+        "rationale": "weighted engagement 19.0 of this run's top score 43.0 (form fills 1, clicks 2, pageviews 2, opens 2)",
+        "evidence": [
+          "opens=2",
+          "clicks=2",
+          "pageviews=2",
+          "form_fills=1"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "nishap@rediffmail.com",
+        "score": 43,
+        "rationale": "weighted engagement 18.5 of this run's top score 43.0 (form fills 1, clicks 2, pageviews 2, opens 1)",
+        "evidence": [
+          "opens=1",
+          "clicks=2",
+          "pageviews=2",
+          "form_fills=1"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "amalhotra@havells.com",
+        "score": 42,
+        "rationale": "weighted engagement 18.0 of this run's top score 43.0 (form fills 1, clicks 2, pageviews 2, opens 0)",
+        "evidence": [
+          "opens=0",
+          "clicks=2",
+          "pageviews=2",
+          "form_fills=1"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "aisyah.abdullah@sea.com",
+        "score": 40,
+        "rationale": "weighted engagement 17.0 of this run's top score 43.0 (form fills 1, clicks 2, pageviews 0, opens 2)",
+        "evidence": [
+          "opens=2",
+          "clicks=2",
+          "pageviews=0",
+          "form_fills=1"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "fatimah@grab.com",
+        "score": 40,
+        "rationale": "weighted engagement 17.0 of this run's top score 43.0 (form fills 1, clicks 2, pageviews 0, opens 2)",
+        "evidence": [
+          "opens=2",
+          "clicks=2",
+          "pageviews=0",
+          "form_fills=1"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "joser@ayala.com",
+        "score": 40,
+        "rationale": "weighted engagement 17.0 of this run's top score 43.0 (form fills 1, clicks 2, pageviews 1, opens 0)",
+        "evidence": [
+          "opens=0",
+          "clicks=2",
+          "pageviews=1",
+          "form_fills=1"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "meerap@ril.com",
+        "score": 38,
+        "rationale": "weighted engagement 16.5 of this run's top score 43.0 (form fills 1, clicks 1, pageviews 3, opens 1)",
+        "evidence": [
+          "opens=1",
+          "clicks=1",
+          "pageviews=3",
+          "form_fills=1"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "noura.alzaabi@alfuttaim.com",
+        "score": 38,
+        "rationale": "weighted engagement 16.5 of this run's top score 43.0 (form fills 1, clicks 2, pageviews 0, opens 1)",
+        "evidence": [
+          "opens=1",
+          "clicks=2",
+          "pageviews=0",
+          "form_fills=1"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "yousef@emirates.com",
+        "score": 38,
+        "rationale": "weighted engagement 16.5 of this run's top score 43.0 (form fills 1, clicks 2, pageviews 0, opens 1)",
+        "evidence": [
+          "opens=1",
+          "clicks=2",
+          "pageviews=0",
+          "form_fills=1"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "divya@hdfcbank.com",
+        "score": 37,
+        "rationale": "weighted engagement 16.0 of this run's top score 43.0 (form fills 1, clicks 1, pageviews 2, opens 2)",
+        "evidence": [
+          "opens=2",
+          "clicks=1",
+          "pageviews=2",
+          "form_fills=1"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "rahul.mukherjee@iimb.ac.in",
+        "score": 37,
+        "rationale": "weighted engagement 16.0 of this run's top score 43.0 (form fills 1, clicks 1, pageviews 3, opens 0)",
+        "evidence": [
+          "opens=0",
+          "clicks=1",
+          "pageviews=3",
+          "form_fills=1"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "rgunawan@grab.com",
+        "score": 37,
+        "rationale": "weighted engagement 16.0 of this run's top score 43.0 (form fills 1, clicks 1, pageviews 2, opens 2)",
+        "evidence": [
+          "opens=2",
+          "clicks=1",
+          "pageviews=2",
+          "form_fills=1"
+        ],
+        "source": "rules"
+      }
+    ],
+    "committees": [
+      {
+        "company": "Datadog",
+        "domain": "datadoghq.com",
+        "contacts": [
+          "emilyw@datadoghq.com",
+          "robert.johnson@datadoghq.com",
+          "amandat@datadoghq.com"
+        ],
+        "why": "3 engaged contacts at one account (100.0% of the known roster), combined weighted score 55.0",
+        "why_source": "rules"
+      },
+      {
+        "company": "Hdfcbank",
+        "domain": "hdfcbank.com",
+        "contacts": [
+          "divyar@hdfcbank.com",
+          "divya@hdfcbank.com",
+          "sanjay.rao@hdfcbank.com"
+        ],
+        "why": "3 engaged contacts at one account (75.0% of the known roster), combined weighted score 51.0",
+        "why_source": "rules"
+      },
+      {
+        "company": "Grab",
+        "domain": "grab.com",
+        "contacts": [
+          "fatimah@grab.com",
+          "rgunawan@grab.com",
+          "eko@grab.com"
+        ],
+        "why": "3 engaged contacts at one account (60.0% of the known roster), combined weighted score 48.5",
+        "why_source": "rules"
+      },
+      {
+        "company": "Emirates Group",
+        "domain": "emirates.com",
+        "contacts": [
+          "nalsayed@emirates.com",
+          "yousef@emirates.com",
+          "lalharthi@emirates.com"
+        ],
+        "why": "3 engaged contacts at one account (50.0% of the known roster), combined weighted score 47.0",
+        "why_source": "rules"
+      },
+      {
+        "company": "Infosys",
+        "domain": "infosys.com",
+        "contacts": [
+          "snehad@infosys.com",
+          "anjalik@infosys.com",
+          "dnair@infosys.com"
+        ],
+        "why": "3 engaged contacts at one account (100.0% of the known roster), combined weighted score 40.0",
+        "why_source": "rules"
+      },
+      {
+        "company": "Tech Mahindra",
+        "domain": "techmahindra.com",
+        "contacts": [
+          "ajay@techmahindra.com",
+          "priya.malhotra@techmahindra.com",
+          "ppillai@techmahindra.com"
+        ],
+        "why": "3 engaged contacts at one account (100.0% of the known roster), combined weighted score 32.0",
+        "why_source": "rules"
+      },
+      {
+        "company": "Landmarkgroup",
+        "domain": "landmarkgroup.com",
+        "contacts": [
+          "omar.alfarsi@landmarkgroup.com",
+          "yalzaabi@landmarkgroup.com",
+          "laylaa@landmarkgroup.com"
+        ],
+        "why": "3 engaged contacts at one account (75.0% of the known roster), combined weighted score 29.0",
+        "why_source": "rules"
+      },
+      {
+        "company": "Darwinbox",
+        "domain": "darwinbox.com",
+        "contacts": [
+          "mkrishnan@darwinbox.com",
+          "vikramn@darwinbox.com",
+          "meeram@darwinbox.com"
+        ],
+        "why": "3 engaged contacts at one account (75.0% of the known roster), combined weighted score 18.5",
+        "why_source": "rules"
+      },
+      {
+        "company": "Chewy",
+        "domain": "chewy.com",
+        "contacts": [
+          "dsmith@chewy.com",
+          "ejohnson@chewy.com"
+        ],
+        "why": "2 engaged contacts at one account (66.7% of the known roster), combined weighted score 77.5",
+        "why_source": "rules"
+      },
+      {
+        "company": "Icicibank",
+        "domain": "icicibank.com",
+        "contacts": [
+          "ajay.kulkarni@icicibank.com",
+          "poojak@icicibank.com"
+        ],
+        "why": "2 engaged contacts at one account (66.7% of the known roster), combined weighted score 38.0",
+        "why_source": "rules"
+      }
+    ],
+    "anomalies": [
+      {
+        "contact": "dsmith@chewy.com",
+        "company": "Chewy",
+        "metric": "engagement_interactions",
+        "value": 14,
+        "threshold": 10,
+        "evidence_rows": [
+          {
+            "metric": "opens",
+            "value": 4
+          },
+          {
+            "metric": "clicks",
+            "value": 2
+          },
+          {
+            "metric": "pageviews",
+            "value": 5
+          },
+          {
+            "metric": "form_fills",
+            "value": 3
+          },
+          {
+            "metric": "last_engaged",
+            "value": "2026-08-31T22:33:00"
+          },
+          {
+            "metric": "lifecycle_history",
+            "value": 4
+          },
+          {
+            "metric": "event:open",
+            "value": "thank-you-email",
+            "ts": "2026-08-31T03:59:00",
+            "source": "fixture"
+          },
+          {
+            "metric": "event:open",
+            "value": "thank-you-email",
+            "ts": "2026-08-31T04:19:00",
+            "source": "fixture"
+          },
+          {
+            "metric": "event:pageview",
+            "value": "/blog/start-and-scale-ai-in-hr",
+            "ts": "2026-08-31T05:09:00",
+            "source": "fixture"
+          },
+          {
+            "metric": "event:form_fill",
+            "value": "pricing-request-form",
+            "ts": "2026-08-31T06:38:00",
+            "source": "fixture"
+          },
+          {
+            "metric": "event:pageview",
+            "value": "/blog/start-and-scale-ai-in-hr",
+            "ts": "2026-08-31T08:02:00",
+            "source": "fixture"
+          },
+          {
+            "metric": "event:click",
+            "value": "cta-book-demo",
+            "ts": "2026-08-31T15:17:00",
+            "source": "fixture"
+          },
+          {
+            "metric": "event:pageview",
+            "value": "/product/darwinbox-cortex",
+            "ts": "2026-08-31T16:10:00",
+            "source": "fixture"
+          },
+          {
+            "metric": "event:pageview",
+            "value": "/blog/start-and-scale-ai-in-hr",
+            "ts": "2026-08-31T18:15:00",
+            "source": "fixture"
+          }
+        ]
+      },
+      {
+        "contact": "abose@greythr.com",
+        "company": "Greythr",
+        "metric": "engagement_interactions",
+        "value": 10,
+        "threshold": 10,
+        "evidence_rows": [
+          {
+            "metric": "opens",
+            "value": 4
+          },
+          {
+            "metric": "clicks",
+            "value": 4
+          },
+          {
+            "metric": "pageviews",
+            "value": 1
+          },
+          {
+            "metric": "form_fills",
+            "value": 1
+          },
+          {
+            "metric": "last_engaged",
+            "value": "2026-08-26T22:48:00"
+          },
+          {
+            "metric": "lifecycle_history",
+            "value": 3
+          },
+          {
+            "metric": "event:click",
+            "value": "cta-book-demo",
+            "ts": "2026-08-26T00:40:00",
+            "source": "fixture"
+          },
+          {
+            "metric": "event:open",
+            "value": "thank-you-email",
+            "ts": "2026-08-26T01:54:00",
+            "source": "fixture"
+          },
+          {
+            "metric": "event:open",
+            "value": "thank-you-email",
+            "ts": "2026-08-26T03:48:00",
+            "source": "fixture"
+          },
+          {
+            "metric": "event:open",
+            "value": "thank-you-email",
+            "ts": "2026-08-26T06:37:00",
+            "source": "fixture"
+          },
+          {
+            "metric": "event:click",
+            "value": "cta-book-demo",
+            "ts": "2026-08-26T08:04:00",
+            "source": "fixture"
+          },
+          {
+            "metric": "event:open",
+            "value": "thank-you-email",
+            "ts": "2026-08-26T08:36:00",
+            "source": "fixture"
+          },
+          {
+            "metric": "event:form_fill",
+            "value": "contact-sales-form",
+            "ts": "2026-08-26T09:13:00",
+            "source": "fixture"
+          },
+          {
+            "metric": "event:click",
+            "value": "cta-watch-recording",
+            "ts": "2026-08-26T19:37:00",
+            "source": "fixture"
+          }
+        ]
+      },
+      {
+        "contact": "nisha.kulkarni@hcltech.com",
+        "company": "Hcltech",
+        "metric": "engagement_interactions",
+        "value": 10,
+        "threshold": 10,
+        "evidence_rows": [
+          {
+            "metric": "opens",
+            "value": 4
+          },
+          {
+            "metric": "clicks",
+            "value": 3
+          },
+          {
+            "metric": "pageviews",
+            "value": 2
+          },
+          {
+            "metric": "form_fills",
+            "value": 1
+          },
+          {
+            "metric": "last_engaged",
+            "value": "2026-09-03T23:22:00"
+          },
+          {
+            "metric": "lifecycle_history",
+            "value": 3
+          },
+          {
+            "metric": "event:click",
+            "value": "cta-book-demo",
+            "ts": "2026-09-03T05:41:00",
+            "source": "fixture"
+          },
+          {
+            "metric": "event:open",
+            "value": "no-show-catchup-email",
+            "ts": "2026-09-03T11:30:00",
+            "source": "fixture"
+          },
+          {
+            "metric": "event:click",
+            "value": "cta-watch-recording",
+            "ts": "2026-09-03T11:33:00",
+            "source": "fixture"
+          },
+          {
+            "metric": "event:open",
+            "value": "no-show-catchup-email",
+            "ts": "2026-09-03T14:31:00",
+            "source": "fixture"
+          },
+          {
+            "metric": "event:pageview",
+            "value": "/product/darwinbox-cortex",
+            "ts": "2026-09-03T16:32:00",
+            "source": "fixture"
+          },
+          {
+            "metric": "event:click",
+            "value": "cta-book-demo",
+            "ts": "2026-09-03T18:14:00",
+            "source": "fixture"
+          },
+          {
+            "metric": "event:pageview",
+            "value": "/blog/start-and-scale-ai-in-hr",
+            "ts": "2026-09-03T20:15:00",
+            "source": "fixture"
+          },
+          {
+            "metric": "event:form_fill",
+            "value": "pricing-request-form",
+            "ts": "2026-09-03T22:05:00",
+            "source": "fixture"
+          }
+        ]
+      },
+      {
+        "contact": "tnguyen@ninjavan.co",
+        "company": "Ninja Van",
+        "metric": "engagement_interactions",
+        "value": 10,
+        "threshold": 10,
+        "evidence_rows": [
+          {
+            "metric": "opens",
+            "value": 5
+          },
+          {
+            "metric": "clicks",
+            "value": 3
+          },
+          {
+            "metric": "pageviews",
+            "value": 2
+          },
+          {
+            "metric": "form_fills",
+            "value": 0
+          },
+          {
+            "metric": "last_engaged",
+            "value": "2026-09-12T11:40:00"
+          },
+          {
+            "metric": "lifecycle_history",
+            "value": 3
+          },
+          {
+            "metric": "event:click",
+            "value": "cta-book-demo",
+            "ts": "2026-08-13T11:00:00",
+            "source": "fixture"
+          },
+          {
+            "metric": "event:open",
+            "value": "thank-you-email",
+            "ts": "2026-08-13T11:00:00",
+            "source": "fixture"
+          },
+          {
+            "metric": "event:open",
+            "value": "thank-you-email",
+            "ts": "2026-08-15T12:07:00",
+            "source": "fixture"
+          },
+          {
+            "metric": "event:pageview",
+            "value": "/product/darwinbox-cortex",
+            "ts": "2026-08-15T15:06:00",
+            "source": "fixture"
+          },
+          {
+            "metric": "event:open",
+            "value": "thank-you-email",
+            "ts": "2026-08-16T20:44:00",
+            "source": "fixture"
+          },
+          {
+            "metric": "event:click",
+            "value": "cta-watch-recording",
+            "ts": "2026-08-19T19:12:00",
+            "source": "fixture"
+          },
+          {
+            "metric": "event:click",
+            "value": "cta-book-demo",
+            "ts": "2026-08-27T05:01:00",
+            "source": "fixture"
+          },
+          {
+            "metric": "event:pageview",
+            "value": "/blog/start-and-scale-ai-in-hr",
+            "ts": "2026-08-28T16:46:00",
+            "source": "fixture"
+          }
+        ]
+      }
+    ],
+    "anomaly_detection": {
+      "threshold": 10,
+      "rationale": "Tukey IQR fence over 86 engaged contacts (median 4.0, Q1 2.0, Q3 5.0, IQR 3.0): threshold = ceil(Q3 + 1.5*IQR) = 10 interactions.",
+      "engaged_contacts": 86,
+      "flagged": 4
+    },
+    "counts": {
+      "contacts": 165,
+      "companies": 75,
+      "engaged_contacts": 86,
+      "email_engagements": 0,
+      "events": 362
+    },
+    "transitions": [
+      {
+        "email": "meerap@hcltech.com",
+        "company": "Hcltech",
+        "stage": "lead",
+        "ts": "2026-08-16T11:00:00",
+        "source": "seeded"
+      },
+      {
+        "email": "rahul.mukherjee@iimb.ac.in",
+        "company": "Iimb",
+        "stage": "lead",
+        "ts": "2026-08-16T11:00:00",
+        "source": "seeded"
+      },
+      {
+        "email": "rgunawan@grab.com",
+        "company": "Grab",
+        "stage": "lead",
+        "ts": "2026-08-16T11:00:00",
+        "source": "seeded"
+      },
+      {
+        "email": "robert.johnson@datadoghq.com",
+        "company": "Datadog",
+        "stage": "lead",
+        "ts": "2026-08-16T11:00:00",
+        "source": "seeded"
+      },
+      {
+        "email": "tnguyen@ninjavan.co",
+        "company": "Ninja Van",
+        "stage": "lead",
+        "ts": "2026-08-16T11:00:00",
+        "source": "seeded"
+      },
+      {
+        "email": "yalsayed@qatarairways.com",
+        "company": "Qatar Airways",
+        "stage": "lead",
+        "ts": "2026-08-16T11:00:00",
+        "source": "seeded"
+      },
+      {
+        "email": "yalzaabi@landmarkgroup.com",
+        "company": "Landmarkgroup",
+        "stage": "lead",
+        "ts": "2026-08-16T11:00:00",
+        "source": "seeded"
+      },
+      {
+        "email": "pooja@delhivery.com",
+        "company": "Delhivery",
+        "stage": "lead",
+        "ts": "2026-08-16T11:34:00",
+        "source": "seeded"
+      },
+      {
+        "email": "fatimah@grab.com",
+        "company": "Grab",
+        "stage": "lead",
+        "ts": "2026-08-16T14:17:00",
+        "source": "seeded"
+      },
+      {
+        "email": "poojak@icicibank.com",
+        "company": "Icicibank",
+        "stage": "lead",
+        "ts": "2026-08-16T15:01:00",
+        "source": "seeded"
+      },
+      {
+        "email": "laura.miller@sweetgreen.com",
+        "company": "Sweetgreen",
+        "stage": "lead",
+        "ts": "2026-08-16T16:45:00",
+        "source": "seeded"
+      },
+      {
+        "email": "lalharthi@emirates.com",
+        "company": "Emirates Group",
+        "stage": "lead",
+        "ts": "2026-08-16T21:21:00",
+        "source": "seeded"
+      },
+      {
+        "email": "anjalig@freshworks.com",
+        "company": "Freshworks",
+        "stage": "lead",
+        "ts": "2026-08-17T05:36:00",
+        "source": "seeded"
+      },
+      {
+        "email": "ahassan@maybank.com",
+        "company": "Maybank",
+        "stage": "lead",
+        "ts": "2026-08-17T11:00:00",
+        "source": "seeded"
+      },
+      {
+        "email": "ejohnson@chewy.com",
+        "company": "Chewy",
+        "stage": "lead",
+        "ts": "2026-08-17T11:00:00",
+        "source": "seeded"
+      },
+      {
+        "email": "siriporn@ninjavan.co",
+        "company": "Ninja Van",
+        "stage": "lead",
+        "ts": "2026-08-17T11:00:00",
+        "source": "seeded"
+      },
+      {
+        "email": "sneham@phonepe.com",
+        "company": "Phonepe",
+        "stage": "lead",
+        "ts": "2026-08-17T11:00:00",
+        "source": "seeded"
+      },
+      {
+        "email": "mohammed.alsayed@majidalfuttaim.com",
+        "company": "Majidalfuttaim",
+        "stage": "lead",
+        "ts": "2026-08-17T13:30:00",
+        "source": "seeded"
+      },
+      {
+        "email": "yousef@emirates.com",
+        "company": "Emirates Group",
+        "stage": "lead",
+        "ts": "2026-08-17T18:59:00",
+        "source": "seeded"
+      },
+      {
+        "email": "joser@ayala.com",
+        "company": "Ayala",
+        "stage": "lead",
+        "ts": "2026-08-18T01:40:00",
+        "source": "seeded"
+      },
+      {
+        "email": "meerap@ril.com",
+        "company": "Reliance Retail",
+        "stage": "lead",
+        "ts": "2026-08-18T03:30:00",
+        "source": "seeded"
+      },
+      {
+        "email": "ajay.kulkarni@icicibank.com",
+        "company": "Icicibank",
+        "stage": "lead",
+        "ts": "2026-08-18T04:37:00",
+        "source": "seeded"
+      },
+      {
+        "email": "ppillai@techmahindra.com",
+        "company": "Tech Mahindra",
+        "stage": "lead",
+        "ts": "2026-08-18T06:34:00",
+        "source": "seeded"
+      },
+      {
+        "email": "nishap@rediffmail.com",
+        "company": "",
+        "stage": "lead",
+        "ts": "2026-08-18T10:00:00",
+        "source": "seeded"
+      },
+      {
+        "email": "anjalik@infosys.com",
+        "company": "Infosys",
+        "stage": "lead",
+        "ts": "2026-08-18T11:00:00",
+        "source": "seeded"
+      },
+      {
+        "email": "averma@asianpaints.com",
+        "company": "Asian Paints",
+        "stage": "lead",
+        "ts": "2026-08-18T11:00:00",
+        "source": "seeded"
+      },
+      {
+        "email": "divya@hdfcbank.com",
+        "company": "Hdfcbank",
+        "stage": "lead",
+        "ts": "2026-08-18T11:00:00",
+        "source": "seeded"
+      },
+      {
+        "email": "meeram@darwinbox.com",
+        "company": "Darwinbox",
+        "stage": "lead",
+        "ts": "2026-08-18T11:00:00",
+        "source": "seeded"
+      },
+      {
+        "email": "nurul.osman@airasia.com",
+        "company": "Airasia",
+        "stage": "lead",
+        "ts": "2026-08-18T11:00:00",
+        "source": "seeded"
+      },
+      {
+        "email": "sanjay.rao@hdfcbank.com",
+        "company": "Hdfcbank",
+        "stage": "lead",
+        "ts": "2026-08-18T11:02:00",
+        "source": "seeded"
+      },
+      {
+        "email": "neha.rao@havells.com",
+        "company": "Havells",
+        "stage": "lead",
+        "ts": "2026-08-18T13:28:00",
+        "source": "seeded"
+      },
+      {
+        "email": "divya.pillai@yahoo.com",
+        "company": "",
+        "stage": "lead",
+        "ts": "2026-08-18T13:31:00",
+        "source": "seeded"
+      },
+      {
+        "email": "emilyw@datadoghq.com",
+        "company": "Datadog",
+        "stage": "lead",
+        "ts": "2026-08-18T17:31:00",
+        "source": "seeded"
+      },
+      {
+        "email": "eko@grab.com",
+        "company": "Grab",
+        "stage": "lead",
+        "ts": "2026-08-18T18:01:00",
+        "source": "seeded"
+      },
+      {
+        "email": "divyar@hdfcbank.com",
+        "company": "Hdfcbank",
+        "stage": "lead",
+        "ts": "2026-08-18T20:14:00",
+        "source": "seeded"
+      },
+      {
+        "email": "nalfarsi@talabat.com",
+        "company": "Talabat",
+        "stage": "lead",
+        "ts": "2026-08-19T03:17:00",
+        "source": "seeded"
+      },
+      {
+        "email": "amit@keka.com",
+        "company": "Keka",
+        "stage": "lead",
+        "ts": "2026-08-19T03:33:00",
+        "source": "seeded"
+      },
+      {
+        "email": "sanjayg@keka.com",
+        "company": "Keka",
+        "stage": "lead",
+        "ts": "2026-08-19T04:49:00",
+        "source": "seeded"
+      },
+      {
+        "email": "rgunawan@grab.com",
+        "company": "Grab",
+        "stage": "marketingqualifiedlead",
+        "ts": "2026-08-19T11:00:00",
+        "source": "seeded"
+      },
+      {
+        "email": "siriporn@ninjavan.co",
+        "company": "Ninja Van",
+        "stage": "marketingqualifiedlead",
+        "ts": "2026-08-19T11:00:00",
+        "source": "seeded"
+      },
+      {
+        "email": "sanjay.rao@hdfcbank.com",
+        "company": "Hdfcbank",
+        "stage": "marketingqualifiedlead",
+        "ts": "2026-08-19T11:02:00",
+        "source": "seeded"
+      },
+      {
+        "email": "deepakm@razorpay.com",
+        "company": "Razorpay",
+        "stage": "lead",
+        "ts": "2026-08-19T11:16:00",
+        "source": "seeded"
+      },
+      {
+        "email": "omar.alfarsi@landmarkgroup.com",
+        "company": "Landmarkgroup",
+        "stage": "lead",
+        "ts": "2026-08-19T13:12:00",
+        "source": "seeded"
+      },
+      {
+        "email": "noura.alzaabi@alfuttaim.com",
+        "company": "Al-Futtaim Group",
+        "stage": "lead",
+        "ts": "2026-08-19T19:33:00",
+        "source": "seeded"
+      },
+      {
+        "email": "amit.pillai@ey.com",
+        "company": "Ey",
+        "stage": "lead",
+        "ts": "2026-08-19T20:41:00",
+        "source": "seeded"
+      },
+      {
+        "email": "deepak.gupta@deloitte.com",
+        "company": "Deloitte",
+        "stage": "lead",
+        "ts": "2026-08-19T22:06:00",
+        "source": "seeded"
+      },
+      {
+        "email": "aisyah.abdullah@sea.com",
+        "company": "Sea",
+        "stage": "lead",
+        "ts": "2026-08-19T22:31:00",
+        "source": "seeded"
+      },
+      {
+        "email": "ajay@techmahindra.com",
+        "company": "Tech Mahindra",
+        "stage": "lead",
+        "ts": "2026-08-19T23:05:00",
+        "source": "seeded"
+      },
+      {
+        "email": "vikram@zomato.com",
+        "company": "Zomato",
+        "stage": "lead",
+        "ts": "2026-08-20T02:48:00",
+        "source": "seeded"
+      },
+      {
+        "email": "aiyer@nykaa.com",
+        "company": "Nykaa",
+        "stage": "lead",
+        "ts": "2026-08-20T03:11:00",
+        "source": "seeded"
+      },
+      {
+        "email": "meerap@ril.com",
+        "company": "Reliance Retail",
+        "stage": "marketingqualifiedlead",
+        "ts": "2026-08-20T03:30:00",
+        "source": "seeded"
+      },
+      {
+        "email": "amalhotra@havells.com",
+        "company": "Havells",
+        "stage": "lead",
+        "ts": "2026-08-20T04:10:00",
+        "source": "seeded"
+      },
+      {
+        "email": "snehad@infosys.com",
+        "company": "Infosys",
+        "stage": "lead",
+        "ts": "2026-08-20T05:23:00",
+        "source": "seeded"
+      },
+      {
+        "email": "anjalik@infosys.com",
+        "company": "Infosys",
+        "stage": "marketingqualifiedlead",
+        "ts": "2026-08-20T11:00:00",
+        "source": "seeded"
+      },
+      {
+        "email": "divya@hdfcbank.com",
+        "company": "Hdfcbank",
+        "stage": "marketingqualifiedlead",
+        "ts": "2026-08-20T11:00:00",
+        "source": "seeded"
+      },
+      {
+        "email": "ejohnson@chewy.com",
+        "company": "Chewy",
+        "stage": "marketingqualifiedlead",
+        "ts": "2026-08-20T11:00:00",
+        "source": "seeded"
+      },
+      {
+        "email": "tnguyen@ninjavan.co",
+        "company": "Ninja Van",
+        "stage": "marketingqualifiedlead",
+        "ts": "2026-08-20T11:00:00",
+        "source": "seeded"
+      },
+      {
+        "email": "vikramn@darwinbox.com",
+        "company": "Darwinbox",
+        "stage": "lead",
+        "ts": "2026-08-20T12:19:00",
+        "source": "seeded"
+      },
+      {
+        "email": "neha.rao@havells.com",
+        "company": "Havells",
+        "stage": "marketingqualifiedlead",
+        "ts": "2026-08-20T13:28:00",
+        "source": "seeded"
+      },
+      {
+        "email": "divya.pillai@yahoo.com",
+        "company": "",
+        "stage": "marketingqualifiedlead",
+        "ts": "2026-08-20T13:31:00",
+        "source": "seeded"
+      },
+      {
+        "email": "landerson@rippling.com",
+        "company": "Rippling",
+        "stage": "lead",
+        "ts": "2026-08-20T14:38:00",
+        "source": "seeded"
+      },
+      {
+        "email": "eko@grab.com",
+        "company": "Grab",
+        "stage": "marketingqualifiedlead",
+        "ts": "2026-08-20T18:01:00",
+        "source": "seeded"
+      },
+      {
+        "email": "ahmed.alsayed@hotmail.com",
+        "company": "",
+        "stage": "lead",
+        "ts": "2026-08-20T19:59:00",
+        "source": "seeded"
+      },
+      {
+        "email": "divyar@hdfcbank.com",
+        "company": "Hdfcbank",
+        "stage": "marketingqualifiedlead",
+        "ts": "2026-08-20T20:14:00",
+        "source": "seeded"
+      },
+      {
+        "email": "huy@sea.com",
+        "company": "Sea",
+        "stage": "lead",
+        "ts": "2026-08-20T20:44:00",
+        "source": "seeded"
+      },
+      {
+        "email": "siti@ocbc.com",
+        "company": "Ocbc",
+        "stage": "lead",
+        "ts": "2026-08-21T01:49:00",
+        "source": "seeded"
+      },
+      {
+        "email": "nalsayed@emirates.com",
+        "company": "Emirates Group",
+        "stage": "lead",
+        "ts": "2026-08-21T02:35:00",
+        "source": "seeded"
+      },
+      {
+        "email": "nishap@rediffmail.com",
+        "company": "",
+        "stage": "marketingqualifiedlead",
+        "ts": "2026-08-21T10:00:00",
+        "source": "seeded"
+      },
+      {
+        "email": "robert.johnson@datadoghq.com",
+        "company": "Datadog",
+        "stage": "marketingqualifiedlead",
+        "ts": "2026-08-21T11:00:00",
+        "source": "seeded"
+      },
+      {
+        "email": "landerson@rippling.com",
+        "company": "Rippling",
+        "stage": "marketingqualifiedlead",
+        "ts": "2026-08-21T14:38:00",
+        "source": "seeded"
+      },
+      {
+        "email": "snehad@infosys.com",
+        "company": "Infosys",
+        "stage": "marketingqualifiedlead",
+        "ts": "2026-08-22T05:23:00",
+        "source": "seeded"
+      },
+      {
+        "email": "ejohnson@chewy.com",
+        "company": "Chewy",
+        "stage": "salesqualifiedlead",
+        "ts": "2026-08-22T11:00:00",
+        "source": "seeded"
+      },
+      {
+        "email": "nsharma@drreddys.com",
+        "company": "Dr. Reddy's Laboratories",
+        "stage": "lead",
+        "ts": "2026-08-22T20:08:00",
+        "source": "seeded"
+      },
+      {
+        "email": "mkrishnan@darwinbox.com",
+        "company": "Darwinbox",
+        "stage": "lead",
+        "ts": "2026-08-23T01:15:00",
+        "source": "seeded"
+      },
+      {
+        "email": "sneha@freshworks.com",
+        "company": "Freshworks",
+        "stage": "lead",
+        "ts": "2026-08-23T09:09:00",
+        "source": "seeded"
+      },
+      {
+        "email": "tnguyen@ninjavan.co",
+        "company": "Ninja Van",
+        "stage": "salesqualifiedlead",
+        "ts": "2026-08-24T11:00:00",
+        "source": "seeded"
+      },
+      {
+        "email": "amit@apollohospitals.com",
+        "company": "Apollohospitals",
+        "stage": "lead",
+        "ts": "2026-08-24T21:42:00",
+        "source": "seeded"
+      },
+      {
+        "email": "dnair@infosys.com",
+        "company": "Infosys",
+        "stage": "lead",
+        "ts": "2026-08-25T16:00:00",
+        "source": "seeded"
+      },
+      {
+        "email": "abose@greythr.com",
+        "company": "Greythr",
+        "stage": "lead",
+        "ts": "2026-08-30T00:40:00",
+        "source": "seeded"
+      },
+      {
+        "email": "abose@greythr.com",
+        "company": "Greythr",
+        "stage": "marketingqualifiedlead",
+        "ts": "2026-09-02T00:40:00",
+        "source": "seeded"
+      },
+      {
+        "email": "dsmith@chewy.com",
+        "company": "Chewy",
+        "stage": "lead",
+        "ts": "2026-09-04T03:59:00",
+        "source": "seeded"
+      },
+      {
+        "email": "abose@greythr.com",
+        "company": "Greythr",
+        "stage": "salesqualifiedlead",
+        "ts": "2026-09-05T00:40:00",
+        "source": "seeded"
+      },
+      {
+        "email": "dsmith@chewy.com",
+        "company": "Chewy",
+        "stage": "marketingqualifiedlead",
+        "ts": "2026-09-08T03:59:00",
+        "source": "seeded"
+      },
+      {
+        "email": "nisha.kulkarni@hcltech.com",
+        "company": "Hcltech",
+        "stage": "lead",
+        "ts": "2026-09-08T05:41:00",
+        "source": "seeded"
+      },
+      {
+        "email": "dsmith@chewy.com",
+        "company": "Chewy",
+        "stage": "salesqualifiedlead",
+        "ts": "2026-09-10T03:59:00",
+        "source": "seeded"
+      },
+      {
+        "email": "nisha.kulkarni@hcltech.com",
+        "company": "Hcltech",
+        "stage": "marketingqualifiedlead",
+        "ts": "2026-09-10T05:41:00",
+        "source": "seeded"
+      },
+      {
+        "email": "nisha.kulkarni@hcltech.com",
+        "company": "Hcltech",
+        "stage": "salesqualifiedlead",
+        "ts": "2026-09-12T05:41:00",
+        "source": "seeded"
+      },
+      {
+        "email": "dsmith@chewy.com",
+        "company": "Chewy",
+        "stage": "opportunity",
+        "ts": "2026-09-12T23:00:00",
+        "source": "seeded"
+      }
+    ]
+  },
+  "llm": {
+    "anomalies": [
+      {
+        "contact": "dsmith@chewy.com",
+        "metric": "engagement_interactions",
+        "value": 14,
+        "rationale": "Highest engagement score (43.0) and 14 interactions, yet stalled in 'opportunity' stage with no progression to customer or closed-won despite peak activity post-event; SDR should prioritize immediate outreach to convert high-intent lead before momentum fades.",
+        "evidence": [
+          "opens=4",
+          "clicks=2",
+          "pageviews=5",
+          "form_fills=3",
+          "weighted_score=43.0",
+          "stage=opportunity",
+          "last_engaged=2026-08-31T22:33:00"
+        ]
+      },
+      {
+        "contact": "tnguyen@ninjavan.co",
+        "metric": "engagement_interactions",
+        "value": 10,
+        "rationale": "Exactly at threshold (10 interactions) but shows strong intent with 5 opens, 3 clicks, 2 pageviews and weighted_score=13.5; stalled in 'salesqualifiedlead' with no progression to opportunity despite high engagement \u2014 SDR should nurture toward demo or sales conversation.",
+        "evidence": [
+          "opens=5",
+          "clicks=3",
+          "pageviews=2",
+          "form_fills=0",
+          "weighted_score=13.5",
+          "stage=salesqualifiedlead",
+          "last_engaged=2026-09-12T11:40:00"
+        ]
+      }
+    ],
+    "interest_scores": [
+      {
+        "contact_id": "dsmith@chewy.com",
+        "score": 96,
+        "rationale": "Senior TA Manager with 3 form fills, highest intent weight",
+        "evidence": [
+          "form_fills=3",
+          "weighted_score=43.0",
+          "stage=opportunity"
+        ]
+      },
+      {
+        "contact_id": "tnguyen@ninjavan.co",
+        "score": 88,
+        "rationale": "Sales qualified lead with 5 opens, strong recency",
+        "evidence": [
+          "opens=5",
+          "stage=salesqualifiedlead",
+          "weighted_score=13.5"
+        ]
+      },
+      {
+        "contact_id": "nisha.kulkarni@hcltech.com",
+        "score": 85,
+        "rationale": "Sales qualified lead with 4 opens, 3 clicks, 1 form fill",
+        "evidence": [
+          "opens=4",
+          "clicks=3",
+          "stage=salesqualifiedlead"
+        ]
+      },
+      {
+        "contact_id": "nalsayed@emirates.com",
+        "score": 82,
+        "rationale": "HR Manager with 2 form fills, active Emirates engagement",
+        "evidence": [
+          "form_fills=2",
+          "title=HR Manager",
+          "weighted_score=24.5"
+        ]
+      },
+      {
+        "contact_id": "abose@greythr.com",
+        "score": 80,
+        "rationale": "Sales qualified lead with 4 opens, 4 clicks, 1 form fill",
+        "evidence": [
+          "opens=4",
+          "clicks=4",
+          "stage=salesqualifiedlead"
+        ]
+      },
+      {
+        "contact_id": "ajay.kulkarni@icicibank.com",
+        "score": 78,
+        "rationale": "2 form fills indicate strong intent, lead stage",
+        "evidence": [
+          "form_fills=2",
+          "stage=lead",
+          "weighted_score=26.5"
+        ]
+      },
+      {
+        "contact_id": "divyar@hdfcbank.com",
+        "score": 75,
+        "rationale": "Marketing qualified lead with 1 click, 4 pageviews",
+        "evidence": [
+          "clicks=4",
+          "pageviews=1",
+          "stage=marketingqualifiedlead"
+        ]
+      },
+      {
+        "contact_id": "divya@hdfcbank.com",
+        "score": 73,
+        "rationale": "Marketing qualified lead with 2 clicks, 1 open",
+        "evidence": [
+          "clicks=1",
+          "opens=2",
+          "stage=marketingqualifiedlead"
+        ]
+      },
+      {
+        "contact_id": "anjalik@infosys.com",
+        "score": 70,
+        "rationale": "Senior HRBP with 3 pageviews, marketing qualified status",
+        "evidence": [
+          "title=Senior HRBP",
+          "pageviews=3",
+          "stage=marketingqualifiedlead"
+        ]
+      },
+      {
+        "contact_id": "snehad@infosys.com",
+        "score": 68,
+        "rationale": "Marketing qualified lead with 3 clicks, 1 form fill",
+        "evidence": [
+          "clicks=3",
+          "stage=marketingqualifiedlead",
+          "weighted_score=21.0"
+        ]
+      },
+      {
+        "contact_id": "omar.alfarsi@landmarkgroup.com",
+        "score": 65,
+        "rationale": "Lead stage with 1 click, 2 form fills, recent engagement",
+        "evidence": [
+          "clicks=1",
+          "form_fills=2",
+          "last_engaged=2026-09-12"
+        ]
+      },
+      {
+        "contact_id": "sanjayg@keka.com",
+        "score": 63,
+        "rationale": "Lead stage with 1 click, 2 pageviews, 1 form fill",
+        "evidence": [
+          "clicks=1",
+          "pageviews=2",
+          "stage=lead"
+        ]
+      },
+      {
+        "contact_id": "amit@keka.com",
+        "score": 60,
+        "rationale": "Lead stage with 3 clicks, 1 form fill, no opens",
+        "evidence": [
+          "clicks=3",
+          "stage=lead",
+          "form_fills=1"
+        ]
+      },
+      {
+        "contact_id": "yousef@emirates.com",
+        "score": 58,
+        "rationale": "Lead stage with 2 clicks, 1 form fill, recent activity",
+        "evidence": [
+          "clicks=2",
+          "form_fills=1",
+          "last_engaged=2026-08-23"
+        ]
+      },
+      {
+        "contact_id": "poojak@icicibank.com",
+        "score": 55,
+        "rationale": "Lead stage with 1 open, 1 form fill, ICICI bank",
+        "evidence": [
+          "opens=1",
+          "form_fills=1",
+          "stage=lead"
+        ]
+      },
+      {
+        "contact_id": "sanjay.rao@hdfcbank.com",
+        "score": 52,
+        "rationale": "Marketing qualified lead with 3 clicks, no form fills",
+        "evidence": [
+          "clicks=3",
+          "stage=marketingqualifiedlead"
+        ]
+      },
+      {
+        "contact_id": "rgunawan@grab.com",
+        "score": 50,
+        "rationale": "Marketing qualified lead with 2 opens, 1 click, 1 form fill",
+        "evidence": [
+          "opens=2",
+          "clicks=1",
+          "stage=marketingqualifiedlead"
+        ]
+      },
+      {
+        "contact_id": "ppillai@techmahindra.com",
+        "score": 48,
+        "rationale": "Senior HRBP title, lead stage, 2 clicks, no form fills",
+        "evidence": [
+          "title=Senior HRBP",
+          "clicks=2",
+          "stage=lead"
+        ]
+      },
+      {
+        "contact_id": "lalharthi@emirates.com",
+        "score": 45,
+        "rationale": "Lead stage with 2 clicks, 2 pageviews, no form fills",
+        "evidence": [
+          "clicks=1",
+          "pageviews=2",
+          "stage=lead"
+        ]
+      },
+      {
+        "contact_id": "amandat@datadoghq.com",
+        "score": 42,
+        "rationale": "Unknown stage with 1 form fill, no clicks or opens",
+        "evidence": [
+          "form_fills=1",
+          "stage=unknown"
+        ]
+      },
+      {
+        "contact_id": "priya.malhotra@techmahindra.com",
+        "score": 40,
+        "rationale": "Unknown stage with 1 form fill, no clicks or pageviews",
+        "evidence": [
+          "form_fills=1",
+          "stage=unknown"
+        ]
+      },
+      {
+        "contact_id": "fatimah@grab.com",
+        "score": 38,
+        "rationale": "Lead stage with 2 clicks, 1 form fill, no pageviews",
+        "evidence": [
+          "clicks=2",
+          "form_fills=1",
+          "stage=lead"
+        ]
+      },
+      {
+        "contact_id": "eko@grab.com",
+        "score": 35,
+        "rationale": "Marketing qualified lead with 3 opens, 1 click, 1 form fill",
+        "evidence": [
+          "opens=3",
+          "clicks=1",
+          "stage=marketingqualifiedlead"
+        ]
+      },
+      {
+        "contact_id": "siriporn@ninjavan.co",
+        "score": 30,
+        "rationale": "Marketing qualified lead with 2 opens, 2 pageviews, 1 form fill",
+        "evidence": [
+          "opens=2",
+          "pageviews=2",
+          "stage=marketingqualifiedlead"
+        ]
+      },
+      {
+        "contact_id": "emilyw@datadoghq.com",
+        "score": 25,
+        "rationale": "Lead stage with 2 form fills, no clicks or opens",
+        "evidence": [
+          "form_fills=2",
+          "stage=lead"
+        ]
+      },
+      {
+        "contact_id": "robert.johnson@datadoghq.com",
+        "score": 20,
+        "rationale": "Marketing qualified lead with 2 clicks, 2 pageviews, 1 form fill",
+        "evidence": [
+          "clicks=3",
+          "pageviews=2",
+          "stage=marketingqualifiedlead"
+        ]
+      }
+    ],
+    "movement_narrative": "In the last seven days, the pipeline saw six transitions, all seeded, concentrated in marketingqualifiedlead (two), salesqualifiedlead (two), and opportunity (one), with two contacts driving the movement: Vikramn@darwinbox.com moving to lead and Abose@greythr.com progressing from marketingqualifiedlead to salesqualifiedlead on 2026-09-05. This represents a continuation of the trend seen over the prior 14 days, where ten transitions\u2014also all seeded\u2014showed steady progression across lead, marketingqualifiedlead, and salesqualifiedlead stages, indicating consistent nurturing without acceleration. Over the full 30-day window, 88 seeded transitions reveal a broad initial influx into the lead stage (63 contacts), but only a small fraction advanced beyond marketingqualifiedlead, with just five reaching salesqualifiedlead and one opportunity created, signaling a stall in mid-to-late funnel conversion despite strong top-of-funnel volume. The accounts carrying recent movement include Vikramn@darwinbox.com (Darwinbox) moving to lead, Abose@greythr.com (Greythr) advancing from marketingqualifiedlead to salesqualifiedlead, and Dsmith@chewy.com (Chewy) progressing from marketingqualifiedlead to salesqualifiedlead and finally to opportunity on 2026-09-12. Meanwhile, numerous engaged contacts such as Vikkram@zomato.com, Aiyer@nykaa.com, Meerap@ril.com, Amalhotra@havells.com, Snehad@infosys.com, Anjalik@infosys.com, Divya@hdfcbank.com, Ejohnson@chewy.com, Tnguyen@ninjavan.co, Neha.rao@havells.com, Divya.pillai@yahoo.com, Landerson@rippling.com, Eko@grab.com, Ahmed.alsayed@hotmail.com, Divyar@hdfcbank.com, Huy@sea.com, Siti@ocbc.com, Nalsayed@emirates.com, Nishap@rediffmail.com, Robert.johnson@datadoghq.com, Snehad@infosys.com (again), Nsharma@drreddys.com, Mkrishnan@darwinbox.com, Sneha@freshworks.com, Amit@apollohospitals.com, Dnair@infosys.com, and others who engaged but never changed stage\u2014remaining in lead or marketingqualifiedlead\u2014have not moved, highlighting a gap between engagement and progression. All movement described is sourced from seeded engagements, not organic CRM history, to avoid misattribution.",
+    "committees": [
+      {
+        "company": "Chewy",
+        "contacts": [
+          "dsmith@chewy.com",
+          "ejohnson@chewy.com"
+        ],
+        "why": "The TA Manager (dsmith@chewy.com) shows deep engagement with 5 pageviews and 3 form fills at opportunity stage, while ejohnson@chewy.com exhibits strong click behavior (4 clicks) and 2 form fills at salesqualifiedlead, indicating coordinated evaluation of HR AI solutions."
+      },
+      {
+        "company": "Datadog",
+        "contacts": [
+          "emilyw@datadoghq.com",
+          "robert.johnson@datadoghq.com",
+          "amandat@datadoghq.com"
+        ],
+        "why": "Robert Johnson (Senior HRBP) drives engagement as a marketingqualifiedlead with 2 opens, 3 clicks, and 2 pageviews, supported by emilyw@datadoghq.com\u2019s consistent low-touch activity and amandat@datadoghq.com\u2019s single pageview, suggesting a structured HR-led evaluation."
+      },
+      {
+        "company": "Hdfcbank",
+        "contacts": [
+          "divyar@hdfcbank.com",
+          "divya@hdfcbank.com",
+          "sanjay.rao@hdfcbank.com"
+        ],
+        "why": "All three contacts are marketingqualifiedleads with overlapping activity \u2014 divyar@hdfcbank.com leads in clicks (4), divya@hdfcbank.com in pageviews (2), and sanjay.rao@hdfcbank.com in opens and clicks (3 each), indicating a synchronized HR team evaluating the same AI HR content."
+      },
+      {
+        "company": "Emirates Group",
+        "contacts": [
+          "nalsayed@emirates.com",
+          "yousef@emirates.com",
+          "lalharthi@emirates.com"
+        ],
+        "why": "Nalsayed (HR Manager) shows strong intent as a lead with 2 form fills and balanced engagement, while yousef@emirates.com and lalharthi@emirates.com demonstrate complementary click and pageview patterns, suggesting an HR team collectively assessing the webinar\u2019s relevance."
+      }
+    ],
+    "top_contacts": [
+      "dsmith@chewy.com",
+      "tnguyen@ninjavan.co",
+      "nisha.kulkarni@hcltech.com",
+      "nalsayed@emirates.com",
+      "abose@greythr.com"
+    ],
+    "top_accounts": [
+      "Chewy",
+      "Datadog",
+      "Hdfcbank",
+      "Emirates Group",
+      "Infosys"
+    ],
+    "movement_counts": {
+      "7d": 6,
+      "14d": 10,
+      "30d": 88
+    },
+    "stalled_contacts": [
+      "vikram@zomato.com",
+      "aiyer@nykaa.com",
+      "meerap@ril.com",
+      "amalhotra@havells.com",
+      "snehad@infosys.com",
+      "anjalik@infosys.com",
+      "divya@hdfcbank.com",
+      "ejohnson@chewy.com",
+      "tnguyen@ninjavan.co",
+      "neha.rao@havells.com",
+      "divya.pillai@yahoo.com",
+      "landerson@rippling.com",
+      "eko@grab.com",
+      "ahmed.alsayed@hotmail.com",
+      "divyar@hdfcbank.com",
+      "huy@sea.com",
+      "siti@ocbc.com",
+      "nalsayed@emirates.com",
+      "nishap@rediffmail.com",
+      "robert.johnson@datadoghq.com",
+      "snehad@infosys.com",
+      "nsharma@drreddys.com",
+      "mkrishnan@darwinbox.com",
+      "sneha@freshworks.com",
+      "amit@apollohospitals.com",
+      "dnair@infosys.com",
+      "abose@greythr.com",
+      "dsmith@chewy.com",
+      "nisha.kulkarni@hcltech.com"
+    ],
+    "rejected_candidates": [
+      {
+        "contact": "abose@greythr.com",
+        "why": "Exactly at threshold (10 interactions) but moderate engagement (weighted_score=25.0) and already in 'salesqualifiedlead' \u2014 represents expected progression, not anomaly; no stall or overperformance relative to score."
+      },
+      {
+        "contact": "nisha.kulkarni@hcltech.com",
+        "why": "Exactly at threshold (10 interactions) with weighted_score=23.0 and in 'salesqualifiedlead' \u2014 consistent with expected nurture path; no evidence of stall or abnormal intent."
+      }
+    ],
+    "not_committees": [
+      {
+        "company": "Grab",
+        "why": "All three contacts have unknown titles and similar, low-to-moderate engagement patterns (1-2 form fills, 1-2 clicks) with no clear role differentiation or buying signal hierarchy, suggesting coincidental attendance rather than a coordinated committee."
+      },
+      {
+        "company": "Icicibank",
+        "why": "Only two contacts with unknown titles; one shows strong form fill activity (2) but no clear role or title to indicate economic buyer or evaluator, and the other has minimal engagement \u2014 insufficient evidence of a structured buying team."
+      },
+      {
+        "company": "Keka",
+        "why": "Both contacts have unknown titles and are at lead stage with modest, non-differentiated engagement (amit@keka.com: 3 clicks; sanjayg@keka.com: 2 pageviews), lacking role-based specialization or escalation signals needed for a committee."
+      },
+      {
+        "company": "Ninja Van",
+        "why": "While one contact is an HR Manager (tnguyen@ninjavan.co) at salesqualifiedlead, the other is a marketingqualifiedlead with unknown title and lower engagement \u2014 the asymmetry in stage and title depth does not reflect a balanced, multi-role evaluation team."
+      },
+      {
+        "company": "Tech Mahindra",
+        "why": "Only one contact has a defined title (Senior HRBP) but is at lead stage with minimal engagement (2 clicks, 1 pageview); the others are unknown title and low activity, showing no evidence of a multi-stakeholder buying process."
+      },
+      {
+        "company": "Infosys",
+        "why": "Despite three contacts, only one has a defined title (Senior HRBP) and another is a Founder \u2014 the Founder\u2019s low engagement (5 score, 0 form fills) and lack of HR-specific role alignment suggest the Founder\u2019s attendance is incidental, not part of an HR buying committee."
+      }
+    ],
+    "shape_notes": [],
+    "validator": {
+      "agreements": 3,
+      "disagreements": [
+        {
+          "field": "top_contacts_top5",
+          "deterministic": [
+            "dsmith@chewy.com",
+            "ejohnson@chewy.com",
+            "ajay.kulkarni@icicibank.com",
+            "abose@greythr.com",
+            "nalsayed@emirates.com"
+          ],
+          "llm": [
+            "dsmith@chewy.com",
+            "tnguyen@ninjavan.co",
+            "nisha.kulkarni@hcltech.com",
+            "nalsayed@emirates.com",
+            "abose@greythr.com"
+          ]
+        },
+        {
+          "field": "top_accounts_top5",
+          "deterministic": [
+            "Chewy",
+            "Datadog",
+            "Hdfcbank",
+            "Grab",
+            "Emirates Group"
+          ],
+          "llm": [
+            "Chewy",
+            "Datadog",
+            "Hdfcbank",
+            "Emirates Group",
+            "Infosys"
+          ]
+        },
+        {
+          "field": "committee_companies",
+          "deterministic": [
+            "Chewy",
+            "Darwinbox",
+            "Datadog",
+            "Emirates Group",
+            "Grab",
+            "Hdfcbank",
+            "Icicibank",
+            "Infosys",
+            "Landmarkgroup",
+            "Tech Mahindra"
+          ],
+          "llm": [
+            "Chewy",
+            "Datadog",
+            "Emirates Group",
+            "Hdfcbank"
+          ]
+        },
+        {
+          "field": "anomaly_contacts",
+          "deterministic": [
+            "abose@greythr.com",
+            "dsmith@chewy.com",
+            "nisha.kulkarni@hcltech.com",
+            "tnguyen@ninjavan.co"
+          ],
+          "llm": [
+            "dsmith@chewy.com",
+            "tnguyen@ninjavan.co"
+          ]
+        }
+      ]
+    }
+  },
+  "notes": []
+}

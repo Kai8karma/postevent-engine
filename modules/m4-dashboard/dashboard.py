@@ -120,7 +120,7 @@ EMAIL_PROPERTIES = ["hs_email_subject", "hs_timestamp"]
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 LLM_ENV_PATH = Path.home() / ".config" / "postevent" / "llm.env"
 DEFAULT_MODEL = "nvidia/nemotron-3-super-120b-a12b:free"
-DEFAULT_BUDGET = 3
+DEFAULT_BUDGET = 4
 MAX_PROMPT_CONTACTS = 30
 MAX_PROMPT_ACCOUNTS = 15
 MAX_PROMPT_TRANSITIONS = 40
@@ -1270,7 +1270,7 @@ def _post(key: str, model: str, prompt: str, max_tokens: int, timeout: int):
 
 
 def call_llm(prompt: str, purpose: str, ledger: LLMLedger, max_tokens: int = 4000):
-    """Single chokepoint. Budget-checked, deadline-bounded, one retry on 429/5xx,
+    """Single chokepoint. Budget-checked, deadline-bounded, up to two retries on 429/5xx with backoff, then the next model in OPENROUTER_MODEL's comma list,
     one receipt row per HTTP attempt (model, prompt chars, tokens, latency, status).
     Fails loud -- never returns a stub."""
     key = openrouter_key()
@@ -1281,7 +1281,7 @@ def call_llm(prompt: str, purpose: str, ledger: LLMLedger, max_tokens: int = 400
     timeout = deadline_seconds()
     last = None
     for model in models_to_try():
-        for attempt in (1, 2):
+        for attempt in (1, 2, 3):
             started = time.monotonic()
             try:
                 content, status, usage = _post(key, model, prompt, max_tokens, timeout)
@@ -1291,9 +1291,9 @@ def call_llm(prompt: str, purpose: str, ledger: LLMLedger, max_tokens: int = 400
                               latency_ms=int((time.monotonic() - started) * 1000),
                               http_status=_status_from_error(str(e)), error=str(e)[:300])
                 last = e
-                if e.transient and attempt == 1:
-                    print(f"[llm] {purpose}: {e} -- one retry", file=sys.stderr)
-                    time.sleep(5)
+                if e.transient and attempt < 3:
+                    print(f"[llm] {purpose}: {e} -- retry {attempt}/2 after {5 * attempt}s", file=sys.stderr)
+                    time.sleep(5 * attempt)
                     continue
                 break
             ledger.record(model=model, purpose=purpose, attempt=attempt, ok=True,
@@ -1370,8 +1370,10 @@ def build_llm_prompts(det: dict, event: dict) -> list:
     event_block = json.dumps({"name": event.get("name"), "date": event.get("date"),
                               "host_company": event.get("host_company"),
                               "slug": event.get("slug")}, indent=2)
-    p1 = fill((PROMPTS_DIR / "anomalies_and_scores.md").read_text(encoding="utf-8"),
+    p1 = fill((PROMPTS_DIR / "anomalies.md").read_text(encoding="utf-8"),
               EVENT=event_block, CANDIDATES=candidates_block(det), CONTACT_ROWS=contact_rows_block(det))
+    p1b = fill((PROMPTS_DIR / "interest_scores.md").read_text(encoding="utf-8"),
+               EVENT=event_block, CONTACT_ROWS=contact_rows_block(det))
     p2 = fill((PROMPTS_DIR / "movement_narrative.md").read_text(encoding="utf-8"),
               EVENT=event_block,
               WINDOWS=json.dumps(det["movement"], indent=2),
@@ -1381,7 +1383,7 @@ def build_llm_prompts(det: dict, event: dict) -> list:
                                  "engaged_contacts": det["counts"]["engaged_contacts"]}, indent=2))
     p3 = fill((PROMPTS_DIR / "committees.md").read_text(encoding="utf-8"),
               EVENT=event_block, ACCOUNT_ROWS=accounts_block(det))
-    return [("anomalies_and_scores", p1), ("movement_narrative", p2), ("committees", p3)]
+    return [("anomalies", p1), ("interest_scores", p1b), ("movement_narrative", p2), ("committees", p3)]
 
 
 def build_validator(det: dict, llm: dict) -> dict:
@@ -1438,6 +1440,36 @@ def build_validator(det: dict, llm: dict) -> dict:
     return {"agreements": agreements, "disagreements": disagreements}
 
 
+def coerce_llm_shape(purpose: str, parsed, notes: list) -> dict:
+    """The prompts ask for one JSON object per purpose; smaller models sometimes return the
+    inner list bare, or a string. Map what came back onto the expected keys by inspecting the
+    items, and record every coercion so analysis.json shows the model did not follow the shape.
+    Nothing is invented: an unrecognisable payload maps to empty lists and a note."""
+    if isinstance(parsed, dict):
+        return parsed
+    if isinstance(parsed, list):
+        items = [x for x in parsed if isinstance(x, dict)]
+        keys = set().union(*(x.keys() for x in items)) if items else set()
+        if purpose == "anomalies":
+            out = {"anomalies": items} if keys & {"metric", "evidence", "evidence_rows", "anomaly", "contact"} else {}
+        elif purpose == "interest_scores":
+            out = {"interest_scores": items} if keys & {"score", "interest_score"} else {}
+        elif purpose == "committees":
+            out = {"committees": items} if keys & {"company", "contacts"} else {}
+        elif purpose == "movement_narrative":
+            text = " ".join(x for x in parsed if isinstance(x, str)).strip()
+            out = {"narrative": text} if text else {}
+        else:
+            out = {}
+        notes.append(f"{purpose}: model returned a JSON list, mapped to {sorted(out) or 'nothing'}")
+        return out
+    if isinstance(parsed, str) and purpose == "movement_narrative" and parsed.strip():
+        notes.append("movement_narrative: model returned a bare string, used as the narrative")
+        return {"narrative": parsed.strip()}
+    notes.append(f"{purpose}: model returned {type(parsed).__name__}, ignored")
+    return {}
+
+
 def run_llm_analysis(det: dict, event: dict, ledger: LLMLedger) -> tuple:
     """Up to `ledger.budget` calls over the snapshot. Returns (llm_block, model)."""
     llm = {"anomalies": [], "interest_scores": [], "movement_narrative": "", "committees": [],
@@ -1450,15 +1482,19 @@ def run_llm_analysis(det: dict, event: dict, ledger: LLMLedger) -> tuple:
             break
         content, model = call_llm(prompt, purpose, ledger)
         model_used = model_used or model
+        if model not in llm.setdefault("models_used", []):
+            llm["models_used"].append(model)
         try:
             parsed = json.loads(strip_json(content))
         except ValueError as e:
             raise M4Error(f"'{purpose}' returned unparseable JSON: {e}")
-        if purpose == "anomalies_and_scores":
+        parsed = coerce_llm_shape(purpose, parsed, llm.setdefault("shape_notes", []))
+        if purpose == "anomalies":
             llm["anomalies"] = parsed.get("anomalies", [])
+            llm["rejected_candidates"] = parsed.get("rejected_candidates", [])
+        elif purpose == "interest_scores":
             llm["interest_scores"] = parsed.get("interest_scores", [])
             llm["top_contacts"] = parsed.get("top_contacts", [])
-            llm["rejected_candidates"] = parsed.get("rejected_candidates", [])
         elif purpose == "movement_narrative":
             llm["movement_narrative"] = parsed.get("narrative", "")
             llm["movement_counts"] = parsed.get("counts", {})
@@ -1486,7 +1522,14 @@ def phase_analyze(ctx) -> dict:
     elif not openrouter_key():
         reason = "no OPENROUTER_API_KEY (env or ~/.config/postevent/llm.env)"
     if reason is None:
-        llm_block, model = run_llm_analysis(det, event, ledger)
+        try:
+            llm_block, model = run_llm_analysis(det, event, ledger)
+        except Exception:
+            # Keep the receipt tape even when the analysis fails: every HTTP attempt
+            # made so far is evidence, and the failure itself must not erase it.
+            write_json(ctx["out"] / "receipts" / "m4_llm_calls.json",
+                       ledger.payload("live-failed", None))
+            raise
         llm_block["validator"] = build_validator(det, llm_block)
         lane, narrative_source = "live", "live"
         if not (llm_block.get("movement_narrative") or "").strip():

@@ -1,0 +1,1673 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lead Intelligence Dashboard</title>
+<style>
+  :root{
+    --bg:#f5f6f8; --surface:#ffffff; --surface-alt:#eef0f4; --border:#e1e4ea;
+    --text:#161922; --text-muted:#5b6270; --accent:#2554ff; --accent-soft:#e8edff;
+    --good:#157a3d; --good-soft:#e7f6ec; --warn:#b45309; --warn-soft:#fdf1df;
+    --danger:#b91c1c; --danger-soft:#fbe9e9;
+    --shadow:0 1px 2px rgba(16,20,30,.04), 0 4px 14px rgba(16,20,30,.05);
+    --radius:10px;
+    --mono: "SFMono-Regular", ui-monospace, Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0b0d13; --surface:#12151d; --surface-alt:#171b25; --border:#262b38;
+      --text:#e7e9ef; --text-muted:#98a0b3; --accent:#6f93ff; --accent-soft:#182140;
+      --good:#34d399; --good-soft:#0f2a20; --warn:#fbbf24; --warn-soft:#2c2107;
+      --danger:#f87171; --danger-soft:#2c1414;
+      --shadow:0 1px 2px rgba(0,0,0,.5), 0 4px 16px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--sans);}
+  body{padding:0 0 64px;}
+  a{color:var(--accent);}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+  header.top{background:var(--surface);border-bottom:1px solid var(--border);padding:22px 0;}
+  header.top .wrap{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:16px;}
+  .event-meta h1{font-size:19px;margin:0 0 4px;font-weight:650;letter-spacing:-.01em;}
+  .event-meta .sub{color:var(--text-muted);font-size:13px;}
+  .speaker-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+  .chip{
+    font-size:11.5px;padding:4px 9px;border-radius:999px;background:var(--surface-alt);
+    border:1px solid var(--border);color:var(--text-muted);white-space:nowrap;
+  }
+  .gen-meta{text-align:right;font-size:12px;color:var(--text-muted);white-space:nowrap;}
+  .gen-meta code{font-family:var(--mono);background:var(--surface-alt);padding:1px 5px;border-radius:4px;}
+
+  section{padding:28px 0;}
+  section.divider{border-top:1px solid var(--border);}
+  h2.section-title{
+    font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);
+    margin:0 0 14px;font-weight:650;
+  }
+  .card{
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    box-shadow:var(--shadow);
+  }
+  .note{font-size:11.5px;color:var(--text-muted);line-height:1.5;max-width:860px;margin:-6px 0 14px;}
+
+  /* KPI row */
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;}
+  .kpi{padding:16px 16px 14px;}
+  .kpi .val{font-size:26px;font-weight:700;letter-spacing:-.02em;line-height:1.1;}
+  .kpi .label{font-size:12px;color:var(--text-muted);margin-top:5px;}
+  .kpi .delta{font-size:11px;margin-top:6px;color:var(--good);}
+
+  /* Funnel */
+  .funnel-wrap{display:flex;gap:28px;flex-wrap:wrap;align-items:stretch;}
+  .funnel-svg-box{flex:1 1 480px;min-width:320px;}
+  .funnel-side{flex:0 0 220px;display:flex;flex-direction:column;gap:10px;justify-content:center;}
+  .funnel-stat{padding:12px 14px;}
+  .funnel-stat .n{font-size:20px;font-weight:700;}
+  .funnel-stat .l{font-size:11.5px;color:var(--text-muted);}
+  svg text{font-family:var(--sans);fill:var(--text);}
+  .funnel-count{font-weight:700;}
+  .funnel-label{fill:var(--text-muted);font-size:12px;}
+  .funnel-pct{fill:var(--text-muted);font-size:11px;}
+
+  /* tables */
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{
+    text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;
+    color:var(--text-muted);font-weight:600;padding:10px 12px;border-bottom:1px solid var(--border);
+  }
+  td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top;}
+  tr:last-child td{border-bottom:none;}
+  .table-scroll{overflow-x:auto;}
+  .mono{font-family:var(--mono);font-size:12px;color:var(--text-muted);}
+  .badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;font-weight:600;}
+  .badge.committee{background:var(--accent-soft);color:var(--accent);}
+  .badge.stage{background:var(--surface-alt);color:var(--text-muted);border:1px solid var(--border);}
+  .badge.seeded{background:var(--warn-soft);color:var(--warn);}
+  .contact-pill{
+    display:inline-flex;align-items:center;gap:5px;font-size:11.5px;background:var(--surface-alt);
+    border:1px solid var(--border);border-radius:999px;padding:2px 8px 2px 6px;margin:2px 4px 2px 0;
+  }
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex:none;}
+  .score-bar-track{width:64px;height:6px;border-radius:4px;background:var(--surface-alt);overflow:hidden;display:inline-block;vertical-align:middle;margin-right:6px;}
+  .score-bar-fill{height:100%;background:var(--accent);}
+  .two-col{display:grid;grid-template-columns:1.6fr 1fr;gap:20px;align-items:start;}
+  @media (max-width:860px){ .two-col{grid-template-columns:1fr;} }
+  .rationale{font-style:italic;color:var(--text-muted);font-size:11.5px;line-height:1.45;margin-top:6px;}
+
+  /* committee grid */
+  .committee-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;}
+  .committee-card{padding:14px;}
+  .committee-card .acct{font-weight:650;font-size:13.5px;}
+  .committee-card .dom{color:var(--text-muted);font-size:11.5px;margin-bottom:8px;}
+  .committee-card .members{font-size:11.5px;color:var(--text-muted);line-height:1.6;}
+
+  /* movement */
+  .movement-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px;}
+  @media (max-width:480px){ .movement-grid{grid-template-columns:1fr;} }
+  .movement-card{padding:14px;}
+  .movement-card .n{font-size:22px;font-weight:700;}
+  .movement-card .l{font-size:11.5px;color:var(--text-muted);}
+  .movement-card .stages{margin-top:8px;font-size:11px;color:var(--text-muted);display:flex;flex-wrap:wrap;gap:6px;}
+  .sparkline-box{padding:16px;}
+
+  /* anomalies */
+  .anomaly-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px;}
+  .anomaly-card{padding:16px;border-left:3px solid var(--warn);}
+  .anomaly-card .head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+  .anomaly-card .who{font-weight:650;font-size:13.5px;}
+  .anomaly-card .co{font-size:12px;color:var(--text-muted);}
+  .anomaly-card .metrics{display:flex;gap:14px;font-size:11.5px;color:var(--text-muted);flex-wrap:wrap;margin-top:8px;}
+  .anomaly-card .evidence{margin-top:8px;font-size:11px;line-height:1.6;}
+  .status-pill{font-size:10.5px;font-weight:650;padding:2px 7px;border-radius:999px;}
+  .status-pill.progressed{background:var(--good-soft);color:var(--good);}
+  .status-pill.stalled{background:var(--danger-soft);color:var(--danger);}
+
+  /* narrative + validator */
+  .narrative-card{padding:20px 22px;}
+  .narrative-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;}
+  .narrative-head h2.section-title{margin:0;}
+  .source-badge{
+    display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:3px 9px;border-radius:999px;
+    background:var(--surface-alt);border:1px solid var(--border);color:var(--text-muted);
+  }
+  .source-badge .dot{width:6px;height:6px;border-radius:50%;}
+  .source-badge.live .dot{background:var(--good);}
+  .source-badge.rules .dot{background:var(--accent);}
+  .source-badge.seeded .dot{background:var(--warn);}
+  .source-badge.loading .dot{background:var(--text-muted);}
+  .narrative-body p{font-size:14px;line-height:1.65;margin:0 0 12px;}
+  .narrative-body p:last-child{margin-bottom:0;}
+  .refresh-btn{
+    font-size:11.5px;border:1px solid var(--border);background:var(--surface);color:var(--text-muted);
+    padding:4px 10px;border-radius:6px;cursor:pointer;
+  }
+  .refresh-btn:hover{color:var(--text);border-color:var(--accent);}
+  .refresh-btn:disabled{opacity:.6;cursor:default;}
+  .narrative-error{font-size:11px;color:var(--danger);max-width:300px;text-align:right;line-height:1.4;}
+  .validator-card{padding:16px 18px;margin-top:14px;}
+  .validator-card .n{font-weight:650;font-size:13px;}
+  .validator-row{font-size:11.5px;color:var(--text-muted);line-height:1.6;margin-top:6px;}
+
+  footer{padding:24px 0;text-align:center;color:var(--text-muted);font-size:11.5px;}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="event-meta">
+      <h1 id="event-name">—</h1>
+      <div class="sub" id="event-sub">—</div>
+      <div class="speaker-chips" id="speaker-chips"></div>
+    </div>
+    <div class="gen-meta">
+      Dashboard built <code id="generated-at">—</code><br>
+      Data as of <code id="as-of">—</code><br>
+      Data lane <code id="data-lane">—</code><br>
+      Engagement <code id="engagement-source">—</code>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section>
+    <h2 class="section-title">Overview</h2>
+    <div class="kpi-grid" id="kpi-grid"></div>
+  </section>
+
+  <section class="divider">
+    <h2 class="section-title">Attendee &rarr; MQL Conversion</h2>
+    <div class="card">
+      <div class="funnel-wrap" style="padding:20px;">
+        <div class="funnel-svg-box" id="funnel-svg"></div>
+        <div class="funnel-side" id="funnel-side"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="divider">
+    <h2 class="section-title">Top Engaged Accounts &amp; Contacts</h2>
+    <div class="two-col">
+      <div class="card table-scroll">
+        <table id="accounts-table">
+          <thead>
+            <tr><th>Account</th><th>Score</th><th>Engaged</th><th>Top contacts</th></tr>
+          </thead>
+          <tbody id="accounts-tbody"></tbody>
+        </table>
+      </div>
+      <div class="card table-scroll">
+        <table id="contacts-table">
+          <thead><tr><th>Contact</th><th>Stage</th><th>Score</th></tr></thead>
+          <tbody id="contacts-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="divider">
+    <h2 class="section-title">Buying Committee Map</h2>
+    <div class="note" id="committee-note"></div>
+    <div class="committee-grid" id="committee-grid"></div>
+  </section>
+
+  <section class="divider">
+    <h2 class="section-title">Lifecycle Movement &mdash; 7 / 14 / 30 days</h2>
+    <div class="movement-grid" id="movement-grid"></div>
+    <div class="card sparkline-box">
+      <div id="sparkline-svg"></div>
+    </div>
+  </section>
+
+  <section class="divider">
+    <h2 class="section-title">Anomaly Callouts</h2>
+    <div class="note" id="anomaly-threshold-note"></div>
+    <div class="anomaly-grid" id="anomaly-grid"></div>
+  </section>
+
+  <section class="divider">
+    <div class="card narrative-card">
+      <div class="narrative-head">
+        <h2 class="section-title">AI Narrative &mdash; stage movement</h2>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="narrative-error" id="narrative-error" hidden></span>
+          <span class="source-badge" id="narrative-badge"><span class="dot"></span><span id="narrative-badge-text">—</span></span>
+          <button class="refresh-btn" id="narrative-refresh">Regenerate</button>
+        </div>
+      </div>
+      <div class="narrative-body" id="narrative-body"></div>
+    </div>
+    <div class="card validator-card" id="validator-panel"></div>
+  </section>
+
+</main>
+
+<footer id="source-footer">Post-Event Engine &middot; Module 4</footer>
+
+<!-- The module API injects `window.NARRATIVE_ENDPOINT` (a string) before this block to
+     turn on refresh-on-load; with nothing injected it stays null and the page makes
+     zero network requests. -->
+<script id="narrative-endpoint">window.NARRATIVE_ENDPOINT = window.NARRATIVE_ENDPOINT || null;</script>
+<script type="application/json" id="dashboard-data">{
+  "generated_at": "2026-09-16T16:25:33",
+  "as_of": "2026-09-12T23:00:00",
+  "event": {
+    "name": "From Hype to High-Impact: How to Start and Scale AI in HR",
+    "slug": "darwinbox-ai-in-hr-2026-08-13",
+    "date": "2026-08-13",
+    "host_company": "Darwinbox",
+    "host_domain": "darwinbox.com",
+    "speakers": [
+      {
+        "name": "Q Hamirani",
+        "title": "Chief People Officer",
+        "company": "HighLevel"
+      },
+      {
+        "name": "Sudi Bjornstad Korba",
+        "title": "Senior Vice President of Sales, North America",
+        "company": "Darwinbox (host)"
+      }
+    ]
+  },
+  "lane": {
+    "data": "offline",
+    "narrative": "live",
+    "engagement": "fixture"
+  },
+  "source": {
+    "method": "offline",
+    "pulled_at": "2026-09-16T16:23:37",
+    "contacts": "fixture",
+    "notes": [
+      "offline lane: contacts, engagement counters and lifecycle history rebuilt from engagement.json, hubspot_existing.json and segments.json; no portal was contacted.",
+      "email_engagements is empty offline: the CRM `emails` objects M2 logs only exist in the portal, and this lane does not invent them.",
+      "region and owner are derived from config/icp.yaml's regions/owners tables -- the same routing M1 applies."
+    ]
+  },
+  "kpis": {
+    "contacts": 165,
+    "companies": 75,
+    "attendees": 75,
+    "engaged_contacts": 86,
+    "email_engagements": 0,
+    "mqls": 14,
+    "sqls": 6,
+    "mql_rate": 0.1867,
+    "mql_rate_pct": 18.7,
+    "committees": 10,
+    "anomalies": 4,
+    "movement_30d": 88
+  },
+  "funnel": [
+    {
+      "stage": "Tagged contacts",
+      "count": 165
+    },
+    {
+      "stage": "Attendees",
+      "count": 75
+    },
+    {
+      "stage": "Engaged post-event",
+      "count": 86
+    },
+    {
+      "stage": "MQL+",
+      "count": 14
+    },
+    {
+      "stage": "SQL+",
+      "count": 6
+    }
+  ],
+  "top_accounts": [
+    {
+      "company": "Chewy",
+      "domain": "chewy.com",
+      "score": 77.5,
+      "engaged_contacts": 2,
+      "known_contacts": 3,
+      "coverage_pct": 66.7,
+      "is_committee": true,
+      "contacts": [
+        {
+          "email": "dsmith@chewy.com",
+          "name": "David Smith",
+          "title": "TA Manager",
+          "stage": "opportunity",
+          "score": 43.0
+        },
+        {
+          "email": "ejohnson@chewy.com",
+          "name": "Ejohnson",
+          "title": "",
+          "stage": "salesqualifiedlead",
+          "score": 34.5
+        }
+      ]
+    },
+    {
+      "company": "Datadog",
+      "domain": "datadoghq.com",
+      "score": 55.0,
+      "engaged_contacts": 3,
+      "known_contacts": 3,
+      "coverage_pct": 100.0,
+      "is_committee": true,
+      "contacts": [
+        {
+          "email": "emilyw@datadoghq.com",
+          "name": "Emilyw",
+          "title": "",
+          "stage": "lead",
+          "score": 22.0
+        },
+        {
+          "email": "robert.johnson@datadoghq.com",
+          "name": "Robert Johnosn",
+          "title": "Senior HRBP",
+          "stage": "marketingqualifiedlead",
+          "score": 22.0
+        },
+        {
+          "email": "amandat@datadoghq.com",
+          "name": "Amandat",
+          "title": "",
+          "stage": "",
+          "score": 11.0
+        }
+      ]
+    },
+    {
+      "company": "Hdfcbank",
+      "domain": "hdfcbank.com",
+      "score": 51.0,
+      "engaged_contacts": 3,
+      "known_contacts": 4,
+      "coverage_pct": 75.0,
+      "is_committee": true,
+      "contacts": [
+        {
+          "email": "divyar@hdfcbank.com",
+          "name": "Divyar",
+          "title": "",
+          "stage": "marketingqualifiedlead",
+          "score": 23.5
+        },
+        {
+          "email": "divya@hdfcbank.com",
+          "name": "Divya",
+          "title": "",
+          "stage": "marketingqualifiedlead",
+          "score": 16.0
+        },
+        {
+          "email": "sanjay.rao@hdfcbank.com",
+          "name": "Sanjay Rao",
+          "title": "",
+          "stage": "marketingqualifiedlead",
+          "score": 11.5
+        }
+      ]
+    },
+    {
+      "company": "Grab",
+      "domain": "grab.com",
+      "score": 48.5,
+      "engaged_contacts": 3,
+      "known_contacts": 5,
+      "coverage_pct": 60.0,
+      "is_committee": true,
+      "contacts": [
+        {
+          "email": "fatimah@grab.com",
+          "name": "Fatimah",
+          "title": "",
+          "stage": "lead",
+          "score": 17.0
+        },
+        {
+          "email": "rgunawan@grab.com",
+          "name": "Rgunawan",
+          "title": "",
+          "stage": "marketingqualifiedlead",
+          "score": 16.0
+        },
+        {
+          "email": "eko@grab.com",
+          "name": "Eko",
+          "title": "",
+          "stage": "marketingqualifiedlead",
+          "score": 15.5
+        }
+      ]
+    },
+    {
+      "company": "Emirates Group",
+      "domain": "emirates.com",
+      "score": 47.0,
+      "engaged_contacts": 3,
+      "known_contacts": 6,
+      "coverage_pct": 50.0,
+      "is_committee": true,
+      "contacts": [
+        {
+          "email": "nalsayed@emirates.com",
+          "name": "Noura Al-Sayed",
+          "title": "HR Manager",
+          "stage": "lead",
+          "score": 24.5
+        },
+        {
+          "email": "yousef@emirates.com",
+          "name": "Yousef",
+          "title": "",
+          "stage": "lead",
+          "score": 16.5
+        },
+        {
+          "email": "lalharthi@emirates.com",
+          "name": "Lalharthi",
+          "title": "",
+          "stage": "lead",
+          "score": 6.0
+        }
+      ]
+    },
+    {
+      "company": "Infosys",
+      "domain": "infosys.com",
+      "score": 40.0,
+      "engaged_contacts": 3,
+      "known_contacts": 3,
+      "coverage_pct": 100.0,
+      "is_committee": true,
+      "contacts": [
+        {
+          "email": "snehad@infosys.com",
+          "name": "Snehad",
+          "title": "",
+          "stage": "marketingqualifiedlead",
+          "score": 21.0
+        },
+        {
+          "email": "anjalik@infosys.com",
+          "name": "Anjali Kapoor",
+          "title": "Senior HRBP",
+          "stage": "marketingqualifiedlead",
+          "score": 14.0
+        },
+        {
+          "email": "dnair@infosys.com",
+          "name": "Divya Nair",
+          "title": "Founder",
+          "stage": "lead",
+          "score": 5.0
+        }
+      ]
+    },
+    {
+      "company": "Icicibank",
+      "domain": "icicibank.com",
+      "score": 38.0,
+      "engaged_contacts": 2,
+      "known_contacts": 3,
+      "coverage_pct": 66.7,
+      "is_committee": true,
+      "contacts": [
+        {
+          "email": "ajay.kulkarni@icicibank.com",
+          "name": "Ajay Kulkarni",
+          "title": "",
+          "stage": "lead",
+          "score": 26.5
+        },
+        {
+          "email": "poojak@icicibank.com",
+          "name": "Poojak",
+          "title": "",
+          "stage": "lead",
+          "score": 11.5
+        }
+      ]
+    },
+    {
+      "company": "Keka",
+      "domain": "keka.com",
+      "score": 35.5,
+      "engaged_contacts": 2,
+      "known_contacts": 2,
+      "coverage_pct": 100.0,
+      "is_committee": true,
+      "contacts": [
+        {
+          "email": "amit@keka.com",
+          "name": "Amit",
+          "title": "",
+          "stage": "lead",
+          "score": 20.0
+        },
+        {
+          "email": "sanjayg@keka.com",
+          "name": "Sanjayg",
+          "title": "",
+          "stage": "lead",
+          "score": 15.5
+        }
+      ]
+    },
+    {
+      "company": "Ninja Van",
+      "domain": "ninjavan.co",
+      "score": 32.5,
+      "engaged_contacts": 2,
+      "known_contacts": 2,
+      "coverage_pct": 100.0,
+      "is_committee": true,
+      "contacts": [
+        {
+          "email": "siriporn@ninjavan.co",
+          "name": "Siriporn",
+          "title": "",
+          "stage": "marketingqualifiedlead",
+          "score": 19.0
+        },
+        {
+          "email": "tnguyen@ninjavan.co",
+          "name": "Thao Nguyen",
+          "title": "HR Manager",
+          "stage": "salesqualifiedlead",
+          "score": 13.5
+        }
+      ]
+    },
+    {
+      "company": "Tech Mahindra",
+      "domain": "techmahindra.com",
+      "score": 32.0,
+      "engaged_contacts": 3,
+      "known_contacts": 3,
+      "coverage_pct": 100.0,
+      "is_committee": true,
+      "contacts": [
+        {
+          "email": "ajay@techmahindra.com",
+          "name": "Ajay",
+          "title": "",
+          "stage": "lead",
+          "score": 14.5
+        },
+        {
+          "email": "priya.malhotra@techmahindra.com",
+          "name": "Priya Malhotra",
+          "title": "",
+          "stage": "",
+          "score": 10.5
+        },
+        {
+          "email": "ppillai@techmahindra.com",
+          "name": "Pirya Pillai",
+          "title": "Senior HRBP",
+          "stage": "lead",
+          "score": 7.0
+        }
+      ]
+    }
+  ],
+  "top_contacts": [
+    {
+      "email": "dsmith@chewy.com",
+      "name": "David Smith",
+      "title": "TA Manager",
+      "company": "Chewy",
+      "stage": "opportunity",
+      "score": 43.0,
+      "interactions": 14,
+      "rules_score": 100,
+      "llm_score": 96,
+      "llm_rationale": "Senior TA Manager with 3 form fills, highest intent weight"
+    },
+    {
+      "email": "ejohnson@chewy.com",
+      "name": "Ejohnson",
+      "title": "",
+      "company": "Chewy",
+      "stage": "salesqualifiedlead",
+      "score": 34.5,
+      "interactions": 9,
+      "rules_score": 80,
+      "llm_score": null,
+      "llm_rationale": null
+    },
+    {
+      "email": "ajay.kulkarni@icicibank.com",
+      "name": "Ajay Kulkarni",
+      "title": "",
+      "company": "Icicibank",
+      "stage": "lead",
+      "score": 26.5,
+      "interactions": 5,
+      "rules_score": 62,
+      "llm_score": 78,
+      "llm_rationale": "2 form fills indicate strong intent, lead stage"
+    },
+    {
+      "email": "abose@greythr.com",
+      "name": "Abose",
+      "title": "",
+      "company": "Greythr",
+      "stage": "salesqualifiedlead",
+      "score": 25.0,
+      "interactions": 10,
+      "rules_score": 58,
+      "llm_score": 80,
+      "llm_rationale": "Sales qualified lead with 4 opens, 4 clicks, 1 form fill"
+    },
+    {
+      "email": "nalsayed@emirates.com",
+      "name": "Noura Al-Sayed",
+      "title": "HR Manager",
+      "company": "Emirates Group",
+      "stage": "lead",
+      "score": 24.5,
+      "interactions": 5,
+      "rules_score": 57,
+      "llm_score": 82,
+      "llm_rationale": "HR Manager with 2 form fills, active Emirates engagement"
+    },
+    {
+      "email": "divyar@hdfcbank.com",
+      "name": "Divyar",
+      "title": "",
+      "company": "Hdfcbank",
+      "stage": "marketingqualifiedlead",
+      "score": 23.5,
+      "interactions": 7,
+      "rules_score": 55,
+      "llm_score": 75,
+      "llm_rationale": "Marketing qualified lead with 1 click, 4 pageviews"
+    },
+    {
+      "email": "nisha.kulkarni@hcltech.com",
+      "name": "Nisha Kulkarni",
+      "title": "",
+      "company": "Hcltech",
+      "stage": "salesqualifiedlead",
+      "score": 23.0,
+      "interactions": 10,
+      "rules_score": 53,
+      "llm_score": 85,
+      "llm_rationale": "Sales qualified lead with 4 opens, 3 clicks, 1 form fill"
+    },
+    {
+      "email": "omar.alfarsi@landmarkgroup.com",
+      "name": "Omar Alfarsi",
+      "title": "",
+      "company": "Landmarkgroup",
+      "stage": "lead",
+      "score": 23.0,
+      "interactions": 3,
+      "rules_score": 53,
+      "llm_score": 65,
+      "llm_rationale": "Lead stage with 1 click, 2 form fills, recent engagement"
+    },
+    {
+      "email": "emilyw@datadoghq.com",
+      "name": "Emilyw",
+      "title": "",
+      "company": "Datadog",
+      "stage": "lead",
+      "score": 22.0,
+      "interactions": 4,
+      "rules_score": 51,
+      "llm_score": 25,
+      "llm_rationale": "Lead stage with 2 form fills, no clicks or opens"
+    },
+    {
+      "email": "robert.johnson@datadoghq.com",
+      "name": "Robert Johnosn",
+      "title": "Senior HRBP",
+      "company": "Datadog",
+      "stage": "marketingqualifiedlead",
+      "score": 22.0,
+      "interactions": 8,
+      "rules_score": 51,
+      "llm_score": 20,
+      "llm_rationale": "Marketing qualified lead with 2 clicks, 2 pageviews, 1 form fill"
+    }
+  ],
+  "committees": [
+    {
+      "company": "Datadog",
+      "domain": "datadoghq.com",
+      "contacts": [
+        "emilyw@datadoghq.com",
+        "robert.johnson@datadoghq.com",
+        "amandat@datadoghq.com"
+      ],
+      "why": "Robert Johnson (Senior HRBP) drives engagement as a marketingqualifiedlead with 2 opens, 3 clicks, and 2 pageviews, supported by emilyw@datadoghq.com\u2019s consistent low-touch activity and amandat@datadoghq.com\u2019s single pageview, suggesting a structured HR-led evaluation.",
+      "why_source": "llm"
+    },
+    {
+      "company": "Hdfcbank",
+      "domain": "hdfcbank.com",
+      "contacts": [
+        "divyar@hdfcbank.com",
+        "divya@hdfcbank.com",
+        "sanjay.rao@hdfcbank.com"
+      ],
+      "why": "All three contacts are marketingqualifiedleads with overlapping activity \u2014 divyar@hdfcbank.com leads in clicks (4), divya@hdfcbank.com in pageviews (2), and sanjay.rao@hdfcbank.com in opens and clicks (3 each), indicating a synchronized HR team evaluating the same AI HR content.",
+      "why_source": "llm"
+    },
+    {
+      "company": "Grab",
+      "domain": "grab.com",
+      "contacts": [
+        "fatimah@grab.com",
+        "rgunawan@grab.com",
+        "eko@grab.com"
+      ],
+      "why": "3 engaged contacts at one account (60.0% of the known roster), combined weighted score 48.5",
+      "why_source": "rules"
+    },
+    {
+      "company": "Emirates Group",
+      "domain": "emirates.com",
+      "contacts": [
+        "nalsayed@emirates.com",
+        "yousef@emirates.com",
+        "lalharthi@emirates.com"
+      ],
+      "why": "Nalsayed (HR Manager) shows strong intent as a lead with 2 form fills and balanced engagement, while yousef@emirates.com and lalharthi@emirates.com demonstrate complementary click and pageview patterns, suggesting an HR team collectively assessing the webinar\u2019s relevance.",
+      "why_source": "llm"
+    },
+    {
+      "company": "Infosys",
+      "domain": "infosys.com",
+      "contacts": [
+        "snehad@infosys.com",
+        "anjalik@infosys.com",
+        "dnair@infosys.com"
+      ],
+      "why": "3 engaged contacts at one account (100.0% of the known roster), combined weighted score 40.0",
+      "why_source": "rules"
+    },
+    {
+      "company": "Tech Mahindra",
+      "domain": "techmahindra.com",
+      "contacts": [
+        "ajay@techmahindra.com",
+        "priya.malhotra@techmahindra.com",
+        "ppillai@techmahindra.com"
+      ],
+      "why": "3 engaged contacts at one account (100.0% of the known roster), combined weighted score 32.0",
+      "why_source": "rules"
+    },
+    {
+      "company": "Landmarkgroup",
+      "domain": "landmarkgroup.com",
+      "contacts": [
+        "omar.alfarsi@landmarkgroup.com",
+        "yalzaabi@landmarkgroup.com",
+        "laylaa@landmarkgroup.com"
+      ],
+      "why": "3 engaged contacts at one account (75.0% of the known roster), combined weighted score 29.0",
+      "why_source": "rules"
+    },
+    {
+      "company": "Darwinbox",
+      "domain": "darwinbox.com",
+      "contacts": [
+        "mkrishnan@darwinbox.com",
+        "vikramn@darwinbox.com",
+        "meeram@darwinbox.com"
+      ],
+      "why": "3 engaged contacts at one account (75.0% of the known roster), combined weighted score 18.5",
+      "why_source": "rules"
+    },
+    {
+      "company": "Chewy",
+      "domain": "chewy.com",
+      "contacts": [
+        "dsmith@chewy.com",
+        "ejohnson@chewy.com"
+      ],
+      "why": "The TA Manager (dsmith@chewy.com) shows deep engagement with 5 pageviews and 3 form fills at opportunity stage, while ejohnson@chewy.com exhibits strong click behavior (4 clicks) and 2 form fills at salesqualifiedlead, indicating coordinated evaluation of HR AI solutions.",
+      "why_source": "llm"
+    },
+    {
+      "company": "Icicibank",
+      "domain": "icicibank.com",
+      "contacts": [
+        "ajay.kulkarni@icicibank.com",
+        "poojak@icicibank.com"
+      ],
+      "why": "2 engaged contacts at one account (66.7% of the known roster), combined weighted score 38.0",
+      "why_source": "rules"
+    }
+  ],
+  "movement": {
+    "7d": {
+      "transitions": 6,
+      "contacts": 2,
+      "by_stage": {
+        "marketingqualifiedlead": 2,
+        "lead": 1,
+        "salesqualifiedlead": 2,
+        "opportunity": 1
+      },
+      "source_mix": {
+        "seeded": 6
+      },
+      "window_start": "2026-09-05T23:00:00",
+      "window_end": "2026-09-12T23:00:00"
+    },
+    "14d": {
+      "transitions": 10,
+      "contacts": 3,
+      "by_stage": {
+        "lead": 3,
+        "marketingqualifiedlead": 3,
+        "salesqualifiedlead": 3,
+        "opportunity": 1
+      },
+      "source_mix": {
+        "seeded": 10
+      },
+      "window_start": "2026-08-29T23:00:00",
+      "window_end": "2026-09-12T23:00:00"
+    },
+    "30d": {
+      "transitions": 88,
+      "contacts": 63,
+      "by_stage": {
+        "lead": 63,
+        "marketingqualifiedlead": 19,
+        "salesqualifiedlead": 5,
+        "opportunity": 1
+      },
+      "source_mix": {
+        "seeded": 88
+      },
+      "window_start": "2026-08-13T23:00:00",
+      "window_end": "2026-09-12T23:00:00"
+    }
+  },
+  "movement_timeline": [
+    {
+      "date": "2026-08-16",
+      "count": 12
+    },
+    {
+      "date": "2026-08-17",
+      "count": 7
+    },
+    {
+      "date": "2026-08-18",
+      "count": 16
+    },
+    {
+      "date": "2026-08-19",
+      "count": 13
+    },
+    {
+      "date": "2026-08-20",
+      "count": 17
+    },
+    {
+      "date": "2026-08-21",
+      "count": 5
+    },
+    {
+      "date": "2026-08-22",
+      "count": 3
+    },
+    {
+      "date": "2026-08-23",
+      "count": 2
+    },
+    {
+      "date": "2026-08-24",
+      "count": 2
+    },
+    {
+      "date": "2026-08-25",
+      "count": 1
+    },
+    {
+      "date": "2026-08-30",
+      "count": 1
+    },
+    {
+      "date": "2026-09-02",
+      "count": 1
+    },
+    {
+      "date": "2026-09-04",
+      "count": 1
+    },
+    {
+      "date": "2026-09-05",
+      "count": 1
+    },
+    {
+      "date": "2026-09-08",
+      "count": 2
+    },
+    {
+      "date": "2026-09-10",
+      "count": 2
+    },
+    {
+      "date": "2026-09-12",
+      "count": 2
+    }
+  ],
+  "anomalies": [
+    {
+      "contact": "dsmith@chewy.com",
+      "company": "Chewy",
+      "metric": "engagement_interactions",
+      "value": 14,
+      "threshold": 10,
+      "evidence_rows": [
+        {
+          "metric": "opens",
+          "value": 4
+        },
+        {
+          "metric": "clicks",
+          "value": 2
+        },
+        {
+          "metric": "pageviews",
+          "value": 5
+        },
+        {
+          "metric": "form_fills",
+          "value": 3
+        },
+        {
+          "metric": "last_engaged",
+          "value": "2026-08-31T22:33:00"
+        },
+        {
+          "metric": "lifecycle_history",
+          "value": 4
+        },
+        {
+          "metric": "event:open",
+          "value": "thank-you-email",
+          "ts": "2026-08-31T03:59:00",
+          "source": "fixture"
+        },
+        {
+          "metric": "event:open",
+          "value": "thank-you-email",
+          "ts": "2026-08-31T04:19:00",
+          "source": "fixture"
+        },
+        {
+          "metric": "event:pageview",
+          "value": "/blog/start-and-scale-ai-in-hr",
+          "ts": "2026-08-31T05:09:00",
+          "source": "fixture"
+        },
+        {
+          "metric": "event:form_fill",
+          "value": "pricing-request-form",
+          "ts": "2026-08-31T06:38:00",
+          "source": "fixture"
+        },
+        {
+          "metric": "event:pageview",
+          "value": "/blog/start-and-scale-ai-in-hr",
+          "ts": "2026-08-31T08:02:00",
+          "source": "fixture"
+        },
+        {
+          "metric": "event:click",
+          "value": "cta-book-demo",
+          "ts": "2026-08-31T15:17:00",
+          "source": "fixture"
+        },
+        {
+          "metric": "event:pageview",
+          "value": "/product/darwinbox-cortex",
+          "ts": "2026-08-31T16:10:00",
+          "source": "fixture"
+        },
+        {
+          "metric": "event:pageview",
+          "value": "/blog/start-and-scale-ai-in-hr",
+          "ts": "2026-08-31T18:15:00",
+          "source": "fixture"
+        }
+      ],
+      "llm_rationale": "Highest engagement score (43.0) and 14 interactions, yet stalled in 'opportunity' stage with no progression to customer or closed-won despite peak activity post-event; SDR should prioritize immediate outreach to convert high-intent lead before momentum fades."
+    },
+    {
+      "contact": "abose@greythr.com",
+      "company": "Greythr",
+      "metric": "engagement_interactions",
+      "value": 10,
+      "threshold": 10,
+      "evidence_rows": [
+        {
+          "metric": "opens",
+          "value": 4
+        },
+        {
+          "metric": "clicks",
+          "value": 4
+        },
+        {
+          "metric": "pageviews",
+          "value": 1
+        },
+        {
+          "metric": "form_fills",
+          "value": 1
+        },
+        {
+          "metric": "last_engaged",
+          "value": "2026-08-26T22:48:00"
+        },
+        {
+          "metric": "lifecycle_history",
+          "value": 3
+        },
+        {
+          "metric": "event:click",
+          "value": "cta-book-demo",
+          "ts": "2026-08-26T00:40:00",
+          "source": "fixture"
+        },
+        {
+          "metric": "event:open",
+          "value": "thank-you-email",
+          "ts": "2026-08-26T01:54:00",
+          "source": "fixture"
+        },
+        {
+          "metric": "event:open",
+          "value": "thank-you-email",
+          "ts": "2026-08-26T03:48:00",
+          "source": "fixture"
+        },
+        {
+          "metric": "event:open",
+          "value": "thank-you-email",
+          "ts": "2026-08-26T06:37:00",
+          "source": "fixture"
+        },
+        {
+          "metric": "event:click",
+          "value": "cta-book-demo",
+          "ts": "2026-08-26T08:04:00",
+          "source": "fixture"
+        },
+        {
+          "metric": "event:open",
+          "value": "thank-you-email",
+          "ts": "2026-08-26T08:36:00",
+          "source": "fixture"
+        },
+        {
+          "metric": "event:form_fill",
+          "value": "contact-sales-form",
+          "ts": "2026-08-26T09:13:00",
+          "source": "fixture"
+        },
+        {
+          "metric": "event:click",
+          "value": "cta-watch-recording",
+          "ts": "2026-08-26T19:37:00",
+          "source": "fixture"
+        }
+      ],
+      "llm_rationale": null
+    },
+    {
+      "contact": "nisha.kulkarni@hcltech.com",
+      "company": "Hcltech",
+      "metric": "engagement_interactions",
+      "value": 10,
+      "threshold": 10,
+      "evidence_rows": [
+        {
+          "metric": "opens",
+          "value": 4
+        },
+        {
+          "metric": "clicks",
+          "value": 3
+        },
+        {
+          "metric": "pageviews",
+          "value": 2
+        },
+        {
+          "metric": "form_fills",
+          "value": 1
+        },
+        {
+          "metric": "last_engaged",
+          "value": "2026-09-03T23:22:00"
+        },
+        {
+          "metric": "lifecycle_history",
+          "value": 3
+        },
+        {
+          "metric": "event:click",
+          "value": "cta-book-demo",
+          "ts": "2026-09-03T05:41:00",
+          "source": "fixture"
+        },
+        {
+          "metric": "event:open",
+          "value": "no-show-catchup-email",
+          "ts": "2026-09-03T11:30:00",
+          "source": "fixture"
+        },
+        {
+          "metric": "event:click",
+          "value": "cta-watch-recording",
+          "ts": "2026-09-03T11:33:00",
+          "source": "fixture"
+        },
+        {
+          "metric": "event:open",
+          "value": "no-show-catchup-email",
+          "ts": "2026-09-03T14:31:00",
+          "source": "fixture"
+        },
+        {
+          "metric": "event:pageview",
+          "value": "/product/darwinbox-cortex",
+          "ts": "2026-09-03T16:32:00",
+          "source": "fixture"
+        },
+        {
+          "metric": "event:click",
+          "value": "cta-book-demo",
+          "ts": "2026-09-03T18:14:00",
+          "source": "fixture"
+        },
+        {
+          "metric": "event:pageview",
+          "value": "/blog/start-and-scale-ai-in-hr",
+          "ts": "2026-09-03T20:15:00",
+          "source": "fixture"
+        },
+        {
+          "metric": "event:form_fill",
+          "value": "pricing-request-form",
+          "ts": "2026-09-03T22:05:00",
+          "source": "fixture"
+        }
+      ],
+      "llm_rationale": null
+    },
+    {
+      "contact": "tnguyen@ninjavan.co",
+      "company": "Ninja Van",
+      "metric": "engagement_interactions",
+      "value": 10,
+      "threshold": 10,
+      "evidence_rows": [
+        {
+          "metric": "opens",
+          "value": 5
+        },
+        {
+          "metric": "clicks",
+          "value": 3
+        },
+        {
+          "metric": "pageviews",
+          "value": 2
+        },
+        {
+          "metric": "form_fills",
+          "value": 0
+        },
+        {
+          "metric": "last_engaged",
+          "value": "2026-09-12T11:40:00"
+        },
+        {
+          "metric": "lifecycle_history",
+          "value": 3
+        },
+        {
+          "metric": "event:click",
+          "value": "cta-book-demo",
+          "ts": "2026-08-13T11:00:00",
+          "source": "fixture"
+        },
+        {
+          "metric": "event:open",
+          "value": "thank-you-email",
+          "ts": "2026-08-13T11:00:00",
+          "source": "fixture"
+        },
+        {
+          "metric": "event:open",
+          "value": "thank-you-email",
+          "ts": "2026-08-15T12:07:00",
+          "source": "fixture"
+        },
+        {
+          "metric": "event:pageview",
+          "value": "/product/darwinbox-cortex",
+          "ts": "2026-08-15T15:06:00",
+          "source": "fixture"
+        },
+        {
+          "metric": "event:open",
+          "value": "thank-you-email",
+          "ts": "2026-08-16T20:44:00",
+          "source": "fixture"
+        },
+        {
+          "metric": "event:click",
+          "value": "cta-watch-recording",
+          "ts": "2026-08-19T19:12:00",
+          "source": "fixture"
+        },
+        {
+          "metric": "event:click",
+          "value": "cta-book-demo",
+          "ts": "2026-08-27T05:01:00",
+          "source": "fixture"
+        },
+        {
+          "metric": "event:pageview",
+          "value": "/blog/start-and-scale-ai-in-hr",
+          "ts": "2026-08-28T16:46:00",
+          "source": "fixture"
+        }
+      ],
+      "llm_rationale": "Exactly at threshold (10 interactions) but shows strong intent with 5 opens, 3 clicks, 2 pageviews and weighted_score=13.5; stalled in 'salesqualifiedlead' with no progression to opportunity despite high engagement \u2014 SDR should nurture toward demo or sales conversation."
+    }
+  ],
+  "anomaly_detection": {
+    "threshold": 10,
+    "rationale": "Tukey IQR fence over 86 engaged contacts (median 4.0, Q1 2.0, Q3 5.0, IQR 3.0): threshold = ceil(Q3 + 1.5*IQR) = 10 interactions.",
+    "engaged_contacts": 86,
+    "flagged": 4
+  },
+  "narrative": {
+    "text": "In the last seven days, the pipeline saw six transitions, all seeded, concentrated in marketingqualifiedlead (two), salesqualifiedlead (two), and opportunity (one), with two contacts driving the movement: Vikramn@darwinbox.com moving to lead and Abose@greythr.com progressing from marketingqualifiedlead to salesqualifiedlead on 2026-09-05. This represents a continuation of the trend seen over the prior 14 days, where ten transitions\u2014also all seeded\u2014showed steady progression across lead, marketingqualifiedlead, and salesqualifiedlead stages, indicating consistent nurturing without acceleration. Over the full 30-day window, 88 seeded transitions reveal a broad initial influx into the lead stage (63 contacts), but only a small fraction advanced beyond marketingqualifiedlead, with just five reaching salesqualifiedlead and one opportunity created, signaling a stall in mid-to-late funnel conversion despite strong top-of-funnel volume. The accounts carrying recent movement include Vikramn@darwinbox.com (Darwinbox) moving to lead, Abose@greythr.com (Greythr) advancing from marketingqualifiedlead to salesqualifiedlead, and Dsmith@chewy.com (Chewy) progressing from marketingqualifiedlead to salesqualifiedlead and finally to opportunity on 2026-09-12. Meanwhile, numerous engaged contacts such as Vikkram@zomato.com, Aiyer@nykaa.com, Meerap@ril.com, Amalhotra@havells.com, Snehad@infosys.com, Anjalik@infosys.com, Divya@hdfcbank.com, Ejohnson@chewy.com, Tnguyen@ninjavan.co, Neha.rao@havells.com, Divya.pillai@yahoo.com, Landerson@rippling.com, Eko@grab.com, Ahmed.alsayed@hotmail.com, Divyar@hdfcbank.com, Huy@sea.com, Siti@ocbc.com, Nalsayed@emirates.com, Nishap@rediffmail.com, Robert.johnson@datadoghq.com, Snehad@infosys.com (again), Nsharma@drreddys.com, Mkrishnan@darwinbox.com, Sneha@freshworks.com, Amit@apollohospitals.com, Dnair@infosys.com, and others who engaged but never changed stage\u2014remaining in lead or marketingqualifiedlead\u2014have not moved, highlighting a gap between engagement and progression. All movement described is sourced from seeded engagements, not organic CRM history, to avoid misattribution.",
+    "source": "live",
+    "generated_at": "2026-09-16T16:25:33",
+    "model": "nvidia/nemotron-3-super-120b-a12b:free"
+  },
+  "validator": {
+    "agreements": 3,
+    "disagreements": [
+      {
+        "field": "top_contacts_top5",
+        "deterministic": [
+          "dsmith@chewy.com",
+          "ejohnson@chewy.com",
+          "ajay.kulkarni@icicibank.com",
+          "abose@greythr.com",
+          "nalsayed@emirates.com"
+        ],
+        "llm": [
+          "dsmith@chewy.com",
+          "tnguyen@ninjavan.co",
+          "nisha.kulkarni@hcltech.com",
+          "nalsayed@emirates.com",
+          "abose@greythr.com"
+        ]
+      },
+      {
+        "field": "top_accounts_top5",
+        "deterministic": [
+          "Chewy",
+          "Datadog",
+          "Hdfcbank",
+          "Grab",
+          "Emirates Group"
+        ],
+        "llm": [
+          "Chewy",
+          "Datadog",
+          "Hdfcbank",
+          "Emirates Group",
+          "Infosys"
+        ]
+      },
+      {
+        "field": "committee_companies",
+        "deterministic": [
+          "Chewy",
+          "Darwinbox",
+          "Datadog",
+          "Emirates Group",
+          "Grab",
+          "Hdfcbank",
+          "Icicibank",
+          "Infosys",
+          "Landmarkgroup",
+          "Tech Mahindra"
+        ],
+        "llm": [
+          "Chewy",
+          "Datadog",
+          "Emirates Group",
+          "Hdfcbank"
+        ]
+      },
+      {
+        "field": "anomaly_contacts",
+        "deterministic": [
+          "abose@greythr.com",
+          "dsmith@chewy.com",
+          "nisha.kulkarni@hcltech.com",
+          "tnguyen@ninjavan.co"
+        ],
+        "llm": [
+          "dsmith@chewy.com",
+          "tnguyen@ninjavan.co"
+        ]
+      }
+    ]
+  },
+  "receipts": [
+    "receipts/m4_seed.json",
+    "receipts/m4_hubspot_sync.json",
+    "receipts/m4_llm_calls.json"
+  ]
+}</script>
+<script>
+(function(){
+  "use strict";
+  var DATA = JSON.parse(document.getElementById('dashboard-data').textContent);
+  var ENDPOINT = (typeof window.NARRATIVE_ENDPOINT === 'string' && window.NARRATIVE_ENDPOINT) ? window.NARRATIVE_ENDPOINT : null;
+
+  function esc(s){
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+  function fmtDate(iso){
+    if(!iso) return "—";
+    try{ return new Date(iso).toISOString().slice(0,16).replace('T',' ') + ' UTC'; }
+    catch(e){ return iso; }
+  }
+  function pct(n){ return (n == null ? "—" : n + "%"); }
+
+  // ---------------- header ----------------
+  document.getElementById('event-name').textContent = DATA.event.name;
+  document.getElementById('event-sub').textContent =
+    DATA.event.host_company + " (" + DATA.event.host_domain + ") · " + DATA.event.date + " · " + DATA.event.slug;
+  document.getElementById('generated-at').textContent = fmtDate(DATA.generated_at);
+  document.getElementById('as-of').textContent = fmtDate(DATA.as_of);
+  document.getElementById('data-lane').textContent = DATA.lane.data + " · " + (DATA.source.method || "—");
+  document.getElementById('engagement-source').textContent = DATA.lane.engagement;
+  document.getElementById('speaker-chips').innerHTML = (DATA.event.speakers || []).map(function(s){
+    return '<span class="chip">' + esc(s.name) + ' &middot; ' + esc(s.title) + ', ' + esc(s.company) + '</span>';
+  }).join('');
+  document.getElementById('source-footer').textContent =
+    'Post-Event Engine · Module 4 · contacts ' + DATA.source.contacts + ' · engagement ' +
+    DATA.lane.engagement + ' · narrative ' + DATA.lane.narrative +
+    (DATA.lane.engagement === 'seeded'
+      ? ' · the engagement stream was written into the CRM by this pipeline for a synthetic registrant list'
+      : '');
+
+  // ---------------- KPI row ----------------
+  var K = DATA.kpis;
+  var kpiDefs = [
+    {label:"Tagged contacts", val: K.contacts},
+    {label:"Attendees", val: K.attendees},
+    {label:"Engaged post-event", val: K.engaged_contacts},
+    {label:"MQL+", val: K.mqls, sub: pct(K.mql_rate_pct) + " of attendees"},
+    {label:"SQL+", val: K.sqls},
+    {label:"Companies", val: K.companies},
+    {label:"Buying committees", val: K.committees},
+    {label:"Stage moves (30d)", val: K.movement_30d},
+  ];
+  document.getElementById('kpi-grid').innerHTML = kpiDefs.map(function(k){
+    return '<div class="card kpi"><div class="val">' + esc(k.val) + '</div>' +
+      '<div class="label">' + esc(k.label) + '</div>' +
+      (k.sub ? '<div class="delta">' + esc(k.sub) + '</div>' : '') + '</div>';
+  }).join('');
+
+  // ---------------- funnel ----------------
+  (function renderFunnel(){
+    var stages = DATA.funnel;
+    var max = Math.max.apply(null, stages.map(function(s){ return s.count; })) || 1;
+    var w = 640, barH = 34, gap = 14, padTop = 10;
+    var h = stages.length * (barH + gap) + padTop;
+    var svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" style="max-width:100%;height:auto;">';
+    stages.forEach(function(s, i){
+      var bw = Math.max(6, (s.count / max) * (w - 200));
+      var y = padTop + i * (barH + gap);
+      var pctOfFirst = stages[0].count ? Math.round(100 * s.count / stages[0].count) : 0;
+      svg += '<rect x="180" y="' + y + '" width="' + bw + '" height="' + barH +
+        '" rx="5" fill="var(--accent)" opacity="' + (0.45 + 0.55 * (i === 0 ? 1 : s.count/max)) + '"></rect>';
+      svg += '<text x="170" y="' + (y + barH/2 + 4) + '" text-anchor="end" class="funnel-label">' + esc(s.stage) + '</text>';
+      svg += '<text x="' + (190 + bw) + '" y="' + (y + barH/2 + 4) + '" class="funnel-count">' + s.count + '</text>';
+      svg += '<text x="' + (190 + bw) + '" y="' + (y + barH/2 + 16) + '" class="funnel-pct">' + pctOfFirst + '% of tagged contacts</text>';
+    });
+    svg += '</svg>';
+    document.getElementById('funnel-svg').innerHTML = svg;
+    document.getElementById('funnel-side').innerHTML =
+      '<div class="card funnel-stat"><div class="n">' + pct(K.mql_rate_pct) + '</div>' +
+      '<div class="l">Attendee &rarr; MQL+ conversion (' + K.mqls + ' of ' + K.attendees + ')</div></div>' +
+      '<div class="card funnel-stat"><div class="n">' + K.sqls + '</div>' +
+      '<div class="l">Attendees now SQL or later</div></div>' +
+      '<div class="card funnel-stat"><div class="n">' + K.email_engagements + '</div>' +
+      '<div class="l">Email engagements logged on these contacts</div></div>';
+  })();
+
+  // ---------------- top accounts / contacts ----------------
+  function contactPill(c){
+    return '<span class="contact-pill"><span class="dot"></span>' + esc(c.name) +
+      ' <span class="mono">' + c.score + '</span></span>';
+  }
+  var maxAccountScore = (DATA.top_accounts[0] && DATA.top_accounts[0].score) || 1;
+  document.getElementById('accounts-tbody').innerHTML = DATA.top_accounts.map(function(a){
+    var barPct = Math.round(100 * a.score / maxAccountScore);
+    return '<tr>' +
+      '<td><div style="font-weight:600;">' + esc(a.company) + '</div>' +
+      '<div class="mono">' + esc(a.domain) + '</div></td>' +
+      '<td><span class="score-bar-track"><span class="score-bar-fill" style="width:' + barPct + '%"></span></span>' + a.score + '</td>' +
+      '<td>' + (a.is_committee ?
+        '<span class="badge committee">' + a.engaged_contacts + '/' + a.known_contacts + ' &middot; ' + a.coverage_pct + '%</span>' :
+        '<span class="badge stage">' + a.engaged_contacts + '/' + a.known_contacts + '</span>') + '</td>' +
+      '<td>' + a.contacts.slice(0,3).map(contactPill).join('') + '</td>' +
+      '</tr>';
+  }).join('') || '<tr><td colspan="4">No account engagement in this snapshot.</td></tr>';
+
+  document.getElementById('contacts-tbody').innerHTML = DATA.top_contacts.map(function(c){
+    return '<tr>' +
+      '<td><div style="font-weight:600;">' + esc(c.name) + '</div>' +
+      '<div class="mono">' + esc(c.email) + '</div>' +
+      (c.title ? '<div class="mono">' + esc(c.title) + '</div>' : '') +
+      (c.llm_rationale ? '<div class="rationale">' + esc(c.llm_rationale) + '</div>' : '') +
+      '</td>' +
+      '<td><span class="badge stage">' + esc(c.stage || 'unknown') + '</span></td>' +
+      '<td class="mono">' + c.score +
+      (c.llm_score != null ? '<br>AI ' + esc(c.llm_score) + '/100'
+        : c.rules_score != null ? '<br>rules ' + esc(c.rules_score) + '/100' : '') + '</td>' +
+      '</tr>';
+  }).join('') || '<tr><td colspan="3">No engaged contacts in this snapshot.</td></tr>';
+
+  // ---------------- committee map ----------------
+  document.getElementById('committee-note').textContent =
+    'An account qualifies as a buying committee at ' + (DATA.committees.length ? '' : '') +
+    '2+ engaged contacts. "Why" comes from the AI pass when the live lane ran, and from the ' +
+    'deterministic rule otherwise — each card says which.';
+  document.getElementById('committee-grid').innerHTML = DATA.committees.map(function(c){
+    return '<div class="card committee-card">' +
+      '<div class="acct">' + esc(c.company) + '</div>' +
+      '<div class="dom">' + esc(c.domain) + ' · ' + c.contacts.length + ' engaged</div>' +
+      '<div class="members">' + c.contacts.map(esc).join('<br>') + '</div>' +
+      '<div class="rationale">' + esc(c.why) + ' <span class="badge stage">' + esc(c.why_source) + '</span></div>' +
+      '</div>';
+  }).join('') || '<div class="card" style="padding:16px;color:var(--text-muted);">No account has 2+ engaged contacts yet.</div>';
+
+  // ---------------- movement ----------------
+  var windows = [["7d","Last 7 days"],["14d","Last 14 days"],["30d","Last 30 days"]];
+  document.getElementById('movement-grid').innerHTML = windows.map(function(w){
+    var m = DATA.movement[w[0]] || {transitions:0, contacts:0, by_stage:{}, source_mix:{}};
+    var stagesHtml = Object.keys(m.by_stage).map(function(k){
+      return '<span>' + esc(k) + ': ' + m.by_stage[k] + '</span>';
+    }).join('');
+    var mixHtml = Object.keys(m.source_mix).map(function(k){
+      return '<span class="badge ' + (k === 'seeded' ? 'seeded' : 'stage') + '">' + esc(k) + ' ' + m.source_mix[k] + '</span>';
+    }).join(' ');
+    return '<div class="card movement-card"><div class="n">' + m.transitions + '</div>' +
+      '<div class="l">' + w[1] + ' &middot; stage transitions across ' + m.contacts + ' contacts</div>' +
+      '<div class="stages">' + (stagesHtml || '<span>none</span>') + '</div>' +
+      '<div class="stages">' + (mixHtml || '') + '</div></div>';
+  }).join('');
+
+  (function renderSparkline(){
+    var pts = DATA.movement_timeline || [];
+    if(!pts.length){
+      document.getElementById('sparkline-svg').innerHTML =
+        '<div style="color:var(--text-muted);font-size:12px;">No lifecycle movement recorded.</div>';
+      return;
+    }
+    var w = 1000, h = 140, padX = 10, padY = 20;
+    var max = Math.max.apply(null, pts.map(function(p){return p.count;})) || 1;
+    var step = (w - padX*2) / Math.max(1, pts.length - 1);
+    var coords = pts.map(function(p,i){
+      return [padX + i*step, h - padY - (p.count/max) * (h - padY*2)];
+    });
+    var path = coords.map(function(c,i){ return (i===0?'M':'L') + c[0].toFixed(1) + ',' + c[1].toFixed(1); }).join(' ');
+    var area = path + ' L ' + coords[coords.length-1][0].toFixed(1) + ',' + (h-padY) +
+      ' L ' + coords[0][0].toFixed(1) + ',' + (h-padY) + ' Z';
+    var svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" style="max-width:100%;height:140px;">' +
+      '<path d="' + area + '" fill="var(--accent-soft)" stroke="none"></path>' +
+      '<path d="' + path + '" fill="none" stroke="var(--accent)" stroke-width="2"></path>';
+    coords.forEach(function(c){
+      svg += '<circle cx="' + c[0].toFixed(1) + '" cy="' + c[1].toFixed(1) + '" r="2.5" fill="var(--accent)"></circle>';
+    });
+    svg += '<text x="' + padX + '" y="' + (h-4) + '" class="funnel-pct">' + esc(pts[0].date) + '</text>';
+    svg += '<text x="' + (w-padX) + '" y="' + (h-4) + '" class="funnel-pct" text-anchor="end">' + esc(pts[pts.length-1].date) + '</text>';
+    svg += '</svg>';
+    document.getElementById('sparkline-svg').innerHTML = svg;
+  })();
+
+  // ---------------- anomalies ----------------
+  document.getElementById('anomaly-threshold-note').textContent =
+    'Threshold: ' + DATA.anomaly_detection.threshold + '+ interactions to qualify — ' +
+    DATA.anomaly_detection.rationale + ' ' + DATA.anomaly_detection.engaged_contacts +
+    ' engaged contact(s) were considered; ' + DATA.anomaly_detection.flagged + ' flagged.';
+  document.getElementById('anomaly-grid').innerHTML = DATA.anomalies.map(function(a){
+    var stalled = a.metric === 'stalled_high_engagement';
+    var evidence = (a.evidence_rows || []).slice(0,8).map(function(e){
+      return '<span class="mono">' + esc(e.metric) + '=' + esc(e.value) + '</span>';
+    }).join(' · ');
+    return '<div class="card anomaly-card">' +
+      '<div class="head"><div><div class="who">' + esc(a.contact) + '</div>' +
+      '<div class="co">' + esc(a.company) + '</div></div>' +
+      '<span class="status-pill ' + (stalled ? 'stalled' : 'progressed') + '">' +
+      (stalled ? 'No stage movement' : 'Outlier') + '</span></div>' +
+      '<div class="metrics"><span>' + esc(a.metric) + ' = ' + esc(a.value) + '</span>' +
+      '<span>threshold ' + esc(a.threshold) + '</span></div>' +
+      (a.llm_rationale ? '<div class="rationale">' + esc(a.llm_rationale) + '</div>' : '') +
+      '<div class="evidence">' + evidence + '</div>' +
+      '</div>';
+  }).join('') || '<div class="card" style="padding:16px;color:var(--text-muted);">No contact clears the outlier fence in this snapshot.</div>';
+
+  // ---------------- narrative + validator ----------------
+  function paragraphs(text){
+    return String(text || '').split(/\n{2,}/).map(function(p){ return p.trim(); }).filter(Boolean);
+  }
+  function renderNarrative(text, source, generatedAt, model){
+    var body = paragraphs(text);
+    document.getElementById('narrative-body').innerHTML =
+      (body.length ? body : ['(no narrative)']).map(function(p){ return '<p>' + esc(p) + '</p>'; }).join('');
+    var badge = document.getElementById('narrative-badge');
+    badge.className = 'source-badge ' + (source === 'live' ? 'live' : source === 'seeded' ? 'seeded' : 'rules');
+    document.getElementById('narrative-badge-text').textContent =
+      (source === 'live' ? 'live' + (model ? ' · ' + model : '')
+        : source === 'seeded' ? 'seeded data'
+        : 'rules (templated from the deterministic counts)') + ' · ' + fmtDate(generatedAt);
+  }
+  renderNarrative(DATA.narrative.text, DATA.narrative.source, DATA.narrative.generated_at, DATA.narrative.model);
+
+  (function renderValidator(){
+    var v = DATA.validator || {agreements:0, disagreements:[]};
+    var rows = (v.disagreements || []).map(function(d){
+      return '<div class="validator-row"><span class="mono">' + esc(d.field) + '</span> — deterministic: ' +
+        esc(JSON.stringify(d.deterministic)) + ' · AI: ' + esc(JSON.stringify(d.llm)) + '</div>';
+    }).join('');
+    document.getElementById('validator-panel').innerHTML =
+      '<div class="n">Deterministic validator · ' + v.agreements + ' agreement(s), ' +
+      (v.disagreements || []).length + ' disagreement(s)</div>' +
+      '<div class="validator-row">Every count on this page is computed arithmetic. The AI pass is ' +
+      'compared against it field by field; disagreements are listed, never silently overwritten.</div>' +
+      (rows || '<div class="validator-row">No disagreement recorded' +
+        (DATA.lane.narrative === 'rules' ? ' (rules lane: no AI pass ran).' : '.') + '</div>');
+  })();
+
+  // ---------------- refresh-on-load ----------------
+  // With window.NARRATIVE_ENDPOINT injected by the module API, the page asks it for a
+  // fresh narrative on load (25s timeout). Any failure keeps the embedded narrative and
+  // its badge — the page never blanks and never claims a source it did not get.
+  function refreshNarrative(isManual){
+    if(!ENDPOINT){
+      if(isManual){
+        var e = document.getElementById('narrative-error');
+        e.textContent = 'No narrative endpoint injected — showing the narrative built with this page.';
+        e.hidden = false;
+      }
+      return;
+    }
+    var errEl = document.getElementById('narrative-error');
+    errEl.hidden = true; errEl.textContent = '';
+    var badge = document.getElementById('narrative-badge');
+    var prevClass = badge.className, prevText = document.getElementById('narrative-badge-text').textContent;
+    badge.className = 'source-badge loading';
+    document.getElementById('narrative-badge-text').textContent = 'refreshing…';
+    var btn = document.getElementById('narrative-refresh');
+    btn.disabled = true;
+
+    var controller = ('AbortController' in window) ? new AbortController() : null;
+    var timer = setTimeout(function(){ if(controller) controller.abort(); }, 25000);
+    var opts = controller ? {signal: controller.signal} : {};
+
+    Promise.resolve()
+      .then(function(){ return fetch(ENDPOINT + '?refresh=1', opts); })
+      .then(function(res){
+        clearTimeout(timer);
+        if(!res.ok){ throw new Error('HTTP ' + res.status); }
+        return res.json();
+      })
+      .then(function(json){
+        if(!json || !json.narrative){ throw new Error('empty narrative response'); }
+        renderNarrative(json.narrative, json.source || 'live', json.generated_at || new Date().toISOString(), json.model);
+      })
+      .catch(function(err){
+        clearTimeout(timer);
+        badge.className = prevClass;
+        document.getElementById('narrative-badge-text').textContent = prevText;
+        var reason = (err && err.name === 'AbortError') ? 'timed out after 25s' : ((err && err.message) || 'request failed');
+        errEl.textContent = 'Refresh failed (' + reason + ') — showing the narrative built with this page.';
+        errEl.hidden = false;
+      })
+      .then(function(){ btn.disabled = false; });
+  }
+
+  document.getElementById('narrative-refresh').addEventListener('click', function(){ refreshNarrative(true); });
+  refreshNarrative(false);
+
+})();
+</script>
+</body>
+</html>

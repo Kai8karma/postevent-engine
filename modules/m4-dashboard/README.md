@@ -19,15 +19,16 @@ back. Live is the default lane; `--offline` is the labelled fixture lane.
 
 ## 2. How the AI is the engine — and the maths is the validator
 
-Live `analyze` spends up to `--budget` (default 3) OpenRouter calls over `snapshot.json`, with
+Live `analyze` spends up to `--budget` (default 4) OpenRouter calls over `snapshot.json`, with
 prompts built from real snapshot rows (`prompts/*.md`, no hard-coded companies):
 
-1. `anomalies_and_scores.md` — judges the outlier fence's shortlist (accept, reject with a
-   reason, or add one it missed) and scores every engaged contact 0–100 with a rationale and the
-   evidence values behind it.
-2. `movement_narrative.md` — narrates what moved across 7 / 14 / 30 days, what did not, and where
+1. `anomalies.md` — judges the outlier fence's shortlist (accept, reject with a
+   reason, or add one it missed), each with the evidence values behind it.
+2. `interest_scores.md` — scores the 25 contacts with the strongest signals 0–100 with a short
+   rationale and evidence, and names its own top 5 for the validator to compare.
+3. `movement_narrative.md` — narrates what moved across 7 / 14 / 30 days, what did not, and where
    the movement is seeded rather than organic.
-3. `committees.md` — decides which multi-contact accounts are real buying committees and why.
+4. `committees.md` — decides which multi-contact accounts are real buying committees and why.
 
 Nothing the model returns overwrites a number. `build_validator()` compares its top-5 contacts,
 top-5 accounts, committee list, anomaly list and window counts against the deterministic block and
@@ -67,7 +68,7 @@ nothing and exits 0. Every phase's last stdout line is
 `M4 <phase> (<lane>): <numbers> -> <out>`; any failure exits non-zero.
 
 Env var names (read from the environment, else `~/.config/postevent/*.env`; never printed):
-`HUBSPOT_TOKEN`, `OPENROUTER_API_KEY`, `OPENROUTER_MODEL`, `LLM_BATCH_DEADLINE_S`, `LLM_REASONING`.
+`HUBSPOT_TOKEN`, `OPENROUTER_API_KEY`, `OPENROUTER_MODEL` (comma-separated fallback list; each model gets up to two retries on 429/5xx before the next is tried), `LLM_BATCH_DEADLINE_S`, `LLM_REASONING`.
 
 ## 4. Files written under `--out`
 

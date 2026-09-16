@@ -1,0 +1,146 @@
+{
+  "lane": "live",
+  "model": "nvidia/nemotron-3-super-120b-a12b:free",
+  "budget": 4,
+  "completions": 4,
+  "attempts": 10,
+  "deadline_s": 90,
+  "calls": [
+    {
+      "model": "nvidia/nemotron-3-super-120b-a12b:free",
+      "purpose": "anomalies",
+      "attempt": 1,
+      "ok": true,
+      "prompt_chars": 7196,
+      "tokens": {
+        "prompt": 2675,
+        "completion": 508,
+        "total": 3183
+      },
+      "latency_ms": 10673,
+      "http_status": 200,
+      "chars": 1700,
+      "ts": "2026-09-16T16:23:48"
+    },
+    {
+      "model": "nvidia/nemotron-3-super-120b-a12b:free",
+      "purpose": "interest_scores",
+      "attempt": 1,
+      "ok": false,
+      "prompt_chars": 6816,
+      "tokens": null,
+      "latency_ms": 308,
+      "http_status": null,
+      "error": "provider error for 'nvidia/nemotron-3-super-120b-a12b:free': 502 Upstream error from Nvidia: Service temporarily overloaded",
+      "ts": "2026-09-16T16:23:49"
+    },
+    {
+      "model": "nvidia/nemotron-3-super-120b-a12b:free",
+      "purpose": "interest_scores",
+      "attempt": 2,
+      "ok": false,
+      "prompt_chars": 6816,
+      "tokens": null,
+      "latency_ms": 295,
+      "http_status": null,
+      "error": "provider error for 'nvidia/nemotron-3-super-120b-a12b:free': 502 Upstream error from Nvidia: Service temporarily overloaded",
+      "ts": "2026-09-16T16:23:54"
+    },
+    {
+      "model": "nvidia/nemotron-3-super-120b-a12b:free",
+      "purpose": "interest_scores",
+      "attempt": 3,
+      "ok": false,
+      "prompt_chars": 6816,
+      "tokens": null,
+      "latency_ms": 393,
+      "http_status": null,
+      "error": "provider error for 'nvidia/nemotron-3-super-120b-a12b:free': 502 Upstream error from Nvidia: Service temporarily overloaded",
+      "ts": "2026-09-16T16:24:04"
+    },
+    {
+      "model": "google/gemma-4-31b-it:free",
+      "purpose": "interest_scores",
+      "attempt": 1,
+      "ok": false,
+      "prompt_chars": 6816,
+      "tokens": null,
+      "latency_ms": 766,
+      "http_status": 429,
+      "error": "HTTP 429 for 'google/gemma-4-31b-it:free': {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"google/gemma-4-31b-it:free is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integration",
+      "ts": "2026-09-16T16:24:05"
+    },
+    {
+      "model": "google/gemma-4-31b-it:free",
+      "purpose": "interest_scores",
+      "attempt": 2,
+      "ok": false,
+      "prompt_chars": 6816,
+      "tokens": null,
+      "latency_ms": 461,
+      "http_status": 429,
+      "error": "HTTP 429 for 'google/gemma-4-31b-it:free': {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"google/gemma-4-31b-it:free is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integration",
+      "ts": "2026-09-16T16:24:10"
+    },
+    {
+      "model": "google/gemma-4-31b-it:free",
+      "purpose": "interest_scores",
+      "attempt": 3,
+      "ok": false,
+      "prompt_chars": 6816,
+      "tokens": null,
+      "latency_ms": 424,
+      "http_status": 429,
+      "error": "HTTP 429 for 'google/gemma-4-31b-it:free': {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"google/gemma-4-31b-it:free is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integration",
+      "ts": "2026-09-16T16:24:21"
+    },
+    {
+      "model": "nvidia/nemotron-3.5-lightning:free",
+      "purpose": "interest_scores",
+      "attempt": 1,
+      "ok": true,
+      "prompt_chars": 6816,
+      "tokens": {
+        "prompt": 2574,
+        "completion": 1986,
+        "total": 4560
+      },
+      "latency_ms": 46101,
+      "http_status": 200,
+      "chars": 5973,
+      "ts": "2026-09-16T16:25:07"
+    },
+    {
+      "model": "nvidia/nemotron-3-super-120b-a12b:free",
+      "purpose": "movement_narrative",
+      "attempt": 1,
+      "ok": true,
+      "prompt_chars": 6528,
+      "tokens": {
+        "prompt": 2693,
+        "completion": 951,
+        "total": 3644
+      },
+      "latency_ms": 16170,
+      "http_status": 200,
+      "chars": 3029,
+      "ts": "2026-09-16T16:25:23"
+    },
+    {
+      "model": "nvidia/nemotron-3-super-120b-a12b:free",
+      "purpose": "committees",
+      "attempt": 1,
+      "ok": true,
+      "prompt_chars": 5585,
+      "tokens": {
+        "prompt": 1844,
+        "completion": 960,
+        "total": 2804
+      },
+      "latency_ms": 9436,
+      "http_status": 200,
+      "chars": 3648,
+      "ts": "2026-09-16T16:25:33"
+    }
+  ]
+}

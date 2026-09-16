@@ -579,14 +579,14 @@ class LivePathAgainstAFakePortal(unittest.TestCase):
 
     def test_analyze_live_records_model_validator_and_narrative(self):
         replies = {
-            "anomalies_and_scores": {"anomalies": [{"contact": "dsmith@chewy.com",
-                                                    "metric": "form_fills", "value": 3,
-                                                    "rationale": "pricing intent",
-                                                    "evidence": ["form_fills=3"]}],
-                                     "interest_scores": [{"contact_id": "dsmith@chewy.com",
-                                                          "score": 88, "rationale": "pricing form",
-                                                          "evidence": ["form_fills=3"]}],
-                                     "top_contacts": ["ejohnson@chewy.com"]},
+            "anomalies": {"anomalies": [{"contact": "dsmith@chewy.com",
+                                         "metric": "form_fills", "value": 3,
+                                         "rationale": "pricing intent",
+                                         "evidence": ["form_fills=3"]}]},
+            "interest_scores": {"interest_scores": [{"contact_id": "dsmith@chewy.com",
+                                                     "score": 88, "rationale": "pricing form",
+                                                     "evidence": ["form_fills=3"]}],
+                                "top_contacts": ["ejohnson@chewy.com"]},
             "movement_narrative": {"narrative": "Movement concentrated at Chewy this week.\n\n"
                                                 "Nothing moved at Infosys.",
                                    "counts": {"7d": 999}},
@@ -622,12 +622,12 @@ class LivePathAgainstAFakePortal(unittest.TestCase):
             dashboard.call_llm, dashboard.openrouter_key = real_call, real_key
 
         self.assertEqual([c[0] for c in calls],
-                         ["anomalies_and_scores", "movement_narrative", "committees"])
+                         ["anomalies", "interest_scores", "movement_narrative", "committees"])
         self.assertEqual(analysis["lane"], "live")
         self.assertEqual(analysis["narrative_source"], "live")
         self.assertEqual(analysis["model"], "fake/model")
         self.assertIn("Chewy", analysis["movement_narrative"])
-        self.assertEqual(ledger["completions"], 3)
+        self.assertEqual(ledger["completions"], 4)
         self.assertEqual(ledger["calls"][0]["tokens"]["total"], 150)
         self.assertIn("latency_ms", ledger["calls"][0])
         disagreements = {d["field"] for d in analysis["llm"]["validator"]["disagreements"]}

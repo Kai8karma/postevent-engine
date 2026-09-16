@@ -1,4 +1,4 @@
-# Prompt: engagement anomalies + lead-interest scores
+# Prompt: engagement anomalies
 
 You are the analysis engine of a post-event revenue pipeline. Below is a snapshot
 pulled from the CRM after a webinar: contacts, their post-event engagement counters,
@@ -28,18 +28,11 @@ answer against it.
 
 ## Task
 
-1. **Anomalies** — which contacts' behaviour is genuinely off-pattern for this event,
-   and why it matters to an SDR this week. Every anomaly must cite the rows it rests
-   on (`evidence`: the literal metric values you used). Include the stalled cases:
-   high intent with no stage movement.
-2. **Interest scores** — score each contact in `CONTACT_ROWS` from 0 to 100 for how
-   likely they are to be in an active buying motion. Use intent quality (a pricing or
-   contact-sales form fill outranks ten opens), recency, seniority of the title, and
-   stage history. One sentence of `rationale` per contact and the `evidence` values
-   behind it. Do not score anyone not in the rows.
-3. **Your own top list** — name the 5 contacts you would work first, in order. The
-   pipeline compares this to its deterministic ranking and records every disagreement;
-   do not copy the deterministic order to look consistent.
+**Anomalies** — which contacts' behaviour is genuinely off-pattern for this event, and
+why it matters to an SDR this week. Every anomaly must cite the rows it rests on
+(`evidence`: the literal metric values you used). Include the stalled cases: high intent
+with no stage movement. Judge the fence's shortlist: accept, reject with a reason, or add
+a contact the fence missed if the rows justify it.
 
 ## Output
 
@@ -52,11 +45,6 @@ Return one JSON object, nothing else:
      "rationale": "<why this is off-pattern and what to do>",
      "evidence": ["<metric>=<value>", "..."]}
   ],
-  "interest_scores": [
-    {"contact_id": "<email>", "score": <0-100>, "rationale": "<one sentence>",
-     "evidence": ["<metric>=<value>", "..."]}
-  ],
-  "top_contacts": ["<email>", "<email>", "<email>", "<email>", "<email>"],
   "rejected_candidates": [{"contact": "<email>", "why": "<why the fence is wrong here>"}]
 }
 ```
