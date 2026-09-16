@@ -44,9 +44,9 @@ response says `lane: "offline"` and lists what was skipped in `notes`.
 | m1 | `prepare` | load registrants → dedupe within batch → dedupe against HubSpot (Search API) → LLM adjudicates gray-zone pairs → LLM infers title/function/seniority/industry/size with confidence → LLM ICP score + rationale (rules validate) → writes interim rows; returns `next.clay_domains` (domains still missing/low-confidence firmographics) |
 | m1 | `finalize` | applies `inputs.clay_results` (Clay wins over LLM, LLM over rules; per-field `*_source` provenance) → lifecycle + owner routing → completeness (verified metric) → `hubspot_ready.csv` + companies/contacts CSVs → **push to HubSpot** (properties, companies, contacts, associations, verify) → receipts |
 | m1 | *(omitted)* | prepare + finalize in one call, no Clay leg (n8n skips Clay when the table isn't configured) |
-| m2 | `generate`, `dispatch` | W2 |
-| m3 | `run` | W3 |
-| m4 | `sync`, `render` | W4 |
+| m2 | `generate`, `approve`, `log` | extraction + three segment variants with grounding → approval gate (demo redirects) → HubSpot email engagements logged; see §M2 |
+| m3 | `transcribe`, `run`, `record` | Sarvam batch STT (optional) → blog/chapters/infographic/social + clips + images with manifest → Drive manifest recorded; see §M3 |
+| m4 | `seed`, `sync`, `analyze`, `render` | engagement stream + lifecycle written into HubSpot → snapshot pulled back → LLM analysis validated by deterministic math → self-contained dashboard with narrative refresh (`GET /narrative/<run_id>?refresh=1`, `GET /dashboard/<run_id>/`); see §M4 |
 
 ## Receipts (every live call writes one)
 

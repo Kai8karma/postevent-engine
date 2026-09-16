@@ -16,17 +16,16 @@ modules build in parallel, see PLAN.md):
         which are api/server.py + n8n's job, not this file's)
   - M3 modules/m3-repurpose/repurpose.py [--live] --out <dir>
         --event <event-dir>/event.json --transcript <event-dir>/transcript.md
-  - M4 modules/m4-dashboard/build_dashboard.py --enriched <m1_csv>
-        --engagement data/fixtures/engagement.json
-        --segments data/fixtures/segments.json --out <dir>
-        writes <dir>/index.html. Real script as built: no --live flag and no
-        --comms/--content/--quality flags (dashboard computes only from M1 +
-        engagement + segments) -- do not pass any of those or argparse will
-        fail. Completeness KPIs are read internally from quality_report.json,
-        which build_dashboard.py finds on its own next to --enriched (same
-        --out dir M1 wrote both files into) -- no separate flag needed.
-        Engagement/segments fixtures are global (not per-event) by design --
-        M4 was not asked to be event-partitioned, only M1's output is.
+  - M4 modules/m4-dashboard/dashboard.py <phase> --out <dir>
+        [--event <event-dir>/event.json] [--event-tag <slug>] [--offline]
+        [--budget N], phase in seed|sync|analyze|render (see
+        docs/module-api.md's "M4 -- phases and files" table). Four sequential
+        stages, not one: seed writes the event's engagement stream into
+        HubSpot, sync reads the portal back into <dir>/snapshot.json, analyze
+        writes <dir>/analysis.json, render writes <dir>/index.html +
+        dashboard_data.json. M4 is event-partitioned through --event-tag (the
+        postevent_event slug M1's push used), so the phases read back exactly
+        the contacts this event created.
   General, for M1-M3 (assumed, not yet verified against real code):
   - With no --live, module reads fixtures/incoming at fixed repo paths
     (data/incoming/, data/fixtures/, config/) and runs fully offline.
@@ -150,7 +149,9 @@ def lane_flags(script_path: Path, live: bool) -> list:
     requested. A script that still only knows --live (comms.py/repurpose.py
     as of this writing): pass --live only when the live lane was requested
     -- its own no-flag default stays offline, unchanged. Neither flag
-    supported (build_dashboard.py): no flag either way."""
+    supported: no flag either way. M4 does not come through here at all --
+    its lane flag is passed straight from the run's lane, see
+    build_m4_stages()."""
     help_text = _script_help(script_path)
     if "--offline" in help_text:
         return [] if live else ["--offline"]
@@ -175,11 +176,9 @@ def build_stages(out_dir: Path, live: bool, event_dir: Path):
     m1_out = out_dir / "m1"
     m2_out = out_dir / "m2"
     m3_out = out_dir / "m3"
-    m4_out = out_dir / "m4"
     m1_hubspot_ready = m1_out / "hubspot_ready.csv"
     m2_dispatch_plan = m2_out / "dispatch_plan.json"
     m3_manifest = m3_out / "manifest.json"
-    m4_index = m4_out / "index.html"
 
     event_json = event_dir / "event.json"
     transcript_md = event_dir / "transcript.md"
@@ -219,18 +218,36 @@ def build_stages(out_dir: Path, live: bool, event_dir: Path):
             "key_output": m3_manifest,
             "summary_fn": m3_summary,
         },
-        "m4": {
-            # Real build_dashboard.py CLI: no --live, no --comms/--content/--quality.
-            # It finds quality_report.json on its own (sibling of hubspot_ready.csv
-            # in m1_out) for the completeness KPIs -- nothing extra to wire here.
-            "stage": "M4 dashboard",
-            "cmd": [sys.executable, str(REPO_ROOT / "modules" / "m4-dashboard" / "build_dashboard.py"),
-                    "--out", str(m4_out), "--enriched", str(m1_hubspot_ready),
-                    "--engagement", str(REPO_ROOT / "data" / "fixtures" / "engagement.json"),
-                    "--segments", str(REPO_ROOT / "data" / "fixtures" / "segments.json")],
-            "key_output": m4_index,
-        },
     }
+
+
+M4_PHASE_STAGES = (("seed", "M4 seed", Path("receipts") / "m4_seed.json"),
+                   ("sync", "M4 sync", Path("snapshot.json")),
+                   ("analyze", "M4 analyze", Path("analysis.json")),
+                   ("render", "M4 render", Path("index.html")))
+
+
+def build_m4_stages(out_dir: Path, live: bool, event_dir: Path, args) -> list:
+    """M4's four phases as four sequential stage rows (seed -> sync -> analyze
+    -> render), one dashboard.py call each -- see docs/module-api.md's "M4 --
+    phases and files" table. Unlike lane_flags() above, --offline is passed
+    straight from this run's lane rather than detected from the script's own
+    --help: M4's CLI is fixed by that table, and a --help probe that comes
+    back empty (script missing/broken) would silently drop --offline and turn
+    an offline run into a live one. A missing script surfaces as a FAIL row
+    from run_stage() instead. seed runs in every lane -- offline means it
+    seeds in offline mode, not that it is skipped."""
+    m4_out = out_dir / "m4"
+    script = REPO_ROOT / "modules" / "m4-dashboard" / "dashboard.py"
+    stages = []
+    for phase, stage_name, key_rel in M4_PHASE_STAGES:
+        cmd = [sys.executable, str(script), phase, "--out", str(m4_out),
+               "--event", str(event_dir / "event.json"), "--event-tag", args.event_tag]
+        if not live:
+            cmd.append("--offline")
+        stages.append({"stage": stage_name, "cmd": cmd, "key_output": m4_out / key_rel,
+                        "summary_fn": m4_summary})
+    return stages
 
 
 IMAGE_GEN_COST_ESTIMATE = "~$0.04-0.08 for 2 images (google/gemini-2.5-flash-image via OpenRouter -- see out/live-proof-visuals/visuals_meta.json for the real $0.077647 receipt from the run that estimate is based on)"
@@ -417,6 +434,50 @@ def m3_summary(stdout: str, stderr: str, key_output: Path) -> str:
     return f"blog_words={blog_words} posts={posts} clips={clips} images={images}"
 
 
+def m4_summary(stdout: str, stderr: str, key_output: Path) -> str:
+    """Each M4 phase's receipt row is read off the file that phase wrote
+    (m4_seed.json / snapshot.json / analysis.json / dashboard_data.json) --
+    counts of rows already on disk, never recomputed here. Falls back to the
+    stage's own last stdout line when the file is missing or unparseable
+    (e.g. a failed phase)."""
+    fallback = last_summary_line(stdout) or last_summary_line(stderr)
+    source = key_output if key_output.name != "index.html" else key_output.parent / "dashboard_data.json"
+    if not source.exists():
+        return fallback
+    try:
+        data = json.loads(source.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return fallback
+    if not isinstance(data, dict):
+        return fallback
+
+    def n(value):
+        return len(value) if isinstance(value, (list, dict)) else value
+
+    if source.name == "m4_seed.json":
+        return (f"method={data.get('method')} contacts={data.get('contacts_matched')} "
+                f"events={data.get('events_written')} lifecycle={data.get('lifecycle_updates')} "
+                f"errors={n(data.get('errors'))}")
+    if source.name == "snapshot.json":
+        return (f"contacts={n(data.get('contacts'))} companies={n(data.get('companies'))} "
+                f"engagements={n(data.get('email_engagements'))} events={n(data.get('events'))} "
+                f"method={data.get('method')}")
+    if source.name == "analysis.json":
+        det = data.get("deterministic") if isinstance(data.get("deterministic"), dict) else {}
+        llm = data.get("llm") if isinstance(data.get("llm"), dict) else {}
+        anomalies = n(llm.get("anomalies")) or n(det.get("anomalies"))
+        committees = n(llm.get("committees")) or n(det.get("committees"))
+        return (f"anomalies={anomalies} scored={n(llm.get('interest_scores'))} "
+                f"committees={committees} lane={data.get('lane')}")
+    if not data:
+        return fallback
+    kpis = data.get("kpis") if isinstance(data.get("kpis"), dict) else {}
+    narrative = data.get("narrative") if isinstance(data.get("narrative"), dict) else {}
+    mql_rate = data.get("mql_rate", kpis.get("mql_rate"))
+    source = data.get("narrative_source", narrative.get("source"))
+    return f"mql_rate={mql_rate} top_accounts={n(data.get('top_accounts'))} narrative={source}"
+
+
 MODULE_LANES = [
     ("M1 Enrichment", "Deterministic rules: difflib dedupe + lookup-table field inference. No LLM call.",
      "Real LLM field inference via --live (claude -p or OpenRouter, per LLM_BACKEND); Clay waterfall enrichment in production."),
@@ -424,8 +485,9 @@ MODULE_LANES = [
      "Live LLM call regenerates the segment's takeaway/quote copy; recipients come from M1's deduped output."),
     ("M3 Repurposing", "Cached LLM-generated copy replayed from sample_output/, fingerprint-guarded.",
      "Live LLM call regenerates blog/YouTube/infographic/social, then verify_grounding.py checks every quote and timestamp back against the transcript."),
-    ("M4 Dashboard", "Computed metrics (real math over fixtures) + labeled cached fallback narrative.",
-     "Live LLM narrative via Vercel /api/narrative.js, UI-labeled live vs. fallback."),
+    ("M4 Dashboard", "Computed metrics (real math over the synced snapshot) + labeled rules-lane narrative.",
+     "Live LLM anomalies/interest scores/narrative in the analyze phase, deterministic math validating "
+     "it; the rendered page refreshes the narrative from the module API's /narrative/<run_id>."),
 ]
 
 
@@ -477,6 +539,18 @@ EXTRA_STAGE_BANNERS = {
     "M1 push": "real push_to_hubspot.py call against the real dev/test HubSpot portal if HUBSPOT_TOKEN is "
                "present, else --dry-run (zero network, loud stderr note) -- unaffected by top-level "
                "--offline/live",
+    # M4's four phases are real HubSpot writes/reads and real math over what
+    # comes back -- print_stage_banner()'s "replaying cached AI outputs"
+    # wording would be false for them, so they get these lines instead.
+    "M4 seed": "writes this event's engagement stream into HubSpot for the tagged contacts (custom "
+               "behavioural events, or the counter properties when the portal refuses them) -- the "
+               "stream is simulated for synthetic registrants and labelled seeded everywhere it appears",
+    "M4 sync": "reads the portal back -- tagged contacts with lifecycle history, companies, email "
+               "engagements, events -- into snapshot.json; no LLM call",
+    "M4 analyze": "deterministic math over snapshot.json always, plus a real LLM pass (anomalies, "
+                  "interest scores, movement narrative, committees) on the live lane -- the "
+                  "deterministic numbers validate the model's and disagreements are flagged, not hidden",
+    "M4 render": "self-contained index.html + dashboard_data.json from analysis.json; zero network",
 }
 
 
@@ -645,7 +719,16 @@ def main():
     for m in selected:
         if m == "m3":
             queue.append(("extra", lambda: build_transcribe_stage(event_dir, out_dir, args)))
-        queue.append(("module", all_stages[m]))
+        if m == "m4":
+            # M4 is four dashboard.py phases, not one script call -- queued as
+            # "extra" rows purely so each gets its own honest banner from
+            # EXTRA_STAGE_BANNERS (they are real HubSpot/LLM work, not the
+            # cached-output replay print_stage_banner() describes). The lambda
+            # just hands back an already-built stage; nothing is deferred.
+            for m4_stage in build_m4_stages(out_dir, live, event_dir, args):
+                queue.append(("extra", lambda s=m4_stage: ("run", s)))
+        else:
+            queue.append(("module", all_stages[m]))
         if m == "m1":
             queue.append(("extra", lambda: build_m1_push_stage(out_dir, args)))
         if m == "m3":

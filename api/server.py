@@ -33,7 +33,7 @@ import urllib.request
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import unquote, urlparse
+from urllib.parse import parse_qs, unquote, urlparse
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import run as legacy  # noqa: E402 -- api/run.py, same directory; see module docstring
@@ -327,10 +327,9 @@ def run_m1(payload: dict, run_id: str, out_dir: Path, log: list) -> dict:
 # --------------------------------------------------------------------------
 # M2 (generate / approve / log) -- see docs/module-api.md's "M2 -- phases and
 # files" table for the dispatch_plan.json / dispatch_results.json schemas
-# this section builds against. Handled separately from run_generic() below
-# (unlike M3/M4, M2's three phases don't share stage_m2()'s old comms.json/
-# sends_log.json contract -- that legacy function is untouched but no longer
-# called for m2).
+# this section builds against. M2's three phases don't share stage_m2()'s old
+# comms.json/sends_log.json contract -- that legacy function is untouched but
+# no longer called for m2.
 def m2_generate_cmd(m2_out: Path, enriched_path, event_path: Path, segments_path: Path,
                      transcript_path: Path, live_requested: bool, notes: list) -> list:
     help_text = script_help(COMMS_SCRIPT)
@@ -888,29 +887,327 @@ def run_m3(payload: dict, run_id: str, out_dir: Path, log: list) -> dict:
 
 
 # --------------------------------------------------------------------------
-# M4 -- no phases of its own; still reuses api/run.py's stage_m1/stage_m4
-# directly (with the module-level timeout monkeypatch above already
-# applied) -- unchanged by the M3 rewrite above, which only split M3 out of
-# what used to be this same function.
-def run_generic(module: str, payload: dict, run_id: str, out_dir: Path, log: list) -> dict:
-    live_requested = bool(payload.get("live", False))
-    try:
-        m1_out = out_dir / "m1"
-        legacy.stage_m1(m1_out, REPO_ROOT / "data" / "incoming" / "registrants.csv", False, log)
-        result = legacy.stage_m4(out_dir, m1_out / "hubspot_ready.csv",
-                                  REPO_ROOT / "data" / "fixtures" / "engagement.json",
-                                  REPO_ROOT / "data" / "fixtures" / "segments.json", log)
-    except legacy.ModuleFailure as fail:
-        return {"ok": False, "module": module, "error": fail.error, "hint": fail.hint, "log": fail.log}
+# M4 (seed / sync / analyze / render) -- see docs/module-api.md's "M4 --
+# phases and files" table for the receipts/snapshot/analysis contract this
+# section builds against. Every phase shells out to the same CLI:
+#
+#   dashboard.py <phase> --out <dir> [--event <json>] [--event-tag <slug>]
+#                        [--offline] [--budget N]
+#
+# and every summary field below is read straight out of the files that CLI
+# wrote -- never recomputed here. A missing or unreadable file lands in
+# `notes` with the field left null, never a fabricated 0 (same discipline as
+# M2 generate / M3 run above). Unlike M1/M2/M3 this section does not gate
+# flags on the script's own --help: the CLI above is fixed by the M4
+# contract, and a dashboard.py that does not exist yet would report no
+# flags at all -- which would silently drop --offline and turn a `live:false`
+# call into a live one. A missing script is reported as ok:false instead.
+M4_PHASES = ("seed", "sync", "analyze", "render")
+M4_ARTIFACT_RELS = ("snapshot.json", "analysis.json", "dashboard_data.json", "index.html",
+                    "receipts/m4_seed.json", "receipts/m4_hubspot_sync.json", "receipts/m4_llm_calls.json")
+M4_RECEIPT_RELS = ("receipts/m4_seed.json", "receipts/m4_hubspot_sync.json", "receipts/m4_llm_calls.json")
 
-    summary = legacy.summarize_m4(result["stdout"])
-    artifacts = {rel: f"/artifacts/{run_id}/{rel}" for rel, _kind in legacy.M4_ARTIFACT_SPECS if (out_dir / rel).exists()}
-    return {
-        "ok": True, "module": module, "phase": payload.get("phase"),
-        "lane": "live" if live_requested else "offline", "run_id": run_id,
-        "model": legacy.FAST_MODEL_CHAIN.split(",")[0] if live_requested else None,
-        "summary": summary, "artifacts": artifacts, "receipts": [], "next": {}, "notes": [], "log": log,
+
+def dashboard_script() -> Path:
+    """modules/m4-dashboard/dashboard.py, overridable with the M4_DASHBOARD_PY
+    env var (a test can point one server process at its own CLI without
+    touching the repo copy). Read per call, not cached."""
+    override = os.environ.get("M4_DASHBOARD_PY")
+    return Path(override) if override else (REPO_ROOT / "modules" / "m4-dashboard" / "dashboard.py")
+
+
+def public_dashboard_enabled() -> bool:
+    """PUBLIC_DASHBOARD=1 drops the Bearer requirement on GET /dashboard/<run>/
+    and GET /narrative/<run> ONLY -- a browser rendering the dashboard cannot
+    send an Authorization header, so those two reads are the only ones that
+    can be opened up. /run and /artifacts stay bearer-only regardless."""
+    return os.environ.get("PUBLIC_DASHBOARD", "").strip() == "1"
+
+
+def read_json_file(path: Path, label: str, notes: list):
+    """The file the CLI wrote, or None + a note saying which file was missing
+    -- the caller leaves the fields that file owns null rather than guessing."""
+    if not path.exists():
+        notes.append(f"{label} not found at {path} -- summary fields read from it are null")
+        return None
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        notes.append(f"{label} present but unreadable ({exc}) -- summary fields read from it are null")
+        return None
+
+
+def count_of(value):
+    """len() of the list/dict the CLI wrote, the number itself when the CLI
+    already counted, None when the key was absent. Never 0 for 'missing'."""
+    if isinstance(value, (list, dict)):
+        return len(value)
+    if isinstance(value, int) and not isinstance(value, bool):
+        return value
+    if isinstance(value, float):
+        return value
+    return None
+
+
+def lookup_first(key: str, sources: list):
+    for src in sources:
+        if isinstance(src, dict) and key in src:
+            return src[key]
+    return None
+
+
+def summarize_m4_seed(m4_out: Path, notes: list) -> dict:
+    receipt = read_json_file(m4_out / "receipts" / "m4_seed.json", "receipts/m4_seed.json", notes) or {}
+    return {key: receipt.get(key) for key in
+            ("method", "contacts_matched", "events_written", "lifecycle_updates", "errors")}
+
+
+def summarize_m4_sync(m4_out: Path, notes: list) -> dict:
+    snapshot = read_json_file(m4_out / "snapshot.json", "snapshot.json", notes) or {}
+    receipt = read_json_file(m4_out / "receipts" / "m4_hubspot_sync.json",
+                             "receipts/m4_hubspot_sync.json", notes) or {}
+    # The sync receipt's own count block ("totals" as dashboard.py writes it,
+    # "counts" per docs/module-api.md's wording) wins; snapshot.json's arrays
+    # answer for anything it doesn't carry.
+    counts = next((receipt[key] for key in ("counts", "totals")
+                   if isinstance(receipt.get(key), dict)), {})
+
+    def from_files(receipt_keys, snapshot_key):
+        for key in receipt_keys:
+            if key in counts:
+                return count_of(counts[key])
+        return count_of(snapshot.get(snapshot_key))
+
+    summary = {
+        "contacts": from_files(("contacts",), "contacts"),
+        "companies": from_files(("companies",), "companies"),
+        "engagements": from_files(("engagements", "email_engagements"), "email_engagements"),
+        "events": from_files(("events",), "events"),
+        "lifecycle_changes": from_files(("lifecycle_changes", "lifecycle_history_rows", "lifecycle_updates"),
+                                         "lifecycle_changes"),
+        "method": snapshot.get("method", receipt.get("method")),
     }
+    for key, val in summary.items():
+        if val is None:
+            notes.append(f"sync summary.{key} is null -- neither snapshot.json nor "
+                          f"receipts/m4_hubspot_sync.json carries it")
+    return summary
+
+
+def summarize_m4_analyze(analysis: dict, notes: list) -> dict:
+    """Counts of the rows analysis.json already holds, never a re-analysis.
+    The llm block wins when it has rows; the deterministic block answers when
+    it doesn't (the rules lane fills only the latter, and reporting the llm
+    block's empty list as "0 anomalies" would contradict the deterministic
+    rows sitting in the same file)."""
+    det = analysis.get("deterministic") if isinstance(analysis.get("deterministic"), dict) else {}
+    llm = analysis.get("llm") if isinstance(analysis.get("llm"), dict) else {}
+
+    def counted(key: str):
+        llm_count, det_count = count_of(llm.get(key)), count_of(det.get(key))
+        if llm_count:
+            return llm_count
+        return det_count if det_count is not None else llm_count
+
+    summary = {"anomalies": counted("anomalies"), "scored": counted("interest_scores"),
+               "committees": counted("committees"), "model": analysis.get("model"),
+               "lane": analysis.get("lane")}
+    for key in ("anomalies", "scored", "committees", "lane"):
+        if summary[key] is None:
+            notes.append(f"analyze summary.{key} is null -- analysis.json has no such field")
+    return summary
+
+
+def summarize_m4_render(m4_out: Path, notes: list) -> dict:
+    """dashboard_data.json is render's own file, so it is read first; the
+    fields it does not carry are read from analysis.json (which render
+    consumed) rather than computed here."""
+    data = read_json_file(m4_out / "dashboard_data.json", "dashboard_data.json", notes) or {}
+    sources = [data, data.get("kpis"), data.get("deterministic"), data.get("summary")]
+    summary = {key: lookup_first(key, sources) for key in ("mql_rate", "top_accounts", "narrative_source")}
+    if summary["narrative_source"] is None and isinstance(data.get("narrative"), dict):
+        summary["narrative_source"] = data["narrative"].get("source")
+    if any(val is None for val in summary.values()):
+        analysis = read_json_file(m4_out / "analysis.json", "analysis.json", notes) or {}
+        fallback = [analysis, analysis.get("deterministic")]
+        for key, val in list(summary.items()):
+            if val is None:
+                summary[key] = lookup_first(key, fallback)
+    summary["top_accounts"] = count_of(summary["top_accounts"])
+    for key, val in summary.items():
+        if val is None:
+            notes.append(f"render summary.{key} is null -- neither dashboard_data.json nor "
+                          f"analysis.json carries it")
+    return summary
+
+
+def m4_cmd(phase: str, m4_out: Path, inputs: dict, live_requested: bool, notes: list) -> list:
+    cmd = [legacy.PY, str(dashboard_script()), phase, "--out", str(m4_out)]
+    if not live_requested:
+        cmd.append("--offline")
+    event_val = inputs.get("event_json_path")
+    if event_val:
+        cmd += ["--event", str(resolve_repo_relative(event_val))]
+    event_slug = inputs.get("event_slug")
+    if event_slug:
+        cmd += ["--event-tag", str(event_slug)]
+    budget = (inputs.get("options") or {}).get("budget")
+    if budget is not None:
+        try:
+            cmd += ["--budget", str(int(budget))]
+        except (TypeError, ValueError):
+            notes.append(f"inputs.options.budget must be an integer, got {budget!r} -- --budget omitted")
+    return cmd
+
+
+def run_m4_phase(payload: dict, run_id: str, out_dir: Path, log: list, phase: str) -> dict:
+    inputs = payload.get("inputs") or {}
+    live_requested = bool(payload.get("live", False))
+    notes = []
+
+    script = dashboard_script()
+    if not script.exists():
+        return {"ok": False, "module": "m4", "phase": phase,
+                "error": f"M4 dashboard CLI not found at {script} (set M4_DASHBOARD_PY to override)",
+                "log": log, "notes": notes}
+
+    m4_out = out_dir / "m4"
+    m4_out.mkdir(parents=True, exist_ok=True)
+    try:
+        cmd = m4_cmd(phase, m4_out, inputs, live_requested, notes)
+    except InputError as exc:
+        return {"ok": False, "module": "m4", "phase": phase, "error": str(exc), "log": log, "notes": notes}
+
+    log.append(f"[m4-{phase}] live={live_requested} -- invoking {script.name}")
+    env = legacy.build_env(live_requested and legacy.openrouter_key_present())
+    result = legacy.run_module(cmd, env, SUBPROCESS_TIMEOUT_S)
+    log.extend(legacy.lines_for_log(result["stdout"], result["stderr"]))
+    if result["timed_out"] or not result["ok"]:
+        error = (f"{script.name} {phase} timed out after {result['elapsed']:.1f}s" if result["timed_out"]
+                 else f"{script.name} {phase} exited {result['returncode']}")
+        return {"ok": False, "module": "m4", "phase": phase, "error": error, "log": log, "notes": notes}
+
+    model = None
+    file_lane = None
+    if phase == "seed":
+        summary = summarize_m4_seed(m4_out, notes)
+        receipt = read_json_file(m4_out / "receipts" / "m4_seed.json", "receipts/m4_seed.json", []) or {}
+        file_lane = receipt.get("lane")
+    elif phase == "sync":
+        summary = summarize_m4_sync(m4_out, notes)
+        file_lane = (read_json_file(m4_out / "snapshot.json", "snapshot.json", []) or {}).get("lane")
+    elif phase == "analyze":
+        analysis = read_json_file(m4_out / "analysis.json", "analysis.json", notes) or {}
+        summary = summarize_m4_analyze(analysis, notes)
+        model, file_lane = analysis.get("model"), analysis.get("lane")
+    else:
+        summary = summarize_m4_render(m4_out, notes)
+        file_lane = (read_json_file(m4_out / "analysis.json", "analysis.json", []) or {}).get("lane")
+
+    artifacts = {rel: f"/artifacts/{run_id}/{rel}" for rel in M4_ARTIFACT_RELS if (m4_out / rel).exists()}
+    receipts = [f"/artifacts/{run_id}/{rel}" for rel in M4_RECEIPT_RELS if (m4_out / rel).exists()]
+    next_block = {"dashboard_url": f"/dashboard/{run_id}/",
+                  "narrative_url": f"/narrative/{run_id}"} if phase == "render" else {}
+
+    return {"ok": True, "module": "m4", "phase": phase,
+            "lane": file_lane or ("live" if live_requested else "offline"),
+            "run_id": run_id, "model": model, "summary": summary, "artifacts": artifacts,
+            "receipts": receipts, "next": next_block, "notes": notes, "log": log}
+
+
+def run_m4(payload: dict, run_id: str, out_dir: Path, log: list) -> dict:
+    phase = payload.get("phase")
+    if phase in M4_PHASES:
+        return run_m4_phase(payload, run_id, out_dir, log, phase)
+    return {"ok": False, "module": "m4", "phase": phase,
+            "error": f"invalid m4 phase {phase!r} (must be one of {', '.join(M4_PHASES)})",
+            "log": log, "notes": []}
+
+
+# --------------------------------------------------------------------------
+# M4 narrative + dashboard reads (GET /narrative/<run_id>, GET /dashboard/<run_id>/)
+RUN_ID_RE = re.compile(r"^[A-Za-z0-9._-]+$")
+
+
+def extract_narrative(analysis: dict):
+    """Returned exactly as analysis.json holds it (string or paragraph list)
+    -- this endpoint never composes narrative text of its own."""
+    det = analysis.get("deterministic") if isinstance(analysis.get("deterministic"), dict) else {}
+    llm = analysis.get("llm") if isinstance(analysis.get("llm"), dict) else {}
+    for src, key in ((analysis, "movement_narrative"), (analysis, "narrative"),
+                     (llm, "movement_narrative"), (llm, "narrative"),
+                     (det, "movement_narrative"), (det, "narrative")):
+        val = src.get(key)
+        if val:
+            return val
+    return None
+
+
+def extract_disagreements(analysis: dict) -> list:
+    llm = analysis.get("llm") if isinstance(analysis.get("llm"), dict) else {}
+    for candidate in (llm.get("validator"), analysis.get("validator")):
+        if isinstance(candidate, dict) and "disagreements" in candidate:
+            return candidate["disagreements"]
+        if isinstance(candidate, list):
+            return candidate
+    return []
+
+
+def narrative_response(run_id: str, refresh: bool, live: bool) -> tuple:
+    """(http_status, body). refresh=1 re-runs the analyze phase in that run's
+    own directory first (live lane unless ?live=0), then answers from the
+    analysis.json that call just wrote -- the narrative is never generated
+    here, only read."""
+    out_dir = OUT_API_ROOT / run_id
+    m4_out = out_dir / "m4"
+    analysis_path = m4_out / "analysis.json"
+    notes = []
+    log = []
+
+    if refresh:
+        resp = run_m4_phase({"module": "m4", "live": live, "inputs": {}}, run_id, out_dir, log, "analyze")
+        if not resp.get("ok"):
+            return 200, {"ok": False, "run_id": run_id, "refreshed": False,
+                          "error": f"analyze refresh failed: {resp.get('error')}",
+                          "notes": resp.get("notes", [])}
+        notes.extend(resp.get("notes", []))
+
+    if not analysis_path.exists():
+        return 404, {"ok": False, "run_id": run_id,
+                      "error": f"no analysis.json for run {run_id!r} -- POST /run "
+                               f"{{\"module\":\"m4\",\"phase\":\"analyze\"}} for this run_id (or GET this "
+                               f"path with ?refresh=1) first"}
+    analysis = read_json_file(analysis_path, "analysis.json", notes)
+    if analysis is None:
+        return 200, {"ok": False, "run_id": run_id, "refreshed": refresh,
+                      "error": f"analysis.json for run {run_id!r} is not readable JSON", "notes": notes}
+
+    generated_at = analysis.get("generated_at")
+    if not generated_at:
+        generated_at = datetime.fromtimestamp(analysis_path.stat().st_mtime, timezone.utc).isoformat()
+        notes.append("analysis.json has no generated_at -- reporting the file's own mtime instead")
+
+    return 200, {"ok": True, "run_id": run_id, "refreshed": refresh,
+                  "narrative": extract_narrative(analysis),
+                  "source": analysis.get("narrative_source"),
+                  "generated_at": generated_at, "model": analysis.get("model"),
+                  "validator_disagreements": extract_disagreements(analysis), "notes": notes}
+
+
+def inject_narrative_endpoint(html: str, run_id: str) -> str:
+    """The served page cannot send a Bearer header, so it is told its own
+    same-origin narrative URL through a global instead of hardcoding one at
+    build time. Injected as a path, not an absolute URL: behind Railway's
+    TLS proxy the scheme/host this process sees are not the ones the browser
+    used, and a path is same-origin by construction."""
+    snippet = f"<script>window.NARRATIVE_ENDPOINT = {json.dumps('/narrative/' + run_id)};</script>\n"
+    idx = html.lower().find("<script")
+    if idx != -1:
+        return html[:idx] + snippet + html[idx:]
+    idx = html.lower().find("</body>")
+    if idx != -1:
+        return html[:idx] + snippet + html[idx:]
+    return html + "\n" + snippet
 
 
 # --------------------------------------------------------------------------
@@ -934,7 +1231,7 @@ def handle_run_request(payload: dict) -> dict:
     elif module == "m3":
         resp = run_m3(payload, run_id, out_dir, log)
     else:
-        resp = run_generic(module, payload, run_id, out_dir, log)
+        resp = run_m4(payload, run_id, out_dir, log)
 
     resp.setdefault("run_id", run_id)
     resp.setdefault("module", module)
@@ -958,7 +1255,7 @@ def find_artifact(out_dir: Path, rel_path: str):
     if not out_dir.exists():
         return None
     out_resolved = out_dir.resolve()
-    for base in (out_dir, out_dir / "m1", out_dir / "m2"):
+    for base in (out_dir, out_dir / "m1", out_dir / "m2", out_dir / "m4"):
         candidate = base / rel_path
         try:
             resolved = candidate.resolve()
@@ -996,6 +1293,13 @@ def auth_ok(handler: "Handler") -> bool:
     return DEV_MODE
 
 
+def dashboard_auth_ok(handler: "Handler") -> bool:
+    """Bearer as everywhere else, OR PUBLIC_DASHBOARD=1 -- the only two routes
+    (GET /dashboard/<run>/ and GET /narrative/<run>) a browser reaches without
+    being able to set a header. See public_dashboard_enabled()."""
+    return auth_ok(handler) or public_dashboard_enabled()
+
+
 # --------------------------------------------------------------------------
 # HTTP
 class Handler(BaseHTTPRequestHandler):
@@ -1029,8 +1333,67 @@ class Handler(BaseHTTPRequestHandler):
                 return
             self._serve_artifact(parsed.path[len("/artifacts/"):])
             return
+        if parsed.path.startswith("/narrative/"):
+            self._serve_narrative(parsed.path[len("/narrative/"):], parsed.query)
+            return
+        if parsed.path.startswith("/dashboard/"):
+            self._serve_dashboard(parsed.path[len("/dashboard/"):])
+            return
         self._json(404, {"ok": False, "error": f"not found: {parsed.path}"})
         self._log_line(404)
+
+    def _run_id_from(self, rest: str):
+        """The <run_id> segment of /narrative/<run_id> or /dashboard/<run_id>/,
+        or None if it is not a plain run id (it ends up inside a <script>
+        literal on the dashboard route, so nothing exotic is accepted)."""
+        run_id = unquote(rest).strip("/")
+        return run_id if run_id and RUN_ID_RE.match(run_id) else None
+
+    def _serve_narrative(self, rest: str, query: str):
+        if not dashboard_auth_ok(self):
+            self._json(401, {"ok": False, "error": "unauthorized"})
+            self._log_line(401)
+            return
+        run_id = self._run_id_from(rest)
+        if run_id is None:
+            self._json(400, {"ok": False, "error": "expected /narrative/<run_id>"})
+            self._log_line(400)
+            return
+        params = parse_qs(query)
+        refresh = (params.get("refresh", ["0"])[0] or "").lower() in ("1", "true", "yes")
+        live = (params.get("live", ["1"])[0] or "").lower() not in ("0", "false", "no")
+        try:
+            status, body = narrative_response(run_id, refresh, live)
+        except Exception as exc:  # noqa: BLE001 -- same never-500-silently rule as /run
+            status, body = 200, {"ok": False, "run_id": run_id,
+                                  "error": f"unhandled {type(exc).__name__}: {exc}"}
+        self._json(status, body)
+        self._log_line(status)
+
+    def _serve_dashboard(self, rest: str):
+        if not dashboard_auth_ok(self):
+            self._json(401, {"ok": False, "error": "unauthorized"})
+            self._log_line(401)
+            return
+        run_id = self._run_id_from(rest)
+        if run_id is None:
+            self._json(400, {"ok": False, "error": "expected /dashboard/<run_id>/"})
+            self._log_line(400)
+            return
+        index_path = OUT_API_ROOT / run_id / "m4" / "index.html"
+        if not index_path.is_file():
+            self._json(404, {"ok": False, "error": f"no index.html for run {run_id!r} -- POST /run "
+                                                    f"{{\"module\":\"m4\",\"phase\":\"render\"}} for this run_id first"})
+            self._log_line(404)
+            return
+        html = inject_narrative_endpoint(index_path.read_text(encoding="utf-8"), run_id)
+        data = html.encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+        self._log_line(200)
 
     def _serve_artifact(self, rest: str):
         rest = unquote(rest)
