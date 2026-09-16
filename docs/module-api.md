@@ -108,3 +108,17 @@ for n8n's Google Drive node. `record` body: `{run_id, drive: {folder_url, folder
 `manifest.json`: `{event_slug, generated_at, lane, models: {text, image}, files: [{name, kind, bytes, source: "llm|image_model|ffmpeg|sarvam", grounded: true|false|null}], shared_drive: {folder_url, files: [...]}}` — every file names its source; nothing pretends a CSS render is a generated image.
 
 Fuel rules: text calls run on the free nemotron model with small prompts when no credits exist; image generation needs a paid model and is skipped with a `notes` entry (never a placeholder PNG) when the key has no credits; clips need only ffmpeg.
+
+## M4 — phases and files (W4)
+
+Source of truth is the HubSpot portal, not a fixture: M1 pushed the contacts (tagged `postevent_event`), M2 logged the
+email engagements, and M4 writes the engagement stream and lifecycle changes INTO HubSpot before reading anything back.
+
+| phase | what runs | writes |
+|---|---|---|
+| `seed` | writes the event's engagement stream into HubSpot for the tagged contacts: tries custom behavioural events (`POST /events/v3/event-definitions` once, then `POST /events/v3/send` per open/click/pageview/form_fill), falls back to contact properties (`postevent_opens/clicks/pageviews/form_fills`, `postevent_last_engaged`) when the portal refuses event definitions; lifecycle stage changes are applied as real `lifecyclestage` updates so HubSpot's own property history holds the movement. Registrant people are synthetic, so this stream is simulated and labelled `source: "seeded"` everywhere it appears; opens/clicks on the demo dispatch are real only when sent through HubSpot | `receipts/m4_seed.json` (method used, counts, errors) |
+| `sync` | pulls from HubSpot: tagged contacts with `propertiesWithHistory=lifecyclestage`, companies + associations, email engagements, custom events or the counter properties | `snapshot.json`, `receipts/m4_hubspot_sync.json` (endpoints, pages, counts) |
+| `analyze` | LLM over the snapshot: engagement anomalies (with the evidence rows), lead-interest score per contact with rationale, **narrated stage movement** across 7/14/30 days, top accounts and buying committees (≥2 engaged contacts at one company). Deterministic math computes the same metrics as a validator; disagreements are flagged, never hidden | `analysis.json`, `receipts/m4_llm_calls.json` |
+| `render` | self-contained `index.html`: attendee→MQL conversion, top engaged accounts + contacts, lifecycle movement 7/14/30d, anomaly panel, buying-committee map, narrative block with a source badge; `GET /narrative/<run_id>?refresh=1` re-runs `analyze` so the narrative refreshes on load when the page is served from the module API (Vercel's `/api/narrative` proxies to it) | `index.html`, `dashboard_data.json` |
+
+`sync` response `summary` = `{contacts, companies, engagements, events, lifecycle_changes, method}`; `analyze` `summary` = `{anomalies, scored, committees, model, lane}`; `render` `summary` = `{mql_rate, top_accounts, narrative_source}`.
