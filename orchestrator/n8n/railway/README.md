@@ -176,3 +176,94 @@ succeeded but were still logged, never dropped, per the brief.
 Summary` both assume the `generate` phase's response `summary` mirrors `dispatch_plan.json`'s
 `counts`/`variants`/`event_close_ts` fields — `docs/module-api.md` shows the plan file's own shape
 but not the API envelope around it for this phase, so these paths are inferred, not confirmed.
+
+## §M3 — Content Repurposing (Railway)
+
+`m3-content-repurposing.json` — n8n owns orchestration, the Drive upload leg, and the evidence
+receipt; the module API owns transcription, extraction/blog/image/clip generation, and the
+manifest write. Import the same way as M1/M2 (Workflows → Import from File), then activate it.
+
+### Nodes (26: 24 logic + 2 sticky notes)
+
+| node | type | purpose |
+|---|---|---|
+| M3 Run (webhook) | webhook v2 | `POST /webhook/m3-run`, body `{event_slug, transcribe?, images?, clips?}` |
+| Transcribe Requested? | if v2 | routes on `body.transcribe` |
+| Call Module API - Transcribe | httpRequest v4.2 | `phase=transcribe`, timeout 1800s |
+| Transcribe OK? / Stop: Transcribe Failed | if v2 / stopAndError v1 | `ok:true` gate |
+| Build Run Body (Transcribed) / (No Transcribe) | code v2 | both emit `{event_slug, run_id, images, clips}` so `Call Module API - Run` sees one shape regardless of branch; the transcribed branch carries transcribe's `run_id` forward so `run` continues the same run |
+| Call Module API - Run | httpRequest v4.2 | `phase=run`, `inputs.options.{images,clips}`, timeout 1800s |
+| Run OK? / Stop: Run Failed | if v2 / stopAndError v1 | `ok:true` gate |
+| Respond to Webhook | respondToWebhook v1.1 | `{run_id, status:"generated", summary}` — fires before the Drive leg, execution continues in the background |
+| Create Drive Folder | googleDrive v3 | `resource:"folder"`, `operation:"create"`, cred `Google Drive account` |
+| Split Next Files | code v2 | `next.files[]` → one item each |
+| Batch Files (1) | splitInBatches v3 | loop, 1 file/iteration |
+| Download File | httpRequest v4.2 | `{{$env.MODULE_API_URL}}{{$json.url}}`, bearer header, `responseFormat: file` |
+| Upload File to Drive | googleDrive v3 | `resource:"file"`, `operation:"upload"`, cred `Google Drive account` |
+| Map Drive Upload Result | code v2 | `{name, drive_file_id, web_view_link}`, loops back into `Batch Files (1)` |
+| Aggregate Drive Uploads | code v2 | `$('Map Drive Upload Result').all()` after the loop's `done` output |
+| Call Module API - Record / Record OK? / Stop: Record Failed | httpRequest v4.2 / if v2 / stopAndError v1 | `phase=record` with `drive:{folder_url,folder_id,files}` |
+| Build Evidence Summary | code v2 | the receipt object |
+| Write M3 Run Summary to Disk | readWriteFile v1 | `/home/node/.n8n/runs/<run_id>-m3.json` |
+| M3 Run Summary (Final) | set v3.4 | re-emits the receipt as the execution's last node |
+
+### Env vars (n8n service)
+
+| var | used for |
+|---|---|
+| `MODULE_API_URL`, `MODULE_API_TOKEN` | module API calls (transcribe/run/record), same pattern as m1/m2 |
+| `DRIVE_PARENT_FOLDER_ID` | Drive folder id the run's evidence folder is created under; unset → Drive root (`root`) |
+| `N8N_BLOCK_ENV_ACCESS_IN_NODE=false` | required, same as m1/m2 |
+
+### Google Drive OAuth2 credential setup (n8n UI)
+
+Credentials → New → Google Drive OAuth2 API → connect the target Google account (scope
+`https://www.googleapis.com/auth/drive.file` is enough — this workflow only creates folders and
+uploads files it just created, never browses/reads the rest of the Drive) → **name it exactly
+`Google Drive account`**. Both Google Drive nodes (`Create Drive Folder`, `Upload File to Drive`)
+reference this name, not an id.
+
+### Trigger it
+
+```bash
+curl -X POST https://<your-n8n-host>/webhook/m3-run \
+  -H "Content-Type: application/json" \
+  -d '{"event_slug": "darwinbox-ai-in-hr-2026-08-13", "transcribe": true, "images": true, "clips": true}'
+```
+Returns `{"run_id": "...", "status": "generated", "summary": {...}}` once `phase=run` succeeds —
+the Drive upload and `phase=record` continue in the background after the response is sent.
+
+### What the Drive folder looks like when done
+
+One folder per run, directly under `$env.DRIVE_PARENT_FOLDER_ID` (or Drive root), named
+`Post-Event/<event_slug>/<run_id>` — e.g. `Post-Event/darwinbox-ai-in-hr-2026-08-13/m3-20260916-1104`.
+Drive allows `/` as a plain character in a folder name, so this is one folder with a path-shaped
+label tagging it to its event and run, not three nested folders. Inside it: every file `next.files`
+listed for the run — `blog.md`, `youtube.md`, `infographic.md`, `social.md`, `extraction.json`,
+`visuals/*.png`, `clips/*.mp4` + `*.srt`, `manifest.json` — uploaded with their original names.
+`manifest.json.shared_drive` (written by `phase=record`) then carries the folder's `folder_url` and
+each file's `drive_file_id`/`web_view_link`, so the run's manifest and the shared Drive folder
+point at each other — the "saved to a shared drive and tagged by event" proof.
+
+### Audit result
+
+`validate.py` → **GREEN, 0 failures, 2 warnings** (both expected — orphan warnings on the 2 sticky
+notes, which never have incoming connections, same as m1/m2). `json.load` parses; every `$('Node')`
+reference in the file resolves to a node that exists (checked programmatically, 26 nodes, 0
+unresolved references, 0 duplicate names).
+
+**Flagged as unverified against a live instance** (per the skill's own audit rule):
+- Both `Create Drive Folder` and `Upload File to Drive` use `n8n-nodes-base.googleDrive` v3 with a
+  best-effort reconstruction of the `driveId`/`folderId` resourceLocator shape and
+  `inputDataFieldName` — the brief flagged this as an acceptable risk upfront ("if unsure of exact
+  parameter names, say so"); confirm field names in your instance's node panel before relying on
+  this in production, same caveat m1/m2 carry for their `readWriteFile` nodes.
+- `Call Module API - Transcribe`'s body adds `inputs.event_slug` beyond the brief's literal
+  shorthand (`{module,phase,live}` only) — without it the module has no way to know which event's
+  recording to transcribe; inferred from the pattern every other M1/M2/M3 phase call uses, not
+  confirmed against a live `transcribe` response.
+- `Build Run Body (No Transcribe)` assumes the module API can locate an existing transcript by
+  `event_slug` alone when no `run_id` is supplied (the skip-transcribe use case) — `docs/module-api.md`
+  doesn't document this resolution path.
+- `webViewLink` on both Drive nodes' responses is assumed to be the Drive API's own field name,
+  carried through unchanged by the n8n node — not confirmed against a live call.

@@ -1,0 +1,676 @@
+{
+  "name": "M3 — Content Repurposing (Railway)",
+  "nodes": [
+    {
+      "id": "m3-run-webhook",
+      "name": "M3 Run (webhook)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [200, 400],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "m3-run",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "webhookId": "m3-run-webhook-0001",
+      "notes": "Entry point. Body: {event_slug, transcribe?: bool, images?: bool, clips?: bool}. Responds via 'Respond to Webhook' AFTER 'Call Module API - Run' returns, so the caller gets the real run_id and content summary, not a bare ack -- same pattern as M1/M2."
+    },
+    {
+      "id": "transcribe-requested",
+      "name": "Transcribe Requested?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [460, 400],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "cond-transcribe-flag",
+              "leftValue": "={{ $json.body.transcribe }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "notes": "True = caller passed transcribe:true -- run phase=transcribe first. False = skip straight to phase=run (a transcript already exists from a prior m3-run call for this event, or the operator doesn't want re-transcription)."
+    },
+    {
+      "id": "call-module-api---transcribe",
+      "name": "Call Module API - Transcribe",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [700, 200],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.MODULE_API_URL }}/run",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.MODULE_API_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { module: \"m3\", phase: \"transcribe\", live: true, inputs: { event_slug: $json.body.event_slug } } }}",
+        "options": {
+          "timeout": 1800000
+        }
+      },
+      "retryOnFail": false,
+      "notes": "Module API /run, phase=transcribe. timeout=1800000ms (1800s) per spec -- Sarvam batch transcription over a full recording is slow. retryOnFail=false: same write-once reasoning as m1/m2's prepare/generate calls, a blind retry on a slow-but-succeeding call risks a duplicate Sarvam batch job. NOTE: the brief's literal body shorthand was {module,phase,live} only; inputs.event_slug is added here because every other M1/M2/M3 phase keys off event_slug in inputs and the module otherwise has no way to know which event's recording to transcribe -- flagged as an inference beyond the brief's shorthand, not a confirmed field name."
+    },
+    {
+      "id": "transcribe-ok",
+      "name": "Transcribe OK?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [940, 200],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "cond-transcribe-ok",
+              "leftValue": "={{ $json.ok }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "notes": "True = transcribe's JSON body has ok:true (HTTP 200 either way per module-api.md -- app-level failure is still HTTP 200 with ok:false). False routes to 'Stop: Transcribe Failed'."
+    },
+    {
+      "id": "stop-transcribe-failed",
+      "name": "Stop: Transcribe Failed",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [940, 460],
+      "parameters": {
+        "errorMessage": "=m3 transcribe failed for event {{ $('M3 Run (webhook)').item.json.body.event_slug }}: {{ $json.error || 'module API returned ok:false with no error message' }}"
+      },
+      "notes": "Terminal failure node -- same pattern as m1/m2's Stop nodes. Surfaces the module API's own error string in the execution log."
+    },
+    {
+      "id": "build-run-body-transcribed",
+      "name": "Build Run Body (Transcribed)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1180, 200],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const webhookBody = $('M3 Run (webhook)').item.json.body;\nconst transcribe = $json;\nreturn [{ json: {\n  event_slug: webhookBody.event_slug,\n  run_id: transcribe.run_id,\n  images: webhookBody.images,\n  clips: webhookBody.clips\n} }];"
+      },
+      "notes": "Carries transcribe's run_id forward so phase=run continues the SAME run (and finds the transcript.md transcribe just wrote) instead of the module API minting a fresh run_id. Same output shape as 'Build Run Body (No Transcribe)' so both branches feed 'Call Module API - Run' identically -- mirrors m1's 'Build Finalize Body (No Clay)' / 'Assemble Clay Results' pattern for two branches converging on one shape."
+    },
+    {
+      "id": "build-run-body-no-transcribe",
+      "name": "Build Run Body (No Transcribe)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [700, 620],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const webhookBody = $json.body;\nreturn [{ json: {\n  event_slug: webhookBody.event_slug,\n  run_id: null,\n  images: webhookBody.images,\n  clips: webhookBody.clips\n} }];"
+      },
+      "notes": "No-transcribe path body for phase=run. run_id:null -- the module API is assumed to locate an already-existing transcript by event_slug when no run_id is given (UNVERIFIED: module-api.md doesn't document how phase=run resolves 'the' transcript when called standalone; if your module API instead requires an explicit run_id to reuse, pass one in the webhook body and wire it through here)."
+    },
+    {
+      "id": "call-module-api---run",
+      "name": "Call Module API - Run",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1420, 400],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.MODULE_API_URL }}/run",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.MODULE_API_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { module: \"m3\", phase: \"run\", live: true, run_id: $json.run_id || undefined, inputs: { event_slug: $json.event_slug, options: { images: $json.images, clips: $json.clips } } } }}",
+        "options": {
+          "timeout": 1800000
+        }
+      },
+      "retryOnFail": false,
+      "notes": "Module API /run, phase=run. Fed by either 'Build Run Body (Transcribed)' or 'Build Run Body (No Transcribe)' -- both emit {event_slug, run_id, images, clips}, so this node's body is identical regardless of branch. 'run_id: $json.run_id || undefined' drops the field from the outgoing JSON entirely when null (JSON.stringify omits undefined-valued keys), so the no-transcribe branch doesn't send a literal null run_id. timeout=1800000ms (1800s) per spec: repurpose.py runs one LLM extraction, image generation, and ffmpeg clip cuts in one phase. retryOnFail=false: same write-once reasoning as every other generate/finalize-shaped call in this workflow set."
+    },
+    {
+      "id": "run-ok",
+      "name": "Run OK?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1660, 400],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "cond-run-ok",
+              "leftValue": "={{ $json.ok }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "notes": "Same ok:true gate as 'Transcribe OK?', on the run response. False routes to 'Stop: Run Failed'."
+    },
+    {
+      "id": "stop-run-failed",
+      "name": "Stop: Run Failed",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [1660, 680],
+      "parameters": {
+        "errorMessage": "=m3 run failed for event {{ $('M3 Run (webhook)').item.json.body.event_slug }}: {{ $json.error || 'module API returned ok:false with no error message' }}"
+      },
+      "notes": "Terminal failure node for the phase=run call (extraction/blog/images/clips)."
+    },
+    {
+      "id": "respond-to-webhook",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1900, 400],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { run_id: $json.run_id, status: \"generated\", summary: $json.summary } }}",
+        "options": {}
+      },
+      "notes": "Fires once phase=run succeeds, so the caller gets run_id/status/summary (blog_words, chapters, posts, images, clips, grounding) without waiting for the Drive leg. Execution keeps running after this node (Respond to Webhook does not terminate the workflow) -- folder creation, uploads, and phase=record continue in the background, same pattern as M1's post-respond Clay leg and M2's post-respond send loop."
+    },
+    {
+      "id": "create-drive-folder",
+      "name": "Create Drive Folder",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [2140, 400],
+      "parameters": {
+        "resource": "folder",
+        "operation": "create",
+        "name": "=Post-Event/{{ $('M3 Run (webhook)').item.json.body.event_slug }}/{{ $json.run_id }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive",
+          "cachedResultName": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $env.DRIVE_PARENT_FOLDER_ID || 'root' }}"
+        }
+      },
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "PLACEHOLDER_GOOGLE_DRIVE_OAUTH2",
+          "name": "Google Drive account"
+        }
+      },
+      "notes": "UNVERIFIED parameter shape, flagged per this skill's audit rule (same caveat m1/m2 carry for their readWriteFile nodes): resource='folder'/operation='create' is the documented v3 Google Drive node shape, but the exact resourceLocator field names for the parent-location picker (driveId/folderId, the __rl/mode/value/cachedResultName wrapper) are a best-effort reconstruction -- confirm against your instance's node panel. Creates ONE folder whose name is the literal string 'Post-Event/<event_slug>/<run_id>' (Drive allows '/' as a plain character in a folder name -- this is NOT three nested folders) directly under $env.DRIVE_PARENT_FOLDER_ID, or Drive root if that env var is unset."
+    },
+    {
+      "id": "split-next-files",
+      "name": "Split Next Files",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2380, 400],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const files = ($('Call Module API - Run').item.json.next || {}).files || [];\nreturn files.map(f => ({ json: f }));"
+      },
+      "notes": "One item per generated artifact -- next.files: [{name, path, url, mime, kind}] per module-api.md's M3 'run' response (kind: blog|youtube|infographic|social|extraction|visual|clip|caption|manifest), whatever this run actually produced."
+    },
+    {
+      "id": "batch-files-1",
+      "name": "Batch Files (1)",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [2620, 400],
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "notes": "Loop, one file per iteration -- same pattern as M2's 'Batch Recipients (1)'. Output 0 ('done') fires once every file has uploaded; output 1 ('loop') feeds the download+upload branch for the current file. 'Map Drive Upload Result' loops back into this node's input to continue."
+    },
+    {
+      "id": "download-file",
+      "name": "Download File",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2860, 200],
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $env.MODULE_API_URL }}{{ $json.url }}",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.MODULE_API_TOKEN }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 120000,
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "notes": "Downloads one artifact per loop iteration from the module API's /artifacts/<run_id>/<path> route -- next.files[].url is that relative path per module-api.md, concatenated onto $env.MODULE_API_URL per the brief. responseFormat:'file' puts the bytes in the binary property (default name 'data') that 'Upload File to Drive' reads via inputDataFieldName. retryOnFail covers transient network faults only, same as m1's 'Push Domain to Clay'."
+    },
+    {
+      "id": "upload-file-to-drive",
+      "name": "Upload File to Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [3100, 200],
+      "parameters": {
+        "resource": "file",
+        "operation": "upload",
+        "name": "={{ $('Batch Files (1)').item.json.name }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive",
+          "cachedResultName": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Create Drive Folder').item.json.id }}"
+        },
+        "inputDataFieldName": "data"
+      },
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "PLACEHOLDER_GOOGLE_DRIVE_OAUTH2",
+          "name": "Google Drive account"
+        }
+      },
+      "notes": "UNVERIFIED parameter shape, same caveat as 'Create Drive Folder' -- resource='file'/operation='upload' is the documented v3 shape; 'inputDataFieldName' (the binary property holding the file downloaded by 'Download File') and the driveId/folderId resourceLocator field names are a best-effort reconstruction. Confirm against your instance's node panel. Uploads into the folder 'Create Drive Folder' just created, via that node's returned 'id'."
+    },
+    {
+      "id": "map-drive-upload-result",
+      "name": "Map Drive Upload Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [3340, 200],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const file = $('Batch Files (1)').item.json;\nconst uploaded = $json;\nreturn [{ json: {\n  name: file.name,\n  drive_file_id: uploaded.id || null,\n  web_view_link: uploaded.webViewLink || null\n} }];"
+      },
+      "notes": "One drive_manifest.json row per uploaded file, matching the record-phase body shape in module-api.md ({name, drive_file_id, web_view_link}). Reads the source file's logical name from 'Batch Files (1)' (the loop's current item) and the Drive-assigned id/webViewLink from 'Upload File to Drive''s own response -- 'webViewLink' is the Drive API's own field name, assumed carried through unchanged by the node; UNVERIFIED against a live call."
+    },
+    {
+      "id": "aggregate-drive-uploads",
+      "name": "Aggregate Drive Uploads",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2860, 640],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const files = $('Map Drive Upload Result').all().map(i => i.json);\nconst folder = $('Create Drive Folder').item.json;\nreturn [{ json: {\n  run_id: $('Call Module API - Run').item.json.run_id,\n  folder_id: folder.id,\n  folder_url: folder.webViewLink || null,\n  files\n} }];"
+      },
+      "notes": "Fires once, from 'Batch Files (1)' output 0 ('done'), after every file has looped through -- same $('NodeName').all() aggregation pattern as M2's 'Aggregate Dispatch Results'. folder_url assumes the Google Drive node's create-folder response carries the Drive API's own 'webViewLink' field unchanged -- UNVERIFIED against a live call, same caveat as the upload leg."
+    },
+    {
+      "id": "call-module-api---record",
+      "name": "Call Module API - Record",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [3100, 640],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.MODULE_API_URL }}/run",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.MODULE_API_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { module: \"m3\", phase: \"record\", run_id: $json.run_id, drive: { folder_url: $json.folder_url, folder_id: $json.folder_id, files: $json.files } } }}",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "retryOnFail": false,
+      "notes": "Module API /run, phase=record -- writes the Drive upload results into manifest.json per module-api.md ('record' body: {run_id, drive: {folder_url, folder_id, files}}). retryOnFail=false: record mutates manifest.json, a blind retry risks a double-write. timeout=300000ms (300s), generous for a small JSON write."
+    },
+    {
+      "id": "record-ok",
+      "name": "Record OK?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [3340, 640],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "cond-record-ok",
+              "leftValue": "={{ $json.ok }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "notes": "Same ok:true gate as the earlier phases, on the record response."
+    },
+    {
+      "id": "stop-record-failed",
+      "name": "Stop: Record Failed",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [3340, 900],
+      "parameters": {
+        "errorMessage": "=m3 record failed for run {{ $('Call Module API - Run').item.json.run_id }}: {{ $json.error || 'module API returned ok:false with no error message' }}"
+      },
+      "notes": "Terminal failure node for a record-side failure. Files are already uploaded to Drive by this point -- this stop is about the manifest.json write, not the upload itself."
+    },
+    {
+      "id": "build-evidence-summary",
+      "name": "Build Evidence Summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [3580, 640],
+      "parameters": {
+        "language": "javaScript",
+        "jsCode": "const runResp = $('Call Module API - Run').item.json;\nconst recordResp = $json;\nconst runSummary = runResp.summary || {};\nconst drive = $('Aggregate Drive Uploads').item.json;\n\nconst receipts = [].concat(runResp.receipts || [], recordResp.receipts || []);\n\nconst summary = {\n  run_id: recordResp.run_id || runResp.run_id,\n  blog_words: runSummary.blog_words ?? null,\n  chapters: runSummary.chapters ?? null,\n  posts: runSummary.posts ?? null,\n  images: runSummary.images ?? null,\n  clips: runSummary.clips ?? null,\n  grounding: runSummary.grounding ?? null,\n  drive_folder_url: drive.folder_url ?? null,\n  files_uploaded: (drive.files || []).length,\n  receipts\n};\n\nconst fileName = summary.run_id + '-m3.json';\nconst fileContent = Buffer.from(JSON.stringify(summary, null, 2), 'utf8').toString('base64');\n\nreturn [{ json: summary, binary: { data: { data: fileContent, mimeType: 'application/json', fileName: fileName } } }];"
+      },
+      "notes": "blog_words/chapters/posts/images/clips/grounding come straight from phase=run's response summary shape documented in module-api.md ({blog_words, chapters, posts:{linkedin,x}, images, clips, grounding:{checked,passed}, lane, models}). drive_folder_url/files_uploaded come from 'Aggregate Drive Uploads'. receipts concatenates run's and record's receipts arrays (both documented as string URL lists)."
+    },
+    {
+      "id": "write-m3-run-summary-to-disk",
+      "name": "Write M3 Run Summary to Disk",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [3820, 640],
+      "parameters": {
+        "operation": "write",
+        "fileName": "=/home/node/.n8n/runs/{{ $json.run_id }}-m3.json",
+        "dataPropertyName": "data",
+        "options": {}
+      },
+      "notes": "UNVERIFIED against a live instance -- same caveat m1/m2's equivalent node carries: n8n's dedicated Write Binary File node is deprecated/removed in current 1.x/2.x, folded into Read/Write Files from Disk (n8n-nodes-base.readWriteFile, operation=write). Reads the binary property built by 'Build Evidence Summary' and writes it to /home/node/.n8n/runs/<run_id>-m3.json inside the container -- confirm the parameter names (fileName, dataPropertyName) against your instance's node panel."
+    },
+    {
+      "id": "m3-run-summary-final",
+      "name": "M3 Run Summary (Final)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [4060, 640],
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{ $('Build Evidence Summary').item.json }}",
+        "options": {}
+      },
+      "notes": "Re-emits the clean evidence summary (no binary payload) as the workflow's last node, so the n8n execution log shows the full receipt object -- same pattern as m1/m2."
+    },
+    {
+      "id": "sticky-note-env-vars-+-credentials",
+      "name": "Sticky Note: Env Vars + Credentials",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [200, 120],
+      "parameters": {
+        "content": "## ENV VARS\nMODULE_API_URL, MODULE_API_TOKEN -- module API calls (transcribe/run/record), same pattern as m1/m2.\nDRIVE_PARENT_FOLDER_ID -- Drive folder id the run's evidence folder is created under; unset -> Drive root ('root').\nAll read via $env -- self-hosted n8n needs N8N_BLOCK_ENV_ACCESS_IN_NODE=false, same requirement as m1/m2.\n\n## CREDENTIALS\nOne Google Drive OAuth2 credential, named exactly 'Google Drive account' in the n8n UI, used by both Google Drive nodes (create folder + upload file). No HubSpot/Clay/Gmail credentials in this file -- the module API holds its own keys server-side for transcribe/run/record.",
+        "height": 280,
+        "width": 500,
+        "color": 4
+      }
+    },
+    {
+      "id": "sticky-note-drive-folder-naming",
+      "name": "Sticky Note: Drive Folder Naming + Unverified Params",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [700, 820],
+      "parameters": {
+        "content": "## DRIVE FOLDER NAMING\n'Create Drive Folder' creates ONE folder whose name is the literal string 'Post-Event/<event_slug>/<run_id>' -- Drive allows '/' as a plain character in a folder name, so this is not three nested folders, just one folder with a path-shaped label, directly under $env.DRIVE_PARENT_FOLDER_ID (or Drive root if that env var is unset).\n\n## UNVERIFIED GOOGLE DRIVE PARAMS\nBoth Google Drive nodes' exact parameter names (the resourceLocator __rl/mode/value/cachedResultName shape for driveId/folderId, inputDataFieldName for the upload binary field) are a best-effort reconstruction of n8n-nodes-base.googleDrive v3's resource='folder'/operation='create' and resource='file'/operation='upload' shapes -- this skill could not confirm the literal field names against a live instance. Check them in your instance's node panel before relying on this in production, same caveat m1/m2 carry for their readWriteFile nodes.",
+        "height": 320,
+        "width": 640,
+        "color": 5
+      }
+    }
+  ],
+  "connections": {
+    "M3 Run (webhook)": {
+      "main": [
+        [
+          { "node": "Transcribe Requested?", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Transcribe Requested?": {
+      "main": [
+        [
+          { "node": "Call Module API - Transcribe", "type": "main", "index": 0 }
+        ],
+        [
+          { "node": "Build Run Body (No Transcribe)", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Call Module API - Transcribe": {
+      "main": [
+        [
+          { "node": "Transcribe OK?", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Transcribe OK?": {
+      "main": [
+        [
+          { "node": "Build Run Body (Transcribed)", "type": "main", "index": 0 }
+        ],
+        [
+          { "node": "Stop: Transcribe Failed", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Build Run Body (Transcribed)": {
+      "main": [
+        [
+          { "node": "Call Module API - Run", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Build Run Body (No Transcribe)": {
+      "main": [
+        [
+          { "node": "Call Module API - Run", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Call Module API - Run": {
+      "main": [
+        [
+          { "node": "Run OK?", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Run OK?": {
+      "main": [
+        [
+          { "node": "Respond to Webhook", "type": "main", "index": 0 }
+        ],
+        [
+          { "node": "Stop: Run Failed", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          { "node": "Create Drive Folder", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Create Drive Folder": {
+      "main": [
+        [
+          { "node": "Split Next Files", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Split Next Files": {
+      "main": [
+        [
+          { "node": "Batch Files (1)", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Batch Files (1)": {
+      "main": [
+        [
+          { "node": "Aggregate Drive Uploads", "type": "main", "index": 0 }
+        ],
+        [
+          { "node": "Download File", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Download File": {
+      "main": [
+        [
+          { "node": "Upload File to Drive", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Upload File to Drive": {
+      "main": [
+        [
+          { "node": "Map Drive Upload Result", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Map Drive Upload Result": {
+      "main": [
+        [
+          { "node": "Batch Files (1)", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Aggregate Drive Uploads": {
+      "main": [
+        [
+          { "node": "Call Module API - Record", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Call Module API - Record": {
+      "main": [
+        [
+          { "node": "Record OK?", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Record OK?": {
+      "main": [
+        [
+          { "node": "Build Evidence Summary", "type": "main", "index": 0 }
+        ],
+        [
+          { "node": "Stop: Record Failed", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Build Evidence Summary": {
+      "main": [
+        [
+          { "node": "Write M3 Run Summary to Disk", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Write M3 Run Summary to Disk": {
+      "main": [
+        [
+          { "node": "M3 Run Summary (Final)", "type": "main", "index": 0 }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": [
+    "postevent",
+    "m3"
+  ]
+}
