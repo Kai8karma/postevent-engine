@@ -2,48 +2,50 @@
 
 ## Inputs
 
-- `{{TRANSCRIPT}}` — full timestamped webinar transcript.
-- `{{EVENT_JSON}}` — event metadata (title, date, host, speakers, recording_url).
-- `{{EXTRACTION}}` — JSON from the extraction pass (key_moments, quotes, data_points).
+- `EVENT_JSON` — event metadata (title, date, host, speakers, recording_url).
+
+{{EVENT_JSON}}
+- `EXTRACTION` — verified moments, insights, quotes and data points:
+
+{{EXTRACTION}}
+
+- `TRANSCRIPT` — the full webinar transcript.
+
+{{TRANSCRIPT}}
 
 ## Task
 
-Produce 8 social posts repurposing this webinar: 5 for LinkedIn, 3 for X.
-Each post must use a **different hook style** — no two posts should read
-like the same sentence chopped up differently.
+Write **8 social posts** repurposing this webinar: 5 for LinkedIn, 3 for X. Every
+post uses a different hook — no two may read like the same sentence rearranged.
 
 ## Output contract
 
-Markdown, one `###` block per post, 8 blocks total. The heading itself must
-be exactly `### Post <N>` (e.g. `### Post 1`, `### Post 2`, ... `### Post
-8`) — the parser that counts posts matches on that literal heading text, so
-folding the platform/hook-style into the heading instead (e.g. `### Platform:
-LinkedIn`) will read as zero posts even though the content is fine. Each
-block then contains these fields in order, on their own lines below the
-heading:
+Markdown, one `###` block per post, 8 blocks. The heading must be exactly
+`### Post <N>` (`### Post 1` … `### Post 8`) — an automated parser matches that
+literal text, so folding the platform into the heading reads as zero posts.
 
-- `Platform:` LinkedIn or X
-- `Hook style:` one of exactly these 8, each used **exactly once** across
-  the set: `contrarian stat`, `story`, `listicle`, `quote card`, `question`,
-  `hot take`, `data viz callout`, `speaker spotlight`
-- `Segment:` which part of the transcript this draws from (e.g. "Segment 1
-  — Speed-to-Lead [08:10–24:00]" or a specific timestamp range) — must be
-  traceable to real transcript content, not invented
-- `Post:` the actual post copy (LinkedIn: 3–6 short paragraphs or a tight
-  list; X: under 280 characters), ending with a placeholder link token
-  `[link]` pointing at the recording
+Each block then carries these fields, each on its own line, in this order:
+
+- `**Platform:** LinkedIn` or `**Platform:** X`
+- `**Hook style:** <one of>` `contrarian stat`, `story`, `listicle`, `quote card`,
+  `question`, `hot take`, `data viz callout`, `speaker spotlight` — each used
+  **exactly once** across the 8 posts.
+- `**Segment:** Chapter <n> at [MM:SS]` — one timestamp copied from `EXTRACTION` (the moment or quote this post draws on).
+- `**Post:**` then the copy. LinkedIn: 3–6 short paragraphs or a tight list. X: under
+  280 characters. End the copy with the literal token `[link]` (the pipeline swaps it
+  for a tracked recording link).
 
 Requirements:
-- Distribution must be exactly 5 LinkedIn + 3 X.
-- Every stat, quote, or claim used in a post must come from `{{EXTRACTION}}`
-  or `{{TRANSCRIPT}}` — never invented.
-- The `quote card` post must use a verbatim quote with correct speaker
-  attribution.
-- The `data viz callout` post must reference a specific before/after or
-  comparison number (not a single flat stat).
-- Vary which speaker each post centers — do not center the same speaker in
-  more than 3 of the 8 posts.
-- Never put quotation marks around a hook or line that is not a verbatim
-  `{{EXTRACTION}}.quotes` entry (e.g. a rhetorical strawman like "follow up
-  within 24 hours") — quote marks are read as a claim that a speaker said
-  those exact words; write hooks and paraphrase in plain prose instead.
+- Exactly 5 LinkedIn + 3 X, and every post carries its `**Platform:**` line.
+- Every stat, quote or claim must come from `EXTRACTION` or `TRANSCRIPT`.
+- The `quote card` post uses a verbatim `EXTRACTION.quotes` string with the right
+  speaker.
+- The `data viz callout` post references a comparison or before/after number, not a
+  single flat stat.
+- Do not centre the same speaker in more than 4 posts.
+
+## Quotation-mark rule (enforced by an automated grounding check)
+
+Copy a quote character-for-character from `EXTRACTION.quotes` and stop where that entry stops -- do not extend it with the words that came before or after it in the transcript, do not merge two entries, do not tidy the wording. Quotation marks are a claim that someone said those exact words. Use them only
+around a verbatim `EXTRACTION.quotes` string, and name the speaker next to it.
+Write hooks, paraphrases and rhetorical lines in plain prose without quotes.

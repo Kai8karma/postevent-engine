@@ -1,0 +1,22 @@
+## Headline Options
+- From 1000 to 1800 Employees: Scaling HR with AI  
+- AI Compensation Model Scans 9000 Jobs in Minutes  
+- 33-Minute Webinar: Real Impact of AI in HR  
+
+## Data Points
+**1800 employees** — Current headcount across 10 countries *Q Hamirani, HighLevel [00:17]*  
+**1000 employees** — Headcount when Q Hamirani joined 10 months prior *Q Hamirani, HighLevel [00:17]*  
+**100 a month** — Average monthly hiring rate *Q Hamirani, HighLevel [00:47]*  
+**2 to 3 people** — Planned compensation team size before AI model *Q Hamirani, HighLevel [06:47]*  
+**9000 jobs** — Volume of compensation data AI can scan quickly from Radford *Q Hamirani, HighLevel [08:47]*  
+**33 minutes** — Total webinar duration *Sudi Bjornstad Korba, Darwinbox [00:04]*  
+
+## Layout
+Top section: Hero icon stat showing **1800 employees** with subtle growth arrow from 1000, labeled "Hypergrowth Drives HRIS Change".  
+Middle left: Icon stat for **100 a month** hiring rate with recruitment icon.  
+Middle right: Before/after pair showing **2 to 3 people** (planned team) vs. **0 people** (actual team after AI), labeled "AI Replaces Manual Compensation Work".  
+Bottom left: Bar chart comparing manual compensation review (days) vs AI scan (**9000 jobs in minutes**), labeled "Speed Gain from AI Model".  
+Bottom right: Icon stat for **33 minutes** webinar duration with clock icon, labeled "Concise Insights for Busy Leaders".  
+Color system: Darwinbox brand blue (#0066FF), success green (#00C853), and neutral gray (#666666) for text and secondary elements.  
+Event branding: Darwinbox logo top-left, event title and date bottom-center.  
+CTA: Button-style banner at bottom-right: "Watch Full Recording →" with link to recording URL.

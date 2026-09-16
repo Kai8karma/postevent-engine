@@ -1,0 +1,14 @@
+{
+  "transcript_sha256": "727b07e7f4315b6261878b1dd8099458394182755db085091006082c0c4b3495",
+  "event_sha256": "6900c25ba7d39c83d1860eb2eda1bfdec63346a5a99bf19c0546f47fcb95b5da",
+  "event_name": "From Hype to High-Impact: How to Start and Scale AI in HR",
+  "refreshed_at": "2026-09-16T15:14:45+00:00",
+  "model": "nvidia/nemotron-3-super-120b-a12b:free",
+  "files": [
+    "extraction.json",
+    "blog.md",
+    "youtube.md",
+    "infographic.md",
+    "social.md"
+  ]
+}

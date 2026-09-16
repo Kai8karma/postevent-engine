@@ -1,0 +1,53 @@
+### Post 1
+**Platform:** LinkedIn
+**Hook style:** contrarian stat
+**Segment:** Chapter 3 at [24:40]
+**Post:** AI isn’t stealing HR jobs—it’s unlocking capacity. Q Hamirani shared that AI took over repetitive compensation tasks, freeing up 2–3 people to focus on strategic work humans actually enjoy. The real win? Doing more with less while keeping empathy in the loop. [link]
+
+### Post 2
+**Platform:** LinkedIn
+**Hook style:** story
+**Segment:** Chapter 1 at [00:17]
+**Post:** When Q Hamirani joined HighLevel 10 months ago, the team was 1,000 strong. Today? Nearly 1,800 across 10 countries—with 100 new hires every month. That hypergrowth forced an HRIS switch, not for tech’s sake, but to keep people processes from breaking at scale. [link]
+
+### Post 3
+**Platform:** LinkedIn
+**Hook style:** listicle
+**Segment:** Chapter 2 at [13:35]
+**Post:** 4 non-negotiables for AI in HR, straight from Q Hamirani:
+1. Controlled experimentation first
+2. Data privacy as baseline
+3. Human validation of outputs
+4. Guardrails against hallucination
+Skip any, and you’re building on sand. [link]
+
+### Post 4
+**Platform:** LinkedIn
+**Hook style:** quote card
+**Segment:** Chapter 3 at [29:50]
+**Post:** "the true human connection, I don't think, I'm a strong believer, cannot be replaced in work or even in life truly with AI" — Q Hamirani
+AI augments, but it doesn’t replace the trust built in 1:1s, coaching, or tough performance convos. [link]
+
+### Post 5
+**Platform:** LinkedIn
+**Hook style:** data viz callout
+**Segment:** Chapter 1 at [08:47]
+**Post:** Before AI: Compensation analysis took days. After: Q’s model scans 8,000–9,000 Radford jobs in minutes. Same accuracy, 90% faster cycle time—so HR shifts from data clerk to strategic advisor. [link]
+
+### Post 6
+**Platform:** X
+**Hook style:** question
+**Segment:** Chapter 1 at [06:47]
+**Post:** What if your compensation team could deliver real-time market data without adding headcount? Q Hamirani built an AI model that does exactly that—using Radford data to align job offers in minutes, not days. [link]
+
+### Post 7
+**Platform:** X
+**Hook style:** hot take
+**Segment:** Chapter 3 at [27:16]
+**Post:** The biggest risk with AI in HR isn’t bias—it’s speed. Tools evolve faster than we can vet them, making fear rational. But pausing means losing the capacity unlock AI delivers. [link]
+
+### Post 8
+**Platform:** X
+**Hook style:** speaker spotlight
+**Segment:** Chapter 2 at [18:39]
+**Post:** Q Hamirani’s rule for AI in HR: Always know where your human-in-the-loop checkpoints are. Automation without validation is just expensive guesswork. [link]

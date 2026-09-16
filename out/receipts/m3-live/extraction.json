@@ -1,0 +1,283 @@
+{
+  "moments": [
+    {
+      "title": "AI in compensation",
+      "speaker": "Q Hamirani",
+      "why": "Describes building an AI model for real-time compensation using Radford data.",
+      "start": "06:17",
+      "end": "06:47",
+      "start_seconds": 377.0,
+      "end_seconds": 407.0,
+      "duration_seconds": 30.0,
+      "clip_worthiness": 0.95,
+      "chapter": 1
+    },
+    {
+      "title": "AI as capacity unlock",
+      "speaker": "Q Hamirani",
+      "why": "Frames AI as freeing up humans for higher-value work, not just replacing jobs.",
+      "start": "24:40",
+      "end": "25:10",
+      "start_seconds": 1480.0,
+      "end_seconds": 1510.0,
+      "duration_seconds": 30.0,
+      "clip_worthiness": 0.95,
+      "chapter": 3
+    },
+    {
+      "title": "Drivers for HRIS change",
+      "speaker": "Q Hamirani",
+      "why": "Explains hypergrowth and fragmented systems as key reasons for adopting Darwinbox.",
+      "start": "00:47",
+      "end": "01:17",
+      "start_seconds": 47.0,
+      "end_seconds": 77.0,
+      "duration_seconds": 30.0,
+      "clip_worthiness": 0.9,
+      "chapter": 1
+    },
+    {
+      "title": "Human-in-the-loop for AI decisions",
+      "speaker": "Q Hamirani",
+      "why": "Stresses need for checkpoints when AI makes decisions in HR processes.",
+      "start": "18:39",
+      "end": "19:09",
+      "start_seconds": 1119.0,
+      "end_seconds": 1149.0,
+      "duration_seconds": 30.0,
+      "clip_worthiness": 0.9,
+      "chapter": 2
+    },
+    {
+      "title": "AI as teammate, not replacement",
+      "speaker": "Q Hamirani",
+      "why": "Positions AI as a tool to augment human judgment in change management and comms.",
+      "start": "31:22",
+      "end": "31:52",
+      "start_seconds": 1882.0,
+      "end_seconds": 1912.0,
+      "duration_seconds": 30.0,
+      "clip_worthiness": 0.9,
+      "chapter": 3
+    },
+    {
+      "title": "Agility and real-time insights",
+      "speaker": "Q Hamirani",
+      "why": "Emphasizes need for agility in fast-changing tech and global environment.",
+      "start": "09:57",
+      "end": "10:43",
+      "start_seconds": 597.0,
+      "end_seconds": 643.0,
+      "duration_seconds": 46.0,
+      "clip_worthiness": 0.85,
+      "chapter": 1
+    },
+    {
+      "title": "Controlled AI experimentation",
+      "speaker": "Q Hamirani",
+      "why": "Advocates testing AI in safe, internal environments before scaling.",
+      "start": "13:05",
+      "end": "13:35",
+      "start_seconds": 785.0,
+      "end_seconds": 815.0,
+      "duration_seconds": 30.0,
+      "clip_worthiness": 0.8,
+      "chapter": 2
+    },
+    {
+      "title": "Pace of AI change and risk",
+      "speaker": "Q Hamirani",
+      "why": "Notes fear comes from speed of AI tool evolution and unvetted options.",
+      "start": "27:16",
+      "end": "27:46",
+      "start_seconds": 1636.0,
+      "end_seconds": 1666.0,
+      "duration_seconds": 30.0,
+      "clip_worthiness": 0.8,
+      "chapter": 3
+    }
+  ],
+  "insights": [
+    {
+      "insight": "Global scalability and local compliance are non-negotiable when choosing HR tech for multinational teams.",
+      "speaker": "Q Hamirani",
+      "timestamp": "02:17",
+      "chapter": 1,
+      "so_what": "HR leaders must ensure tools handle both global consistency and local legal nuances like state-specific time tracking."
+    },
+    {
+      "insight": "Embedded analytics in HRIS eliminate the need for a dedicated people analytics team to start gaining insights.",
+      "speaker": "Q Hamirani",
+      "timestamp": "03:47",
+      "chapter": 1,
+      "so_what": "Teams can leverage built-in storyboards and reporting to drive decisions without heavy upfront investment in analytics headcount."
+    },
+    {
+      "insight": "AI in HR should be evaluated by whether it enables 'doing more with less' without sacrificing human judgment in sensitive areas.",
+      "speaker": "Q Hamirani",
+      "timestamp": "04:47",
+      "chapter": 1,
+      "so_what": "Success isn't just automation\u2014it's augmenting HR capacity while preserving empathy and context in people decisions."
+    },
+    {
+      "insight": "Guardrails for AI in HR must include controlled experimentation, data privacy, and human validation of outputs to prevent hallucination and misuse.",
+      "speaker": "Q Hamirani",
+      "timestamp": "13:35",
+      "chapter": 2,
+      "so_what": "Trust but verify: pilot AI in sandbox environments, validate outputs with business context, and restrict access to sensitive models."
+    },
+    {
+      "insight": "The most valuable HR uses of AI augment\u2014rather than replace\u2014human skills like coaching, performance conversations, and change management.",
+      "speaker": "Q Hamirani",
+      "timestamp": "29:20",
+      "chapter": 3,
+      "so_what": "Leaders should invest in AI that frees time for high-touch, relational work that machines cannot replicate."
+    }
+  ],
+  "quotes": [
+    {
+      "quote": "we have experienced tremendous hyper growth in the last year or two",
+      "speaker": "Q Hamirani",
+      "timestamp": "00:17",
+      "timestamp_seconds": 17.0,
+      "topic": "Growth challenge",
+      "chapter": 1,
+      "match_ratio": 1.0
+    },
+    {
+      "quote": "can it meet the needs of our global employee base?",
+      "speaker": "Q Hamirani",
+      "timestamp": "01:47",
+      "timestamp_seconds": 107.0,
+      "topic": "Global HRIS need",
+      "chapter": 1,
+      "match_ratio": 1.0
+    },
+    {
+      "quote": "we've been able to train our own models to give us almost real-time compensation based on a job description",
+      "speaker": "Q Hamirani",
+      "timestamp": "06:47",
+      "timestamp_seconds": 407.0,
+      "topic": "AI in compensation",
+      "chapter": 1,
+      "match_ratio": 1.0
+    },
+    {
+      "quote": "it's not a one and done thing",
+      "speaker": "Q Hamirani",
+      "timestamp": "16:35",
+      "timestamp_seconds": 995.0,
+      "topic": "AI model maintenance",
+      "chapter": 2,
+      "match_ratio": 1.0
+    },
+    {
+      "quote": "you have to figure out where you want to have kind of human in the loop checkpoints",
+      "speaker": "Q Hamirani",
+      "timestamp": "18:39",
+      "timestamp_seconds": 1119.0,
+      "topic": "AI governance",
+      "chapter": 2,
+      "match_ratio": 1.0
+    },
+    {
+      "quote": "I don't view AI specifically as a new thing that's taking away people's jobs",
+      "speaker": "Q Hamirani",
+      "timestamp": "24:10",
+      "timestamp_seconds": 1450.0,
+      "topic": "AI and job displacement",
+      "chapter": 3,
+      "match_ratio": 1.0
+    },
+    {
+      "quote": "it's taken away a small subset of jobs and unlocked capacity from those individuals to do things that they were not able to do before",
+      "speaker": "Q Hamirani",
+      "timestamp": "24:40",
+      "timestamp_seconds": 1480.0,
+      "topic": "AI as capacity unlock",
+      "chapter": 3,
+      "match_ratio": 1.0
+    },
+    {
+      "quote": "the true human connection, I don't think, I'm a strong believer, cannot be replaced in work or even in life truly with AI",
+      "speaker": "Q Hamirani",
+      "timestamp": "29:50",
+      "timestamp_seconds": 1790.0,
+      "topic": "Limits of AI in HR",
+      "chapter": 3,
+      "match_ratio": 1.0
+    }
+  ],
+  "data_points": [
+    {
+      "value": "1800 employees",
+      "what": "Current headcount across 10 countries",
+      "speaker": "Q Hamirani",
+      "timestamp": "00:17",
+      "chapter": 1
+    },
+    {
+      "value": "1000 employees",
+      "what": "Headcount when Q Hamirani joined 10 months prior",
+      "speaker": "Q Hamirani",
+      "timestamp": "00:17",
+      "chapter": 1
+    },
+    {
+      "value": "100 a month",
+      "what": "Average monthly hiring rate",
+      "speaker": "Q Hamirani",
+      "timestamp": "00:47",
+      "chapter": 1
+    },
+    {
+      "value": "2 to 3 people",
+      "what": "Planned compensation team size before AI model",
+      "speaker": "Q Hamirani",
+      "timestamp": "06:47",
+      "chapter": 1
+    },
+    {
+      "value": "8000, 9000 jobs",
+      "what": "Volume of compensation data AI can scan quickly from Radford",
+      "speaker": "Q Hamirani",
+      "timestamp": "08:47",
+      "chapter": 1
+    },
+    {
+      "value": "33 minutes",
+      "what": "Total webinar duration",
+      "speaker": "Sudi Bjornstad Korba",
+      "timestamp": "00:04",
+      "chapter": 1
+    }
+  ],
+  "dropped": {
+    "quotes": [],
+    "moments": [],
+    "data_points": []
+  },
+  "speaker_corrections": [],
+  "attempts": 1,
+  "event_slug": "darwinbox-ai-in-hr-2026-08-13",
+  "chapters": [
+    {
+      "chapter": 1,
+      "start_abs": 0.0,
+      "end_abs": 697.0,
+      "duration_sec": 697.0
+    },
+    {
+      "chapter": 2,
+      "start_abs": 697.0,
+      "end_abs": 1432.0,
+      "duration_sec": 735.0
+    },
+    {
+      "chapter": 3,
+      "start_abs": 1432.0,
+      "end_abs": 1992.0,
+      "duration_sec": 560.0
+    }
+  ]
+}

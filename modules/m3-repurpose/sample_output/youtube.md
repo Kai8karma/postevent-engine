@@ -1,0 +1,30 @@
+<!-- event: darwinbox-ai-in-hr-2026-08-13 | generated: live -->
+## Chapters
+00:00 Introduction and HR Transformation Drivers
+00:47 Scaling HRIS for Global Growth
+02:17 Global Scalability and Local Compliance
+03:47 Embedded Analytics Eliminating Dedicated Teams
+04:47 AI Evaluation: Doing More with Less
+06:17 AI in Compensation: Real-Time Modeling
+09:57 Agility and Real-Time Insights
+11:37 Transition to AI Governance and Ethics
+13:05 Controlled AI Experimentation
+13:35 Guardrails for AI in HR
+18:39 Human-in-the-Loop for AI Decisions
+19:09 Systematic Validation of AI Outputs
+23:52 Transition to AI and Workforce Impact
+24:40 AI as Capacity Unlock
+27:16 Pace of AI Change and Risk
+29:20 AI Augmenting Human Skills Like Coaching
+31:22 AI as Teammate, Not Replacement
+33:12 Session Ends
+
+## Description
+From Hype to High-Impact: How to Start and Scale AI in HR features Q Hamirani, Chief People Officer at HighLevel, and Sudi Bjornstad Korba, Senior Vice President of Sales, North America at Darwinbox, hosted by Darwinbox. Key takeaways include: AI enables real-time compensation modeling using Radford data, scanning 8000-9000 jobs instantly; HR leaders must implement guardrails like controlled experimentation and human validation to prevent AI misuse; and AI augments rather than replaces human skills, freeing capacity for high-touch work like coaching and change management. AI HR impact capacity unlock data privacy human judgment Darwinbox 2026-08-13
+
+**Recording link:** [Watch the full session](https://explore.darwinbox.com/lp/resources/events/webinar-how-to-start-and-scale-ai-in-hr?utm_source=youtube&utm_medium=video&utm_campaign=from-hype-to-high-impact-2026-08-13&utm_content=youtube-description)
+
+## Thumbnail Brief
+**Composition**: Q Hamirani on the left speaking, Sudi Bjornstad Korba on the right listening, both in professional attire, with a subtle AI neural network graphic overlay in the background connecting them; Darwinbox logo positioned at the bottom right corner.
+**Text overlay**: Headline: "AI as Capacity Unlock" (under 6 words); Secondary stat: "1800 employees across 10 countries" using the real data point from EXTRACTION.data_points.
+**Colors**: Darwinbox brand palette — primary blue #0066FF, secondary gray #6B7280, accent green #10B981, and white #FFFFFF for text contrast.

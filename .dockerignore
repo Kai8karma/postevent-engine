@@ -1,0 +1,11 @@
+.git
+.gitignore
+_internal/
+out/*
+!out/receipts/
+data/incoming/media/
+**/__pycache__/
+*.pyc
+.env
+*.env
+.DS_Store

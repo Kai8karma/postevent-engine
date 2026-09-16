@@ -1,0 +1,161 @@
+{
+  "generated_at": "2026-09-16T15:14:45+00:00",
+  "tool": "ffmpeg",
+  "ffmpeg_version": "ffmpeg version 9.0.1 Copyright (c) 2000-2026 the FFmpeg developers",
+  "event_slug": "darwinbox-ai-in-hr-2026-08-13",
+  "seconds": 40.0,
+  "clips": [
+    {
+      "moment": "AI in compensation",
+      "speaker": "Q Hamirani",
+      "clip_worthiness": 0.95,
+      "chapter": 1,
+      "source_file": "chapter1.mp4",
+      "in_chapter_local_s": 377.97,
+      "out_chapter_local_s": 407.97,
+      "in_absolute_s": 377.97,
+      "out_absolute_s": 407.97,
+      "requested_duration_s": 30.0,
+      "duration_s": 30.0,
+      "caption_lines": 13,
+      "content_box": [
+        1280,
+        428,
+        0,
+        180
+      ],
+      "vertical_layout": "stacked-tiles",
+      "tile_bottom_trim": 0.16,
+      "ffmpeg_exit_codes": {
+        "16x9": 0,
+        "9x16": 0,
+        "thumb": 0
+      },
+      "files": {
+        "landscape": {
+          "file": "clip1-ch1-16x9.mp4",
+          "bytes": 1256790,
+          "duration_s": 30.0
+        },
+        "vertical": {
+          "file": "clip1-ch1-9x16.mp4",
+          "bytes": 2082570,
+          "duration_s": 30.04
+        },
+        "captions": {
+          "file": "clip1-ch1.srt",
+          "bytes": 930,
+          "duration_s": null
+        },
+        "thumbnail": {
+          "file": "clip1-ch1-thumb.png",
+          "bytes": 384576,
+          "duration_s": null
+        }
+      }
+    },
+    {
+      "moment": "AI as capacity unlock",
+      "speaker": "Q Hamirani",
+      "clip_worthiness": 0.95,
+      "chapter": 3,
+      "source_file": "chapter3.mp4",
+      "in_chapter_local_s": 48.21,
+      "out_chapter_local_s": 108.21,
+      "in_absolute_s": 1480.21,
+      "out_absolute_s": 1540.21,
+      "requested_duration_s": 30.0,
+      "duration_s": 60.0,
+      "caption_lines": 28,
+      "content_box": [
+        1280,
+        428,
+        0,
+        180
+      ],
+      "vertical_layout": "stacked-tiles",
+      "tile_bottom_trim": 0.16,
+      "ffmpeg_exit_codes": {
+        "16x9": 0,
+        "9x16": 0,
+        "thumb": 0
+      },
+      "files": {
+        "landscape": {
+          "file": "clip2-ch3-16x9.mp4",
+          "bytes": 2424781,
+          "duration_s": 60.0
+        },
+        "vertical": {
+          "file": "clip2-ch3-9x16.mp4",
+          "bytes": 4004181,
+          "duration_s": 60.04
+        },
+        "captions": {
+          "file": "clip2-ch3.srt",
+          "bytes": 2007,
+          "duration_s": null
+        },
+        "thumbnail": {
+          "file": "clip2-ch3-thumb.png",
+          "bytes": 364439,
+          "duration_s": null
+        }
+      }
+    },
+    {
+      "moment": "Drivers for HRIS change",
+      "speaker": "Q Hamirani",
+      "clip_worthiness": 0.9,
+      "chapter": 1,
+      "source_file": "chapter1.mp4",
+      "in_chapter_local_s": 47.09,
+      "out_chapter_local_s": 77.09,
+      "in_absolute_s": 47.09,
+      "out_absolute_s": 77.09,
+      "requested_duration_s": 30.0,
+      "duration_s": 30.0,
+      "caption_lines": 13,
+      "content_box": [
+        1280,
+        428,
+        0,
+        180
+      ],
+      "vertical_layout": "stacked-tiles",
+      "tile_bottom_trim": 0.16,
+      "ffmpeg_exit_codes": {
+        "16x9": 0,
+        "9x16": 0,
+        "thumb": 0
+      },
+      "files": {
+        "landscape": {
+          "file": "clip3-ch1-16x9.mp4",
+          "bytes": 1179263,
+          "duration_s": 30.0
+        },
+        "vertical": {
+          "file": "clip3-ch1-9x16.mp4",
+          "bytes": 1965803,
+          "duration_s": 30.04
+        },
+        "captions": {
+          "file": "clip3-ch1.srt",
+          "bytes": 933,
+          "duration_s": null
+        },
+        "thumbnail": {
+          "file": "clip3-ch1-thumb.png",
+          "bytes": 403572,
+          "duration_s": null
+        }
+      }
+    }
+  ],
+  "total_bytes": 14069845,
+  "total_mb": 14.07,
+  "caption_source": "sarvam saaras:v3 diarized chunk timings; line starts/ends interpolated within each chunk by character count (chunk-level, not word-level, is what the API returns)",
+  "caption_burn_method": "Pillow-rendered PNG strips composited with ffmpeg overlay+enable (this ffmpeg build has no libass/subtitles or libfreetype/drawtext filter)",
+  "duration_rule": "30-60s, snapped to Sarvam turn boundaries"
+}

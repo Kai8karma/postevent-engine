@@ -2,37 +2,45 @@
 
 ## Inputs
 
-- `{{TRANSCRIPT}}` — full timestamped webinar transcript.
-- `{{EVENT_JSON}}` — event metadata (title, date, host).
-- `{{EXTRACTION}}` — JSON from the extraction pass (key_moments, quotes, data_points).
+- `EVENT_JSON` — event metadata (title, date, host, speakers).
+
+{{EVENT_JSON}}
+- `EXTRACTION` — verified moments, insights, quotes and data points:
+
+{{EXTRACTION}}
+
+- `TRANSCRIPT` — the full webinar transcript.
+
+{{TRANSCRIPT}}
 
 ## Task
 
-Produce a design-ready outline for a single-page infographic built entirely
-around the numbers this specific webinar produced. This is a spec for a
-designer (or downstream image-generation step), not the finished graphic.
+Produce a design-ready outline for a single-page infographic built entirely around
+the numbers and claims this specific webinar produced. This is a spec for a designer
+or an image model, not the finished graphic.
 
 ## Output contract
 
-Markdown with exactly these three `##` sections, in this order:
+Markdown with exactly these three `##` sections, in this order.
 
 ### `## Headline Options`
-- 3 candidate headlines for the infographic, each under 12 words, each
-  referencing the numbers/theme rather than being generic.
+- 3 candidate headlines, each under 12 words, each referencing the actual theme or
+  numbers rather than being generic.
 
 ### `## Data Points`
-- **Exactly 6** data points, selected from `{{EXTRACTION}}.data_points`.
-- Prefer the 6 most surprising or citable — favor specific multipliers and
-  percentages over vague claims, and favor spread across speakers over
-  repeating one speaker's stats.
-- Each entry format: `**<number>** — <one-line what-it-measures> *<Speaker, Company [MM:SS]>*`
-- Every number and attribution must trace to `{{EXTRACTION}}` — do not
-  invent, round beyond what was said, or merge two different stats into one.
+- **6–8** data points drawn from `EXTRACTION.data_points` (and, where a number
+  is thin, an `insights` entry expressed as a concrete count or duration).
+- Each entry on its own line, in exactly this format:
+  `**<number or short stat>** — <one line on what it measures> *<Speaker, Company [MM:SS]>*`
+- Every number, speaker and timestamp must trace to `EXTRACTION`. Do not invent,
+  re-round, or merge two stats into one.
+- If you reference a point by ordinal in `## Layout`, use "Stat N" where N is within
+  the number of points you actually listed here.
 
 ### `## Layout`
-- A top-to-bottom (or panel-by-panel) description of visual flow: what's the
-  hero element, what's grouped together, what chart type (if any) fits each
-  data point (bar, before/after pair, icon stat, timeline), and where the
-  event branding and CTA sit.
-- Name a simple color system (2–3 colors max) so all 6 stats read as one
-  family rather than six unrelated graphics.
+- Top-to-bottom (or panel-by-panel) visual flow: the hero element, what groups with
+  what, which chart type fits each stat (bar, before/after pair, icon stat,
+  timeline), and where the event branding and CTA sit.
+- Name a 2–3 colour system so all the stats read as one family.
+- Use no quotation marks around anything that is not a verbatim
+  `EXTRACTION.quotes` string.

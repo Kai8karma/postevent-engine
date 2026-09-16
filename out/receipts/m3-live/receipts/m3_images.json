@@ -1,0 +1,155 @@
+{
+  "generated_at": "2026-09-16T15:14:02+00:00",
+  "provider": "openrouter",
+  "model": "google/gemini-2.5-flash-image",
+  "discovery": {
+    "endpoint": "https://openrouter.ai/api/v1/models",
+    "http_status": 200,
+    "image_capable_models": 11,
+    "top_candidates": [
+      "google/gemini-2.5-flash-image",
+      "google/gemini-3.1-flash-lite-image",
+      "openai/gpt-5-image-mini",
+      "google/gemini-3.1-flash-image",
+      "google/gemini-3.1-flash-image-preview"
+    ],
+    "error": null
+  },
+  "images": [
+    {
+      "name": "youtube-thumbnail",
+      "aspect": "16:9",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Editorial illustration for a B2B webinar titled \"From Hype to High-Impact: How to Start and Scale AI in HR\", hosted by Darwinbox. Speakers: Q Hamirani, Chief People Officer at HighLevel, Sudi Bjornstad Korba, Senior Vice President of Sales, North America at Darwinbox. The session covers: Global scalability and local compliance are non-negotiable when choosing HR tech for multinational teams.; Embedded analytics in HRIS eliminate the need for a dedicated people analytics team to start gaining insights.; AI in HR should be evaluated by whether it enables 'doing more with less' without sacrificing human judgment in sensitive areas.. Design a YouTube thumbnail background in a 16:9 aspect ratio. Art direction from the session's own thumbnail brief: **Composition**: Q Hamirani on the left speaking, Sudi Bjornstad Korba on the right listening, both in professional attire, with a subtle AI neural network graphic overlay in the background connecting them; Darwinbox logo positioned at the bottom right corner. **Text overlay**: Headline: \"AI as Capacity Unlock\" (under 6 words); Secondary stat: \"1800 employees across 10 countries\" using the real data point from EXTRACTION.data_points. **Colors**: Darwinbox brand palette \u2014 primary blue #0066FF, secondary gray #6B7280, accent green #10B981, and white #FFFFFF for text contrast. Leave the upper-left third visually calm as clear space for a headline. Render pure imagery only: absolutely no words, letters, numerals, captions, logos or typography anywhere in the frame (text is added separately downstream).",
+      "latency_ms": 1179,
+      "http_status": 402,
+      "ok": false,
+      "attempts": [
+        {
+          "model": "google/gemini-2.5-flash-image",
+          "http_status": 402,
+          "ok": false,
+          "error": "{\"error\":{\"message\":\"Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more a"
+        },
+        {
+          "model": "google/gemini-3.1-flash-lite-image",
+          "http_status": 402,
+          "ok": false,
+          "error": "{\"error\":{\"message\":\"Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more a"
+        },
+        {
+          "model": "openai/gpt-5-image-mini",
+          "http_status": 402,
+          "ok": false,
+          "error": "{\"error\":{\"message\":\"Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more a"
+        },
+        {
+          "model": "google/gemini-3.1-flash-image",
+          "http_status": 402,
+          "ok": false,
+          "error": "{\"error\":{\"message\":\"Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more a"
+        },
+        {
+          "model": "google/gemini-3.1-flash-image-preview",
+          "http_status": 402,
+          "ok": false,
+          "error": "{\"error\":{\"message\":\"Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more a"
+        }
+      ],
+      "error": "{\"error\":{\"message\":\"Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more at https://openrouter.ai/settings/credits\",\"code\":402,\"metadata\":{\"limit_source\":\"openrouter_credits\",\"remedy_hint\":\"Add credits at https://o",
+      "bytes": 0
+    },
+    {
+      "name": "social-square",
+      "aspect": "1:1",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Editorial illustration for a B2B webinar titled \"From Hype to High-Impact: How to Start and Scale AI in HR\", hosted by Darwinbox. Speakers: Q Hamirani, Chief People Officer at HighLevel, Sudi Bjornstad Korba, Senior Vice President of Sales, North America at Darwinbox. The session covers: Global scalability and local compliance are non-negotiable when choosing HR tech for multinational teams.; Embedded analytics in HRIS eliminate the need for a dedicated people analytics team to start gaining insights.; AI in HR should be evaluated by whether it enables 'doing more with less' without sacrificing human judgment in sensitive areas.. Design a social media card background in a 1:1 aspect ratio: clean corporate abstract, deep navy and warm amber palette, subtle geometric shapes suggesting people data and workflow automation, generous negative space in the centre for copy to be placed later. Reference points from the session: 1800 employees (Current headcount across 10 countries); 1000 employees (Headcount when Q Hamirani joined 10 months prior); 100 a month (Average monthly hiring rate). Render pure imagery only: absolutely no words, letters, numerals, captions, logos or typography anywhere in the frame (text is added separately downstream).",
+      "latency_ms": 419,
+      "http_status": 402,
+      "ok": false,
+      "attempts": [
+        {
+          "model": "google/gemini-2.5-flash-image",
+          "http_status": 402,
+          "ok": false,
+          "error": "{\"error\":{\"message\":\"Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more a"
+        },
+        {
+          "model": "google/gemini-3.1-flash-lite-image",
+          "http_status": 402,
+          "ok": false,
+          "error": "{\"error\":{\"message\":\"Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more a"
+        },
+        {
+          "model": "openai/gpt-5-image-mini",
+          "http_status": 402,
+          "ok": false,
+          "error": "{\"error\":{\"message\":\"Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more a"
+        },
+        {
+          "model": "google/gemini-3.1-flash-image",
+          "http_status": 402,
+          "ok": false,
+          "error": "{\"error\":{\"message\":\"Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more a"
+        },
+        {
+          "model": "google/gemini-3.1-flash-image-preview",
+          "http_status": 402,
+          "ok": false,
+          "error": "{\"error\":{\"message\":\"Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more a"
+        }
+      ],
+      "error": "{\"error\":{\"message\":\"Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more at https://openrouter.ai/settings/credits\",\"code\":402,\"metadata\":{\"limit_source\":\"openrouter_credits\",\"remedy_hint\":\"Add credits at https://o",
+      "bytes": 0
+    },
+    {
+      "name": "social-portrait",
+      "aspect": "4:5",
+      "model": "google/gemini-2.5-flash-image",
+      "prompt": "Editorial illustration for a B2B webinar titled \"From Hype to High-Impact: How to Start and Scale AI in HR\", hosted by Darwinbox. Speakers: Q Hamirani, Chief People Officer at HighLevel, Sudi Bjornstad Korba, Senior Vice President of Sales, North America at Darwinbox. The session covers: Global scalability and local compliance are non-negotiable when choosing HR tech for multinational teams.; Embedded analytics in HRIS eliminate the need for a dedicated people analytics team to start gaining insights.; AI in HR should be evaluated by whether it enables 'doing more with less' without sacrificing human judgment in sensitive areas.. Design a social media card background in a 4:5 aspect ratio: clean corporate abstract, deep navy and warm amber palette, subtle geometric shapes suggesting people data and workflow automation, generous negative space in the centre for copy to be placed later. Reference points from the session: 1800 employees (Current headcount across 10 countries); 1000 employees (Headcount when Q Hamirani joined 10 months prior); 100 a month (Average monthly hiring rate). Render pure imagery only: absolutely no words, letters, numerals, captions, logos or typography anywhere in the frame (text is added separately downstream).",
+      "latency_ms": 454,
+      "http_status": 402,
+      "ok": false,
+      "attempts": [
+        {
+          "model": "google/gemini-2.5-flash-image",
+          "http_status": 402,
+          "ok": false,
+          "error": "{\"error\":{\"message\":\"Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more a"
+        },
+        {
+          "model": "google/gemini-3.1-flash-lite-image",
+          "http_status": 402,
+          "ok": false,
+          "error": "{\"error\":{\"message\":\"Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more a"
+        },
+        {
+          "model": "openai/gpt-5-image-mini",
+          "http_status": 402,
+          "ok": false,
+          "error": "{\"error\":{\"message\":\"Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more a"
+        },
+        {
+          "model": "google/gemini-3.1-flash-image",
+          "http_status": 402,
+          "ok": false,
+          "error": "{\"error\":{\"message\":\"Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more a"
+        },
+        {
+          "model": "google/gemini-3.1-flash-image-preview",
+          "http_status": 402,
+          "ok": false,
+          "error": "{\"error\":{\"message\":\"Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more a"
+        }
+      ],
+      "error": "{\"error\":{\"message\":\"Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more at https://openrouter.ai/settings/credits\",\"code\":402,\"metadata\":{\"limit_source\":\"openrouter_credits\",\"remedy_hint\":\"Add credits at https://o",
+      "bytes": 0
+    }
+  ],
+  "notes": [
+    "youtube-thumbnail: image model returned HTTP 402 ({\"error\":{\"message\":\"Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more a) -- file skipped, no placeholder emitted",
+    "social-square: image model returned HTTP 402 ({\"error\":{\"message\":\"Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more a) -- file skipped, no placeholder emitted",
+    "social-portrait: image model returned HTTP 402 ({\"error\":{\"message\":\"Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more a) -- file skipped, no placeholder emitted",
+    "no visuals shipped this run -- see per-image errors above"
+  ]
+}

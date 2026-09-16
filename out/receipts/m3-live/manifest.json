@@ -1,0 +1,304 @@
+{
+  "event_slug": "darwinbox-ai-in-hr-2026-08-13",
+  "generated_at": "2026-09-16T15:14:45+00:00",
+  "lane": "live",
+  "models": {
+    "text": "nvidia/nemotron-3-super-120b-a12b:free",
+    "image": "google/gemini-2.5-flash-image"
+  },
+  "files": [
+    {
+      "name": "blog.md",
+      "kind": "blog",
+      "bytes": 7497,
+      "source": "llm",
+      "grounded": true
+    },
+    {
+      "name": "youtube.md",
+      "kind": "youtube",
+      "bytes": 2317,
+      "source": "llm",
+      "grounded": true
+    },
+    {
+      "name": "infographic.md",
+      "kind": "infographic",
+      "bytes": 1681,
+      "source": "llm",
+      "grounded": true
+    },
+    {
+      "name": "social.md",
+      "kind": "social",
+      "bytes": 4346,
+      "source": "llm",
+      "grounded": true
+    },
+    {
+      "name": "extraction.json",
+      "kind": "extraction",
+      "bytes": 8877,
+      "source": "llm",
+      "grounded": true
+    },
+    {
+      "name": "grounding_report.json",
+      "kind": "report",
+      "bytes": 801,
+      "source": "llm",
+      "grounded": null
+    },
+    {
+      "name": "clips/clip1-ch1-16x9.mp4",
+      "kind": "clip",
+      "bytes": 1256790,
+      "source": "ffmpeg",
+      "grounded": true
+    },
+    {
+      "name": "clips/clip1-ch1-9x16.mp4",
+      "kind": "clip",
+      "bytes": 2082570,
+      "source": "ffmpeg",
+      "grounded": true
+    },
+    {
+      "name": "clips/clip1-ch1-thumb.png",
+      "kind": "visual",
+      "bytes": 384576,
+      "source": "ffmpeg",
+      "grounded": null
+    },
+    {
+      "name": "clips/clip1-ch1.srt",
+      "kind": "caption",
+      "bytes": 930,
+      "source": "sarvam",
+      "grounded": true
+    },
+    {
+      "name": "clips/clip2-ch3-16x9.mp4",
+      "kind": "clip",
+      "bytes": 2424781,
+      "source": "ffmpeg",
+      "grounded": true
+    },
+    {
+      "name": "clips/clip2-ch3-9x16.mp4",
+      "kind": "clip",
+      "bytes": 4004181,
+      "source": "ffmpeg",
+      "grounded": true
+    },
+    {
+      "name": "clips/clip2-ch3-thumb.png",
+      "kind": "visual",
+      "bytes": 364439,
+      "source": "ffmpeg",
+      "grounded": null
+    },
+    {
+      "name": "clips/clip2-ch3.srt",
+      "kind": "caption",
+      "bytes": 2007,
+      "source": "sarvam",
+      "grounded": true
+    },
+    {
+      "name": "clips/clip3-ch1-16x9.mp4",
+      "kind": "clip",
+      "bytes": 1179263,
+      "source": "ffmpeg",
+      "grounded": true
+    },
+    {
+      "name": "clips/clip3-ch1-9x16.mp4",
+      "kind": "clip",
+      "bytes": 1965803,
+      "source": "ffmpeg",
+      "grounded": true
+    },
+    {
+      "name": "clips/clip3-ch1-thumb.png",
+      "kind": "visual",
+      "bytes": 403572,
+      "source": "ffmpeg",
+      "grounded": null
+    },
+    {
+      "name": "clips/clip3-ch1.srt",
+      "kind": "caption",
+      "bytes": 933,
+      "source": "sarvam",
+      "grounded": true
+    }
+  ],
+  "shared_drive": {
+    "folder_url": null,
+    "folder_id": null,
+    "files": []
+  },
+  "summary": {
+    "blog_words": 1106,
+    "chapters": 18,
+    "posts": {
+      "linkedin": 5,
+      "x": 3
+    },
+    "images": 3,
+    "clips": 3,
+    "grounding": {
+      "checked": 39,
+      "passed": 39
+    },
+    "lane": "live",
+    "models": {
+      "text": "nvidia/nemotron-3-super-120b-a12b:free",
+      "image": "google/gemini-2.5-flash-image"
+    },
+    "extraction": {
+      "moments": 8,
+      "insights": 5,
+      "quotes": 8,
+      "data_points": 6
+    }
+  },
+  "spec_check": {
+    "blog_words": 1106,
+    "blog_spec": "800-1200",
+    "blog_within_spec": true,
+    "social_posts": 8,
+    "social_spec": "5-10",
+    "social_within_spec": true,
+    "social_platforms": {
+      "linkedin": 5,
+      "x": 3,
+      "other": 0
+    },
+    "youtube_chapter_markers": 18,
+    "youtube_sections_ok": true,
+    "infographic_data_points": 6,
+    "infographic_sections_ok": true,
+    "gate": {
+      "blog.md": {
+        "attempts": 1,
+        "within_spec": true,
+        "detail": ""
+      },
+      "youtube.md": {
+        "attempts": 1,
+        "within_spec": true,
+        "detail": ""
+      },
+      "infographic.md": {
+        "attempts": 1,
+        "within_spec": true,
+        "detail": ""
+      },
+      "social.md": {
+        "attempts": 1,
+        "within_spec": true,
+        "detail": ""
+      }
+    }
+  },
+  "grounding": {
+    "overall_pass": true,
+    "totals": {
+      "claims_checked": 39,
+      "verified": 39,
+      "failed": 0
+    },
+    "report": "grounding_report.json"
+  },
+  "llm": {
+    "budget": 8,
+    "calls_made": 6,
+    "http_attempts": 8,
+    "failed_attempts": 2,
+    "deadline_s": 90,
+    "receipt": "receipts/m3_llm_calls.json"
+  },
+  "notes": [
+    "youtube-thumbnail: image model returned HTTP 402 ({\"error\":{\"message\":\"Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more a) -- file skipped, no placeholder emitted",
+    "social-square: image model returned HTTP 402 ({\"error\":{\"message\":\"Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more a) -- file skipped, no placeholder emitted",
+    "social-portrait: image model returned HTTP 402 ({\"error\":{\"message\":\"Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more a) -- file skipped, no placeholder emitted",
+    "no visuals shipped this run -- see per-image errors above"
+  ],
+  "assets": {
+    "blog.md": {
+      "bytes": 7497,
+      "source": "llm"
+    },
+    "youtube.md": {
+      "bytes": 2317,
+      "source": "llm"
+    },
+    "infographic.md": {
+      "bytes": 1681,
+      "source": "llm"
+    },
+    "social.md": {
+      "bytes": 4346,
+      "source": "llm"
+    },
+    "extraction.json": {
+      "bytes": 8877,
+      "source": "llm"
+    },
+    "grounding_report.json": {
+      "bytes": 801,
+      "source": "llm"
+    },
+    "clips/clip1-ch1-16x9.mp4": {
+      "bytes": 1256790,
+      "source": "ffmpeg"
+    },
+    "clips/clip1-ch1-9x16.mp4": {
+      "bytes": 2082570,
+      "source": "ffmpeg"
+    },
+    "clips/clip1-ch1-thumb.png": {
+      "bytes": 384576,
+      "source": "ffmpeg"
+    },
+    "clips/clip1-ch1.srt": {
+      "bytes": 930,
+      "source": "sarvam"
+    },
+    "clips/clip2-ch3-16x9.mp4": {
+      "bytes": 2424781,
+      "source": "ffmpeg"
+    },
+    "clips/clip2-ch3-9x16.mp4": {
+      "bytes": 4004181,
+      "source": "ffmpeg"
+    },
+    "clips/clip2-ch3-thumb.png": {
+      "bytes": 364439,
+      "source": "ffmpeg"
+    },
+    "clips/clip2-ch3.srt": {
+      "bytes": 2007,
+      "source": "sarvam"
+    },
+    "clips/clip3-ch1-16x9.mp4": {
+      "bytes": 1179263,
+      "source": "ffmpeg"
+    },
+    "clips/clip3-ch1-9x16.mp4": {
+      "bytes": 1965803,
+      "source": "ffmpeg"
+    },
+    "clips/clip3-ch1-thumb.png": {
+      "bytes": 403572,
+      "source": "ffmpeg"
+    },
+    "clips/clip3-ch1.srt": {
+      "bytes": 933,
+      "source": "sarvam"
+    }
+  },
+  "llm_calls_made": 6
+}

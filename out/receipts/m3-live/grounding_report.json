@@ -1,0 +1,42 @@
+{
+  "overall_pass": true,
+  "totals": {
+    "claims_checked": 39,
+    "verified": 39,
+    "failed": 0
+  },
+  "assets": {
+    "blog.md": {
+      "asset": "blog.md",
+      "claims_checked": 0,
+      "verified": 0,
+      "failed_count": 0,
+      "failed": [],
+      "pass": true
+    },
+    "youtube.md": {
+      "asset": "youtube.md",
+      "claims_checked": 18,
+      "verified": 18,
+      "failed_count": 0,
+      "failed": [],
+      "pass": true
+    },
+    "infographic.md": {
+      "asset": "infographic.md",
+      "claims_checked": 12,
+      "verified": 12,
+      "failed_count": 0,
+      "failed": [],
+      "pass": true
+    },
+    "social.md": {
+      "asset": "social.md",
+      "claims_checked": 9,
+      "verified": 9,
+      "failed_count": 0,
+      "failed": [],
+      "pass": true
+    }
+  }
+}

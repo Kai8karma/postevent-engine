@@ -1,0 +1,51 @@
+1
+00:00:00,000 --> 00:00:02,536
+personal perspective and being relatable,
+
+2
+00:00:02,536 --> 00:00:05,010
+um, is something that humans will always
+
+3
+00:00:05,010 --> 00:00:07,423
+do. So, in hiring there's that, there's
+
+4
+00:00:07,423 --> 00:00:10,021
+some specific examples. One I hinted to is
+
+5
+00:00:10,021 --> 00:00:12,186
+people analytics, right? Like AI is
+
+6
+00:00:12,186 --> 00:00:14,412
+helping us do a lot of the analytics
+
+7
+00:00:14,412 --> 00:00:17,010
+embedded in Darwin Box, but if I even zoom
+
+8
+00:00:17,010 --> 00:00:18,866
+out of Darwin Box, for us, um,
+
+9
+00:00:18,866 --> 00:00:21,340
+compensation is a function that every HR
+
+10
+00:00:21,340 --> 00:00:23,505
+team has. Um, it's a, it's a pretty
+
+11
+00:00:23,505 --> 00:00:26,041
+complex function where you're doing a lot
+
+12
+00:00:26,041 --> 00:00:28,577
+of analysis, you're doing a lot of market
+
+13
+00:00:28,577 --> 00:00:30,000
+data constantly. Um, we

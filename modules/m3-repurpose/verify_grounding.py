@@ -334,11 +334,25 @@ def verify_asset(name: str, text: str, turns: list, windows: list, valid_ts_seco
     }
 
 
+def recording_boundary_seconds(event: dict) -> set:
+    """00:00 plus the absolute start of every recording chapter declared in
+    event.json (chapter N starts where 1..N-1 ended). These are real,
+    citable marks in the video even though no transcript turn starts exactly
+    there -- YouTube chapter markers need them."""
+    out, offset = {0}, 0.0
+    for rec in event.get("recording_files", []):
+        out.add(int(round(offset)))
+        offset += float(rec.get("duration_sec") or 0)
+    out.add(int(round(offset)))          # the end of the recording (session close)
+    return out
+
+
 def check_assets(transcript_text: str, event: dict, asset_texts: dict) -> dict:
     """Public entry point for repurpose.py -- no file I/O, no argparse."""
     turns = parse_transcript(transcript_text)
     windows = build_windows(turns)
-    valid_ts_seconds = {t["sec"] for t in turns} | segment_boundary_seconds(transcript_text)
+    valid_ts_seconds = ({t["sec"] for t in turns} | segment_boundary_seconds(transcript_text)
+                        | recording_boundary_seconds(event))
     speaker_names = [s["name"] for s in event.get("speakers", [])]
 
     assets = {name: verify_asset(name, text, turns, windows, valid_ts_seconds, speaker_names)
