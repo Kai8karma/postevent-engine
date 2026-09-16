@@ -159,6 +159,18 @@ def lane_flags(script_path: Path, live: bool) -> list:
     return []
 
 
+def m3_extra_flags(script_path: Path, live: bool) -> list:
+    """--clips/--images opt-in flags for repurpose.py's run phase -- only
+    passed when the live lane is requested AND repurpose.py's own --help
+    currently advertises them (same call-time-detection reasoning as
+    lane_flags() above; repurpose.py is gaining these concurrently, see
+    docs/module-api.md's M3 phase table)."""
+    if not live:
+        return []
+    help_text = _script_help(script_path)
+    return [f for f in ("--clips", "--images") if f in help_text]
+
+
 def build_stages(out_dir: Path, live: bool, event_dir: Path):
     m1_out = out_dir / "m1"
     m2_out = out_dir / "m2"
@@ -200,10 +212,12 @@ def build_stages(out_dir: Path, live: bool, event_dir: Path):
         "m3": {
             "stage": "M3 repurpose",
             "cmd": [sys.executable, str(m3_script), *lane_flags(m3_script, live),
+                    *m3_extra_flags(m3_script, live),
                     "--out", str(m3_out),
                     "--event", str(event_json), "--transcript", str(transcript_md),
                     *([] if live else ["--allow-stale"])],
             "key_output": m3_manifest,
+            "summary_fn": m3_summary,
         },
         "m4": {
             # Real build_dashboard.py CLI: no --live, no --comms/--content/--quality.
@@ -371,6 +385,36 @@ def m2_summary(stdout: str, stderr: str, key_output: Path) -> str:
         except (OSError, json.JSONDecodeError):
             pass
     return last_summary_line(stdout) or last_summary_line(stderr)
+
+
+def m3_summary(stdout: str, stderr: str, key_output: Path) -> str:
+    """M3's key_output is manifest.json itself -- prefer real counts read
+    straight off repurpose.py's own output files (blog.md word count,
+    social.md post count, manifest.json's clip/visual file kinds) for the
+    receipt-row summary; fall back to the old last-stdout-line behaviour
+    when the manifest is missing or unparseable (e.g. a failed run, or a
+    repurpose.py that hasn't landed manifest.json's files[] block yet)."""
+    if not key_output.exists():
+        return last_summary_line(stdout) or last_summary_line(stderr)
+    try:
+        manifest = json.loads(key_output.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return last_summary_line(stdout) or last_summary_line(stderr)
+
+    m3_out = key_output.parent
+    blog_path = m3_out / "blog.md"
+    blog_words = len(blog_path.read_text(encoding="utf-8").split()) if blog_path.exists() else 0
+
+    posts = 0
+    social_path = m3_out / "social.md"
+    if social_path.exists():
+        posts = len(re.findall(r"\*\*Platform:\*\*", social_path.read_text(encoding="utf-8")))
+
+    files = manifest.get("files", [])
+    clips = sum(1 for f in files if f.get("kind") == "clip")
+    images = sum(1 for f in files if f.get("kind") == "visual")
+
+    return f"blog_words={blog_words} posts={posts} clips={clips} images={images}"
 
 
 MODULE_LANES = [

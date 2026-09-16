@@ -101,6 +101,17 @@ Demo dispatch = the recipients whose `demo_redirect_to` is set (one attendee, on
 | `run` | `repurpose.py` (live default): one LLM extraction over the transcript → blog (800–1200, hard gate with one retry), YouTube chapters + description + thumbnail brief, infographic outline with data points, 5–10 social posts (LinkedIn + X, distinct hooks), grounding verifier over every quote/timestamp; **image generation** (thumbnail + 2 social visuals) via OpenRouter image-capable model; **clips**: top 3 moments from the extraction cut with ffmpeg from the recording, 30–60 s, 16:9 and 9:16 (centre crop), captions SRT built from the Sarvam word timestamps and burned into the 9:16 | `extraction.json`, `blog.md`, `youtube.md`, `infographic.md`, `social.md`, `visuals/*.png`, `clips/*.mp4` + `*.srt`, `grounding_report.json`, `manifest.json`, `receipts/m3_llm_calls.json`, `receipts/m3_images.json`, `receipts/m3_clips.json` |
 | `record` | takes the Drive upload results from n8n and writes them into the manifest | `drive_manifest.json`, `manifest.json.shared_drive` |
 
+**Multiple events:** `transcribe` and `run` both accept `inputs.event_slug`. Omitted, or the literal
+`darwinbox-ai-in-hr-2026-08-13`, resolves to the bundled fixture (`data/incoming/event.json` /
+`data/incoming/transcript.md`); any other slug resolves to `data/events/<slug>/event.json` /
+`data/events/<slug>/transcript.md` and fails loud (`ok:false`, no fixture fallback) if that `transcript.md`
+is missing. `run` additionally checks its own `run_id` before falling back to the slug: with no
+`inputs.transcript_md_path` given, if `out/api/<run_id>/transcript.md` already exists (written by a prior
+`transcribe` call reusing that same `run_id`), `run` uses that freshly produced transcript instead of the
+slug default — so a `transcribe` → `run` pair sharing one `run_id` always regenerates from what was just
+transcribed. Explicit `inputs.transcript_md_path` / `inputs.event_json_path` win over both the `run_id` reuse
+and the slug resolution.
+
 `run` response: `summary` = `{blog_words, chapters, posts: {linkedin, x}, images, clips, grounding: {checked, passed}, lane, models}`,
 `artifacts` map as usual, and `next.files` = `[{name, path, url, mime, kind: "blog|youtube|infographic|social|extraction|visual|clip|caption|manifest"}]`
 for n8n's Google Drive node. `record` body: `{run_id, drive: {folder_url, folder_id, files: [{name, drive_file_id, web_view_link}]}}`.

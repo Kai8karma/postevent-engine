@@ -22,6 +22,7 @@ import argparse
 import json
 import mimetypes
 import os
+import re
 import socketserver
 import subprocess
 import sys
@@ -56,6 +57,13 @@ ENRICH_SCRIPT = REPO_ROOT / "modules" / "m1-enrichment" / "enrich.py"
 PUSH_SCRIPT = REPO_ROOT / "modules" / "m1-enrichment" / "push_to_hubspot.py"
 COMMS_SCRIPT = REPO_ROOT / "modules" / "m2-comms" / "comms.py"
 LOG_DISPATCH_SCRIPT = REPO_ROOT / "modules" / "m2-comms" / "log_dispatch.py"
+REPURPOSE_SCRIPT = REPO_ROOT / "modules" / "m3-repurpose" / "repurpose.py"
+TRANSCRIBE_BATCH_SCRIPT = REPO_ROOT / "modules" / "m3-repurpose" / "transcribe_batch.py"
+BUILD_TRANSCRIPT_SCRIPT = REPO_ROOT / "data" / "incoming" / "tools" / "build_transcript.py"
+MEDIA_DIR = REPO_ROOT / "data" / "incoming" / "media"
+FFMPEG_TIMEOUT_S = 300  # per-chapter mono/16kHz extraction -- minutes, not SUBPROCESS_TIMEOUT_S's scale
+BUILD_TRANSCRIPT_TIMEOUT_S = 60  # pure-Python turn assembly, no network
+DEFAULT_EVENT_SLUG = "darwinbox-ai-in-hr-2026-08-13"  # the bundled fixture -- data/incoming/, not data/events/
 
 
 def _git_sha() -> str:
@@ -144,6 +152,16 @@ def resolve_registrants_input(inputs: dict, out_dir: Path) -> Path:
 def resolve_optional_repo_path(inputs: dict, key: str, default: Path) -> Path:
     val = inputs.get(key)
     return resolve_repo_relative(val) if val else default
+
+
+def resolve_event_dir(slug) -> Path:
+    """data/incoming/ for the bundled default event (omitted slug or the
+    literal DEFAULT_EVENT_SLUG); data/events/<slug>/ for any other --
+    M3's inputs.event_slug support for multiple events, see
+    docs/module-api.md's M3 'Multiple events' paragraph."""
+    if not slug or slug == DEFAULT_EVENT_SLUG:
+        return REPO_ROOT / "data" / "incoming"
+    return REPO_ROOT / "data" / "events" / slug
 
 
 def resolve_enriched_csv(inputs: dict, notes: list):
@@ -509,30 +527,384 @@ def run_m2(payload: dict, run_id: str, out_dir: Path, log: list) -> dict:
 
 
 # --------------------------------------------------------------------------
-# M3/M4 -- these already accept --live/--allow-stale in the shape
-# api/run.py's stage_m3/stage_m4 expect, so reuse them directly
-# (with the module-level timeout monkeypatch above already applied).
+# M3 (transcribe / run / record) -- see docs/module-api.md's "M3 -- phases
+# and files" table (and its "Multiple events" paragraph) for the exact
+# manifest.json / drive-record / event_slug contract this section builds
+# against. repurpose.py is being rewritten concurrently to gain
+# --clips/--images/--offline (same script_help()-at-call-time pattern
+# already used by M1/M2 above) -- every flag below is only ever added
+# after confirming its own live --help advertises it, and a dropped flag
+# is always logged in notes, never silently swallowed.
+def default_speaker_map(speakers: list) -> dict:
+    """0=<host>, 1=<next speaker>, ... in event.json.speakers order, host
+    first regardless of its position in the list (build_transcript.py's
+    --speaker-map keys are Sarvam's numeric diarization speaker ids)."""
+    ordered = sorted(speakers, key=lambda s: 0 if (s.get("role") or "").strip().lower() == "host" else 1)
+    return {str(i): s.get("name", f"Speaker {i}") for i, s in enumerate(ordered)}
+
+
+def download_binary(url: str, dest: Path) -> Path:
+    req = urllib.request.Request(url, headers={"User-Agent": "postevent-module-api/1.0"})
+    try:
+        with urllib.request.urlopen(req, timeout=300) as resp:
+            status, data = resp.status, resp.read()
+    except urllib.error.HTTPError as exc:
+        raise InputError(f"audio download failed: HTTP {exc.code} ({url})") from exc
+    except urllib.error.URLError as exc:
+        raise InputError(f"audio download failed: {exc.reason} ({url})") from exc
+    if status != 200:
+        raise InputError(f"audio download failed: HTTP {status} ({url})")
+    if not data:
+        raise InputError(f"audio download returned an empty body ({url})")
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_bytes(data)
+    return dest
+
+
+def resolve_recording_file(rec: dict, out_dir: Path, log: list) -> Path:
+    """chapterN.mp4 at data/incoming/media/ (the repo's committed fixture
+    media) wins over a download every time -- only reaches for rec['url']
+    when that local file is missing."""
+    chapter = rec["chapter"]
+    local_name = f"chapter{chapter}.mp4"
+    local_path = MEDIA_DIR / local_name
+    if local_path.exists():
+        log.append(f"[m3-transcribe] chapter {chapter}: using local {local_path}")
+        return local_path
+    url = rec.get("url")
+    if not url:
+        raise InputError(f"chapter {chapter}: no local file at {local_path} and no url to download it from")
+    dest = out_dir / "media" / local_name
+    log.append(f"[m3-transcribe] chapter {chapter}: downloading {url} -> {dest}")
+    return download_binary(url, dest)
+
+
+def extract_audio(mp4_path: Path, out_dir: Path, chapter: int, log: list) -> Path:
+    mp3_path = out_dir / "audio" / f"chapter{chapter}.mp3"
+    mp3_path.parent.mkdir(parents=True, exist_ok=True)
+    cmd = ["ffmpeg", "-y", "-i", str(mp4_path), "-ac", "1", "-ar", "16000", "-vn", str(mp3_path)]
+    log.append(f"[m3-transcribe] chapter {chapter}: ffmpeg extract -> {mp3_path}")
+    result = legacy.run_module(cmd, dict(os.environ), FFMPEG_TIMEOUT_S)
+    log.extend(legacy.lines_for_log(result["stdout"], result["stderr"]))
+    if not result["ok"]:
+        raise InputError(f"ffmpeg extraction failed on chapter {chapter} (exit {result['returncode']}) -- see log")
+    return mp3_path
+
+
+def run_m3_transcribe(payload: dict, run_id: str, out_dir: Path, log: list) -> dict:
+    inputs = payload.get("inputs") or {}
+    notes = []
+    slug = inputs.get("event_slug")
+    event_dir = resolve_event_dir(slug)
+    event_val = inputs.get("event_json_path")
+    try:
+        event_path = resolve_repo_relative(event_val) if event_val else (event_dir / "event.json")
+        if not event_path.exists():
+            raise InputError(f"no event.json found at {event_path} (event_slug={slug!r}) -- for a non-default "
+                              f"event_slug, put it at data/events/<slug>/event.json")
+        event = json.loads(event_path.read_text(encoding="utf-8"))
+    except (InputError, OSError, json.JSONDecodeError) as exc:
+        return {"ok": False, "module": "m3", "phase": "transcribe", "error": f"cannot load event.json: {exc}",
+                "log": log, "notes": notes}
+
+    audio_urls = inputs.get("audio_urls")
+    if audio_urls:
+        recordings = [{"chapter": i, "url": u, "duration_sec": None} for i, u in enumerate(audio_urls, start=1)]
+    else:
+        recordings = sorted((dict(r) for r in event.get("recording_files", [])), key=lambda r: r["chapter"])
+    if not recordings:
+        return {"ok": False, "module": "m3", "phase": "transcribe",
+                "error": "no inputs.audio_urls given and event.json has no recording_files", "log": log, "notes": notes}
+
+    mp3_by_chapter = []
+    try:
+        for rec in recordings:
+            mp4_path = resolve_recording_file(rec, out_dir, log)
+            mp3_by_chapter.append((rec["chapter"], extract_audio(mp4_path, out_dir, rec["chapter"], log)))
+    except InputError as exc:
+        return {"ok": False, "module": "m3", "phase": "transcribe", "error": str(exc), "log": log, "notes": notes}
+
+    transcription_dir = out_dir / "receipts" / "transcription"
+    cmd = [legacy.PY, str(TRANSCRIBE_BATCH_SCRIPT)]
+    for _, mp3_path in mp3_by_chapter:
+        cmd += ["--audio", str(mp3_path)]
+    cmd += ["--out", str(transcription_dir)]
+    log.append(f"[m3-transcribe] invoking transcribe_batch.py for {len(mp3_by_chapter)} file(s)")
+    result = legacy.run_module(cmd, dict(os.environ), SUBPROCESS_TIMEOUT_S)
+    log.extend(legacy.lines_for_log(result["stdout"], result["stderr"]))
+    if not result["ok"]:
+        return {"ok": False, "module": "m3", "phase": "transcribe",
+                "error": f"transcribe_batch.py exited {result['returncode']}", "log": log, "notes": notes}
+
+    speaker_map = inputs.get("speaker_map") or default_speaker_map(event.get("speakers", []))
+    transcript_path = out_dir / "transcript.md"
+    cmd = [legacy.PY, str(BUILD_TRANSCRIPT_SCRIPT), "--event", str(event_path)]
+    for chapter, _ in mp3_by_chapter:
+        cmd += ["--chapter", f"{chapter}={transcription_dir / f'chapter{chapter}.sarvam.json'}"]
+    for key, name in speaker_map.items():
+        cmd += ["--speaker-map", f"{key}={name}"]
+    cmd += ["--out", str(transcript_path)]
+    log.append("[m3-transcribe] invoking build_transcript.py")
+    result2 = legacy.run_module(cmd, dict(os.environ), BUILD_TRANSCRIPT_TIMEOUT_S)
+    log.extend(legacy.lines_for_log(result2["stdout"], result2["stderr"]))
+    if not result2["ok"]:
+        return {"ok": False, "module": "m3", "phase": "transcribe",
+                "error": f"build_transcript.py exited {result2['returncode']}", "log": log, "notes": notes}
+
+    m = re.search(r"turns=(\d+)\s+words=(\d+)", result2["stdout"])
+    turns, words = (int(m.group(1)), int(m.group(2))) if m else (0, 0)
+    total_seconds = sum(r.get("duration_sec") or 0 for r in recordings)
+
+    receipt = {}
+    tb_receipt_path = transcription_dir / "receipt.json"
+    if tb_receipt_path.exists():
+        try:
+            receipt = json.loads(tb_receipt_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            notes.append("transcribe_batch.py's receipt.json is not valid JSON")
+    receipt["chapters"] = len(recordings)
+    receipt["speaker_map"] = speaker_map
+    (out_dir / "receipts").mkdir(parents=True, exist_ok=True)
+    (out_dir / "receipts" / "transcription.json").write_text(json.dumps(receipt, indent=2), encoding="utf-8")
+
+    artifacts = {"transcript.md": f"/artifacts/{run_id}/transcript.md",
+                 "receipts/transcription.json": f"/artifacts/{run_id}/receipts/transcription.json"}
+    for p in sorted(transcription_dir.glob("*.sarvam.json")):
+        rel = f"receipts/transcription/{p.name}"
+        artifacts[rel] = f"/artifacts/{run_id}/{rel}"
+
+    return {"ok": True, "module": "m3", "phase": "transcribe", "lane": "live", "run_id": run_id, "model": None,
+            "summary": {"chapters": len(recordings), "words": words, "turns": turns, "seconds": total_seconds},
+            "artifacts": artifacts, "receipts": [f"/artifacts/{run_id}/receipts/transcription.json"],
+            "next": {}, "notes": notes, "log": log}
+
+
+def summarize_m3_run(out_dir: Path, manifest: dict) -> dict:
+    """Reads repurpose.py's own output files -- never recomputes generation,
+    only counts/measures what's already on disk (same discipline as
+    legacy.summarize_m1/m2/m3)."""
+    blog_path = out_dir / "blog.md"
+    blog_words = len(blog_path.read_text(encoding="utf-8").split()) if blog_path.exists() else 0
+
+    chapters = 0
+    yt_path = out_dir / "youtube.md"
+    if yt_path.exists():
+        chapters = len(re.findall(r"^\d{1,2}:\d{2}\s+\S", yt_path.read_text(encoding="utf-8"), re.MULTILINE))
+
+    linkedin_posts = x_posts = 0
+    social_path = out_dir / "social.md"
+    if social_path.exists():
+        social_text = social_path.read_text(encoding="utf-8")
+        linkedin_posts = len(re.findall(r"\*\*Platform:\*\*\s*LinkedIn", social_text))
+        x_posts = len(re.findall(r"\*\*Platform:\*\*\s*X\b", social_text))
+
+    files = manifest.get("files", [])
+    images = sum(1 for f in files if f.get("kind") == "visual")
+    clips = sum(1 for f in files if f.get("kind") == "clip")
+
+    grounding = {"checked": 0, "passed": 0}
+    grounding_path = out_dir / "grounding_report.json"
+    if grounding_path.exists():
+        try:
+            totals = json.loads(grounding_path.read_text(encoding="utf-8")).get("totals", {})
+            grounding = {"checked": totals.get("claims_checked", 0), "passed": totals.get("verified", 0)}
+        except json.JSONDecodeError:
+            pass
+
+    return {"blog_words": blog_words, "chapters": chapters, "posts": {"linkedin": linkedin_posts, "x": x_posts},
+            "images": images, "clips": clips, "grounding": grounding,
+            "lane": manifest.get("lane"), "models": manifest.get("models", {})}
+
+
+def resolve_run_transcript_and_event(payload: dict, inputs: dict) -> tuple:
+    """Precedence: explicit inputs.transcript_md_path/event_json_path >
+    this run_id's own freshly transcribed transcript.md (out/api/<run_id>/
+    transcript.md, written by a prior 'transcribe' call reusing the same
+    run_id) > inputs.event_slug's event dir > the bundled default event
+    dir. See docs/module-api.md's M3 'Multiple events' paragraph. Returns
+    (transcript_path, event_path, notes); raises InputError if nothing
+    resolves to a real file (fail loud, never a silent fixture swap)."""
+    notes = []
+    run_id = payload.get("run_id")
+    slug = inputs.get("event_slug")
+    event_dir = resolve_event_dir(slug)
+
+    transcript_val = inputs.get("transcript_md_path")
+    if transcript_val:
+        transcript_path = resolve_repo_relative(transcript_val)
+    else:
+        reused = OUT_API_ROOT / run_id / "transcript.md" if run_id else None
+        if reused is not None and reused.exists():
+            transcript_path = reused
+            notes.append(f"no inputs.transcript_md_path given -- reused run {run_id!r}'s own transcript.md "
+                         f"from its transcribe phase ({reused})")
+        else:
+            transcript_path = event_dir / "transcript.md"
+    if not transcript_path.exists():
+        raise InputError(f"no transcript.md found at {transcript_path} (event_slug={slug!r}) -- for a "
+                          f"non-default event_slug, put the transcript at data/events/<slug>/transcript.md")
+
+    event_val = inputs.get("event_json_path")
+    event_path = resolve_repo_relative(event_val) if event_val else (event_dir / "event.json")
+    if not event_path.exists():
+        raise InputError(f"no event.json found at {event_path} (event_slug={slug!r})")
+
+    return transcript_path, event_path, notes
+
+
+def run_m3_run(payload: dict, run_id: str, out_dir: Path, log: list) -> dict:
+    inputs = payload.get("inputs") or {}
+    live_requested = bool(payload.get("live", False))
+    options = inputs.get("options") or {}
+    notes = []
+    try:
+        transcript_path, event_path, resolve_notes = resolve_run_transcript_and_event(payload, inputs)
+    except InputError as exc:
+        return {"ok": False, "module": "m3", "phase": "run", "error": str(exc), "log": log, "notes": notes}
+    notes.extend(resolve_notes)
+
+    help_text = script_help(REPURPOSE_SCRIPT)
+    cmd = [legacy.PY, str(REPURPOSE_SCRIPT), "--out", str(out_dir),
+           "--event", str(event_path), "--transcript", str(transcript_path)]
+
+    if live_requested:
+        if "--live" in help_text:
+            cmd.append("--live")
+        else:
+            notes.append("repurpose.py has no --live flag in its current --help -- cannot honor live:true")
+    elif "--offline" in help_text:
+        cmd.append("--offline")
+    else:
+        notes.append("repurpose.py does not support --offline yet -- omitted (its own no-flag default replays "
+                      "sample_output, so this still runs zero LLM calls)")
+
+    if options.get("clips"):
+        if "--clips" in help_text:
+            cmd.append("--clips")
+        else:
+            notes.append("repurpose.py does not support --clips yet -- inputs.options.clips ignored")
+    if options.get("images"):
+        if "--images" in help_text:
+            cmd.append("--images")
+        else:
+            notes.append("repurpose.py does not support --images yet -- inputs.options.images ignored")
+
+    log.append(f"[m3-run] live={live_requested} options={options} -- invoking repurpose.py")
+    env = legacy.build_env(live_requested and legacy.openrouter_key_present())
+    result = legacy.run_module(cmd, env, SUBPROCESS_TIMEOUT_S)
+    log.extend(legacy.lines_for_log(result["stdout"], result["stderr"]))
+    if result["timed_out"] or not result["ok"]:
+        error = (f"repurpose.py timed out after {result['elapsed']:.1f}s" if result["timed_out"]
+                 else f"repurpose.py exited {result['returncode']}")
+        return {"ok": False, "module": "m3", "phase": "run", "error": error, "log": log, "notes": notes}
+
+    manifest = {}
+    manifest_path = out_dir / "manifest.json"
+    if manifest_path.exists():
+        try:
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            notes.append("manifest.json present but not valid JSON")
+    else:
+        notes.append(f"repurpose.py exited 0 but did not write manifest.json at {manifest_path}")
+
+    summary = summarize_m3_run(out_dir, manifest)
+
+    artifacts = {}
+    for rel in ("blog.md", "youtube.md", "infographic.md", "social.md", "extraction.json",
+                "grounding_report.json", "manifest.json"):
+        if (out_dir / rel).exists():
+            artifacts[rel] = f"/artifacts/{run_id}/{rel}"
+    for f in manifest.get("files", []):
+        name = f.get("name")
+        if name and name not in artifacts and (out_dir / name).exists():
+            artifacts[name] = f"/artifacts/{run_id}/{name}"
+
+    next_files = []
+    for f in manifest.get("files", []):
+        name = f.get("name")
+        if not name:
+            continue
+        next_files.append({"name": name, "path": str(out_dir / name), "url": f"/artifacts/{run_id}/{name}",
+                            "mime": guess_content_type(out_dir / name), "kind": f.get("kind")})
+
+    receipts = [f"/artifacts/{run_id}/{rel}" for rel in
+                ("receipts/m3_llm_calls.json", "receipts/m3_images.json", "receipts/m3_clips.json")
+                if (out_dir / rel).exists()]
+
+    lane = manifest.get("lane") or ("live" if live_requested else "offline")
+    model = (manifest.get("models") or {}).get("text")
+
+    return {"ok": True, "module": "m3", "phase": "run", "lane": lane, "run_id": run_id, "model": model,
+            "summary": summary, "artifacts": artifacts, "receipts": receipts,
+            "next": {"files": next_files}, "notes": notes, "log": log}
+
+
+def run_m3_record(payload: dict, run_id: str, out_dir: Path, log: list) -> dict:
+    inputs = payload.get("inputs") or {}
+    drive = inputs.get("drive")
+    notes = []
+    if not isinstance(drive, dict):
+        return {"ok": False, "module": "m3", "phase": "record",
+                "error": "inputs.drive is required (n8n's {folder_url, folder_id, files: [...]})",
+                "log": log, "notes": notes}
+
+    manifest_path = out_dir / "manifest.json"
+    if not manifest_path.exists():
+        return {"ok": False, "module": "m3", "phase": "record",
+                "error": f"no manifest.json at {manifest_path} -- run the m3 'run' phase for this run_id first",
+                "log": log, "notes": notes}
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        return {"ok": False, "module": "m3", "phase": "record",
+                "error": f"manifest.json is not valid JSON: {exc}", "log": log, "notes": notes}
+
+    drive_manifest = {"run_id": run_id, "recorded_at": datetime.now(timezone.utc).isoformat(), **drive}
+    (out_dir / "drive_manifest.json").write_text(json.dumps(drive_manifest, indent=2), encoding="utf-8")
+
+    manifest["shared_drive"] = drive
+    manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+
+    files = drive.get("files") or []
+    return {"ok": True, "module": "m3", "phase": "record", "lane": manifest.get("lane", "offline"),
+            "run_id": run_id, "model": None,
+            "summary": {"files_recorded": len(files), "folder_url": drive.get("folder_url")},
+            "artifacts": {"drive_manifest.json": f"/artifacts/{run_id}/drive_manifest.json",
+                          "manifest.json": f"/artifacts/{run_id}/manifest.json"},
+            "receipts": [], "next": {}, "notes": notes, "log": log}
+
+
+def run_m3(payload: dict, run_id: str, out_dir: Path, log: list) -> dict:
+    phase = payload.get("phase")
+    if phase == "transcribe":
+        return run_m3_transcribe(payload, run_id, out_dir, log)
+    if phase == "run":
+        return run_m3_run(payload, run_id, out_dir, log)
+    if phase == "record":
+        return run_m3_record(payload, run_id, out_dir, log)
+    return {"ok": False, "module": "m3", "phase": phase,
+            "error": f"invalid m3 phase {phase!r} (must be one of transcribe, run, record)", "log": log, "notes": []}
+
+
+# --------------------------------------------------------------------------
+# M4 -- no phases of its own; still reuses api/run.py's stage_m1/stage_m4
+# directly (with the module-level timeout monkeypatch above already
+# applied) -- unchanged by the M3 rewrite above, which only split M3 out of
+# what used to be this same function.
 def run_generic(module: str, payload: dict, run_id: str, out_dir: Path, log: list) -> dict:
     live_requested = bool(payload.get("live", False))
-    ev_path = REPO_ROOT / "data" / "incoming" / "event.json"
-    tr_path = REPO_ROOT / "data" / "incoming" / "transcript.md"
     try:
-        if module == "m3":
-            legacy.stage_m3(out_dir, ev_path, tr_path, live_requested, log)
-            summary = legacy.summarize_m3(out_dir)
-            artifact_specs = legacy.M3_ARTIFACT_SPECS
-        else:  # m4 -- no --live of its own; feed it an offline M1 run first
-            m1_out = out_dir / "m1"
-            legacy.stage_m1(m1_out, REPO_ROOT / "data" / "incoming" / "registrants.csv", False, log)
-            result = legacy.stage_m4(out_dir, m1_out / "hubspot_ready.csv",
-                                      REPO_ROOT / "data" / "fixtures" / "engagement.json",
-                                      REPO_ROOT / "data" / "fixtures" / "segments.json", log)
-            summary = legacy.summarize_m4(result["stdout"])
-            artifact_specs = legacy.M4_ARTIFACT_SPECS
+        m1_out = out_dir / "m1"
+        legacy.stage_m1(m1_out, REPO_ROOT / "data" / "incoming" / "registrants.csv", False, log)
+        result = legacy.stage_m4(out_dir, m1_out / "hubspot_ready.csv",
+                                  REPO_ROOT / "data" / "fixtures" / "engagement.json",
+                                  REPO_ROOT / "data" / "fixtures" / "segments.json", log)
     except legacy.ModuleFailure as fail:
         return {"ok": False, "module": module, "error": fail.error, "hint": fail.hint, "log": fail.log}
 
-    artifacts = {rel: f"/artifacts/{run_id}/{rel}" for rel, _kind in artifact_specs if (out_dir / rel).exists()}
+    summary = legacy.summarize_m4(result["stdout"])
+    artifacts = {rel: f"/artifacts/{run_id}/{rel}" for rel, _kind in legacy.M4_ARTIFACT_SPECS if (out_dir / rel).exists()}
     return {
         "ok": True, "module": module, "phase": payload.get("phase"),
         "lane": "live" if live_requested else "offline", "run_id": run_id,
@@ -559,6 +931,8 @@ def handle_run_request(payload: dict) -> dict:
         resp = run_m1(payload, run_id, out_dir, log)
     elif module == "m2":
         resp = run_m2(payload, run_id, out_dir, log)
+    elif module == "m3":
+        resp = run_m3(payload, run_id, out_dir, log)
     else:
         resp = run_generic(module, payload, run_id, out_dir, log)
 
@@ -599,7 +973,17 @@ def find_artifact(out_dir: Path, rel_path: str):
     return None
 
 
+# mimetypes.guess_type() leans on the host's system mime.types file for some
+# extensions (absent/incomplete on python:3.12-slim, this service's Docker
+# base) -- these are pinned explicitly so M3's clip/caption artifacts get a
+# correct Content-Type on every deployment, not just wherever this runs.
+EXTRA_CONTENT_TYPES = {".mp4": "video/mp4", ".srt": "application/x-subrip", ".vtt": "text/vtt"}
+
+
 def guess_content_type(path: Path) -> str:
+    ext = path.suffix.lower()
+    if ext in EXTRA_CONTENT_TYPES:
+        return EXTRA_CONTENT_TYPES[ext]
     ctype, _ = mimetypes.guess_type(str(path))
     return ctype or "application/octet-stream"
 
