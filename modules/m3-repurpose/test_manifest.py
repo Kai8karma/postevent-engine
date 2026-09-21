@@ -10,7 +10,10 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 RUN = Path(sys.argv[1]) if len(sys.argv) > 1 else REPO_ROOT / "out" / "verify-w3" / "m3"
 M = json.loads((RUN / "manifest.json").read_text())
-SOURCES = {"llm", "image_model", "ffmpeg", "sarvam", "html_render"}
+# Every value any current code path emits. "html_render" was a retired template
+# fallback: nothing writes it now, so accepting it would let a CSS render pass as
+# a generated image.
+SOURCES = {"llm", "image_model", "ffmpeg", "sarvam"}
 KINDS = {"blog", "youtube", "infographic", "social", "extraction", "visual", "clip", "caption",
          "manifest", "report"}
 failures = []
@@ -38,7 +41,7 @@ check("the four channel assets are listed", {"blog", "youtube", "infographic", "
 check("text assets carry a grounded flag", all(isinstance(f["grounded"], bool) for f in M["files"]
                                                if f["kind"] in ("blog", "youtube", "infographic", "social")))
 check("no visual claims a source it did not come from",
-      all(f["source"] in ("image_model", "ffmpeg", "html_render") for f in M["files"] if f["kind"] == "visual"))
+      all(f["source"] in ("image_model", "ffmpeg") for f in M["files"] if f["kind"] == "visual"))
 check("shared_drive is present and empty until record",
       M["shared_drive"].get("files") == [] and not M["shared_drive"].get("folder_url"))
 check("llm receipt is declared and on disk",
