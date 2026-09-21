@@ -1,54 +1,72 @@
 #!/usr/bin/env bash
-# Builds a judge-ready submission zip: dist/postevent-engine-<date-arg>.zip
+# Builds the reviewer-facing submission zip: dist/postevent-engine-<tag>.zip
 #
-# Usage: ./make_package.sh [date-arg]     (default: "submission")
+# Usage: ./make_package.sh [name]        (default: the short commit sha)
+#        ./make_package.sh --with-sample-run [name]
 #
-# Includes the whole repo except: _internal/, out/ (except a freshly
-# generated out/sample-run/, added back explicitly so judges see real
-# output without running anything, plus out/clay-live-proof/ and
-# out/live-proof/ when present -- the live-lane receipts), dist/,
-# .DS_Store, __pycache__/, *.pyc, and modules/*/out/ (stray local test output).
+# The zip is produced with `git archive` from HEAD, so it contains exactly what is
+# committed -- no more, no less. That matters for two reasons:
+#   1. The 460 MB of webinar MP4/MP3 source media under data/incoming/media/ is
+#      ignored by git. A plain `zip -r .` does NOT read .gitignore and would ship
+#      all of it; git archive cannot.
+#   2. The zip, the git tag and any deploy then describe the same tree, so a link
+#      in the submission email resolves to the same bytes a reviewer unzips.
+#
+# _internal/ (self-assessment), _archive/ and dist/ are gitignored and therefore
+# absent automatically. out/receipts/ IS tracked and ships -- it is the evidence.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT"
 
-DATE_ARG="${1:-submission}"
-ZIP_NAME="postevent-engine-${DATE_ARG}.zip"
-ZIP_PATH="dist/${ZIP_NAME}"
+WITH_SAMPLE_RUN=0
+if [ "${1:-}" = "--with-sample-run" ]; then
+  WITH_SAMPLE_RUN=1
+  shift
+fi
 
+SHA="$(git rev-parse --short HEAD)"
+NAME="${1:-$SHA}"
+ZIP_PATH="dist/postevent-engine-${NAME}.zip"
 mkdir -p dist
 rm -f "$ZIP_PATH"
 
-echo "Generating fresh out/sample-run/ (offline lane, zero network)..."
-rm -rf out/sample-run
-python3 orchestrator/run_pipeline.py --out out/sample-run
+if ! git diff --quiet || ! git diff --cached --quiet; then
+  echo "WARNING: working tree has uncommitted changes. The zip is built from HEAD (${SHA})"
+  echo "         and will NOT contain them. Commit first if they belong in the submission."
+  echo ""
+fi
 
-echo "Zipping repo (excluding _internal/, out/*, dist/, caches)..."
-zip -r -q "$ZIP_PATH" . \
-  -x "_internal/*" "_internal" \
-  -x "out/*" "out" \
-  -x "dist/*" "dist" \
-  -x "*.DS_Store" \
-  -x "*__pycache__*" \
-  -x "*.pyc" \
-  -x "modules/*/out/*" "modules/*/out"
+echo "Archiving HEAD (${SHA})..."
+git archive --format=zip --prefix="postevent-engine/" -o "$ZIP_PATH" HEAD
 
-echo "Adding out/sample-run/ back in..."
-zip -r -q "$ZIP_PATH" out/sample-run
+if [ "$WITH_SAMPLE_RUN" = "1" ]; then
+  # Offline lane only. Live is the default in v2, so omitting --offline here would
+  # spend real API calls during packaging.
+  echo "Generating out/sample-run/ on the offline lane (zero network)..."
+  rm -rf out/sample-run
+  python3 orchestrator/run_pipeline.py --offline --out out/sample-run
+  echo "Adding out/sample-run/ to the archive..."
+  zip -r -q "$ZIP_PATH" out/sample-run -x "*__pycache__*" -x "*.DS_Store"
+fi
 
-# Live-lane receipts (present only if the live runs were made on this machine):
-for proof in out/clay-live-proof out/live-proof; do
-  if [ -d "$proof" ]; then
-    echo "Adding $proof/ (live receipt) ..."
-    zip -r -q "$ZIP_PATH" "$proof" -x "*__pycache__*" -x "*.DS_Store"
-  fi
-done
-
+RECEIPTS="$(unzip -l "$ZIP_PATH" | grep -c 'postevent-engine/out/receipts/' || true)"
+MEDIA="$(unzip -l "$ZIP_PATH" | grep -cE '\.(mp4|mp3)$' || true)"
 FILE_COUNT="$(unzip -l "$ZIP_PATH" | tail -1 | awk '{print $2}')"
 ZIP_SIZE="$(du -h "$ZIP_PATH" | cut -f1)"
 
 echo ""
-echo "Package built: ${ZIP_PATH}"
-echo "Size: ${ZIP_SIZE}"
-echo "Files: ${FILE_COUNT}"
+echo "Package:  ${ZIP_PATH}"
+echo "Commit:   ${SHA}"
+echo "Size:     ${ZIP_SIZE}"
+echo "Files:    ${FILE_COUNT}  (receipt files: ${RECEIPTS})"
+
+if [ "$MEDIA" -gt 0 ]; then
+  echo "ERROR: ${MEDIA} media file(s) leaked into the archive." >&2
+  exit 1
+fi
+if [ "$RECEIPTS" -lt 1 ]; then
+  echo "ERROR: no out/receipts/ files in the archive -- the evidence is missing." >&2
+  exit 1
+fi
+echo "Checks:   no source media, receipts present."
