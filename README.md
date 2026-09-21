@@ -200,6 +200,11 @@ them:
 - The four n8n workflows are authored and audited green (0 failures; warnings and every unverified node parameter are
   listed in `orchestrator/n8n/railway/README.md`), but **none has been imported into a running n8n instance**.
 - **No Railway module-API URL is live.** `docs/deploy-module-api.md` is the procedure, not a record of a deployment.
+  The container itself is real and was exercised: `docker build` exits 0, `GET /health` returns 200 listing all four
+  modules, `POST /run` completes an M1 `prepare` phase inside the container (150 rows in, 142 out) and
+  `GET /artifacts/<run_id>/quality_report.json` serves the result — receipt
+  [`out/receipts/module-api-container.json`](out/receipts/module-api-container.json). What is missing is hosting,
+  not a working image.
 - HubSpot **`marketing-email`, `transactional-email` and the custom-events API return 403 on this portal**. M2's send
   path therefore falls back to Gmail with HubSpot engagement logging; M4's `seed` falls back to `postevent_*` counter
   properties instead of custom behavioural events.

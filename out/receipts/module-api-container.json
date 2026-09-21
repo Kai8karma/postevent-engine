@@ -1,0 +1,51 @@
+{
+  "what": "Module API container build + live run, recorded so the 'runs in a container' claim is evidence, not assertion.",
+  "recorded_at": "2026-09-21T17:30:30.087806+00:00",
+  "image": "postevent-engine:audit4",
+  "dockerfile": "Dockerfile (python:3.12-slim + ffmpeg, stdlib only, CMD api/server.py)",
+  "build": {
+    "command": "docker build -t postevent-engine:audit4 .",
+    "exit_code": 0
+  },
+  "run": {
+    "command": "docker run -d -p 8099:8080 -e MODULE_API_TOKEN=*** postevent-engine:audit4"
+  },
+  "checks": [
+    {
+      "endpoint": "GET /health",
+      "status": 200,
+      "body": {
+        "ok": true,
+        "modules": [
+          "m1",
+          "m2",
+          "m3",
+          "m4"
+        ],
+        "live_available": false,
+        "versions": {
+          "python": "3.12.14",
+          "git_sha": "unknown"
+        }
+      }
+    },
+    {
+      "endpoint": "GET /artifacts/audit4-container/quality_report.json",
+      "status": 200,
+      "bytes": 7806,
+      "sha256": "9bf56b011111b170"
+    },
+    {
+      "endpoint": "POST /run m1/prepare (offline)",
+      "status": 200,
+      "summary": {
+        "input_rows": 150,
+        "output_rows": 142,
+        "duplicates_merged": 10,
+        "contact_completeness_pct": 99.3,
+        "company_completeness_pct": 96.7
+      }
+    }
+  ],
+  "note": "Proves the module API serves all four modules and completes a real M1 phase inside the container. It does NOT mean anything is hosted: no Railway deployment exists and no public URL is live."
+}
