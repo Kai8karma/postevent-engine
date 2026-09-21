@@ -33,7 +33,10 @@ flowchart TD
 
 Reading it: M1 is the only module that writes to HubSpot's contact/company
 records — M2 and M4 both trust what it wrote rather than re-reading the raw
-registrant list. M3 has zero dependency on M1/M2 — it works straight off
+registrant list. The Clay leg on M1 is wired (`--emit-clay-domains` out,
+`--clay-results` back in, plus an n8n leg) but **has never been executed** —
+every firmographic in the committed slice came from the model or the rule
+tables. M3 has zero dependency on M1/M2 — it works straight off
 the transcript. M4 is the sink: it seeds this event's engagement stream
 into HubSpot itself, then reads the portal back (M1's push, its own seed,
 and whatever `emails` objects the portal holds), so it can't produce a

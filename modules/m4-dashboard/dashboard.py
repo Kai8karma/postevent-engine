@@ -1525,6 +1525,10 @@ def run_llm_analysis(det: dict, event: dict, ledger: LLMLedger) -> tuple:
         model_used = model_used or model
         if model not in llm.setdefault("models_used", []):
             llm["models_used"].append(model)
+        # Per purpose, not just the first model to answer: when the head of the
+        # fallback chain 503s on one prompt and a later model answers it, crediting
+        # that output to the first model misstates its provenance on the page.
+        llm.setdefault("model_by_purpose", {})[purpose] = model
         try:
             parsed = json.loads(strip_json(content))
         except ValueError as e:

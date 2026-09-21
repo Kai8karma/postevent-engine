@@ -98,14 +98,22 @@ Response is a `File` resource; `id` and (with `fields=id,webViewLink` on the
 request, or a follow-up `files.get`) `webViewLink` are what gets recorded in
 the manifest.
 
-## State: not run
+## State: Drive lane not run
 
 To be explicit, because this page reads like a runbook: **nothing here has
 been executed against Google Drive.** There is no Drive folder, no uploaded
-file, no folder or file id, and no Drive receipt in this repo. The local
-lane of `publish_deliverables.py` (copying deliverables into
-`out/shared-drive/<event_tag>/` with an `INDEX.md`) has likewise not been
-run for the committed M3 run — no such directory exists in the package. The
-Drive upload itself is wired into the n8n M3 workflow
+file, no folder or file id, and no Drive receipt anywhere in this repo, and
+`out/receipts/m3-live/manifest.json`'s `shared_drive` block is still
+`{"folder_url": null, "folder_id": null, "files": []}`. The Drive upload is
+also wired into the n8n M3 workflow
 (`orchestrator/n8n/railway/m3-content-repurposing.json`), which has not been
 imported into a running n8n instance either.
+
+The **local** lane has been executed. `out/shared-drive/darwinbox-2026-08-13/`
+holds six deliverables plus a composed `INDEX.md` that records
+`Published: 2026-09-21T16:29:09Z`; those copies carry a
+`generated: offline-replay` header, so they came from an offline replay of
+M3 rather than from the committed live run. That directory is working-tree
+run output, not a committed receipt — it is not part of the package a
+reviewer clones, and no `publish_manifest.json` from that run is committed
+either. Reproduce it with the command at the top of this page.

@@ -5,11 +5,10 @@ Layout produced under out/vercel-stage/postevent-engine/ (deploy that dir):
   /                      web/index.html -- the console app a reviewer drives
   /control-room/         docs/index.html (the written build report) + docs/*.md
   /modules/<m>/README.md module READMEs the control room links to
-  /dashboard/            M4 dashboard (live-proof build if present, else sample-run)
-  /api/narrative.js      M4 narrative serverless function (+ vercel.json)
+  /dashboard/            M4 dashboard (the committed portal run if present, else sample-run)
+  /api/narrative.js      M4 narrative proxy to the module API (+ vercel.json)
   /demo/sample-run/      every M1-M4 output of the offline lane, browsable
-  /demo/live-proof/      every output of the live LLM lane (receipt), browsable
-  /demo/clay-live-proof/ Clay live enrichment receipt
+  /demo/receipts/        the committed live-run receipts, browsable
 Each demo directory gets a generated index.html so a judge can click through
 without a directory-listing server. Stdlib only.
 
@@ -23,7 +22,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 STAGE = ROOT / "out" / "vercel-stage" / "postevent-engine"
-DEMO_DIRS = ["sample-run", "live-proof", "clay-live-proof"]
+# Only directories that exist in this build. The v1 live-proof/clay-live-proof
+# trees were removed: no Clay run ever happened and their receipts were not real.
+DEMO_DIRS = ["sample-run", "receipts"]
 SKIP_NAMES = {".DS_Store", "__pycache__"}
 TEXT_EXT = {".md", ".csv", ".txt", ".log", ".json", ".yaml", ".yml", ".sh"}
 
@@ -87,7 +88,7 @@ def main() -> int:
         for doc in (ROOT / "modules" / m).glob("*.md"):
             shutil.copy2(doc, mdir / doc.name)
     # M4 hosted dashboard + narrative function
-    live_m4 = ROOT / "out" / "live-proof" / "m4" / "index.html"
+    live_m4 = ROOT / "out" / "receipts" / "m4-live-portal" / "index.html"
     sample_m4 = ROOT / "out" / "sample-run" / "m4" / "index.html"
     dash_src = live_m4 if live_m4.exists() else sample_m4
     if not dash_src.exists():
@@ -117,10 +118,8 @@ def main() -> int:
     # n8n workflow JSONs, served so n8n's "Import from URL" can pull them directly
     n8n_dst = STAGE / "n8n"
     n8n_dst.mkdir(exist_ok=True)
-    for lane, src in (("cloud-master.json", ROOT / "orchestrator" / "n8n" / "cloud" / "master.json"),
-                      ("local-demo-master.json", ROOT / "orchestrator" / "n8n" / "local-demo" / "master.json")):
-        if src.exists():
-            shutil.copy2(src, n8n_dst / lane)
+    for src in sorted((ROOT / "orchestrator" / "n8n" / "railway").glob("*.json")):
+        shutil.copy2(src, n8n_dst / src.name)
 
     # Browsable module outputs
     staged = []

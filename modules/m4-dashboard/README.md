@@ -92,8 +92,12 @@ themselves: `seed` writes that stream into HubSpot through the public API, and H
 property history then holds the movement. Everything that came from it is labelled
 `source: "seeded"` in the seed receipt, on every snapshot engagement block, inside each movement
 window's `source_mix`, and on the page's badges. What is not seeded: the contacts and companies
-themselves (M1's push), the CRM property history (HubSpot's), and every number on the dashboard
-(computed from what the API returned). The one email engagement in the committed snapshot is a
+themselves (M1's push) and every number on the dashboard (computed from what the API returned).
+The CRM property history is **not** a third independent source: the 33 transitions it labels
+`hubspot_history` in the committed run are 32 rows this pipeline's own M1 push wrote minutes
+before the seed phase, plus one older row from earlier work in the same test portal (the
+Q Hamirani speaker contact moving to `lead` on 2026-09-13). See
+`out/receipts/m4-live-portal/README.md`. The one email engagement in the committed snapshot is a
 logger probe, not a real send: M2 stops at `pending_human_approval` and no message has been
 dispatched on any run so far.
 

@@ -2,10 +2,10 @@
 """publish_deliverables.py -- real "saved to a shared drive, tagged by
 event" step for M3 (SPEC.md: "Saved to shared drive, tagged by event").
 
-Closes the gap `scripts/publish_to_drive.md` documented but didn't run: a
-real Google Drive upload existed (`out/live-proof-drive/`) but was done by
-hand through an interactive MCP session, and no repo code performed it.
-This script is that code, with two lanes:
+No Google Drive upload has ever run in this build: no OAuth credential is
+connected, `manifest.json.shared_drive` is empty in every committed receipt,
+and there is no Drive receipt anywhere in the package. This script is the code
+that would perform one, with two lanes:
 
   1. LOCAL shared drive (always runs, zero network, zero credentials).
      Copies the M3 run's deliverables into
@@ -25,9 +25,9 @@ expire hourly and require a 3-legged consent flow this stdlib-only,
 non-interactive script correctly refuses to perform on its own (that would
 mean handling a client secret and a redirect, well past "call an HTTP
 API" scope) -- see README's "Google Drive handoff" for the exact command
-to mint one. A local shared-drive directory that genuinely works end to
-end, every run, is more honest than a Drive integration that only works
-by hand. Both lanes tag every file by event (folder/prefix = event_tag)
+to mint one. The local lane is a directory on this machine, not a shared
+drive anyone else can open; it is shipped as proof the publish step and the
+event tagging work, not as a substitute for the Drive leg, which has never run. Both lanes tag every file by event (folder/prefix = event_tag)
 and neither ever makes a file public (no permissions.create call, ever).
 
 Usage:
@@ -256,7 +256,7 @@ def main() -> int:
         drive_result = {
             "status": "skipped",
             "reason": f"no OAuth access token in ${args.drive_token_env} -- Drive lane not attempted "
-                      "(local shared-drive copy above is the real, working deliverable)",
+                      "(the local copy above is written; the Drive leg has never run in this build)",
         }
         print(f"Google Drive: SKIPPED -- {drive_result['reason']}")
     else:

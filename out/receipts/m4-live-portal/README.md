@@ -22,6 +22,7 @@ seed phase, all on 2026-09-21, plus one older row. HubSpot's property history re
 history, which is true but would read as organic movement over weeks. Rows written inside the
 seed run are therefore labelled `seeded`, each window reports its timestamp dates, and the
 dashboard card states how many transitions the pipeline wrote and that this is a seeded
-developer test portal. The narrative says so in its first sentence.
+developer test portal. The narrative states it too, in its second paragraph -- its opening
+sentence is about movement plateauing across the three windows.
 
 Re-run on 2026-09-21 after the movement disclosure was sharpened: the earlier wording named only the 7 seed-written transitions, which left the other 32 reading as organic. They were written by this pipeline's own M1 push minutes earlier, and the disclosure now says so.

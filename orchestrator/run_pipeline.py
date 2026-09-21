@@ -26,10 +26,10 @@ modules build in parallel, see PLAN.md):
         dashboard_data.json. M4 is event-partitioned through --event-tag (the
         postevent_event slug M1's push used), so the phases read back exactly
         the contacts this event created.
-  General, for M1-M3 (assumed, not yet verified against real code):
-  - With no --live, module reads fixtures/incoming at fixed repo paths
-    (data/incoming/, data/fixtures/, config/) and runs fully offline.
-  - --live switches to real LLM calls (scripts/lib/claude_call.py pattern).
+  General, for M1-M4:
+  - Live is the default lane: each module calls its real backend unless
+    --offline is passed, which replays this repo's checked-in output from
+    fixed paths (data/incoming/, data/fixtures/, config/).
   - Module prints at least one line to stdout; the last non-blank line is
     treated as a human-readable summary and shown in the receipt table.
   - Exit code 0 = pass, nonzero = fail.
@@ -212,7 +212,9 @@ def build_stages(out_dir: Path, live: bool, event_dir: Path):
                     *m3_extra_flags(m3_script, live),
                     "--out", str(m3_out),
                     "--event", str(event_json), "--transcript", str(transcript_md),
-                    *([] if live else ["--allow-stale"])],
+                    # --allow-stale is retired in repurpose.py (accepted, no effect);
+                    # the offline lane is selected by lane_flags() above.
+                    ],
             "key_output": m3_manifest,
             "summary_fn": m3_summary,
         },
@@ -257,13 +259,14 @@ def build_transcribe_stage(event_dir: Path, out_dir: Path, args) -> tuple:
     real, working script that run_pipeline.py never called -- this wires it
     in as a genuine optional stage rather than a side-lane.
 
-    Auto-discovers <event-dir>/recording.wav; --transcribe-audio overrides.
-    No audio found -> SKIP with the exact reason (never a fabricated call).
-    Audio found -> runs transcribe.py for real; --dry-run by default (zero
-    network, zero cost, proves the wiring) unless --transcribe-live is also
-    passed, which requires a real SARVAM_API_KEY (not provisioned in this
-    build's account list -- see BUILD-BRIEF -- so --transcribe-live will
-    fail loud here, exactly as transcribe.py is designed to)."""
+    This stage re-proves the transcription wiring on demand. The transcript
+    this build actually ships was produced by a real Sarvam batch run over the
+    three chapter audio files -- see out/receipts/transcription.json and
+    out/receipts/transcription/. That audio is gitignored (460 MB), so on a
+    fresh clone there is nothing here to transcribe and this stage SKIPs with
+    the exact reason rather than fabricating a call. Point it at a file with
+    --transcribe-audio to run it; --dry-run by default (zero network), and
+    --transcribe-live needs a real SARVAM_API_KEY in the environment."""
     audio = Path(args.transcribe_audio) if args.transcribe_audio else (event_dir / "recording.wav")
     if not audio.exists():
         return ("skip", "M3 transcribe (proof)",
@@ -284,7 +287,7 @@ def build_visuals_stage(out_dir: Path, args) -> tuple:
 
     Off by default: --gen-visuals opts in. Even opted in, writes prompts
     only (--dry-run, zero network/cost) unless --live-visuals is also
-    passed -- real generation spends real OpenRouter credits, and rule #7
+    passed -- real generation spends real OpenRouter credits, and the rule
     is: state the cost before spending it, never spend by default. See
     IMAGE_GEN_COST_ESTIMATE above for the number this pipeline would state.
 

@@ -90,12 +90,15 @@ env, or a `KEY=VALUE` line in `~/.config/postevent/llm.env`.
   when `HUBSPOT_TOKEN` resolves (else `hubspot_dedupe_source=unavailable`).
 - **Offline**: `python3 enrich.py --offline --out out/run1-offline` -- zero
   network/LLM/HubSpot calls, prints `[lane] offline`.
-- **With Clay results**: `--emit-clay-domains out/run1/clay_domains.json` on
-  a run writes the domains still missing/low-confidence firmographics; feed
-  that list through the n8n Clay table
-  (`orchestrator/n8n/railway/README.md`), then re-run with
+- **With Clay results** (**wired, never executed**): `--emit-clay-domains
+  out/run1/clay_domains.json` on a run writes the domains still
+  missing/low-confidence firmographics; feed that list through the n8n Clay
+  table (`orchestrator/n8n/railway/README.md`), then re-run with
   `--clay-results <callback-output>.json` -- Clay values overwrite the LLM's
-  and set `*_source=clay`.
+  and set `*_source=clay`. No Clay run has happened: the committed slice's
+  `quality_report.json` records `clay_domains_supplied: 0`,
+  `clay_domains_applied: 0` and an empty `run_urls`, and no row in
+  `outputs/enriched.json` carries a `clay` source.
 - **Push**: `python3 push_to_hubspot.py --in out/run1 --dry-run`, then drop
   `--dry-run` -- see `HUBSPOT_PUSH.md`.
 - Other flags: `--limit-rows N` (iterate cheaply against the free-tier
@@ -109,7 +112,7 @@ env, or a `KEY=VALUE` line in `~/.config/postevent/llm.env`.
 Every LLM call appends to `<out>/receipts/m1_llm_calls.json`; every HubSpot
 dedupe search appends to `<out>/receipts/m1_hubspot_dedupe.json`
 (`hubspot_dedupe_source` records which: `live`, `live_error`, `unavailable`,
-or `fixture`). A real 30-row live slice is checked in at
+or `fixture`). A real 32-row live slice (30 registrants + the 2 speakers) is checked in at
 `out/receipts/m1-live-slice-30/`, with that run's own output files under
 `outputs/` (`hubspot_ready.csv`, `hubspot_contacts.csv`,
 `hubspot_companies.csv`, `enriched.json`, `dedupe_report.json`,

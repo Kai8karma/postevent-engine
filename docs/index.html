@@ -331,9 +331,9 @@
           </tr>
           <tr>
             <td><b>M1 — Lead List Enrichment</b><br>fuzzy match + dedupe against HubSpot, infer missing fields, enrich company data, score ICP fit, HubSpot-ready file above 90% complete</td>
-            <td><code class="mono">modules/m1-enrichment/enrich.py</code> (live default): HubSpot Search API dedupe → LLM adjudicates gray-zone pairs → LLM row inference + firmographics + ICP tier with rationale, rules validate → <code class="mono">--clay-results</code> merge with per-field <code class="mono">*_source</code> provenance → <code class="mono">push_to_hubspot.py</code> upsert.<br><b>In the committed slice the ICP step produced nothing:</b> all three ICP batches came back unusable, so <code class="mono">icp_rows_scored_by_llm: 0</code> and all 32 tiers are the rule table's. The model work that receipt backs is the dedupe adjudication and the firmographic inference.</td>
+            <td><code class="mono">modules/m1-enrichment/enrich.py</code> (live default): HubSpot Search API dedupe → LLM adjudicates gray-zone pairs → LLM row inference + firmographics + ICP tier with rationale, rules validate → <code class="mono">--clay-results</code> merge with per-field <code class="mono">*_source</code> provenance (<b>wired, never executed</b> — no Clay run has happened) → <code class="mono">push_to_hubspot.py</code> upsert.<br><b>In the committed slice the ICP step produced nothing:</b> all three ICP batches came back unusable, so <code class="mono">icp_rows_scored_by_llm: 0</code> and all 32 tiers are the rule table's. The model work that receipt backs is the dedupe adjudication and the firmographic inference.</td>
             <td><code class="mono">hubspot_ready.csv</code>, <code class="mono">hubspot_contacts.csv</code>, <code class="mono">hubspot_companies.csv</code>, <code class="mono">quality_report.json</code>, <code class="mono">dedupe_report.json</code>, <code class="mono">live_inference_report.json</code>.<br>Committed and openable: <code class="mono">out/receipts/m1-live-slice-30/outputs/hubspot_ready.csv</code>, <code class="mono">hubspot_contacts.csv</code>, <code class="mono">hubspot_companies.csv</code>, <code class="mono">enriched.json</code>, <code class="mono">dedupe_report.json</code>, <code class="mono">live_inference_report.json</code></td>
-            <td><code class="mono">out/receipts/m1-live-slice-30/</code> — 30-row live slice: 96.2% contact / 93.0% company verified completeness (bar is 90), 10 LLM calls attempted and 7 parsed cleanly, live HubSpot search, ICP tiers 32/32 from the rule table · push: <code class="mono">out/receipts/m1-push-slice30-2026-09-16.json</code> — 32 contacts, 23 companies, 27 associations <b>as reported by the upsert calls</b>; that receipt's <code class="mono">verify</code> block reads <code class="mono">not_run</code>, so no independent read-back ships with it</td>
+            <td><code class="mono">out/receipts/m1-live-slice-30/</code> — live slice of 32 rows (30 registrants + the 2 speakers): 96.2% contact / 93.0% company verified completeness (bar is 90), 10 LLM calls attempted and 7 parsed cleanly, live HubSpot search, ICP tiers 32/32 from the rule table · push: <code class="mono">out/receipts/m1-push-slice30-2026-09-16.json</code> — 32 contacts, 23 companies, 27 associations <b>as reported by the upsert calls</b>; that receipt's <code class="mono">verify</code> block reads <code class="mono">not_run</code>, so no independent read-back ships with it</td>
           </tr>
           <tr>
             <td><b>M2 — Post-Event Communications</b><br>segment-specific copy, subject variants, takeaways personalised by role/industry, UTM on every link, three variants inside 24h of close</td>
@@ -344,14 +344,14 @@
           <tr>
             <td><b>M3 — Content Repurposing</b><br>transcription API, extract moments/quotes/data points, blog 800–1200, YouTube pack, infographic outline, 5–10 social posts, image generation, saved to a shared drive tagged by event</td>
             <td><code class="mono">modules/m3-repurpose/repurpose.py</code>: one extraction pass normalised against real transcript turns → four per-asset generations off that extraction → <code class="mono">verify_grounding.py</code> hard gate with one corrective repair → <code class="mono">make_clips.py</code> (ffmpeg) → <code class="mono">gen_visuals.py</code> (image model)</td>
-            <td><code class="mono">blog.md</code> (1,106 words), <code class="mono">youtube.md</code> (18 chapters + description + thumbnail brief), <code class="mono">infographic.md</code> (6 data points), <code class="mono">social.md</code> (8 posts: 5 LinkedIn + 3 X), <code class="mono">extraction.json</code>, <code class="mono">grounding_report.json</code>, <code class="mono">manifest.json</code>, <code class="mono">clips/</code> — in the committed package <code class="mono">clips/</code> holds the 3 <code class="mono">.srt</code> files and 3 thumbnails only; <b>the six MP4s are not shipped</b> and <code class="mono">make_clips.py</code> regenerates them from the source media</td>
-            <td><code class="mono">out/receipts/m3-live/</code> — grounding 39/39 over <code class="mono">youtube.md</code> (18), <code class="mono">infographic.md</code> (12) and <code class="mono">social.md</code> (9); <code class="mono">blog.md</code> logged <b>0 claims</b> in that report and is not covered by the 39/39. Spec gate clean, 6 model calls against a budget of 8 · <code class="mono">out/receipts/m3-live/receipts/m3_clips.json</code> (3 moments × 16:9 and 9:16, SRT from Sarvam word timings — SRTs and thumbnails committed, MP4s not) · <code class="mono">out/receipts/m3-live/receipts/m3_images.json</code> — 0 of 3 images, HTTP 402</td>
+            <td><code class="mono">blog.md</code> (1,106 words), <code class="mono">youtube.md</code> (18 chapters + description + thumbnail brief), <code class="mono">infographic.md</code> (6 data points), <code class="mono">social.md</code> (8 posts: 5 LinkedIn + 3 X), <code class="mono">extraction.json</code>, <code class="mono">grounding_report.json</code>, <code class="mono">manifest.json</code>, <code class="mono">clips/</code> — in the committed package <code class="mono">clips/</code> holds the 3 <code class="mono">.srt</code> files and 3 thumbnails only; <b>the six MP4s are not shipped</b> and <code class="mono">make_clips.py</code> regenerates them — <code class="mono">data/incoming/media/</code> is gitignored and ships empty, so regenerating means re-downloading the three chapter files from the public CDN first</td>
+            <td><code class="mono">out/receipts/m3-live/</code> — grounding 46/46 over <code class="mono">youtube.md</code> (18), <code class="mono">infographic.md</code> (12), <code class="mono">social.md</code> (9) and <code class="mono">blog.md</code> (7). Spec gate clean, 6 model calls against a budget of 8 · <code class="mono">out/receipts/m3-live/receipts/m3_clips.json</code> (3 moments × 16:9 and 9:16, SRT from Sarvam word timings — SRTs and thumbnails committed, MP4s not) · <code class="mono">out/receipts/m3-live/receipts/m3_images.json</code> — 0 of 3 images, HTTP 402</td>
           </tr>
           <tr>
             <td><b>M4 — Lead Intelligence Dashboard</b><br>HubSpot contacts + engagement events + lifecycle changes in; anomalies, interest scores, narrated movement, top accounts and buying committees; HTML dashboard with narrative refreshed on load</td>
             <td><code class="mono">modules/m4-dashboard/dashboard.py</code> <code class="mono">seed</code> → <code class="mono">sync</code> → <code class="mono">analyze</code> → <code class="mono">render</code>: writes the engagement stream and lifecycle changes into HubSpot, reads the portal back, LLM analysis checked by deterministic math, self-contained page; <code class="mono">GET /narrative/&lt;run_id&gt;?refresh=1</code> re-runs <code class="mono">analyze</code></td>
             <td><code class="mono">snapshot.json</code>, <code class="mono">analysis.json</code>, <code class="mono">dashboard_data.json</code>, <code class="mono">index.html</code> (self-contained, every number reconciling to the snapshot)</td>
-            <td><code class="mono">out/receipts/m4-live-portal/</code> — all four phases against test portal 247135551: seed 16 contacts / 73 events / 12 lifecycle updates, sync 32 contacts + 23 companies over 6 HubSpot calls all HTTP 200, analyze 4/4 completions, validator 4 agree / 3 disagree · earlier fixture-snapshot analyze: <code class="mono">out/receipts/m4-live-analyze-fixture/</code></td>
+            <td><code class="mono">out/receipts/m4-live-portal/</code> — all four phases against test portal 247135551: seed 16 contacts / 73 events / 12 lifecycle updates, sync 32 contacts + 23 companies over 6 HubSpot calls all HTTP 200, analyze 4/4 completions, validator 5 agree / 2 disagree · a different, earlier fixture-snapshot analyze run (3 agree / 4 disagree): <code class="mono">out/receipts/m4-live-analyze-fixture/</code></td>
           </tr>
         </tbody>
       </table>
@@ -395,7 +395,7 @@
       <ul>
         <li><b>Extraction pass</b> returns clip-worthy moments, insights, verbatim quotes and data points; <code class="mono">normalise_extraction()</code> snaps every timestamp onto a real transcript turn, replaces each speaker with whoever the transcript shows at that timestamp, and drops anything that does not verify — so asset prompts never see ungrounded material.</li>
         <li><b>Four asset generations</b> (blog, YouTube pack, infographic outline, social set) run off that verified extraction. Each is checked by <code class="mono">check_asset_spec()</code> before it is written; the blog's 800–1200 word gate regenerates once and fails the run rather than shipping out of spec.</li>
-        <li><b>Grounding verifier</b> re-checks every timestamp, quote ≥25 characters and speaker attribution after generation; a failing asset gets one corrective regeneration, and the run fails if it still misses. 39 of 39 claims verified on the committed run — <code class="mono">youtube.md</code> 18, <code class="mono">infographic.md</code> 12, <code class="mono">social.md</code> 9; <code class="mono">blog.md</code> records <code class="mono">claims_checked: 0</code> in that report, so the blog draft is not covered by it.</li>
+        <li><b>Grounding verifier</b> re-checks every timestamp, quote ≥25 characters and speaker attribution after generation; a failing asset gets one corrective regeneration, and the run fails if it still misses. 46 of 46 claims verified on the committed run — <code class="mono">youtube.md</code> 18, <code class="mono">infographic.md</code> 12, <code class="mono">social.md</code> 9, <code class="mono">blog.md</code> 7. An earlier version of this receipt read 39/39 because the verifier matched speakers by surname only, so prose like &ldquo;As Q explained&rdquo; attributed nothing and every blog quote was skipped; after fixing that and adding elided-quote support, re-running the shipped verifier over the same committed assets gives 46/46. Reproduce: <code class="mono">python3 modules/m3-repurpose/verify_grounding.py --transcript data/incoming/transcript.md --event data/incoming/event.json --assets-dir out/receipts/m3-live</code></li>
         <li><b>Clips and captions</b> are deterministic: the model picks the moments, ffmpeg cuts them, and the captions come from Sarvam's own word timings.</li>
       </ul>
     </div>
@@ -415,7 +415,7 @@
       (Q3 + 1.5×IQR) outlier fence, the weighted engagement score, the funnel and the 7/14/30-day movement windows
       compute the same quantities independently. Every mismatch is written to
       <code class="mono">analysis.json.llm.validator.disagreements</code> and printed on the dashboard — the committed
-      portal run records 4 agreements and 3 disagreements, and nothing the model returned overwrote a number. Where a
+      portal run records <b>5 agreements and 2 disagreements</b>, and nothing the model returned overwrote a number. Where a
       model call fails, the module says so: M1 degrades that batch to the rule table with a warning and a lane reason,
       M2 and M3 fail the run rather than ship stale copy. No module presents a rules output as a model output.
     </div>
@@ -462,11 +462,13 @@
       Two smaller disclosures, both in <code class="mono">data/incoming/event.json._provenance</code>: the event page
       publishes no air date, so <code class="mono">event.json.date</code> is an assumption every downstream artifact
       inherits; and the speakers' own addresses are not public, so speaker mail is addressed to sender-controlled
-      aliases. Every lifecycle transition in that test portal was written by this pipeline — 32 by the M1 push and 7
-      by the seed phase. <code class="mono">dashboard_data.json</code>'s 14-day window dates them
-      <code class="mono">{"2026-09-13": 1, "2026-09-21": 39}</code>: 39 of the 40 share a single day and one is
-      older. The dashboard card and the narrative's first sentence say so rather than letting HubSpot's property
-      history read as weeks of organic movement.
+      aliases. The 30-day window holds 40 lifecycle transitions, dated
+      <code class="mono">{"2026-09-13": 1, "2026-09-21": 39}</code>. The 39 on 2026-09-21 were written by this
+      pipeline that afternoon — 32 by the M1 push, 7 by the seed phase. The 40th is older: the Q Hamirani speaker
+      contact moving to <code class="mono">lead</code> at 2026-09-13T11:05:41, before either step ran. The dashboard
+      card and the narrative both disclose the seeding — the narrative in its second paragraph, not its first
+      sentence, which is about movement plateauing — rather than letting HubSpot's property history read as weeks of
+      organic movement.
     </div>
   </section>
 
@@ -480,7 +482,8 @@
       <div class="card">
         <div class="card-head"><span class="card-tag tag-m1">VERIFIED</span><h3>Backed by a receipt in this repo</h3></div>
         <p class="what">
-          <b>M1</b> — 30-row live slice: 96.2% contact / 93.0% company verified completeness, PASS against the brief's
+          <b>M1</b> — live slice of 32 rows (30 registrants + the 2 speakers): 96.2% contact / 93.0% company
+          verified completeness, PASS against the brief's
           90% bar; live HubSpot dedupe search logged; 10 LLM calls attempted, 7 parsed. <b>ICP tiering in this slice
           was not model work</b> — all three ICP batches came back unusable and all 32 tiers came from the rule
           table; what this receipt backs as model work is one gray-zone adjudication and the firmographic inference.
@@ -489,17 +492,18 @@
           <code class="mono">not_run</code>.<br><br>
           <b>M2</b> — grounding 81/81, 0 failed; 4 live model calls, all HTTP 200, all parsed.<br><br>
           <b>M3</b> — blog 1,106 words inside the 800–1200 gate; 18 YouTube chapters; 8 social posts across both
-          platforms; grounding 39/39 over <code class="mono">youtube.md</code>,
-          <code class="mono">infographic.md</code> and <code class="mono">social.md</code>
-          (<code class="mono">blog.md</code> logged 0 claims in that report, so it is not covered by the 39/39);
+          platforms; grounding 46/46 over <code class="mono">youtube.md</code> (18),
+          <code class="mono">infographic.md</code> (12), <code class="mono">social.md</code> (9) and
+          <code class="mono">blog.md</code> (7);
           3 clips cut in 16:9 and 9:16 with an SRT per clip burned into the 9:16 cut — the SRTs and thumbnails are
           in the package, <b>the six MP4s are not</b> and are regenerated by
-          <code class="mono">make_clips.py</code>; images 0 of 3 with the 402 recorded.<br><br>
+          <code class="mono">make_clips.py</code> once the gitignored chapter media is re-downloaded from the public
+          CDN; images 0 of 3 with the 402 recorded.<br><br>
           <b>M4</b> — all four phases live against the HubSpot test portal (seed 16 contacts / 73 engagement events /
           12 lifecycle updates through the contact-property fallback — that 12 is writes issued; the movement windows
           attribute 7 transitions to the seed (<code class="mono">source_mix.seeded: 7</code>), and the receipts do
           not reconcile the gap further; sync 32 contacts + 23 companies over 6 HubSpot
-          calls all HTTP 200; analyze 4/4 completions, validator 4 agreements / 3 disagreements recorded), plus the
+          calls all HTTP 200; analyze 4/4 completions, validator 5 agreements / 2 disagreements recorded), plus the
           earlier fixture-snapshot analyze receipt. Tests: 37 zero-network tests in
           <code class="mono">modules/m4-dashboard/test_dashboard.py</code> and 76 assertions over the module API's M4
           surface in <code class="mono">api/test_server_m4.py</code>.
@@ -525,6 +529,13 @@
           run so far.<br><br>
           <span class="todo">Drive:</span> <b>no upload has run</b> — no Google Drive OAuth credential is connected
           and <code class="mono">manifest.json.shared_drive</code> is empty.<br><br>
+          <span class="todo">Clay:</span> <b>no Clay run has ever happened.</b> The brief names Clay as M1's
+          firmographic source; what exists is the <code class="mono">--clay-results</code> merge path (with
+          <code class="mono">--emit-clay-domains</code>) and a leg in the n8n M1 workflow.
+          <code class="mono">quality_report.json</code> records <code class="mono">clay_domains_supplied: 0</code>,
+          <code class="mono">clay_domains_applied: 0</code> and an empty <code class="mono">run_urls</code>, and no
+          row in <code class="mono">enriched.json</code> carries a <code class="mono">clay</code> source — every
+          firmographic in the committed slice came from the model or the rule tables.<br><br>
           <span class="todo">OpenRouter:</span> <b>credits are at zero</b>, so the live lane runs free models and
           image generation stays at 402.
         </p>

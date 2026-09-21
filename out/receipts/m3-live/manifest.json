@@ -149,8 +149,8 @@
     "images": 0,
     "clips": 3,
     "grounding": {
-      "checked": 39,
-      "passed": 39
+      "checked": 46,
+      "passed": 46
     },
     "lane": "live",
     "models": {
@@ -225,7 +225,7 @@
     "social-square: image model returned HTTP 402 ({\"error\":{\"message\":\"Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more a) -- file skipped, no placeholder emitted",
     "social-portrait: image model returned HTTP 402 ({\"error\":{\"message\":\"Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more a) -- file skipped, no placeholder emitted",
     "no visuals shipped this run -- see per-image errors above",
-    "grounding_report.json and summary.images were corrected after the run: the verifier had skipped every blog.md quote because it matched speakers by surname only, and the image count in summary counted attempts rather than files written. Re-verified at 46/46 with blog.md contributing 7 claims; 0 images shipped, as receipts/m3_images.json has always recorded."
+    "grounding_report.json in this receipt was re-derived, not hand-edited: the verifier had matched speakers by surname only, so prose like 'As Q explained' attributed nothing and every blog.md quote was skipped, making the original 39/39 exclude the largest deliverable. After fixing that (and adding elided-quote support) the shipped verifier was re-run over these same committed assets and returned 46/46 with blog.md contributing 7. Reproduce it: python3 modules/m3-repurpose/verify_grounding.py --transcript data/incoming/transcript.md --event data/incoming/event.json --assets-dir out/receipts/m3-live. summary.images was 3 because it counted attempts rather than files written; 0 images shipped, as receipts/m3_images.json has always recorded."
   ],
   "assets": {
     "blog.md": {
