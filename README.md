@@ -148,7 +148,7 @@ real API calls.
   `{"hubspot_history": 32, "seeded": 7}`: 32 by the M1 push, 7 by the seed phase. The 40th is older: the speaker
   contact `kai8karma+speaker-qhamirani@gmail.com` moving to `lead` at 2026-09-13T11:05:41, which predates both this
   run's push and its seed. The dashboard card and the narrative both disclose the seeding. In the
-  committed run the narrative's opening sentence already attributes the burst to "the pipeline's seed phase", and
+  committed run the narrative's opening sentence already attributes the burst to "the pipeline’s seed phase", and
   its source-mix paragraph quantifies it: "7 of the 39 transitions in the 7-day window were seeded by the pipeline;
   the remaining 32 carry the hubspot_history label". The narrative is model-written, so a re-run will word this
   differently and may order the paragraphs differently — what is enforced is that the seeding is disclosed and

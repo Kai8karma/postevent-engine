@@ -20,7 +20,7 @@ Scenarios:
 
 Run: python3 api/test_server_m3.py
 
-NOTE: this is a plain script, not unittest.TestCase. "python3 -m unittest <this file>" exits 0 reporting "Ran 0 tests" -- it does not find anything to run. Run it directly, as the Run line above shows.
+NOTE: this is a plain script, not unittest.TestCase. "python3 -m unittest <this file>" runs none of it: it reports "Ran 0 tests" and "NO TESTS RAN", exiting 5 on Python 3.12+ and 0 on older interpreters. Either way nothing here is executed. Run it directly, as the Run line above shows.
 """
 import json
 import os
