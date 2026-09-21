@@ -1,175 +1,20 @@
-# Build Log
+# Build Log — superseded (v1)
 
-Disclosed on purpose — the assignment is being evaluated as much on *how* this
-was built as on the artifact itself. Started as a skeleton and closed out at
-ship on 2026-08-23; where a number was never metered it says so instead of
-being invented.
+This file documented the v1 build (Claude Code subagent fleet, wall-clock,
+token-spend estimates, "what's real vs simulated") for the submission a
+Darwinbox reviewer rejected on 2026-09-12 for not following the case study.
 
-Deadline: 2026-08-23 20:00 IST. Received: 2026-08-21 15:25 IST. Internal ship
-target: 2026-08-23 ~14:00 IST.
+v2 is a different build against the same four brief modules, orchestrated by
+n8n (Railway) calling a small module API in front of the Python engine. Its
+build history lives as a running progress log, not a closed-out narrative:
 
-## Agents used
+- `_internal/REVISION-PLAN-2026-09-12.md` — the plan plus a dated progress
+  log (what shipped each session, commit hashes, what's still Kai-gated).
+- `docs/module-api.md` — the current module contract (phases, request/
+  response shapes, receipts).
+- `modules/*/README.md` — each module's own "what's real vs simulated"
+  section (e.g. `modules/m4-dashboard/README.md` §5).
 
-Parallel build fleet, one Claude Code agent per row, each scoped to a single
-directory (see `PLAN.md` → "Module owners").
-
-All eight units were Claude Code subagents (Sonnet-class builders, dispatched
-in parallel from one frontier-model main thread that did integration, the
-judge panels and the fix waves). Token spend was not metered per unit — the
-build ran on a flat-rate seat, so no per-call bill exists to quote; the
-per-event *run* cost is estimated below and the live lane ran at $0.
-Wall-clock = first file written → last edit (later edits are fix waves, not
-the initial build, which closed within ~2h of dispatch for every unit).
-
-| unit | scope | agent / model | wall-clock (IST) | token spend | human touchpoints |
-|---|---|---|---|---|---|
-| FIX-A | webinar content fixture (transcript, speakers, event) | Claude Code subagent | 08-21 15:47 → 08-23 14:33 (date-shift pass) | not metered | 0 |
-| FIX-B | registrant + CRM + engagement fixtures | Claude Code subagent | 08-21 15:47 → 08-22 17:41 (webinar-#2 fixture) | not metered | 0 |
-| M1 | `modules/m1-enrichment/` | Claude Code subagent | 08-21 16:48 → 08-23 16:52 (HubSpot injector fixes) | not metered | Clay workspace auth + credit cap; HubSpot sandbox/app/token |
-| M2 | `modules/m2-comms/` | Claude Code subagent | 08-21 15:56 → 08-23 16:46 (OpenRouter backend) | not metered | approval gate (by design, never auto-flipped) |
-| M3 | `modules/m3-repurpose/` | Claude Code subagent | 08-21 15:55 → 08-23 16:46 (OpenRouter backend) | not metered | 0 |
-| M4 | `modules/m4-dashboard/` | Claude Code subagent | 08-21 16:39 → 08-23 16:46 (OpenRouter backend) | not metered | Vercel deploy go/no-go (Kai) |
-| ORCH | `orchestrator/` (run_pipeline.py + n8n JSONs) | Claude Code subagent | 08-21 15:55 → 08-23 16:59 (backend-aware live banner) | not metered | n8n Cloud instance + workflow import (Kai, via UI) |
-| DOCS | `docs/` (this control room) | Claude Code subagent | 08-21 16:47 → 08-23 ship | not metered | ship-time review by Kai |
-
-Loop used: builders run in parallel and self-verify → a critic pass per module
-→ fix pass → integration check via `orchestrator/run_pipeline.py`.
-
-## Wall-clock
-
-- Assignment received: 2026-08-21 15:25 IST
-- Build fleet dispatched: 2026-08-21 ~15:45 IST (first fixture/module files
-  land 15:47–16:48)
-- First integration run (`run_pipeline.py --out out/final`, offline): 2026-08-21
-  17:14 IST — green on the first attempt, no seam fixes needed. Total pipeline
-  wall-clock 0.45s (`time python3 orchestrator/run_pipeline.py`).
-
-  | stage | seconds | result |
-  |---|---|---|
-  | M1 enrich | 0.21 | PASS — 150 input rows, 3 fake-email exclusions, 138 output rows (133 registrant contacts + 3 speakers + 2 recovered from the case-only-duplicate-email bug) |
-  | M2 comms | 0.08 | PASS — 3 email variants rendered, 153 recipients |
-  | M3 repurpose | 0.07 | PASS — 4 content assets |
-  | M4 dashboard | 0.07 | PASS — 10 top accounts, 5 buying-committee accounts, 2 anomalies |
-
-- Judge panel round 1 (3 adversarial personas): 2026-08-21 evening → fix wave 1
-- Judge panel round 2 (depth-focused): 2026-08-22 → fix wave 2
-- Live lanes: Clay enrichment live 2026-08-23 (run `run_0tk7y5kH2Y5PHTW5moE`,
-  1.5 credits); HubSpot sandbox push live 2026-08-23 ~16:45–17:00 IST
-  (30 companies / 133 contacts / 120 associations, zero errors); LLM live
-  proof 2026-08-23 17:00–18:30 IST via OpenRouter (`out/live-proof/`; M1 121 s,
-  M2 795 s, M3 548 s)
-- Second live wave, same evening: Sarvam speech-to-text (3 live calls on a
-  synthesised stand-in recording, `out/live-proof-transcription/`); image
-  generation for M3's visual assets (Higgsfield plan-gated, real fallback to
-  `google/gemini-2.5-flash-image`, `out/live-proof-visuals/`); shared-drive
-  upload (7 files, `out/live-proof-drive/`); M4's narrative endpoint executed
-  3× against real computed metrics (`out/live-proof/m4-narrative/`); M1's
-  spec-scoped completeness math (99.8% contact / 97.2% company) landed and
-  verified. All four are scored, with their stand-in caveats, in the control
-  room's ["Scored against the brief"](index.html#scorecard) table.
-- No Loom walkthroughs were recorded — `docs/loom-scripts.md` holds the
-  scripts as text (useful as a guided-tour transcript) but no video exists
-  for this submission. The reviewer instead gets the thing the scripts would
-  have narrated: a working build at the site root they drive themselves,
-  plus this control room as the evidence trail.
-- Final ship: 2026-08-23 (target was ~14:00 IST; actual close-out ran to the
-  evening because the live HubSpot/LLM/transcription/image/Drive lanes were
-  prioritised over an early send)
-
-## Token spend
-
-- Per-module estimates used for `economics.md`: M1 ~40k, M2 ~15k, M3 ~60k,
-  M4 ~5k tokens (120k/event, offline fixture run — no `--live` calls made
-  during the timed estimate).
-- Actual `--live` spend: the proof run in `out/live-proof/` went through
-  OpenRouter on `nvidia/nemotron-3-ultra-550b-a55b:free` (first attempts on
-  `stealth/ox-alpha` were abandoned: ~2 min/call and it spent its whole
-  completion budget reasoning on the transcript prompts). Both are priced at
-  $0 on OpenRouter at time of run — `usage.cost: 0` in every response.
-  Per-stage wall-clock is in each `run*.log` receipt table; raw model
-  responses M2 received are under `m2/live_raw/`. Build-time generation of
-  the cached offline outputs ran under a flat-rate seat and was not metered.
-
-## Human touchpoints
-
-Every judgment call a human made mid-build, not just the ship-time approval
-gate baked into M2:
-
-- Company/webinar identity: fixed by the recruiter's brief (ACME Revenue
-  Cloud / synthetic-but-realistic, since the hiring company's real webinar was
-  not named before the deadline — see punch list item 1 in `PLAN.md`).
-- Manual overrides during build (ICP tier, email copy, content draft edits):
-  none — fixtures are synthetic and no real send occurs before Kai reviews
-  this control room. Every change came through the critic → fix-wave loop.
-- Account-side actions (human-only by policy — the agent never holds a
-  credential it didn't need to): Clay workspace sign-in + "preserve credits"
-  cap on live runs; HubSpot developer account, sandbox portal, private-app
-  creation and token paste; OpenRouter key + model choice; n8n Cloud sign-up
-  and workflow import via UI.
-- M2 approval gate: stays `approved:false` until Kai flips it — email
-  engagements are logged to HubSpot only after that.
-- Pre-submission: Kai reviews all four modules + this control room, then
-  sends `submission_email.md`.
-
-## What's real vs. simulated
-
-- Real: the code, the prompts, the offline pipeline run, the n8n workflow
-  JSON (cloud lane imported into a live n8n Cloud instance, webhook trigger
-  fired), the architecture and economics reasoning, the live Clay enrichment
-  run on real domains, the live HubSpot push into a provisioned sandbox
-  (private app, 15 scopes), the live LLM proof run in `out/live-proof/`, the
-  3 live Sarvam transcription calls, the 2 live OpenRouter image generations,
-  the live Google Drive upload, and the 3 live M4 narrative endpoint calls.
-- Simulated or stood-in, named plainly: the webinar itself (synthetic
-  transcript/speakers/registrants — see `PLAN.md` punch list item 1) and,
-  downstream of that, the audio fed to Sarvam (macOS `say`-synthesised, since
-  no real recording exists — the transcription API call against it was real).
-  The HubSpot portal is a sandbox, not a customer's; Clay ran on three real
-  domains only (credit-capped), the fixture's synthetic domains return
-  nothing from Clay by construction. The n8n cloud lane's trigger fired live
-  but its HubSpot leg still needs a credential the reviewer supplies. Full
-  strict scorecard, item by item: control room
-  ["Scored against the brief"](index.html#scorecard).
-
-## Post-ship documentation pass (2026-08-24)
-
-A RevOps review of the shipped build found the substance was outrunning the
-presentation: the control room narrated plumbing before value, the data
-contract was scattered across four files, and there was nothing on
-operating cadence. Fixed, docs-only (no module code touched):
-
-- **Data contract**: [`docs/data-contract.md`](data-contract.md) — every
-  field the engine writes, its source, type/enum, derivation, and
-  missing-value behavior, pulled from `dedupe_report.json`'s stated formula,
-  `modules/m1-enrichment/HUBSPOT_PUSH.md`'s two HubSpot gotchas,
-  `enrich.py::lifecycle_target()`'s rubric, and `config/icp.yaml`'s
-  region/owner map — one page instead of four.
-- **Operating cadence**: [`docs/operating-cadence.md`](operating-cadence.md)
-  — the weekly run cycle, who owns the M1/M2 review queues, the same-day SDR
-  handoff SLA the brief names, and a plain statement that a cross-event
-  contact ledger and send-fatigue suppression do not exist yet (both needed
-  at ~40 events/year, neither built).
-- **Control room restructured**: the outcome numbers (attendee→MQL,
-  contacts/completeness vs. the 90% bar, top accounts, cost/event) now sit
-  immediately after the hero, ahead of the thesis prose and lanes table that
-  used to open the page — sections moved, none rewritten.
-- **Depth ranking made explicit**, in both the control room's honesty
-  section and this repo's README: M1 deepest, M3 next, M2 strong-but-
-  gated, M4 best-engineered-thinnest-AI-by-choice.
-- **Fingerprint-limit disclosure**: `compute_fingerprint()` in
-  `modules/m2-comms/comms.py` hashes the transcript + event name — that
-  proves the cached copy isn't stale for this event, not that a model
-  authored it. Stated in the control room's honesty section. Not yet
-  mirrored into `modules/m2-comms/README.md` — that file wasn't in this
-  pass's file allowlist (module code/docs was other agents' territory this
-  session); flagged for a follow-up pass.
-
-One claim was verified rather than assumed: the depth-ranking brief for this
-pass characterized M3 as having "a grounding verifier" beyond its
-extraction-to-asset chain. `modules/m3-repurpose/` was grepped for
-`grounding`/`verifier` twice during this pass — absent on the first check,
-present on the second (`verify_grounding.py`, landed mid-session by the
-agent working M3 concurrently). The ranking above was written only after
-reading that file and confirming what it actually checks (timestamp/quote/
-speaker-attribution claims against the transcript, `grounding_report.json`
-output) — not from the brief's description of it.
+Don't cite this file's numbers (token spend, wall-clock, the old fixture's
+row-by-row dedupe breakdown) — they describe a different build on a
+different fixture.

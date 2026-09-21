@@ -96,7 +96,7 @@ themselves (M1's push), the email engagements (M2's real sends), the CRM propert
 ## 6. Tests
 
 ```
-python3 modules/m4-dashboard/test_dashboard.py     # 33 tests, stdlib unittest, no network
+python3 modules/m4-dashboard/test_dashboard.py     # 37 tests, stdlib unittest, no network
 python3 -m py_compile modules/m4-dashboard/dashboard.py
 ```
 

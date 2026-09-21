@@ -638,7 +638,32 @@ class ModuleFailure(Exception):
 
 # --------------------------------------------------------------------------
 # Top-level request handling
+# This endpoint is retired. Its stage_m1/m2/m3/m4 builders below still speak v1's
+# flag convention: they pass "--live" to opt IN to live calls. In v2 the live lane is
+# the default in every module and "--offline" is the opt-out, so these builders would
+# silently run the live lane when a caller asked for offline, and M2 would fail on an
+# unrecognised argument. The supported entry point is the module API in api/server.py
+# (POST /run with a module and a phase, documented in docs/module-api.md); nothing in
+# the shipped UI calls this path any more. api/server.py still imports this file for
+# helpers (REPO_ROOT, run_module, build_env, the summarisers and artifact specs), so
+# the file stays -- only the run endpoint is closed, rather than left to misreport
+# which lane it ran.
+RETIRED_NOTE = (
+    "api/run.py's /api/run endpoint is retired. It ran modules with v1's flag "
+    "convention, where --live opted in; v2 runs live by default and --offline opts "
+    "out, so this path could run the live lane when offline was requested. Use the "
+    "module API instead: POST /run {\"module\": \"m1|m2|m3|m4\", \"phase\": ..., "
+    "\"live\": true|false} -- see docs/module-api.md and docs/deploy-module-api.md."
+)
+
+
 def handle_run(payload: dict) -> dict:
+    return {"ok": False, "module": str(payload.get("module", "?")), "error": RETIRED_NOTE,
+            "hint": "see docs/module-api.md for the module API this was replaced by",
+            "log": []}
+
+
+def _handle_run_v1_disabled(payload: dict) -> dict:
     if REPO_ROOT is None:
         return {"ok": False, "module": payload.get("module", "?"), "error": REPO_ROOT_ERROR,
                 "hint": "this deployment is missing modules/config/data next to api/run.py", "log": []}

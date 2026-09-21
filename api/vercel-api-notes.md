@@ -2,6 +2,15 @@
 
 For the main thread wiring `orchestrator/stage_vercel.py` / `vercel.json`.
 
+`api/run.py` is still live: `api/server.py` (the Railway module-API
+service, see `docs/module-api.md`) imports it directly (`import run as
+legacy`) for its generic subprocess-runner and per-module summarize/
+artifact helpers, and `orchestrator/stage_vercel.py` still stages it as its
+own Vercel serverless function. Two different Vercel-facing things exist
+side by side now -- this file is about the older one, `POST`/`GET
+/api/run`. The console's live narrative refresh goes through a separate,
+newer function; see "The narrative endpoint" below.
+
 ## Route
 
 `api/run.py` exports a module-level `class handler(BaseHTTPRequestHandler)`
@@ -23,17 +32,16 @@ it to:
   provider's own error text verbatim (e.g. a 429 body). This is opt-in *and*
   cached process-wide for `PROBE_CACHE_TTL_S` (300s) so repeated status polls
   never re-burn quota; every plain `GET` (no `probe` param) makes zero
-  outbound calls. See "Live vs degraded lane" below for why this probe is the
-  only place that provider text is recoverable at all.
-- `POST /api/run` -- runs one module (or the full chain). Request/response
-  JSON shape is specified in full in the workstream brief this file's sibling
-  code was built against; not repeated here to avoid drift -- read
-  `api/run.py`'s module docstring and `handle_run()` if you need the exact
-  contract, it is the single source of truth. One field is called out here
+  outbound calls.
+- `POST /api/run` -- runs one module (or the full chain) by shelling out to
+  that module's real script (`enrich.py`, `comms.py`, `repurpose.py`, and
+  -- see "Retired" below -- an M4 entry point that no longer exists).
+  Request/response JSON shape: read `api/run.py`'s module docstring and
+  `handle_run()`, not repeated here to avoid drift. One field is called out
   because it is the P0 fix this file documents: the response's `"lane"` is
   one of `"live" | "offline" | "degraded"`, set from evidence the module
-  itself emitted (its own report file / stderr), never from the module's
-  exit code alone. See "Live vs degraded lane" below.
+  itself emitted, never from the exit code alone -- see "Live vs degraded
+  lane" below.
 
 ## Live vs degraded lane (P0 fix)
 
@@ -65,11 +73,30 @@ their own key, or read `out/live-proof/`) -- see `degraded_note()` in
 provider's real error text, since `enrich.py`'s internal preflight discards
 that detail before it ever reaches stderr.
 
-Every `POST` response's `summary` also carries `llm_calls_made` (m1: LLM
-batches attempted; m2: 3 iff all three segment caches regenerated live, else
-0; m3: `1 + len(ASSETS)` iff extraction + every asset call succeeded, else
-0) and, for m1, `llm_rows_patched` -- so the live claim is a number, not just
-a status word.
+## Retired: this endpoint no longer runs modules
+
+M1/M2/M3 flipped from offline-by-default (v1) to **live-by-default**, with `--offline`
+as the explicit opt-out, and M4 moved from a single script to a phased CLI. This file's
+`stage_m1`/`stage_m2`/`stage_m3`/`stage_m4` builders still spoke v1's convention, which
+no longer round-trips:
+
+- **M1** never added `--offline` on the `live:false` path, so every run went live
+  whichever lane the caller asked for.
+- **M2** was passed `--live` or `--allow-stale`; `comms.py` has neither flag today, so
+  it exited on an unrecognised argument on every call.
+- **M3** ran live regardless of the requested lane, for the same reason as M1.
+- **M4** invoked a script that no longer exists, with flags that no longer exist.
+
+A run endpoint that reports the wrong lane is worse than no run endpoint, so
+`handle_run()` now returns a refusal naming the replacement instead of executing
+anything. The v1 body is kept as `_handle_run_v1_disabled()` for reference and is not
+reachable. The supported entry point is the module API in `api/server.py`
+(`POST /run` with a module and a phase) — see `docs/module-api.md` and
+`docs/deploy-module-api.md`.
+
+`api/run.py` itself stays: `api/server.py` imports it for `REPO_ROOT`, `run_module`,
+`build_env`, the per-module summarisers and the artifact specs. Only the endpoint is
+closed.
 
 ## vercel.json requirement
 
@@ -102,24 +129,31 @@ bundle must have, as siblings of `api/run.py`'s parent:
   modules/
     m1-enrichment/enrich.py   (+ prompts/, tools/ if present)
     m2-comms/comms.py         (+ prompts/, sample_output/, .fingerprint.json)
-    m3-repurpose/repurpose.py (+ prompts/, sample_output/, tools/)
-    m4-dashboard/build_dashboard.py (+ template.html, fallback_narrative.md)
+    m3-repurpose/repurpose.py (+ prompts/, sample_output/)
+    m4-dashboard/dashboard.py (+ template.html) -- see "Retired" above:
+      not actually reachable through this function's current M4 stage
   config/icp.yaml
   data/
     incoming/registrants.csv, event.json, transcript.md   (default fixture)
     fixtures/hubspot_existing.json, engagement.json, segments.json
 ```
 
-As staged today (`orchestrator/stage_vercel.py`), `out/vercel-stage/.../modules/`
-only carries each module's `*.md` docs -- the actual `.py` scripts and their
-`prompts/`/`sample_output/`/`template.html`/fixture support files are not
-copied. This function will 500 with a clear "cannot locate repo root" error
-(or a `FileNotFoundError` from a missing prompt/template) until
-`stage_vercel.py` is updated to copy the four directories above (the whole
-`modules/` tree including scripts, plus `config/` and `data/`) into the
-staged deploy root, not just the docs. `.pycache/` under `modules/**` can be
-excluded; everything else the scripts read at runtime (prompts, templates,
-fixture JSON, `.fingerprint.json`) must ship.
+`orchestrator/stage_vercel.py` already copies the whole `modules/`,
+`config/` and `data/` trees (`.pycache/` excluded) into the staged deploy
+root, so this list is met mechanically today -- the gap is in `api/run.py`'s
+own M4 stage (above), not in what gets shipped.
+
+## The narrative endpoint (a separate function, not this one)
+
+The M4 dashboard's live-refreshing narrative does **not** go through
+`api/run.py`. It's `modules/m4-dashboard/api/narrative.js`, a second, much
+simpler Vercel function: a pure proxy that forwards `GET /api/narrative?
+run_id=<id>[&refresh=1]` to the module API's own `GET /narrative/<run_id>`
+(Railway, `api/server.py`), attaches the bearer token server-side, and
+returns that response verbatim. It makes no model calls of its own and
+needs no model-provider key on Vercel -- only `MODULE_API_URL` and
+`MODULE_API_TOKEN` as project env vars. Full contract:
+`docs/deploy-module-api.md` (§9) and `docs/module-api.md`.
 
 ## requirements.txt
 
@@ -142,19 +176,15 @@ itself deployed.
 
 ## Known live-lane reality (read before filing a "live is broken" issue)
 
-Live-lane timings measured locally against the current OpenRouter free tier
-(2026-08-23, model chain led by `nvidia/nemotron-3.5-lightning:free`):
-
-- Full 150-row fixture, `enrich.py --live`: 5m24s.
-- Minimal 2-row CSV (1 row needing LLM inference), `enrich.py --live`: still
-  well over 60s.
-
-The bottleneck right now is OpenRouter free-tier queueing/latency, not batch
-count or the module code. That means a live single-module request can
-plausibly time out even on the smallest possible input, under current
-provider load. `api/run.py` handles this as designed: an honest `ok:false`
-naming the module and elapsed time, with a hint pointing at the pre-computed
-full live run already committed at `out/live-proof/`. This is expected
-behavior, not a defect in the endpoint -- do not raise `LIVE_TIMEOUT_S` past
-Vercel's 60s cap chasing it; there is no timeout value under that cap that
-reliably succeeds at current OpenRouter latency.
+Timing numbers from an earlier measurement (2026-08-23, against a model
+chain that is no longer the current default) aren't repeated here, since
+nothing has re-timed a live call through this specific endpoint since the
+module CLIs moved to live-by-default -- see "Retired" above, which is
+the more urgent caveat: for M2 and M4, and for M1/M3's offline path, this
+endpoint may not reach a model call at all today. Where it does reach one,
+OpenRouter free-tier queueing/latency is still the practical bottleneck
+(see each module's own `receipts/*_llm_calls.json` for real per-call
+latency from its own live runs). `api/run.py` handles a timeout as
+designed either way: an honest `ok:false` naming the module and elapsed
+time, never a bare platform 504 -- do not raise `LIVE_TIMEOUT_S` past
+Vercel's 60s cap chasing this.

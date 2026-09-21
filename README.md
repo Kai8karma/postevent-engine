@@ -143,7 +143,7 @@ them — the full progress log is in [`_internal/REVISION-PLAN-2026-09-12.md`](_
   3 clips in both ratios with SRT captions.
 - M4 — all four phases run live against the HubSpot test portal: seed 16 contacts / 73 engagement events / 12
   lifecycle updates through the contact-property fallback, sync 32 contacts + 23 companies over 6 HubSpot calls all
-  HTTP 200, analyze 4/4 completions with 4 validator agreements and 3 disagreements recorded. Plus 33 zero-network
+  HTTP 200, analyze 4/4 completions with 4 validator agreements and 3 disagreements recorded. Plus 37 zero-network
   tests (`modules/m4-dashboard/test_dashboard.py`) and 76 assertions over the module API's M4 surface
   (`api/test_server_m4.py`).
 

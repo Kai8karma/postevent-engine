@@ -272,17 +272,14 @@
   <div class="topbar-inner">
     <strong>Post-Event Engine — Control Room</strong>
     <div class="topbar-nav">
-      <a href="https://postevent-engine.vercel.app">← Run it live</a>
-      <a href="#outcomes">The numbers</a>
-      <a href="#receipts">Live receipts</a>
-      <a href="#honesty">Honesty &amp; lanes</a>
-      <a href="#architecture">Architecture</a>
+      <a href="../web/index.html">Console page</a>
+      <a href="#map">Brief → artifact</a>
+      <a href="#engine">AI is the engine</a>
+      <a href="#real">Real vs simulated</a>
+      <a href="#status">Verified / not yet</a>
       <a href="#modules">Modules</a>
-      <a href="#scorecard">Scored against the brief</a>
-      <a href="#economics">Economics</a>
-      <a href="#buildlog">Build Log</a>
-      <a href="#runit">Run it yourself</a>
-      <a href="#swap">Swap to your event</a>
+      <a href="#orchestration">Orchestration</a>
+      <a href="#runit">Run it</a>
     </div>
     <button class="theme-toggle" id="themeToggle" type="button">Toggle theme</button>
   </div>
@@ -290,989 +287,419 @@
 
 <div class="wrap">
 
-
   <header class="hero">
-    <p class="kicker">Working Prototype — Write-up &amp; Evidence Room</p>
-    <h1>Kshitij Mishra — AI-Led Post-Event Content Automation</h1>
+    <p class="kicker">Kshitij Mishra — working prototype, technical index</p>
+    <h1>Post-Event Engine — one real Darwinbox webinar, four modules</h1>
     <p class="assignment">
-      Built for the assignment: turn a webinar's raw exhaust — recording, transcript, registrant list,
-      engagement data — into HubSpot-ready leads, sent comms, repurposed content, and a live dashboard,
-      with AI doing the actual work at every step, not wrapping a manual process. This page is the
-      write-up and the evidence trail; <a href="https://postevent-engine.vercel.app">the root of this site</a> is the actual working
-      build — drop in your own CSV or transcript, hit Run, and watch each module execute for real.
+      Built against the brief in <a href="../SPEC.md">SPEC.md</a> and run end to end on a single real event:
+      Darwinbox's own on-demand webinar <b>“From Hype to High-Impact: How to Start and Scale AI in HR”</b>
+      (<a href="https://explore.darwinbox.com/lp/resources/events/webinar-how-to-start-and-scale-ai-in-hr">public event page</a>),
+      33 minutes in three chapters, hosted on Darwinbox's own HubSpot file CDN. The transcript was produced by a real
+      <b>Sarvam <code class="mono">saaras:v3</code> batch STT</b> run over the three chapter audio files — no captions
+      exist for this recording and none of it was typed by hand. Real model and API calls are the default lane in
+      every module; <code class="mono">--offline</code> is an explicit flag that replays this repo's checked-in
+      output for a reviewer who has no keys. Every number on this page comes from a receipt file named beside it.
     </p>
 
     <div class="hero-meta">
-      <div><strong>ACME Revenue Cloud</strong>host company · acmerevenue.example</div>
-      <div><strong>Pipeline After the Webinar: Turning Event Engagement into Revenue</strong>webinar · 2026-07-20</div>
-      <div><strong>Priya Nair · Daniel Kim · Sara Alvarez</strong>speakers</div>
-      <div><strong>4 / 4</strong>modules attempted, independently demoable</div>
+      <div><strong>Darwinbox</strong>host · explore.darwinbox.com</div>
+      <div><strong>Q Hamirani · Sudi Bjornstad Korba</strong>CPO, HighLevel · SVP Sales NA, Darwinbox</div>
+      <div><strong>6,449 words</strong>transcript, Sarvam saaras:v3 batch STT</div>
+      <div><strong>4 / 4</strong>brief modules, each demoable on its own</div>
     </div>
   </header>
 
-  <section id="outcomes">
-    <h2>The numbers</h2>
+  <section id="map">
+    <h2>Brief → artifact map</h2>
     <p class="section-sub">
-      What this run actually produced, before anything else. Every figure below is cited to the
-      section that backs it &mdash; <a href="#receipts">Live receipts</a>, <a href="#scorecard">Scored
-      against the brief</a>, and <a href="#economics">Unit economics</a> &mdash; nothing here is a new
-      number, just the existing ones surfaced first instead of buried on page 8.
-    </p>
-    <div class="stat-row">
-      <div class="stat"><div class="num">133 / 30</div><div class="lbl">contacts / companies out of 150 raw registrants, live HubSpot sandbox push (<a href="#receipts">receipt</a>)</div></div>
-      <div class="stat"><div class="num">99.8%</div><div class="lbl">contact completeness vs. the brief's 90% bar (<code class="mono">spec_completeness</code>, <a href="#scorecard">scorecard</a>)</div></div>
-      <div class="stat"><div class="num">97.2%</div><div class="lbl">company completeness vs. the same 90% bar &mdash; caveat: measured per contact-row, not deduped to unique companies</div></div>
-      <div class="stat"><div class="num">16.2%</div><div class="lbl">attendee &rarr; MQL conversion, computed directly from lifecycle data, not estimated</div></div>
-      <div class="stat"><div class="num">10 / 5</div><div class="lbl">top engaged accounts ranked / buying-committee accounts identified</div></div>
-      <div class="stat"><div class="num">$23.67</div><div class="lbl">infra cost per event &mdash; $1.17 LLM + $22.50 Clay (<a href="#economics">~22x the manual-hours cost</a>)</div></div>
-    </div>
-    <div class="callout">
-      Every field behind these numbers &mdash; source, type/enum, how it's derived, and what happens
-      when it's missing &mdash; is on one page: <a href="data-contract.md">docs/data-contract.md</a>.
-      How this runs week to week once it's live &mdash; who owns the review queue, the same-day SDR
-      handoff SLA, and what's honestly not built yet for 10x scale &mdash; is on
-      <a href="operating-cadence.md">docs/operating-cadence.md</a>.
-    </div>
-  </section>
-
-  <section id="receipts">
-    <h2>Live receipts</h2>
-    <p class="section-sub">
-      Everything below is a receipt for a call actually made against a real provider account, not a
-      spec doc or a mock. Clay's managed enrichment ran live on three real domains; the HubSpot sandbox
-      and private app are provisioned and the injector has pushed the full event into it; and the LLM
-      lane ran end to end against a real model endpoint (receipt at the bottom of this section).
-    </p>
-
-    <div class="diagram-block">
-      <h3>Clay — live company enrichment</h3>
-      <p style="font-size:14.5px; color:var(--text-muted); margin:0 0 14px; max-width:760px;">
-        Clay CLI (official, July-2026 release) authenticated; Clay's managed Enrich Company function
-        executed live via <code class="mono">clay routines runs</code> on 3 real domains.
-      </p>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Domain</th><th>Name</th><th>Industry</th><th>Employees</th><th>Country</th><th>Revenue band</th></tr></thead>
-          <tbody>
-            <tr><td>hubspot.com</td><td>HubSpot</td><td>Software Development</td><td>13,083</td><td>US</td><td>1B–10B</td></tr>
-            <tr><td>n8n.io</td><td>n8n</td><td>Software Development</td><td>1,228</td><td>DE</td><td>75M–200M</td></tr>
-            <tr><td>clay.com</td><td>Clay</td><td>Software Development</td><td>1,495</td><td>US</td><td>500M–1B</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="stat-row">
-        <div class="stat"><div class="lbl" style="margin-bottom:4px;">Routine run id</div><div class="num mono" style="font-size:14px; word-break:break-all;">run_0tk7y5kH2Y5PHTW5moE</div></div>
-        <div class="stat"><div class="num">2505 → 2503.5</div><div class="lbl">workspace credits, before → after</div></div>
-        <div class="stat"><div class="num">1.5</div><div class="lbl">credits spent (3 domains)</div></div>
-      </div>
-      <div class="callout">
-        Fixture domains are synthetic by design — hubspot.com/clay.com/n8n.io stand in for real registrant
-        companies so this proof run doesn't spend against or leak data about anyone real. The production
-        lane runs this identical routine on every real company domain in the registrant list, via
-        <code class="mono">enrich.py</code>'s <code class="mono">--clay-max</code> flag driving
-        <code class="mono">clay_enrich.py</code>'s <code class="mono">enrich_domains()</code> in-process.
-      </div>
-    </div>
-
-    <div class="diagram-block">
-      <h3>HubSpot — sandbox + private app</h3>
-      <p style="font-size:14.5px; color:var(--text-muted); margin:0 0 14px; max-width:820px;">
-        Developer test account <b>"Post-Event Engine Sandbox"</b> (portal
-        <code class="mono">247135551</code>, Enterprise-trial on all Hubs) with private app
-        <b>"Post-Event Engine"</b> (id <code class="mono">50285304</code>), scoped for the full
-        M1/M2 write path — not read-only access for a screenshot.
-      </p>
-      <div class="label">15 granted scopes</div>
-      <div class="chip-row">
-        <span class="chip">crm.objects.contacts.read</span>
-        <span class="chip">crm.objects.contacts.write</span>
-        <span class="chip">crm.objects.companies.read</span>
-        <span class="chip">crm.objects.companies.write</span>
-        <span class="chip">crm.objects.owners.read</span>
-        <span class="chip">crm.schemas.contacts.read</span>
-        <span class="chip">crm.schemas.contacts.write</span>
-        <span class="chip">crm.schemas.companies.read</span>
-        <span class="chip">crm.schemas.companies.write</span>
-        <span class="chip">marketing-email</span>
-        <span class="chip">marketing.campaigns.read</span>
-        <span class="chip">marketing.campaigns.write</span>
-        <span class="chip">sales-email-read</span>
-        <span class="chip">transactional-email</span>
-        <span class="chip">timeline</span>
-      </div>
-      <p style="font-size:14px; color:var(--text-muted); margin:18px 0 6px;">
-        The injector (<code class="mono">push_to_hubspot.py</code>) is dry-run verified against this
-        scope set before any live token touches it:
-      </p>
-      <div class="stat-row">
-        <div class="stat"><div class="num">7</div><div class="lbl">custom properties ensured</div></div>
-        <div class="stat"><div class="num">30</div><div class="lbl">companies upserted</div></div>
-        <div class="stat"><div class="num">133</div><div class="lbl">contacts upserted</div></div>
-        <div class="stat"><div class="num">120</div><div class="lbl">associations written</div></div>
-      </div>
-      <div class="callout">
-        Dry-run makes zero network calls (<code class="mono">network_calls_made=0</code> in its own plan
-        output), and the 401 path is separately proven against a fake token — so the only thing between
-        this and a live push was the sandbox token itself. With the token in, it ran (receipt below).
-      </div>
-      <div class="loom-slot" id="hubspot-live-results">
-        <b>Live HubSpot push — done 2026-08-23, sandbox portal 247135551</b><br>
-        <code class="mono">python3 modules/m1-enrichment/push_to_hubspot.py</code> then <code class="mono">--verify</code>,
-        through the private app above: 7 custom properties ensured (7 requests) · 30 companies upserted (1 batch)
-        · 133 contacts upserted (2 batches) · 120 contact→company associations (2 batches; 13 skipped = freemail /
-        no company domain) · zero errors. Read-back by <code class="mono">event_tag=acmerevenue-2026-07-20</code>:
-        contacts=133, companies=30. Two things the sandbox taught us on the way, both fixed in the injector:
-        HubSpot doesn't unique-index company <code class="mono">domain</code> (so companies are search-by-domain →
-        batch update/create, not batch upsert), and <code class="mono">industry</code> is a fixed enum (mapped from
-        M1's labels). Email engagements are logged to contact timelines only after M2's approval gate flips —
-        by design, that flip is a human's.
-      </div>
-    </div>
-
-    <div class="diagram-block" id="llm-live-results">
-      <h3>LLM — live generation run (the "AI is the engine" lane, executed)</h3>
-      <p style="font-size:14.5px; color:var(--text-muted); margin:0 0 14px; max-width:820px;">
-        <code class="mono">LLM_BACKEND=openrouter python3 orchestrator/run_pipeline.py --live --out out/live-proof</code>
-        on 2026-08-23 against OpenRouter, model <code class="mono">nvidia/nemotron-3-ultra-550b-a55b:free</code>
-        (the <code class="mono">claude -p</code> lane was unavailable on the build machine that day — auth revoked — so
-        the OpenRouter backend every module ships carried the proof; <code class="mono">usage.cost: 0</code> on every call).
-        Every artifact is in <code class="mono">out/live-proof/</code> (zip) and browsable
-        <a href="https://postevent-engine.vercel.app/demo/live-proof/">hosted</a>, with per-stage
-        <code class="mono">_stage.log</code> files and the raw model responses M2 received.
-      </p>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Stage</th><th>Live LLM work done</th><th>Result</th><th>Wall-clock</th></tr></thead>
-          <tbody>
-            <tr><td>M1 enrich</td><td>2 inference batches over the 30 rows the rule tables couldn't fill; model inferred function / seniority / size band / industry</td><td>PASS — 25 of 30 rows patched by the model; 1 batch fell back to rule values after a malformed response (counted, not hidden: <code class="mono">live_inference_report.json</code>)</td><td>121 s</td></tr>
-            <tr><td>M2 comms</td><td>3 calls: attendee takeaways by function × industry, no-show takeaways, speaker quotes + subject-line pairs</td><td id="m2-live-result">PASS — 3 variants rendered for 153 recipients; attendee + no-show takeaways came back keyed by all 6 functions × 3 industry buckets; the speaker call's first answer was 51 KB of reasoning with no JSON (kept: <code class="mono">m2/live_raw/speaker.attempt1.raw.txt</code>), the automatic retry returned clean JSON — the parse→validate→retry path doing its job live</td><td id="m2-live-secs">795 s</td></tr>
-            <tr><td>M3 repurpose</td><td>1 extraction call (key moments, quotes, data points) + 4 generation calls (blog, YouTube, infographic, social)</td><td>PASS — blog 1,277 words (<b>77 over the 800–1,200 spec</b>, flagged <code class="mono">blog_within_spec:false</code> in <code class="mono">manifest.json</code>), 8 social posts ✓, 18 YouTube chapters ✓. <b>This overrun is what the spec gate was built for:</b> the check now runs before the write and regenerates with the overage named, so this run would not ship as-is today.</td><td>548 s</td></tr>
-            <tr><td>M4 dashboard</td><td>none at build time by design (deterministic metrics); narrative is generated on page load by <code class="mono">/api/narrative</code></td><td>PASS — 10 top accounts, 5 committee accounts, 2 anomalies</td><td>0.05 s</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="callout">
-        What the free model taught the code, all fixed in this build and kept: reasoning-style models (we tried
-        <code class="mono">stealth/ox-alpha</code> first) wrap JSON in fences <i>and</i> append a sentence after the
-        closing fence, spend their whole completion budget thinking on a long transcript, and take ~2 min a call — so
-        every module now extracts the first complete JSON value rather than trusting the whole response, sizes
-        timeouts/max_tokens for it, retries a non-JSON answer, validates the shape against the renderer's contract
-        before persisting anything, and <code class="mono">OPENROUTER_MODEL</code> accepts a comma-separated
-        fallback chain for when a free provider is overloaded (it was, twice).
-      </div>
-    </div>
-
-    <div class="diagram-block">
-      <h3>M1 — spec completeness, measured against the brief's own field list</h3>
-      <p style="font-size:14.5px; color:var(--text-muted); margin:0 0 14px; max-width:820px;">
-        The brief asks for "contact and company completeness above 90 percent." Most completeness
-        numbers quietly include easy fields (email, first/last name) that inflate the average — this
-        one doesn't. <code class="mono">spec_completeness()</code> in
-        <code class="mono">modules/m1-enrichment/enrich.py</code> scores only the fields the brief
-        actually names, prints the result to M1's stdout, and stores it under
-        <code class="mono">quality_report.json → spec_completeness</code>.
-      </p>
-      <div class="stat-row">
-        <div class="stat"><div class="num">99.8%</div><div class="lbl">contact completeness (jobtitle, function, seniority, company, size, industry, region, ICP tier, lifecycle stage, owner)</div></div>
-        <div class="stat"><div class="num">97.2%</div><div class="lbl">company completeness (name, domain, size band, industry)</div></div>
-        <div class="stat"><div class="num">90.2%</div><div class="lbl">weakest single field: company_domain</div></div>
-      </div>
-      <div class="callout">
-        Both clear the 90% bar, but two honest caveats travel with that number, not around it: company
-        completeness is measured per contact-row, not deduped to unique company objects (deduping first
-        would hide exactly the rows whose company never resolved — the weak spot this metric exists to
-        surface); and the size-band field is a synthetic offline placeholder never checked against a real
-        source, so it reads as ~100% filled by construction, not by data quality. Both caveats are printed
-        alongside the numbers in <code class="mono">quality_report.json</code>, not hidden in this page.
-      </div>
-    </div>
-
-    <div class="diagram-block">
-      <h3>Transcription — Sarvam speech-to-text, live 3-call proof</h3>
-      <p style="font-size:14.5px; color:var(--text-muted); margin:0 0 14px; max-width:820px;">
-        <code class="mono">modules/m3-repurpose/transcribe.py</code> is a stdlib CLI that posts audio
-        to Sarvam's <code class="mono">/speech-to-text</code> endpoint. No real webinar recording
-        exists for this build, so an 85.31-second two-speaker stand-in was synthesised with macOS
-        <code class="mono">say</code> (Sarvam's own TTS wrapper errored on every call — see the
-        caveat below) and fed to Sarvam's <code class="mono">saaras:v3</code> model across 3 live
-        calls, chunked to fit the endpoint's 30-second cap per call.
-      </p>
-      <div class="stat-row">
-        <div class="stat"><div class="num">9301.7 / 4970.8 / 3253.4 ms</div><div class="lbl">3 live call latencies</div></div>
-        <div class="stat"><div class="num">254</div><div class="lbl">words transcribed</div></div>
-        <div class="stat"><div class="num">0.9216</div><div class="lbl">word-level similarity vs. source script</div></div>
-      </div>
-      <div class="callout">
-        Two things stated plainly, not rounded up: the audio is a synthesised stand-in, not a real
-        webinar recording — Sarvam's TTS wrapper rejected every request ("Pitch and loudness
-        parameters are currently not supported for the Bulbul V3 model," even with those fields
-        omitted), so macOS <code class="mono">say</code> filled in per the task's stated fallback. And
-        the live proof above ran through the Sarvam MCP client, not through
-        <code class="mono">transcribe.py</code>'s own REST path, because no
-        <code class="mono">SARVAM_API_KEY</code> was in the shell that session —
-        <code class="mono">transcribe.py</code>'s <code class="mono">--dry-run</code> mode and its
-        fail-loud-without-key path were verified directly; its network path was not. Artifacts:
-        <code class="mono">out/live-proof-transcription/</code> (audio, transcript, source script,
-        <code class="mono">transcription_meta.json</code> with all 4 request ids).
-      </div>
-    </div>
-
-    <div class="diagram-block">
-      <h3>Image generation — the visual-assets brief, run for real</h3>
-      <p style="font-size:14.5px; color:var(--text-muted); margin:0 0 14px; max-width:820px;">
-        Higgsfield (the primary provider wired for this) returned <code class="mono">0 credits</code>
-        / "Requires basic plan or higher" on this account, so both images were generated instead via a
-        real HTTP call to <code class="mono">google/gemini-2.5-flash-image</code> over OpenRouter,
-        grounded in M3's own live-generated briefs (colors, copy, layout copied verbatim from
-        <code class="mono">youtube.md</code> / <code class="mono">infographic.md</code>).
-      </p>
-      <div class="stat-row">
-        <div class="stat"><div class="num">1024×576</div><div class="lbl">YouTube thumbnail, 637,827 bytes</div></div>
-        <div class="stat"><div class="num">1024×1024</div><div class="lbl">Infographic hero, 885,495 bytes</div></div>
-        <div class="stat"><div class="num">$0.077647</div><div class="lbl">total OpenRouter spend, 2 images</div></div>
-      </div>
-      <div class="callout">
-        Stated plainly rather than shipped clean: the infographic renders all 6 real data points
-        correctly but contains three model typos — "piseline," "AFORE," "REPUROSED" — and the
-        thumbnail's headline text did not render as legible type at all, only illegible caption-style
-        marks under the panelist photos. This is exactly the kind of thing a human still checks before
-        publishing either asset. Artifacts + full generation metadata (prompts, provider fallback
-        chain, per-image cost):
-        <code class="mono">out/live-proof-visuals/</code>.
-      </div>
-    </div>
-
-    <div class="diagram-block">
-      <h3>Shared drive — saved and tagged by event</h3>
-      <p style="font-size:14.5px; color:var(--text-muted); margin:0 0 14px; max-width:820px;">
-        The brief's "saved to a shared drive and tagged by event" output: a Google Drive folder
-        <b>"Post-Event Engine — acmerevenue-2026-07-20"</b> (id
-        <code class="mono">1HDEuOF3tFieIaduGJxY7E35M9HCMVprt</code>) with 7 files uploaded — the 6
-        live M3 deliverables plus an <code class="mono">INDEX.md</code> — each filename prefixed with
-        the event tag.
-      </p>
-      <div class="stat-row">
-        <div class="stat"><div class="num">7</div><div class="lbl">files uploaded, event-tag-prefixed</div></div>
-        <div class="stat"><div class="num">private</div><div class="lbl">sharing — owner only, not made public</div></div>
-      </div>
-      <div class="callout">
-        Deliberately not linked here: the folder stays private to the owner's Drive by design, so this
-        page points at the manifest instead of the folder itself —
-        <code class="mono">out/live-proof-drive/drive_manifest.json</code> (file ids, sizes, upload
-        timestamps). The production mechanism — how a real deployment would push to a team's shared
-        drive on a schedule — is documented at
-        <code class="mono">scripts/publish_to_drive.md</code>.
-      </div>
-    </div>
-
-    <div class="diagram-block">
-      <h3>M4 narrative — the brief's "AI-generated narrative summary refreshed on load"</h3>
-      <p style="font-size:14.5px; color:var(--text-muted); margin:0 0 14px; max-width:820px;">
-        <code class="mono">api/narrative.js</code> executed for real 3 times against OpenRouter with
-        this event's own computed metrics (133 registrants, 74 attendees, top account Palmetto SaaS
-        Group) — not fixture text. All 3 runs came back <code class="mono">source: "live"</code>.
-      </p>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Model</th><th>Run</th><th>Latency</th><th>Fits the 25s client timeout?</th></tr></thead>
-          <tbody>
-            <tr><td rowspan="2"><code class="mono">nvidia/nemotron-3-ultra-550b-a55b:free</code></td><td>1</td><td>29,869 ms</td><td>No — 4.9s over</td></tr>
-            <tr><td>2</td><td>35,226 ms</td><td>No — 10.2s over</td></tr>
-            <tr><td><code class="mono">nvidia/nemotron-3-super-120b-a12b:free</code></td><td>3</td><td>17,086 ms</td><td>Yes — 7.9s headroom</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="callout">
-        First words of the generated narrative (run 1): "The webinar drew 133 registrants and 74
-        attendees (55.6% attendance), yielding 31…" — matches the real numbers, not invented ones.
-        The model named in the task spec (<code class="mono">ultra-550b</code>) is too slow for the
-        dashboard's 25-second client-side timeout, so a hosted load on that model would usually fall
-        back to the labeled cache; <code class="mono">nemotron-3-super-120b-a12b:free</code> is the
-        recommended hosted model — comfortably inside the window. Making this live in production is
-        one environment variable, not a code change (see <code class="mono">DEPLOY.md</code>) — that
-        step has deliberately not been taken yet; it's the one item in this scorecard still waiting on
-        a config flip rather than a proof run. Artifacts:
-        <code class="mono">out/live-proof/m4-narrative/</code>.
-      </div>
-    </div>
-  </section>
-
-  <section id="honesty">
-    <h2>Honesty: lanes, depth, and what a fingerprint proves</h2>
-    <p class="section-sub">
-      The two lanes this build runs, and how deep the AI actually goes in each module &mdash; read
-      before the architecture diagrams below assume you already know the difference.
-    </p>
-    <div class="thesis" style="border-left-color: var(--m4-stroke);">
-      <b>Run it yourself:</b> live console app —
-      <a href="https://postevent-engine.vercel.app">postevent-engine.vercel.app</a> (this write-up lives at
-      <code class="mono">/control-room</code>). Offline, zero keys, ~1s:
-      <code class="mono">python3 orchestrator/run_pipeline.py</code>. Live, real LLM calls:
-      <code class="mono">LLM_BACKEND=openrouter OPENROUTER_MODEL="nvidia/nemotron-3.5-lightning:free,nvidia/nemotron-3-super-120b-a12b:free,nvidia/nemotron-3-ultra-550b-a55b:free"
-      python3 orchestrator/run_pipeline.py --live</code>. Clone:
-      <code class="mono">git clone https://github.com/Kai8karma/postevent-engine && cd postevent-engine</code>
-    </div>
-    <div class="thesis">
-      <b>Thesis:</b> AI does the actual reasoning work in this build, but not identically across
-      modules, and we'd rather show you the real shape of that than round it up. M1 runs a
-      deterministic rules lane offline (dedupe + field inference by lookup table, zero LLM tokens)
-      and switches to real LLM classification with <code class="mono">--live</code>; M2 and M3 ship
-      genuinely LLM-generated copy, replayed from a fingerprint-guarded cache offline so the demo
-      doesn't need an API key; M4 computes its metrics directly from data and calls a live LLM only
-      for the narrative summary, falling back to a labeled cached one without a key. Humans approve
-      every send either way.
-    </div>
-    <div class="table-wrap" style="max-width:820px; margin-top:16px;">
-      <table>
-        <thead><tr><th>Module</th><th>Offline (repo default)</th><th>--live / production</th></tr></thead>
-        <tbody>
-          <tr><td>M1 Enrichment</td><td>Deterministic rules: difflib dedupe + lookup-table field inference. No LLM call.</td><td>Real LLM classification via <code class="mono">--live</code> (<code class="mono">claude -p</code> or OpenRouter, per <code class="mono">LLM_BACKEND</code>); Clay's managed Enrich Company routine already executed live on 3 real domains (<a href="#receipts">Live receipts</a>) — production lane runs the same call across every real company domain via <code class="mono">--clay-max</code>.</td></tr>
-          <tr><td>M2 Comms</td><td>Cached LLM-generated copy replayed from <code class="mono">sample_output/</code>, fingerprint-guarded.</td><td>Live LLM call (<code class="mono">claude -p</code> or OpenRouter) regenerates the segment's takeaway/quote copy.</td></tr>
-          <tr><td>M3 Repurposing</td><td>Cached LLM-generated copy replayed from <code class="mono">sample_output/</code>, fingerprint-guarded.</td><td>Live LLM call (<code class="mono">claude -p</code> or OpenRouter) regenerates blog/YouTube/infographic/social from the transcript.</td></tr>
-          <tr><td>M4 Dashboard</td><td>Computed metrics (real math over fixtures) + labeled cached fallback narrative. <b>Anomaly detection and lead-interest scoring are deterministic rules, not LLM calls</b> (same-day concentration ≥15 touches; tier × attendance × engagement weights) — the AI role here is the narrative that interprets them.</td><td>Live LLM narrative via Vercel <code class="mono">/api/narrative.js</code>, UI-labeled live vs. fallback (<a href="https://postevent-engine.vercel.app/dashboard/">hosted</a>). Anomaly/scoring rules stay deterministic in both lanes by choice: auditable, reproducible, and the LLM reads their output rather than inventing it.</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="callout">
-      <b>What the fingerprint proves, and what it doesn't:</b> <code class="mono">compute_fingerprint()</code>
-      in <code class="mono">modules/m2-comms/comms.py</code> hashes exactly two things &mdash; the
-      transcript's SHA-256 and the event name &mdash; and the offline lane refuses to silently replay a
-      cached sample whose fingerprint doesn't match what's on record (the &ldquo;frankenstein
-      guard&rdquo;). That proves one thing only: the cached copy in <code class="mono">sample_output/</code>
-      was generated from <i>this</i> transcript and <i>this</i> event, not a stale one swapped in later.
-      It does <b>not</b> prove a model authored that copy &mdash; authorship is only provable by actually
-      running <code class="mono">--live</code> and reading the receipt (see
-      <a href="#receipts">Live receipts</a>), which is why every honesty claim in this build points back
-      to a receipt, not to the fingerprint alone.
-    </div>
-
-    <h3 style="margin-top:28px;">Depth, ranked honestly</h3>
-    <p style="font-size:14.5px; color:var(--text-muted); margin:0 0 14px; max-width:780px;">
-      The brief says attempt all four, depth of execution matters more than breadth &mdash; all four
-      were attempted; what was missing was saying out loud which is deepest and why. In order:
+      One row per module table in the brief. “Receipt” is a path inside this repo — a JSON or Markdown file written
+      by the run that produced the claim, not prose. Nothing in the Output column is a mock-up.
     </p>
     <div class="table-wrap">
-      <table>
-        <thead><tr><th>Rank</th><th>Module</th><th>Why</th></tr></thead>
+      <table class="scorecard-table">
+        <thead>
+          <tr><th>Brief module</th><th>What runs</th><th>Output</th><th>Receipt path</th></tr>
+        </thead>
         <tbody>
-          <tr><td>1</td><td><span class="card-tag tag-m1">M1</span> Enrichment</td><td>Real dedupe math (a stated weighted composite score, not a black box &mdash; <a href="data-contract.md">data contract &sect;2</a>), a live Clay enrichment run and a live HubSpot sandbox push (not a dry-run), and completeness measured against the brief's own named fields, not an inflated denominator (99.8% contact / 97.2% company, both above the 90% bar &mdash; <a href="#scorecard">scorecard</a>).</td></tr>
-          <tr><td>2</td><td><span class="card-tag tag-m3">M3</span> Repurposing</td><td>A real extraction-to-asset chain &mdash; one <code class="mono">claude -p</code> extraction pass over the transcript, then every asset (blog/YouTube/infographic/social) generated off that extraction rather than each guessing independently off the raw transcript (<code class="mono">modules/m3-repurpose/repurpose.py</code>) &mdash; and a grounding verifier (<code class="mono">modules/m3-repurpose/verify_grounding.py</code>) that checks every timestamp, quote, and speaker attribution each asset claims against the source transcript, fuzzy-matching quotes with the same primitive M1's dedupe uses, and writes a per-asset pass/fail <code class="mono">grounding_report.json</code>.</td></tr>
-          <tr><td>3</td><td><span class="card-tag tag-m2">M2</span> Comms</td><td>Strong content generation and real CRM send-log wiring, deliberately stopped short of an actual send &mdash; the human approval gate (<code class="mono">approval_gate.json</code>, never auto-flipped) is a design choice, not an unfinished feature.</td></tr>
-          <tr><td>4</td><td><span class="card-tag tag-m4">M4</span> Dashboard</td><td>Best engineering, thinnest AI &mdash; by choice. One live narrative call; anomaly detection and lead-interest scoring are deterministic rules, not LLM calls. Reproducibility is a compliance property here, not a missed opportunity: an SDR disputing a merge a year from now needs a byte-identical replay of how that account got scored, and a deterministic rule gives them that where a model call wouldn't.</td></tr>
+          <tr>
+            <td><b>Event fixture</b><br>the one real event everything runs on</td>
+            <td><code class="mono">modules/m3-repurpose/transcribe_batch.py</code> — Sarvam <code class="mono">saaras:v3</code> batch STT over the three public chapter files, then <code class="mono">data/incoming/tools/build_transcript.py</code>. Registrant export generated by <code class="mono">data/incoming/tools/gen_registrants.py</code>.</td>
+            <td><code class="mono">data/incoming/transcript.md</code> (6,449 words, diarized <code class="mono">[MM:SS] **Speaker:**</code> turns) · <code class="mono">transcript.vtt</code> · <code class="mono">event.json</code> · <code class="mono">speakers.json</code> · <code class="mono">registrants.csv</code> (150 rows)</td>
+            <td><code class="mono">out/receipts/transcription.json</code> — 3 Sarvam jobs, every stage HTTP 200/201/202, job ids recorded · <code class="mono">out/receipts/transcription/chapter{1,2,3}.sarvam.json</code></td>
+          </tr>
+          <tr>
+            <td><b>M1 — Lead List Enrichment</b><br>fuzzy match + dedupe against HubSpot, infer missing fields, enrich company data, score ICP fit, HubSpot-ready file above 90% complete</td>
+            <td><code class="mono">modules/m1-enrichment/enrich.py</code> (live default): HubSpot Search API dedupe → LLM adjudicates gray-zone pairs → LLM row inference + firmographics + ICP tier with rationale, rules validate → <code class="mono">--clay-results</code> merge with per-field <code class="mono">*_source</code> provenance → <code class="mono">push_to_hubspot.py</code> upsert</td>
+            <td><code class="mono">hubspot_ready.csv</code>, <code class="mono">hubspot_contacts.csv</code>, <code class="mono">hubspot_companies.csv</code>, <code class="mono">quality_report.json</code>, <code class="mono">dedupe_report.json</code>, <code class="mono">live_inference_report.json</code></td>
+            <td><code class="mono">out/receipts/m1-live-slice-30/</code> — 30-row live slice: 96.2% contact / 93.0% company verified completeness (bar is 90), 10 LLM calls logged, live HubSpot search · push: <code class="mono">out/receipts/m1-push-slice30-2026-09-16.json</code> — 32 contacts, 23 companies, 27 associations</td>
+          </tr>
+          <tr>
+            <td><b>M2 — Post-Event Communications</b><br>segment-specific copy, subject variants, takeaways personalised by role/industry, UTM on every link, three variants inside 24h of close</td>
+            <td><code class="mono">modules/m2-comms/comms.py</code>: one extraction call over the real transcript, then one call per segment (attendee / no-show / speaker) × two subjects; per-recipient render off M1's <code class="mono">function</code> and <code class="mono">industry</code>; grounding gate; approval gate. Module API phases <code class="mono">generate</code> / <code class="mono">approve</code> / <code class="mono">log</code></td>
+            <td><code class="mono">dispatch_plan.json</code> (one rendered message per recipient, UTM-tagged links), <code class="mono">emails/&lt;segment&gt;.md</code>, <code class="mono">approval_gate.json</code>, <code class="mono">extraction.json</code>, <code class="mono">grounding.json</code></td>
+            <td><code class="mono">out/receipts/m2-live/grounding.json</code> — 81 checks, 81 passed, 0 failed · <code class="mono">out/receipts/m2-live/m2_llm_calls.json</code> — 4 live calls, all HTTP 200, parsed clean</td>
+          </tr>
+          <tr>
+            <td><b>M3 — Content Repurposing</b><br>transcription API, extract moments/quotes/data points, blog 800–1200, YouTube pack, infographic outline, 5–10 social posts, image generation, saved to a shared drive tagged by event</td>
+            <td><code class="mono">modules/m3-repurpose/repurpose.py</code>: one extraction pass normalised against real transcript turns → four per-asset generations off that extraction → <code class="mono">verify_grounding.py</code> hard gate with one corrective repair → <code class="mono">make_clips.py</code> (ffmpeg) → <code class="mono">gen_visuals.py</code> (image model)</td>
+            <td><code class="mono">blog.md</code> (1,106 words), <code class="mono">youtube.md</code> (18 chapters + description + thumbnail brief), <code class="mono">infographic.md</code> (6 data points), <code class="mono">social.md</code> (8 posts: 5 LinkedIn + 3 X), <code class="mono">extraction.json</code>, <code class="mono">grounding_report.json</code>, <code class="mono">manifest.json</code>, <code class="mono">clips/</code></td>
+            <td><code class="mono">out/receipts/m3-live/</code> — grounding 39/39, spec gate clean, 6 model calls against a budget of 8 · <code class="mono">out/receipts/m3-live/receipts/m3_clips.json</code> (3 moments × 16:9 and 9:16, SRT from Sarvam word timings) · <code class="mono">out/receipts/m3-live/receipts/m3_images.json</code> — 0 of 3 images, HTTP 402</td>
+          </tr>
+          <tr>
+            <td><b>M4 — Lead Intelligence Dashboard</b><br>HubSpot contacts + engagement events + lifecycle changes in; anomalies, interest scores, narrated movement, top accounts and buying committees; HTML dashboard with narrative refreshed on load</td>
+            <td><code class="mono">modules/m4-dashboard/dashboard.py</code> <code class="mono">seed</code> → <code class="mono">sync</code> → <code class="mono">analyze</code> → <code class="mono">render</code>: writes the engagement stream and lifecycle changes into HubSpot, reads the portal back, LLM analysis checked by deterministic math, self-contained page; <code class="mono">GET /narrative/&lt;run_id&gt;?refresh=1</code> re-runs <code class="mono">analyze</code></td>
+            <td><code class="mono">snapshot.json</code>, <code class="mono">analysis.json</code>, <code class="mono">dashboard_data.json</code>, <code class="mono">index.html</code> (self-contained, every number reconciling to the snapshot)</td>
+            <td><code class="mono">out/receipts/m4-live-portal/</code> — all four phases against test portal 247135551: seed 16 contacts / 73 events / 12 lifecycle updates, sync 32 contacts + 23 companies over 6 HubSpot calls all HTTP 200, analyze 4/4 completions, validator 4 agree / 3 disagree · earlier fixture-snapshot analyze: <code class="mono">out/receipts/m4-live-analyze-fixture/</code></td>
+          </tr>
         </tbody>
       </table>
     </div>
+    <div class="callout">
+      The same map, with the file links resolved, is the first screen of <a href="../README.md">README.md</a>.
+      Per-module contracts (request/response per phase, every file each phase writes) live in
+      <a href="module-api.md">module-api.md</a>.
+    </div>
   </section>
 
-  <section id="architecture">
-    <h2>Architecture</h2>
+  <section id="engine">
+    <h2>AI is the engine</h2>
     <p class="section-sub">
-      Two views: the data DAG (what feeds what), and the honest two-lane story — the lane that runs
-      today next to the lane it swaps into on a real account. Full write-up in
-      <a href="architecture.md">architecture.md</a>. Rendered here as hand-drawn inline SVG (what
-      actually displays — this page makes zero external requests); the same diagrams also ship as
-      portable Mermaid source below each one, openable in any Mermaid renderer.
+      Every “AI role” cell in the brief is a real model call with a receipt, not a template with slots. The reasoning
+      steps, module by module — each one named, each one logged to <code class="mono">receipts/*_llm_calls.json</code>
+      with model, purpose, prompt size, latency, HTTP status and parse result.
     </p>
 
     <div class="diagram-block">
-      <h3>(a) End-to-end data flow</h3>
-      <div class="svg-frame">
-        <svg viewBox="0 0 1200 750" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="End-to-end data flow: inputs feed M1 enrichment, M2 comms and M3 repurposing, which converge on M4 dashboard and the judge control room.">
-<defs>
-  <marker id="arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-    <path d="M 0 0 L 10 5 L 0 10 L 2.5 5 z" fill="var(--edge)"/>
-  </marker>
-</defs>
-<g class="node" id="in_m1a">
-  <rect x="20.0" y="26.0" width="170.0" height="62.0" rx="10" ry="10" fill="var(--box-fill)" stroke="var(--box-stroke)" stroke-width="1.6"/>
-  <rect x="18.9" y="26.5" width="170.0" height="62.0" rx="10" ry="10" fill="none" stroke="var(--box-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.25 105.0 57.0)"/>
-  <text x="105.0" y="52.5" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--box-text)">registrants.csv</text>
-  <text x="105.0" y="69.5" text-anchor="middle" font-size="12.5" font-weight="400" fill="var(--box-text)">150 rows · messy</text>
-</g>
-<g class="node" id="in_m1b">
-  <rect x="200.0" y="26.0" width="180.0" height="62.0" rx="10" ry="10" fill="var(--box-fill)" stroke="var(--box-stroke)" stroke-width="1.6"/>
-  <rect x="200.1" y="25.6" width="180.0" height="62.0" rx="10" ry="10" fill="none" stroke="var(--box-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.6 290.0 57.0)"/>
-  <text x="290.0" y="52.7" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--box-text)">hubspot_existing.json</text>
-  <text x="290.0" y="68.7" text-anchor="middle" font-size="11.5" font-weight="400" fill="var(--box-text)">+ config/icp.yaml</text>
-</g>
-<g class="node" id="in_m2a">
-  <rect x="410.0" y="26.0" width="170.0" height="62.0" rx="10" ry="10" fill="var(--box-fill)" stroke="var(--box-stroke)" stroke-width="1.6"/>
-  <rect x="410.0" y="24.5" width="170.0" height="62.0" rx="10" ry="10" fill="none" stroke="var(--box-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.62 495.0 57.0)"/>
-  <text x="495.0" y="52.7" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--box-text)">transcript.md</text>
-  <text x="495.0" y="68.7" text-anchor="middle" font-size="11.5" font-weight="400" fill="var(--box-text)">+ speakers/event.json</text>
-</g>
-<g class="node" id="in_m2b">
-  <rect x="600.0" y="26.0" width="180.0" height="62.0" rx="10" ry="10" fill="var(--box-fill)" stroke="var(--box-stroke)" stroke-width="1.6"/>
-  <rect x="598.6" y="24.7" width="180.0" height="62.0" rx="10" ry="10" fill="none" stroke="var(--box-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.09 690.0 57.0)"/>
-  <text x="690.0" y="52.8" text-anchor="middle" font-size="12" font-weight="700" fill="var(--box-text)">segments.json</text>
-  <text x="690.0" y="68.3" text-anchor="middle" font-size="11" font-weight="400" fill="var(--box-text)">attendee · no-show · speaker</text>
-</g>
-<g class="node" id="in_m3">
-  <rect x="800.0" y="26.0" width="380.0" height="62.0" rx="10" ry="10" fill="var(--box-fill)" stroke="var(--box-stroke)" stroke-width="1.6"/>
-  <rect x="801.0" y="24.8" width="380.0" height="62.0" rx="10" ry="10" fill="none" stroke="var(--box-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.11 990.0 57.0)"/>
-  <text x="990.0" y="52.5" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--box-text)">transcript.md</text>
-  <text x="990.0" y="69.5" text-anchor="middle" font-size="12.5" font-weight="400" fill="var(--box-text)">same source · full ~8k-word transcript</text>
-</g>
-<g class="node" id="m1">
-  <rect x="20.0" y="168.0" width="360.0" height="92.0" rx="10" ry="10" fill="var(--m1-fill)" stroke="var(--m1-stroke)" stroke-width="1.6"/>
-  <rect x="20.4" y="169.4" width="360.0" height="92.0" rx="10" ry="10" fill="none" stroke="var(--m1-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.39 200.0 214.0)"/>
-  <text x="200.0" y="200.3" text-anchor="middle" font-size="14.5" font-weight="700" fill="var(--box-text)">M1 — Lead List Enrichment</text>
-  <text x="200.0" y="218.3" text-anchor="middle" font-size="13.5" font-weight="400" fill="var(--box-text)">fuzzy dedupe → infer fields</text>
-  <text x="200.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="400" fill="var(--box-text)">→ ICP score + rationale → route</text>
-</g>
-<g class="node" id="m2">
-  <rect x="410.0" y="168.0" width="360.0" height="92.0" rx="10" ry="10" fill="var(--m2-fill)" stroke="var(--m2-stroke)" stroke-width="1.6"/>
-  <rect x="409.7" y="169.5" width="360.0" height="92.0" rx="10" ry="10" fill="none" stroke="var(--m2-stroke)" stroke-width="1" opacity="0.45" transform="rotate(0.11 590.0 214.0)"/>
-  <text x="590.0" y="200.3" text-anchor="middle" font-size="14.5" font-weight="700" fill="var(--box-text)">M2 — Post-Event Comms</text>
-  <text x="590.0" y="218.3" text-anchor="middle" font-size="13.5" font-weight="400" fill="var(--box-text)">segment attendee/no-show/speaker</text>
-  <text x="590.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="400" fill="var(--box-text)">→ draft 3 variants × 2 subjects</text>
-</g>
-<g class="node" id="m3">
-  <rect x="800.0" y="168.0" width="380.0" height="92.0" rx="10" ry="10" fill="var(--m3-fill)" stroke="var(--m3-stroke)" stroke-width="1.6"/>
-  <rect x="801.1" y="167.3" width="380.0" height="92.0" rx="10" ry="10" fill="none" stroke="var(--m3-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.63 990.0 214.0)"/>
-  <text x="990.0" y="200.3" text-anchor="middle" font-size="14.5" font-weight="700" fill="var(--box-text)">M3 — Content Repurposing</text>
-  <text x="990.0" y="218.3" text-anchor="middle" font-size="13.5" font-weight="400" fill="var(--box-text)">extract quotes/moments/data</text>
-  <text x="990.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="400" fill="var(--box-text)">→ blog/YT/infographic/social</text>
-</g>
-<g class="node gate" id="gate">
-  <polygon points="600.0,292.0 695.0,322.0 600.0,352.0 505.0,322.0" fill="var(--gate-fill)" stroke="var(--gate-stroke)" stroke-width="1.6"/>
-  <polygon points="600.0,292.0 695.0,322.0 600.0,352.0 505.0,322.0" fill="none" stroke="var(--gate-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.57 600.0 322.0)"/>
-  <text x="600.0" y="319.5" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--gate-text)">human approval</text>
-  <text x="600.0" y="332.5" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--gate-text)">gate — no blind send</text>
-</g>
-<g class="node" id="o1">
-  <rect x="20.0" y="384.0" width="360.0" height="56.0" rx="10" ry="10" fill="var(--out-fill)" stroke="var(--out-stroke)" stroke-width="1.6"/>
-  <rect x="19.4" y="385.0" width="360.0" height="56.0" rx="10" ry="10" fill="none" stroke="var(--out-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.54 200.0 412.0)"/>
-  <text x="200.0" y="407.5" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--box-text)">enriched.json</text>
-  <text x="200.0" y="424.5" text-anchor="middle" font-size="12.5" font-weight="400" fill="var(--box-text)">contact+company completeness ≥90%</text>
-</g>
-<g class="node" id="o2">
-  <rect x="410.0" y="384.0" width="360.0" height="56.0" rx="10" ry="10" fill="var(--out-fill)" stroke="var(--out-stroke)" stroke-width="1.6"/>
-  <rect x="410.3" y="384.4" width="360.0" height="56.0" rx="10" ry="10" fill="none" stroke="var(--out-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.45 590.0 412.0)"/>
-  <text x="590.0" y="407.5" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--box-text)">comms.json</text>
-  <text x="590.0" y="424.5" text-anchor="middle" font-size="12.5" font-weight="400" fill="var(--box-text)">sent + UTM-logged to HubSpot</text>
-</g>
-<g class="node" id="o3">
-  <rect x="800.0" y="384.0" width="380.0" height="56.0" rx="10" ry="10" fill="var(--out-fill)" stroke="var(--out-stroke)" stroke-width="1.6"/>
-  <rect x="800.1" y="382.6" width="380.0" height="56.0" rx="10" ry="10" fill="none" stroke="var(--out-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.18 990.0 412.0)"/>
-  <text x="990.0" y="407.5" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--box-text)">manifest.json</text>
-  <text x="990.0" y="424.5" text-anchor="middle" font-size="12.5" font-weight="400" fill="var(--box-text)">blog + YT pack + infographic + 8 posts</text>
-</g>
-<g class="node" id="m4">
-  <rect x="140.0" y="470.0" width="920.0" height="108.0" rx="10" ry="10" fill="var(--m4-fill)" stroke="var(--m4-stroke)" stroke-width="1.6"/>
-  <rect x="139.1" y="470.6" width="920.0" height="108.0" rx="10" ry="10" fill="none" stroke="var(--m4-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.62 600.0 524.0)"/>
-  <text x="600.0" y="501.9" text-anchor="middle" font-size="14" font-weight="700" fill="var(--box-text)">M4 — Lead Intelligence Dashboard</text>
-  <text x="600.0" y="519.4" text-anchor="middle" font-size="13" font-weight="400" fill="var(--box-text)">+ engagement.json (opens/clicks/pageviews/fills)</text>
-  <text x="600.0" y="536.9" text-anchor="middle" font-size="13" font-weight="400" fill="var(--box-text)">attendee→MQL funnel · top accounts + buying committee</text>
-  <text x="600.0" y="554.4" text-anchor="middle" font-size="13" font-weight="400" fill="var(--box-text)">7/14/30-day lifecycle movement · AI narrative summary</text>
-</g>
-<g class="node" id="fin">
-  <rect x="390.0" y="616.0" width="420.0" height="64.0" rx="10" ry="10" fill="var(--fin-fill)" stroke="var(--fin-stroke)" stroke-width="1.6"/>
-  <rect x="389.4" y="616.3" width="420.0" height="64.0" rx="10" ry="10" fill="none" stroke="var(--fin-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.1 600.0 648.0)"/>
-  <text x="600.0" y="643.3" text-anchor="middle" font-size="14.5" font-weight="700" fill="var(--box-text)">Judge Control Room</text>
-  <text x="600.0" y="661.3" text-anchor="middle" font-size="13.5" font-weight="400" fill="var(--box-text)">docs/index.html — this page</text>
-</g>
-<path d="M 105.0 88.0 Q 157.7 121.9 200.0 168.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead)"/>
-<path d="M 290.0 88.0 Q 239.7 122.0 200.0 168.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead)"/>
-<path d="M 495.0 88.0 Q 547.7 121.9 590.0 168.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead)"/>
-<path d="M 690.0 88.0 Q 635.0 121.8 590.0 168.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead)"/>
-<path d="M 990.0 88.0 Q 990.0 128.0 990.0 168.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead)"/>
-<path d="M 380.0 214.0 Q 395.0 130.0 410.0 214.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead)"/>
-<text x="395.0" y="122.0" text-anchor="middle" font-size="10.5" font-style="italic" fill="var(--edge-label)">enriched contacts (dedup'd)</text>
-<path d="M 200.0 260.0 Q 200.0 322.0 200.0 384.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead)"/>
-<path d="M 590.0 260.0 Q 595.0 276.0 600.0 292.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead)"/>
-<path d="M 600.0 352.0 Q 595.0 368.0 590.0 384.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead)"/>
-<path d="M 990.0 260.0 Q 990.0 322.0 990.0 384.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead)"/>
-<path d="M 200.0 440.0 Q 398.2 478.9 600.0 470.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead)"/>
-<path d="M 590.0 440.0 Q 595.0 455.0 600.0 470.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead)"/>
-<path d="M 990.0 440.0 Q 796.8 478.9 600.0 470.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead)"/>
-</svg>
-      </div>
-      <details class="mermaid-toggle">
-        <summary>View portable Mermaid source</summary>
-        <pre>flowchart TD
-    subgraph IN1G["for M1"]
-        IN1A["registrants.csv&lt;br/&gt;150 rows · messy"]
-        IN1B["hubspot_existing.json&lt;br/&gt;+ config/icp.yaml"]
-    end
-    subgraph IN2G["for M2"]
-        IN2A["transcript.md&lt;br/&gt;+ speakers/event.json"]
-        IN2B["segments.json&lt;br/&gt;attendee · no-show · speaker"]
-    end
-    IN3["transcript.md&lt;br/&gt;same source, full ~8k-word transcript&lt;br/&gt;(for M3)"]
-    M1["M1 — Lead List Enrichment&lt;br/&gt;fuzzy dedupe → infer fields&lt;br/&gt;→ ICP score + rationale → route"]
-    M2["M2 — Post-Event Comms&lt;br/&gt;segment attendee/no-show/speaker&lt;br/&gt;→ draft 3 variants × 2 subjects"]
-    M3["M3 — Content Repurposing&lt;br/&gt;extract quotes/moments/data&lt;br/&gt;→ blog/YT/infographic/social"]
-    GATE{{"human approval gate&lt;br/&gt;no blind send"}}
-    O1["enriched.json&lt;br/&gt;contact+company completeness ≥90%"]
-    O2["comms.json&lt;br/&gt;sent + UTM-logged to HubSpot"]
-    O3["manifest.json&lt;br/&gt;blog + YT pack + infographic + 8 posts"]
-    M4["M4 — Lead Intelligence Dashboard&lt;br/&gt;attendee→MQL funnel · top accounts + buying committee&lt;br/&gt;7/14/30-day lifecycle movement · AI narrative summary"]
-    FIN["Judge Control Room&lt;br/&gt;docs/index.html"]
-    IN1A --> M1
-    IN1B --> M1
-    IN2A --> M2
-    IN2B --> M2
-    IN3 --> M3
-    M1 -- "enriched contacts (dedup'd)" --> M2
-    M1 --> O1
-    M2 --> GATE --> O2
-    M3 --> O3
-    O1 --> M4
-    O2 --> M4
-    O3 --> M4
-    ENG["+ engagement.json&lt;br/&gt;opens · clicks · pageviews · fills"] --> M4
-    M4 --> FIN</pre>
-      </details>
+      <h3>M1 — four reasoning jobs, each checked by the rule engine</h3>
+      <ul>
+        <li><b>Gray-zone dedupe adjudication.</b> Pairs scoring in <code class="mono">[0.65, 0.80)</code> are too ambiguous for a fixed threshold, so the model sees both records and rules same-person or not — capped at 20 pairs per run, every decision written to <code class="mono">dedupe_report.json.gray_zone_adjudication</code>.</li>
+        <li><b>Row inference.</b> Title, function and seniority for the contacts the rule cascade could not resolve (<code class="mono">modules/m1-enrichment/prompts/inference.md</code>).</li>
+        <li><b>Firmographic inference.</b> Industry from <code class="mono">config/icp.yaml</code>'s own vocabulary, plus an employee-count estimate and a confidence, batched once per distinct company. Clay values overwrite the model's when they arrive; each field carries <code class="mono">industry_source</code> / <code class="mono">numemployees_source</code> (<code class="mono">clay|llm|rules|synthetic</code>).</li>
+        <li><b>ICP tier + rationale.</b> The model scores; <code class="mono">icp_tier()</code> recomputes the same tier deterministically. A model tier more than one level away still ships but sets <code class="mono">needs_review_reason=icp_disagreement</code> for a human to adjudicate.</li>
+      </ul>
     </div>
 
     <div class="diagram-block">
-      <h3>(b) Demo lane vs. production lane</h3>
-      <div class="svg-frame">
-        <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Demo lane runs locally offline with stdlib Python scripts; production lane swaps in n8n, Clay, HubSpot API and a Vercel serverless narrative function on the same DAG.">
-<defs>
-  <marker id="arrowhead2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-    <path d="M 0 0 L 10 5 L 0 10 L 2.5 5 z" fill="var(--edge)"/>
-  </marker>
-</defs>
-<g class="node" id="d0">
-  <rect x="50.0" y="90.0" width="340.0" height="62.0" rx="10" ry="10" fill="var(--lane-d-fill)" stroke="var(--lane-d-stroke)" stroke-width="1.6"/>
-  <rect x="51.2" y="90.7" width="340.0" height="62.0" rx="10" ry="10" fill="none" stroke="var(--lane-d-stroke)" stroke-width="1" opacity="0.45" transform="rotate(0.04 220.0 121.0)"/>
-  <text x="220.0" y="116.3" text-anchor="middle" font-size="14.5" font-weight="700" fill="var(--box-text)">data/incoming/ + data/fixtures/</text>
-  <text x="220.0" y="134.3" text-anchor="middle" font-size="13.5" font-weight="400" fill="var(--box-text)">flat files, checked into the repo</text>
-</g>
-<g class="node" id="d1">
-  <rect x="50.0" y="190.0" width="340.0" height="62.0" rx="10" ry="10" fill="var(--lane-d-fill)" stroke="var(--lane-d-stroke)" stroke-width="1.6"/>
-  <rect x="51.5" y="188.8" width="340.0" height="62.0" rx="10" ry="10" fill="none" stroke="var(--lane-d-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.3 220.0 221.0)"/>
-  <text x="220.0" y="216.3" text-anchor="middle" font-size="14.5" font-weight="700" fill="var(--box-text)">orchestrator/run_pipeline.py</text>
-  <text x="220.0" y="234.3" text-anchor="middle" font-size="13.5" font-weight="400" fill="var(--box-text)">subprocess chain → pass/fail receipt</text>
-</g>
-<g class="node" id="d2">
-  <rect x="50.0" y="290.0" width="340.0" height="62.0" rx="10" ry="10" fill="var(--lane-d-fill)" stroke="var(--lane-d-stroke)" stroke-width="1.6"/>
-  <rect x="50.8" y="288.9" width="340.0" height="62.0" rx="10" ry="10" fill="none" stroke="var(--lane-d-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.11 220.0 321.0)"/>
-  <text x="220.0" y="316.3" text-anchor="middle" font-size="14.5" font-weight="700" fill="var(--box-text)">enrich.py · comms.py · repurpose.py ·</text>
-  <text x="220.0" y="334.3" text-anchor="middle" font-size="13.5" font-weight="400" fill="var(--box-text)">build_dashboard.py — stdlib only</text>
-</g>
-<g class="node" id="d3">
-  <rect x="410.0" y="372.0" width="170.0" height="62.0" rx="10" ry="10" fill="var(--lane-d-alt)" stroke="var(--lane-d-stroke)" stroke-width="1.6"/>
-  <rect x="408.5" y="372.5" width="170.0" height="62.0" rx="10" ry="10" fill="none" stroke="var(--lane-d-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.02 495.0 403.0)"/>
-  <text x="495.0" y="390.7" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--box-text)">claude -p via</text>
-  <text x="495.0" y="406.7" text-anchor="middle" font-size="10.5" font-weight="400" fill="var(--box-text)">each module's own call_llm()</text>
-  <text x="495.0" y="422.7" text-anchor="middle" font-size="11.5" font-weight="400" fill="var(--box-text)">(only with --live)</text>
-</g>
-<g class="node" id="d4">
-  <rect x="50.0" y="470.0" width="340.0" height="60.0" rx="10" ry="10" fill="var(--lane-d-fill)" stroke="var(--lane-d-stroke)" stroke-width="1.6"/>
-  <rect x="50.2" y="471.2" width="340.0" height="60.0" rx="10" ry="10" fill="none" stroke="var(--lane-d-stroke)" stroke-width="1" opacity="0.45" transform="rotate(0.37 220.0 500.0)"/>
-  <text x="220.0" y="495.3" text-anchor="middle" font-size="14.5" font-weight="700" fill="var(--box-text)">docs/index.html</text>
-  <text x="220.0" y="513.3" text-anchor="middle" font-size="13.5" font-weight="400" fill="var(--box-text)">opened directly in a browser</text>
-</g>
-<g class="node" id="d5">
-  <rect x="50.0" y="560.0" width="340.0" height="60.0" rx="10" ry="10" fill="var(--lane-d-fill)" stroke="var(--lane-d-stroke)" stroke-width="1.6"/>
-  <text x="220.0" y="585.3" text-anchor="middle" font-size="13" font-weight="700" fill="var(--box-text)">orchestrator/n8n/local-demo/*.json</text>
-  <text x="220.0" y="602.3" text-anchor="middle" font-size="11.5" font-weight="400" fill="var(--box-text)">n8n import (Docker) — mirrors this DAG, no account</text>
-</g>
-<path d="M 220.0 530.0 Q 220.0 545.0 220.0 560.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead2)"/>
-<g class="node" id="p0">
-  <rect x="650.0" y="90.0" width="500.0" height="62.0" rx="10" ry="10" fill="var(--lane-p-fill)" stroke="var(--lane-p-stroke)" stroke-width="1.6"/>
-  <rect x="650.6" y="90.3" width="500.0" height="62.0" rx="10" ry="10" fill="none" stroke="var(--lane-p-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.26 900.0 121.0)"/>
-  <text x="900.0" y="116.3" text-anchor="middle" font-size="14.5" font-weight="700" fill="var(--box-text)">Webinar platform webhook</text>
-  <text x="900.0" y="134.3" text-anchor="middle" font-size="13.5" font-weight="400" fill="var(--box-text)">Zoom · GoTo · ON24</text>
-</g>
-<g class="node" id="p1">
-  <rect x="650.0" y="190.0" width="500.0" height="62.0" rx="10" ry="10" fill="var(--lane-p-fill)" stroke="var(--lane-p-stroke)" stroke-width="1.6"/>
-  <rect x="649.9" y="191.1" width="500.0" height="62.0" rx="10" ry="10" fill="none" stroke="var(--lane-p-stroke)" stroke-width="1" opacity="0.45" transform="rotate(0.11 900.0 221.0)"/>
-  <text x="900.0" y="216.3" text-anchor="middle" font-size="14.5" font-weight="700" fill="var(--box-text)">n8n workflow — cloud lane</text>
-  <text x="900.0" y="234.3" text-anchor="middle" font-size="13.5" font-weight="400" fill="var(--box-text)">orchestrator/n8n/cloud/*.json — real HTTP nodes</text>
-</g>
-<g class="node" id="p2a">
-  <rect x="650.0" y="290.0" width="240.0" height="60.0" rx="10" ry="10" fill="var(--lane-p-fill)" stroke="var(--lane-p-stroke)" stroke-width="1.6"/>
-  <rect x="649.9" y="290.5" width="240.0" height="60.0" rx="10" ry="10" fill="none" stroke="var(--lane-p-stroke)" stroke-width="1" opacity="0.45" transform="rotate(0.62 770.0 320.0)"/>
-  <text x="770.0" y="315.5" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--box-text)">Clay table</text>
-  <text x="770.0" y="332.5" text-anchor="middle" font-size="12.5" font-weight="400" fill="var(--box-text)">waterfall enrichment</text>
-</g>
-<g class="node" id="p2b">
-  <rect x="910.0" y="290.0" width="240.0" height="60.0" rx="10" ry="10" fill="var(--lane-p-fill)" stroke="var(--lane-p-stroke)" stroke-width="1.6"/>
-  <rect x="910.6" y="290.5" width="240.0" height="60.0" rx="10" ry="10" fill="none" stroke="var(--lane-p-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.62 1030.0 320.0)"/>
-  <text x="1030.0" y="315.5" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--box-text)">HubSpot API</text>
-  <text x="1030.0" y="332.5" text-anchor="middle" font-size="12.5" font-weight="400" fill="var(--box-text)">contacts, companies, dedupe</text>
-</g>
-<g class="node" id="p3">
-  <rect x="650.0" y="380.0" width="500.0" height="56.0" rx="10" ry="10" fill="var(--lane-p-alt)" stroke="var(--lane-p-stroke)" stroke-width="1.6"/>
-  <rect x="651.0" y="379.3" width="500.0" height="56.0" rx="10" ry="10" fill="none" stroke="var(--lane-p-stroke)" stroke-width="1" opacity="0.45" transform="rotate(0.69 900.0 408.0)"/>
-  <text x="900.0" y="403.5" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--box-text)">Claude API</text>
-  <text x="900.0" y="420.5" text-anchor="middle" font-size="12.5" font-weight="400" fill="var(--box-text)">classification + generation at every node</text>
-</g>
-<g class="node gate" id="pg">
-  <polygon points="900.0,460.0 1000.0,490.0 900.0,520.0 800.0,490.0" fill="var(--gate-fill)" stroke="var(--gate-stroke)" stroke-width="1.6"/>
-  <polygon points="900.0,460.0 1000.0,490.0 900.0,520.0 800.0,490.0" fill="none" stroke="var(--gate-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.18 900.0 490.0)"/>
-  <text x="900.0" y="487.5" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--gate-text)">human approval</text>
-  <text x="900.0" y="500.5" text-anchor="middle" font-size="11.5" font-weight="600" fill="var(--gate-text)">before any send</text>
-</g>
-<g class="node" id="p5">
-  <rect x="650.0" y="550.0" width="500.0" height="56.0" rx="10" ry="10" fill="var(--lane-p-fill)" stroke="var(--lane-p-stroke)" stroke-width="1.6"/>
-  <rect x="648.5" y="549.9" width="500.0" height="56.0" rx="10" ry="10" fill="none" stroke="var(--lane-p-stroke)" stroke-width="1" opacity="0.45" transform="rotate(0.24 900.0 578.0)"/>
-  <text x="900.0" y="573.5" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--box-text)">HubSpot send + tracking</text>
-  <text x="900.0" y="590.5" text-anchor="middle" font-size="12.5" font-weight="400" fill="var(--box-text)">UTM, opens, clicks, lifecycle stage</text>
-</g>
-<g class="node" id="p6">
-  <rect x="650.0" y="636.0" width="500.0" height="54.0" rx="10" ry="10" fill="var(--lane-p-fill)" stroke="var(--lane-p-stroke)" stroke-width="1.6"/>
-  <rect x="648.8" y="634.6" width="500.0" height="54.0" rx="10" ry="10" fill="none" stroke="var(--lane-p-stroke)" stroke-width="1" opacity="0.45" transform="rotate(-0.46 900.0 663.0)"/>
-  <text x="900.0" y="658.5" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--box-text)">Vercel serverless fn</text>
-  <text x="900.0" y="675.5" text-anchor="middle" font-size="12.5" font-weight="400" fill="var(--box-text)">/api/narrative.js reads HubSpot live</text>
-</g>
-<g class="node" id="p7">
-  <rect x="650.0" y="720.0" width="500.0" height="54.0" rx="10" ry="10" fill="var(--lane-p-fill)" stroke="var(--lane-p-stroke)" stroke-width="1.6"/>
-  <rect x="648.8" y="719.2" width="500.0" height="54.0" rx="10" ry="10" fill="none" stroke="var(--lane-p-stroke)" stroke-width="1" opacity="0.45" transform="rotate(0.38 900.0 747.0)"/>
-  <text x="900.0" y="742.5" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--box-text)">Hosted dashboard URL</text>
-  <text x="900.0" y="759.5" text-anchor="middle" font-size="12.5" font-weight="400" fill="var(--box-text)">same M4 UI, live data</text>
-</g>
-<path d="M 220.0 152.0 Q 220.0 171.0 220.0 190.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead2)"/>
-<path d="M 220.0 252.0 Q 220.0 271.0 220.0 290.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead2)"/>
-<path d="M 220.0 352.0 Q 220.0 411.0 220.0 470.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead2)"/>
-<path d="M 390.0 321.0 Q 400.0 362.0 410.0 403.0" fill="none" stroke="var(--edge)" stroke-width="1.7" stroke-dasharray="6 5" marker-end="url(#arrowhead2)"/>
-<text x="400.0" y="356.0" text-anchor="middle" font-size="10.5" font-style="italic" fill="var(--edge-label)">--live</text>
-<path d="M 900.0 152.0 Q 900.0 171.0 900.0 190.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead2)"/>
-<path d="M 900.0 252.0 Q 832.2 261.4 770.0 290.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead2)"/>
-<path d="M 900.0 252.0 Q 967.8 261.4 1030.0 290.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead2)"/>
-<path d="M 770.0 350.0 Q 832.8 374.7 900.0 380.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead2)"/>
-<path d="M 1030.0 350.0 Q 967.2 374.7 900.0 380.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead2)"/>
-<path d="M 900.0 436.0 Q 900.0 448.0 900.0 460.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead2)"/>
-<path d="M 900.0 520.0 Q 900.0 535.0 900.0 550.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead2)"/>
-<path d="M 900.0 606.0 Q 900.0 621.0 900.0 636.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead2)"/>
-<path d="M 900.0 690.0 Q 900.0 705.0 900.0 720.0" fill="none" stroke="var(--edge)" stroke-width="1.7" marker-end="url(#arrowhead2)"/>
-<path d="M 390.0 500.0 Q 476.1 319.6 650.0 221.0" fill="none" stroke="var(--edge-soft)" stroke-width="1.7" stroke-dasharray="6 5" marker-end="url(#arrowhead2)"/>
-<text x="476.1" y="309.6" text-anchor="middle" font-size="10.5" font-style="italic" fill="var(--edge-label)">same DAG, same prompts/</text>
-</svg>
+      <h3>M2 — one extraction, three segment writes, one grounding gate</h3>
+      <ul>
+        <li><b>Extraction</b> is the only call that sees the transcript: takeaways with <code class="mono">[MM:SS]</code> anchors, verbatim quotes with speaker and timestamp, the moments worth a no-show's click, and a personalisation matrix — one angle per CRM function, one follow-on sentence per industry bucket.</li>
+        <li><b>Three segment calls</b> (attendee / no-show / speaker) each see only that extraction and return two subjects, a preheader, a body template and takeaways. The speaker mail carries a performance snapshot computed from M1 plus the attendance segments.</li>
+        <li><b>Grounding verifier.</b> Every quoted span and every timestamp in the extraction, the variants and the rendered bodies is re-matched against the transcript. A miss fails the run <i>before</i> a dispatch plan exists — 81 of 81 checks passed on the committed run.</li>
+      </ul>
+    </div>
+
+    <div class="diagram-block">
+      <h3>M3 — extraction → per-asset generation → hard grounding gate</h3>
+      <ul>
+        <li><b>Extraction pass</b> returns clip-worthy moments, insights, verbatim quotes and data points; <code class="mono">normalise_extraction()</code> snaps every timestamp onto a real transcript turn, replaces each speaker with whoever the transcript shows at that timestamp, and drops anything that does not verify — so asset prompts never see ungrounded material.</li>
+        <li><b>Four asset generations</b> (blog, YouTube pack, infographic outline, social set) run off that verified extraction. Each is checked by <code class="mono">check_asset_spec()</code> before it is written; the blog's 800–1200 word gate regenerates once and fails the run rather than shipping out of spec.</li>
+        <li><b>Grounding verifier</b> re-checks every timestamp, quote ≥25 characters and speaker attribution after generation; a failing asset gets one corrective regeneration, and the run fails if it still misses. 39 of 39 claims verified on the committed run.</li>
+        <li><b>Clips and captions</b> are deterministic: the model picks the moments, ffmpeg cuts them, and the captions come from Sarvam's own word timings.</li>
+      </ul>
+    </div>
+
+    <div class="diagram-block">
+      <h3>M4 — four analyses over the portal snapshot, graded by the maths</h3>
+      <ul>
+        <li><b>Anomalies</b> — the model judges the outlier fence's shortlist (accept, reject with a reason, or add one it missed), each with the evidence rows behind it.</li>
+        <li><b>Lead-interest scores</b> — 0–100 per contact with a short rationale and its evidence, plus the model's own top five for the validator to compare.</li>
+        <li><b>Stage-movement narrative</b> — what moved across 7 / 14 / 30 days, what did not, and where the movement is seeded rather than organic.</li>
+        <li><b>Buying committees</b> — which multi-contact accounts are real committees, and why.</li>
+      </ul>
+    </div>
+
+    <div class="callout">
+      <b>Deterministic maths validates the model; it never silently replaces it.</b> The Tukey
+      (Q3 + 1.5×IQR) outlier fence, the weighted engagement score, the funnel and the 7/14/30-day movement windows
+      compute the same quantities independently. Every mismatch is written to
+      <code class="mono">analysis.json.llm.validator.disagreements</code> and printed on the dashboard — the committed
+      portal run records 4 agreements and 3 disagreements, and nothing the model returned overwrote a number. Where a
+      model call fails, the module says so: M1 degrades that batch to the rule table with a warning and a lane reason,
+      M2 and M3 fail the run rather than ship stale copy. No module presents a rules output as a model output.
+    </div>
+  </section>
+
+  <section id="real">
+    <h2>Real vs simulated</h2>
+    <p class="section-sub">
+      Stated once, plainly, so nothing on this page has to be taken on trust.
+    </p>
+    <div class="modules-grid">
+      <div class="card">
+        <div class="card-head"><span class="card-tag tag-m3">REAL</span><h3>What is real</h3></div>
+        <p class="what">
+          The event, its public page, its recording and both speakers. The transcript — a real Sarvam batch STT run
+          over the real chapter audio. Every generated artifact (blog, chapters, infographic, social posts, email
+          copy, dedupe adjudications, ICP rationales, dashboard analysis) is the output of a real model call with a
+          per-call receipt. The HubSpot dedupe searches, the contact/company/association writes, the property and
+          lifecycle updates and the portal read-back are real API calls against a HubSpot developer test portal.
+        </p>
       </div>
-      <details class="mermaid-toggle">
-        <summary>View portable Mermaid source</summary>
-        <pre>flowchart LR
-    subgraph DEMO["DEMO LANE — runs today, fully offline"]
-        direction TB
-        d0["data/incoming/ + data/fixtures/&lt;br/&gt;flat files, checked into the repo"]
-        d1["orchestrator/run_pipeline.py&lt;br/&gt;subprocess chain → pass/fail receipt"]
-        d2["enrich.py · comms.py · repurpose.py ·&lt;br/&gt;build_dashboard.py — stdlib only"]
-        d3["claude -p via each module's own&lt;br/&gt;call_llm()/call_claude_live() helper&lt;br/&gt;(only with --live)"]
-        d4["docs/index.html&lt;br/&gt;opened directly in a browser"]
-        d5["orchestrator/n8n/local-demo/*.json&lt;br/&gt;n8n import (Docker) — mirrors this DAG, no account"]
-        d0 --> d1 --> d2
-        d2 -. "--live" .-> d3
-        d2 --> d4
-        d4 --> d5
-    end
-    subgraph PROD["PRODUCTION LANE — swap-in path"]
-        direction TB
-        p0["Webinar platform webhook&lt;br/&gt;Zoom · GoTo · ON24"]
-        p1["n8n workflow — cloud lane&lt;br/&gt;orchestrator/n8n/cloud/*.json — real HTTP nodes"]
-        p2a["Clay table&lt;br/&gt;waterfall enrichment"]
-        p2b["HubSpot API&lt;br/&gt;contacts, companies, dedupe"]
-        p3["Claude API&lt;br/&gt;classification + generation at every node"]
-        pg{{"human approval node&lt;br/&gt;before any send"}}
-        p5["HubSpot send + tracking&lt;br/&gt;UTM, opens, clicks, lifecycle stage"]
-        p6["Vercel serverless fn&lt;br/&gt;/api/narrative.js reads HubSpot live"]
-        p7["Hosted dashboard URL&lt;br/&gt;same M4 UI, live data"]
-        p0 --> p1
-        p1 --> p2a --> p3
-        p1 --> p2b --> p3
-        p3 --> pg --> p5 --> p6 --> p7
-    end
-    d4 -. "same DAG, same prompts/ — only the transport changes" .-> p1</pre>
-      </details>
+      <div class="card">
+        <div class="card-head"><span class="card-tag tag-m4">GENERATED</span><h3>What is generated or simulated</h3></div>
+        <p class="what">
+          <b>The registrant list.</b> 150 rows from <code class="mono">data/incoming/tools/gen_registrants.py</code>:
+          employer companies, domains, roles and regions are real so enrichment returns real firmographics, but every
+          registrant's name and email address is invented. No shareable attendee list exists for this webinar, so none
+          was used.<br><br>
+          <b>M4's engagement stream.</b> Opens, clicks, page views, form fills and lifecycle changes did not happen on
+          their own — <code class="mono">dashboard.py seed</code> writes them into a HubSpot developer test portal
+          through the public API and everything from it is labelled <code class="mono">source: "seeded"</code> in the
+          seed receipt, on every snapshot engagement block, in each movement window's
+          <code class="mono">source_mix</code> and on the dashboard badge.<br><br>
+          <b>Images: 0 of 3 shipped.</b> Every attempt returned HTTP 402 on an unfunded key. The receipt records the
+          model, the status and the error; no placeholder image was written in their place.<br><br>
+          <b>The model lane runs on free-tier OpenRouter models today</b>, which is why the receipts name those models
+          and why some calls show provider 502/429 retries before a completion.
+        </p>
+      </div>
+    </div>
+    <div class="callout">
+      Two smaller disclosures, both in <code class="mono">data/incoming/event.json._provenance</code>: the event page
+      publishes no air date, so <code class="mono">event.json.date</code> is an assumption every downstream artifact
+      inherits; and the speakers' own addresses are not public, so speaker mail is addressed to sender-controlled
+      aliases. Every lifecycle transition in that test portal was written by this pipeline — 32 by the M1 push and 7
+      by the seed phase, all on one day — and the dashboard card and the narrative's first sentence say so rather
+      than letting HubSpot's property history read as weeks of organic movement.
+    </div>
+  </section>
+
+  <section id="status">
+    <h2>Verified / not yet</h2>
+    <p class="section-sub">
+      Left column: things a reviewer can open a file and check. Right column: things that are not done. Nothing has
+      been deployed, imported or dispatched.
+    </p>
+    <div class="modules-grid">
+      <div class="card">
+        <div class="card-head"><span class="card-tag tag-m1">VERIFIED</span><h3>Backed by a receipt in this repo</h3></div>
+        <p class="what">
+          <b>M1</b> — 30-row live slice: 96.2% contact / 93.0% company verified completeness, PASS against the brief's
+          90% bar; live HubSpot dedupe search logged; push of 32 contacts / 23 companies / 27 associations into the
+          test portal.<br><br>
+          <b>M2</b> — grounding 81/81, 0 failed; 4 live model calls, all HTTP 200, all parsed.<br><br>
+          <b>M3</b> — blog 1,106 words inside the 800–1200 gate; 18 YouTube chapters; 8 social posts across both
+          platforms; grounding 39/39; 3 clips cut in 16:9 and 9:16 with an SRT per clip, burned into the 9:16 cut; images 0 of 3
+          with the 402 recorded.<br><br>
+          <b>M4</b> — all four phases live against the HubSpot test portal (seed 16 contacts / 73 engagement events /
+          12 lifecycle updates through the contact-property fallback; sync 32 contacts + 23 companies over 6 HubSpot
+          calls all HTTP 200; analyze 4/4 completions, validator 4 agreements / 3 disagreements recorded), plus the
+          earlier fixture-snapshot analyze receipt. Tests: 37 zero-network tests in
+          <code class="mono">modules/m4-dashboard/test_dashboard.py</code> and 76 assertions over the module API's M4
+          surface in <code class="mono">api/test_server_m4.py</code>.
+        </p>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-tag tag-m2">NOT YET</span><h3>Open, with the blocker named</h3></div>
+        <p class="what">
+          <span class="todo">n8n:</span> the four workflows are authored and audited green (0 failures; every warning
+          and every unverified node parameter is listed in
+          <code class="mono">orchestrator/n8n/railway/README.md</code>), but <b>none has been imported into a running
+          n8n instance</b>.<br><br>
+          <span class="todo">Module API:</span> <b>no Railway URL is live.</b>
+          <a href="deploy-module-api.md">deploy-module-api.md</a> is the procedure, not a record of a
+          deployment.<br><br>
+          <span class="todo">HubSpot:</span> <code class="mono">marketing-email</code>,
+          <code class="mono">transactional-email</code> and the custom-events API all return <b>403</b> on this
+          portal. M2's send path therefore falls back to Gmail with HubSpot engagement logging; M4's
+          <code class="mono">seed</code> falls back to <code class="mono">postevent_*</code> counter properties
+          instead of custom behavioural events.<br><br>
+          <span class="todo">Dispatch:</span> <b>no email has been dispatched.</b>
+          <code class="mono">approval_gate.json</code> reads <code class="mono">pending_human_approval</code> on every
+          run so far.<br><br>
+          <span class="todo">Drive:</span> <b>no upload has run</b> — no Google Drive OAuth credential is connected
+          and <code class="mono">manifest.json.shared_drive</code> is empty.<br><br>
+          <span class="todo">OpenRouter:</span> <b>credits are at zero</b>, so the live lane runs free models and
+          image generation stays at 402.
+        </p>
+      </div>
     </div>
   </section>
 
   <section id="modules">
     <h2>The four modules</h2>
     <p class="section-sub">
-      Each is independent and separately demoable. Judge-facing path:
-      <code class="mono">./orchestrator/demo.sh --live</code> — chains M1→M2→M3→M4 with real LLM calls into
-      <code class="mono">out/&lt;event-slug&gt;/</code> and prints a stage/seconds/key-output/pass-fail
-      receipt. <code class="mono">./orchestrator/demo.sh</code> without the flag (or the module scripts below,
-      run individually) is the instant preview — same DAG, cached/deterministic outputs, zero network
-      calls, zero wait. <code class="mono">demo.sh</code>'s auth check only probes <code class="mono">claude
-      -p</code> — if this machine only has an OpenRouter key (the path every live receipt on this page
-      actually ran through), skip straight to
-      <code class="mono">LLM_BACKEND=openrouter OPENROUTER_MODEL=&lt;model&gt; python3 orchestrator/run_pipeline.py --live</code>
-      instead of trusting <code class="mono">demo.sh</code>'s banner.
+      Each runs on its own, live by default. Commands below are exactly what the module READMEs document; env var
+      <i>names</i> only — no value is printed by any module.
     </p>
     <div class="modules-grid">
 
       <div class="card">
         <div class="card-head"><span class="card-tag tag-m1">M1</span><h3>Lead List Enrichment</h3></div>
         <p class="what">
-          Fuzzy-dedupes the 150-row messy Zoom export against existing HubSpot contacts (difflib, no
-          fuzzy-matching library needed), infers missing title/seniority/company size/industry, scores
-          ICP tier with a written rationale per row, assigns region, and routes ownership — same-day
-          SDR-handoff-ready. Offline default is a deterministic rules lane (lookup tables, no LLM
-          tokens spent); <code class="mono">--live</code> swaps in real LLM field classification.
+          Dedupes the 150-row messy registrant export against the HubSpot portal over the Search API, hands the
+          ambiguous pairs to the model, infers the missing title / function / seniority / industry / size, scores ICP
+          tier with a written rationale, assigns region and owner pod, sets lifecycle stage by a pinned rubric, and
+          upserts contacts, companies and associations.
         </p>
-        <div class="label">Run (judges — live)</div>
-        <div class="runcmd">./orchestrator/demo.sh --live</div>
-        <div class="label">Instant preview (deterministic rules, no LLM)</div>
-        <div class="runcmd">python3 modules/m1-enrichment/enrich.py --out out/m1</div>
+        <div class="label">Run (live lane, default)</div>
+        <div class="runcmd">python3 modules/m1-enrichment/enrich.py --out out/run1</div>
         <div class="label">Key output</div>
-        <div class="keyout">hubspot_ready.csv — contact + company completeness ≥90%, ICP tier + rationale, region, owner, lifecycle stage per row</div>
-        <div class="card-links"><a href="https://postevent-engine.vercel.app/demo/sample-run/m1/">Outputs: offline run →</a> <a href="https://postevent-engine.vercel.app/demo/live-proof/m1/">Outputs: live LLM run →</a> <a href="../modules/m1-enrichment/README.md">Module README →</a></div>
+        <div class="keyout">hubspot_ready.csv + quality_report.json — verified completeness per the brief's own field list, ICP tier and rationale, region, owner, lifecycle stage, and a per-field source column</div>
+        <div class="label">Receipt</div>
+        <div class="keyout mono">out/receipts/m1-live-slice-30/ · out/receipts/m1-push-slice30-2026-09-16.json</div>
+        <div class="card-links"><a href="../modules/m1-enrichment/README.md">Module README →</a> <a href="module-api.md">API contract →</a></div>
       </div>
 
       <div class="card">
         <div class="card-head"><span class="card-tag tag-m2">M2</span><h3>Post-Event Communications</h3></div>
         <p class="what">
-          Drafts three segment-specific email variants (attendee thank-you, no-show catch-up, speaker
-          thank-you), two subject-line options each, personalized off the enriched contact list and the
-          real transcript — then holds at a human-approval gate before anything is logged to HubSpot
-          with UTM tracking. No blind sends. The copy is genuinely LLM-generated either way; offline
-          replays a fingerprint-guarded cache instead of re-calling the model.
+          Turns the transcript and M1's enriched contacts into three segment variants (attendee thank-you, no-show
+          catch-up, speaker thank-you), two subject lines each, one fully rendered message per recipient personalised
+          by CRM function and industry bucket, UTM on every link — then stops at a human approval gate. The module
+          never sends; n8n dispatches after the gate flips and the <code class="mono">log</code> phase writes one
+          HubSpot email engagement per message that actually has a provider message id.
         </p>
-        <div class="label">Run (judges — live)</div>
-        <div class="runcmd">./orchestrator/demo.sh --live</div>
-        <div class="label">Instant preview (cached AI replay)</div>
-        <div class="runcmd">python3 modules/m2-comms/comms.py --out out/m2 \
-    --enriched out/m1/enriched.json</div>
+        <div class="label">Run (live lane, default)</div>
+        <div class="runcmd">python3 modules/m2-comms/comms.py --out out/run1/m2 \
+    --enriched out/run1/hubspot_ready.csv</div>
         <div class="label">Key output</div>
-        <div class="keyout">comms.json — 3 variants × 2 subject lines, approval-gated, UTM-tagged, HubSpot-send-logged</div>
-        <div class="card-links"><a href="https://postevent-engine.vercel.app/demo/sample-run/m2/">Outputs: offline run →</a> <a href="https://postevent-engine.vercel.app/demo/live-proof/m2/">Outputs: live LLM run →</a> <a href="../modules/m2-comms/README.md">Module README →</a></div>
+        <div class="keyout">dispatch_plan.json — 3 variants × 2 subjects, per-recipient bodies, UTM taxonomy, approval gate at pending_human_approval</div>
+        <div class="label">Receipt</div>
+        <div class="keyout mono">out/receipts/m2-live/grounding.json · out/receipts/m2-live/m2_llm_calls.json</div>
+        <div class="card-links"><a href="../modules/m2-comms/README.md">Module README →</a> <a href="module-api.md">API contract →</a></div>
       </div>
 
       <div class="card">
         <div class="card-head"><span class="card-tag tag-m3">M3</span><h3>Content Repurposing</h3></div>
         <p class="what">
-          Extracts the quotable moments, data points, and structure straight from the ~8k-word transcript
-          and generates a full multi-format package: one 800–1200-word blog draft, YouTube chapter
-          markers + description + thumbnail brief, an infographic outline, and 5–10 social posts across
-          LinkedIn and X, each with a distinct hook. LLM-generated either way; offline replays a
-          fingerprint-guarded cache instead of re-calling the model.
+          Sarvam batch STT produces the transcript; one extraction pass mines it for moments, insights, quotes and
+          data points; each asset is generated off that verified extraction and re-checked against the transcript
+          afterwards. ffmpeg cuts the top three moments into both ratios with captions built from Sarvam's word
+          timings.
         </p>
-        <div class="label">Run (judges — live)</div>
-        <div class="runcmd">./orchestrator/demo.sh --live</div>
-        <div class="label">Instant preview (cached AI replay)</div>
-        <div class="runcmd">python3 modules/m3-repurpose/repurpose.py --out out/m3</div>
+        <div class="label">Run (live lane, default)</div>
+        <div class="runcmd">python3 modules/m3-repurpose/repurpose.py --out out/run1/m3 \
+    --clips --images</div>
         <div class="label">Key output</div>
-        <div class="keyout">manifest.json — blog draft + YouTube pack + infographic outline + 5–10 social posts, tagged by event</div>
-        <div class="card-links"><a href="https://postevent-engine.vercel.app/demo/sample-run/m3/">Outputs: offline run →</a> <a href="https://postevent-engine.vercel.app/demo/live-proof/m3/">Outputs: live LLM run →</a> <a href="../modules/m3-repurpose/README.md">Module README →</a></div>
+        <div class="keyout">manifest.json — every file with its own source (llm / image_model / ffmpeg / sarvam) and grounding verdict; blog 1,106 words, 18 chapters, 8 posts, 3 clips × 2 ratios</div>
+        <div class="label">Receipt</div>
+        <div class="keyout mono">out/receipts/m3-live/ (MP4s are regenerated by make_clips.py, not committed — see its README)</div>
+        <div class="card-links"><a href="../modules/m3-repurpose/README.md">Module README →</a> <a href="module-api.md">API contract →</a></div>
       </div>
 
       <div class="card">
         <div class="card-head"><span class="card-tag tag-m4">M4</span><h3>Lead Intelligence Dashboard</h3></div>
         <p class="what">
-          Reads M1's enriched roster plus engagement events (opens, clicks, page views, form fills) and
-          computes the attendee→MQL funnel, top engaged accounts and buying committees, and 7/14/30-day
-          lifecycle movement — all real math over the data, not LLM output. The one narrative summary
-          line is a live LLM call on Vercel, with a clearly labeled cached fallback when there's no key.
+          The portal is the source of truth: M1 pushed the contacts, M2 logged the email engagement, and M4 writes the
+          engagement stream and lifecycle changes into HubSpot before reading anything back. The model produces
+          anomalies, interest scores, the movement narrative and the committees; the deterministic block computes the
+          same quantities as a validator and every disagreement is printed rather than hidden.
         </p>
-        <div class="label">Run (judges — live)</div>
-        <div class="runcmd">./orchestrator/demo.sh --live</div>
-        <div class="label">Instant preview (computed metrics + labeled fallback narrative)</div>
-        <div class="runcmd">python3 modules/m4-dashboard/build_dashboard.py \
-    --enriched out/m1/hubspot_ready.csv \
-    --engagement data/fixtures/engagement.json \
-    --segments data/fixtures/segments.json \
-    --out out/m4</div>
+        <div class="label">Run (live lane, default)</div>
+        <div class="runcmd">python3 modules/m4-dashboard/dashboard.py all --out out/run1/m4</div>
         <div class="label">Key output</div>
-        <div class="keyout">index.html — self-contained live dashboard, inline SVG charts, computed metrics + AI narrative (live or labeled fallback)</div>
-        <div class="card-links"><a href="https://postevent-engine.vercel.app/dashboard/">Hosted dashboard →</a> <a href="https://postevent-engine.vercel.app/demo/sample-run/m4/">Outputs: offline run →</a> <a href="../modules/m4-dashboard/README.md">Module README →</a></div>
+        <div class="keyout">index.html — self-contained dashboard: attendee→MQL funnel, top accounts and contacts, 7/14/30-day movement with its own source mix and disclosure, anomaly panel, committee map, narrative with a source badge</div>
+        <div class="label">Receipt</div>
+        <div class="keyout mono">out/receipts/m4-live-portal/ · out/receipts/m4-live-analyze-fixture/</div>
+        <div class="card-links"><a href="../modules/m4-dashboard/README.md">Module README →</a> <a href="module-api.md">API contract →</a></div>
       </div>
 
     </div>
-    <div class="loom-slot" style="margin-top:18px;">
-      <b>Source, and the links that stay current</b><br>
-      Clone and run it yourself: <a href="https://github.com/Kai8karma/postevent-engine">github.com/Kai8karma/postevent-engine</a>
-      &middot; this control room: <a href="https://postevent-engine.vercel.app">postevent-engine.vercel.app</a>
-      &middot; hosted M4 dashboard: <a href="https://postevent-engine.vercel.app/dashboard/">/dashboard/</a>
-      &middot; every module's actual output, browsable file by file: <a href="https://postevent-engine.vercel.app/demo/">/demo/</a>
-      (<code class="mono">/demo/sample-run/</code> = offline lane, <code class="mono">/demo/live-proof/</code> = the live LLM run,
-      <code class="mono">/demo/clay-live-proof/</code> = the Clay call).<br>
-      Both the page and the repo are updated as further receipts land, so what you open is the current state of the
-      build rather than a frozen snapshot — the build log records what changed and when.
-    </div>
   </section>
 
-  <section id="scorecard">
-    <h2>Scored against the brief</h2>
+  <section id="orchestration">
+    <h2>Orchestration</h2>
     <p class="section-sub">
-      One row per output the assignment names in <a href="../SPEC.md">SPEC.md</a>'s four module tables — every
-      numeric bar, every named artifact, no exceptions. <b>Status</b> is one of three plain words: <b>Met</b>
-      (a reviewer can open the evidence and see it done), <b>Met with a stand-in</b> (real work happened, but
-      something specific stands in for the final production step — named, not hidden), or <b>Not met</b>
-      (no evidence to point at). Graded strictly on purpose — a scorecard that can't produce a "Not met" or a
-      "stand-in" isn't a scorecard.
+      n8n owns the triggers, the waits, the approval gate, the sends and the Drive leg. It calls the modules over HTTP
+      through one small stdlib service (<code class="mono">api/server.py</code>), one module or phase per
+      <code class="mono">POST /run</code> — so the reviewer watches an execution, not a shell script. The workflows
+      below are in the repo and audited; none has been imported into a running instance yet.
     </p>
     <div class="table-wrap">
       <table class="scorecard-table">
-        <thead><tr><th style="width:22%">Requirement</th><th style="width:30%">What the build does</th><th style="width:26%">Evidence</th><th style="width:10%">Status</th></tr></thead>
-        <tbody>
-          <tr><td><span class="card-tag tag-m1">M1</span> Fuzzy match + dedupe against HubSpot</td><td>difflib fuzzy match (0.80 threshold) against existing HubSpot contacts; matched/deduped rows actually upserted into a live sandbox portal</td><td><code class="mono">out/&lt;slug&gt;/m1/dedupe_report.json</code> · <a href="#receipts">HubSpot receipt</a> — 133 contacts / 30 companies, portal 247135551</td><td>Met</td></tr>
-          <tr><td><span class="card-tag tag-m1">M1</span> Infer missing fields (title, function, seniority, company size, industry)</td><td>Offline: deterministic lookup tables, zero LLM tokens. <code class="mono">--live</code>: real LLM classification, JSON-validated with a rule-value fallback on malformed responses</td><td><code class="mono">out/live-proof/m1/live_inference_report.json</code> — 25 of 30 rows patched by the model, 1 fallback logged not hidden</td><td>Met</td></tr>
-          <tr><td><span class="card-tag tag-m1">M1</span> Enrich company data (Clay)</td><td>Clay's managed Enrich Company routine executed live via the official CLI</td><td><code class="mono">out/clay-live-proof/</code> — run <code class="mono">run_0tk7y5kH2Y5PHTW5moE</code>, 3 real domains, 1.5 credits</td><td>Met with a stand-in — proven live on 3 reference domains (hubspot.com/clay.com/n8n.io), not on the fixture's own synthetic registrant domains, which return nothing from Clay by construction</td></tr>
-          <tr><td><span class="card-tag tag-m1">M1</span> Score ICP fit</td><td>Tier assignment is a deterministic function (title/company-size/industry match against <code class="mono">config/icp.yaml</code>) — authoritative by design so a reviewer can audit it; <code class="mono">--live</code> adds an LLM-written rationale per row, not a tier override</td><td><code class="mono">hubspot_ready.csv</code> → <code class="mono">icp_tier</code> + <code class="mono">icp_rationale</code> columns; <code class="mono">modules/m1-enrichment/prompts/icp_scoring.md</code> states the authority split verbatim</td><td>Met</td></tr>
-          <tr><td><span class="card-tag tag-m1">M1</span> Contact completeness above 90%</td><td>Scored against exactly the fields the brief names (not inflated by easy identity fields)</td><td><code class="mono">quality_report.json → spec_completeness.contact.completeness_pct</code> = <b>99.8%</b> (<a href="#receipts">receipt</a>)</td><td>Met</td></tr>
-          <tr><td><span class="card-tag tag-m1">M1</span> Company completeness above 90%</td><td>Same, company-side fields (name, domain, size band, industry)</td><td><code class="mono">quality_report.json → spec_completeness.company.completeness_pct</code> = <b>97.2%</b> — caveat: per-contact-row, not deduped to unique companies; size band is a synthetic placeholder</td><td>Met</td></tr>
-          <tr><td><span class="card-tag tag-m1">M1</span> ICP tier tagged, region assigned, lifecycle stage set</td><td>All three set per contact row and pushed live</td><td><code class="mono">hubspot_ready.csv</code> columns; verified read-back after the live HubSpot push (contacts=133, companies=30 by <code class="mono">event_tag</code>)</td><td>Met</td></tr>
-          <tr><td><span class="card-tag tag-m1">M1</span> Ownership routed</td><td>Owner routing is computed and emitted per row</td><td><code class="mono">hubspot_ready.csv → hubspot_owner_email</code> — but NOT written to HubSpot owner objects in the sandbox (no matching owner records exist there); <code class="mono">push_to_hubspot.py</code> prints this exact caveat on every run</td><td>Met with a stand-in</td></tr>
-          <tr><td><span class="card-tag tag-m1">M1</span> "Ready for SDR handoff same day"</td><td>Full 4-module chain completes in well under a second offline; the live LLM lane completes M1 in ~2 minutes</td><td>Per-stage receipt table printed by <code class="mono">orchestrator/run_pipeline.py</code></td><td>Met</td></tr>
-          <tr><td><span class="card-tag tag-m2">M2</span> Attendee thank-you (recording + takeaways)</td><td>Drafted with a UTM-tagged recording link and a personalized takeaway snippet</td><td><code class="mono">out/&lt;slug&gt;/m2/comms.json</code> — attendee variant</td><td>Met</td></tr>
-          <tr><td><span class="card-tag tag-m2">M2</span> No-show catch-up (recording + CTA)</td><td>Drafted with recording link + explicit CTA</td><td><code class="mono">out/&lt;slug&gt;/m2/comms.json</code> — no_show variant</td><td>Met</td></tr>
-          <tr><td><span class="card-tag tag-m2">M2</span> Speaker thank-you (performance snapshot)</td><td>Drafted with speaker-specific attendance/engagement numbers</td><td><code class="mono">out/&lt;slug&gt;/m2/comms.json</code> — speaker variant</td><td>Met</td></tr>
-          <tr><td><span class="card-tag tag-m2">M2</span> Subject-line A/B variants, role/industry personalization</td><td>2 subjects per segment; live takeaways came back keyed by all 6 functions × 3 industry buckets</td><td><code class="mono">comms.json</code>; <a href="#receipts">live receipt table</a></td><td>Met</td></tr>
-          <tr><td><span class="card-tag tag-m2">M2</span> UTM tracking on every link</td><td><code class="mono">utm_source</code>/<code class="mono">medium</code>/<code class="mono">campaign</code> stamped on every recording and CTA link before it reaches HubSpot</td><td><code class="mono">comms.json</code></td><td>Met</td></tr>
-          <tr><td><span class="card-tag tag-m2">M2</span> Dispatched within 24h, logged to HubSpot with UTM tracking</td><td>Nothing is ever auto-sent — by design. A human sets <code class="mono">approved:true</code> before the HubSpot send node fires; email-engagement logging (<code class="mono">push_to_hubspot.py --log-emails</code>) is real, dry-run-verified code that has not been exercised end-to-end because the gate is deliberately still human-flipped</td><td><code class="mono">out/&lt;slug&gt;/m2/approval_gate.json</code> (<code class="mono">approved:false</code>) · <code class="mono">modules/m2-comms/hubspot_wiring.md</code></td><td>Met with a stand-in — no blind send, by design</td></tr>
-          <tr><td><span class="card-tag tag-m2">M2</span> n8n orchestration (Tools)</td><td>Cloud-lane workflow (real HubSpot/Clay HTTP nodes) imported into a live n8n Cloud instance and its webhook trigger fired live; the HubSpot leg still needs a credential the reviewer supplies</td><td><code class="mono">orchestrator/n8n/cloud/master.json</code> · <code class="mono">orchestrator/README.md</code></td><td>Met with a stand-in</td></tr>
-          <tr><td><span class="card-tag tag-m3">M3</span> Extract key moments, insights, quotes, data points</td><td>One extraction call over the full transcript, structured JSON output</td><td><code class="mono">out/&lt;slug&gt;/m3/extraction.json</code></td><td>Met</td></tr>
-          <tr><td><span class="card-tag tag-m3">M3</span> Transcription API (Tools)</td><td>Real stdlib client posting to Sarvam's <code class="mono">/speech-to-text</code>, 3 live calls on a synthesised stand-in recording (no real webinar recording exists)</td><td><code class="mono">modules/m3-repurpose/transcribe.py</code> · <a href="#receipts">transcription receipt</a> — 254 words, 0.9216 similarity</td><td>Met with a stand-in — stand-in audio; the live proof ran through the Sarvam MCP client, not <code class="mono">transcribe.py</code>'s own REST path (no key in that shell)</td></tr>
-          <tr><td><span class="card-tag tag-m3">M3</span> Blog draft, 800–1,200 words</td><td>Enforced before the file is written: the word count is checked, and a draft outside 800–1,200 is regenerated with the exact overage named in the retry prompt (up to 3 attempts), then shipped loudly flagged rather than silently. Offline: 1,165 words. The earlier 1,277-word live draft is what motivated the gate — that path now regenerates instead of annotating.</td><td><code class="mono">repurpose.py → check_asset_spec()</code> / <code class="mono">manifest.json → spec_check.gate</code></td><td>Met</td></tr>
-          <tr><td><span class="card-tag tag-m3">M3</span> YouTube chapter markers + description + thumbnail brief</td><td>All three generated per run</td><td><code class="mono">out/&lt;slug&gt;/m3/youtube.md</code> — live run: 18 chapters</td><td>Met</td></tr>
-          <tr><td><span class="card-tag tag-m3">M3</span> Infographic outline with data points</td><td>Real numbers pulled from the transcript, structured for a designer or a generator to render</td><td><code class="mono">out/&lt;slug&gt;/m3/infographic.md</code></td><td>Met</td></tr>
-          <tr><td><span class="card-tag tag-m3">M3</span> Image generation for visual assets (Tools)</td><td>Higgsfield (primary) returned 0 credits / plan-gated; real fallback call to <code class="mono">google/gemini-2.5-flash-image</code> over OpenRouter, grounded in M3's own live briefs</td><td><a href="#receipts">image-generation receipt</a> — 2 images, $0.077647 total spend</td><td>Met with a stand-in — infographic has 3 model typos, thumbnail headline text didn't render legibly; both flagged for human review before publishing</td></tr>
-          <tr><td><span class="card-tag tag-m3">M3</span> 5–10 social posts (LinkedIn, X), distinct hooks</td><td>8 posts generated, each a different angle on the same material</td><td><code class="mono">out/&lt;slug&gt;/m3/social.md</code></td><td>Met</td></tr>
-          <tr><td><span class="card-tag tag-m3">M3</span> Saved to shared drive, tagged by event</td><td>Google Drive folder created, 6 live deliverables + an index uploaded, every filename event-tag-prefixed</td><td><a href="#receipts">Drive receipt</a> — <code class="mono">out/live-proof-drive/drive_manifest.json</code> (folder kept private to the owner by design — not linked here)</td><td>Met</td></tr>
-          <tr><td><span class="card-tag tag-m3">M3</span> n8n pipeline (Tools)</td><td>Standalone n8n workflow JSON mirrors the M3 DAG (Execute Command node shelling to <code class="mono">repurpose.py</code>), schema-verified against n8n's node catalog</td><td><code class="mono">orchestrator/n8n/local-demo/m3-repurpose.json</code></td><td>Met with a stand-in — validated by inspection, not imported into a running n8n instance</td></tr>
-          <tr><td><span class="card-tag tag-m4">M4</span> Attendee-to-MQL conversion</td><td>Computed directly from the enriched roster + lifecycle data, not estimated</td><td>Dashboard <code class="mono">#dashboard-data → attendee_to_mql_pct</code> = 16.2%</td><td>Met</td></tr>
-          <tr><td><span class="card-tag tag-m4">M4</span> Top engaged accounts/contacts, buying committees</td><td>Ranked by a real engagement-weight formula; buying committee = every engaged contact per account</td><td>Dashboard <code class="mono">top_accounts</code> (10) / <code class="mono">committee_accounts</code> (5)</td><td>Met</td></tr>
-          <tr><td><span class="card-tag tag-m4">M4</span> Lifecycle stage movement across 7/14/30 days</td><td>Three real time-windowed views over the same lifecycle data</td><td>Dashboard "Last 7 days" / "Last 14 days" / "Last 30 days" panels</td><td>Met</td></tr>
-          <tr><td><span class="card-tag tag-m4">M4</span> Detect engagement anomalies, score lead interest</td><td>Deterministic rules, not LLM calls — same-day concentration ≥15 touches for anomalies; tier × attendance × engagement weights for scoring. Named as rule-based here on purpose: the spec calls these AI's job, and this build's honest answer is "auditable rules, not a model," with the LLM's role confined to narrating what the rules found</td><td><code class="mono">modules/m4-dashboard/build_dashboard.py</code> — anomaly/scoring functions; dashboard shows 2 live anomalies</td><td>Met</td></tr>
-          <tr><td><span class="card-tag tag-m4">M4</span> One AI-generated narrative summary, refreshed on load</td><td>Live LLM call on every page load, real computed metrics passed in, not fixture text; the model named in the task spec is too slow for the client's 25s timeout, a faster model comfortably fits it</td><td><a href="#receipts">M4 narrative receipt</a> — 3 live runs, <code class="mono">source:"live"</code> on every one</td><td>Met with a stand-in — proven live 3×, but the hosted deployment currently has no API key configured at all (<code class="mono">/api/narrative</code> 500s: "ANTHROPIC_API_KEY not configured"); needs <code class="mono">OPENROUTER_API_KEY</code> (and optionally <code class="mono">OPENROUTER_MODEL</code>) set in the Vercel env before it's live-on-load for a reviewer, not a code change</td></tr>
-          <tr><td><span class="card-tag tag-m4">M4</span> n8n sync (Tools)</td><td>Standalone n8n workflow JSON mirrors the M4 DAG, schema-verified</td><td><code class="mono">orchestrator/n8n/local-demo/m4-dashboard.json</code></td><td>Met with a stand-in — validated by inspection, not imported into a running n8n instance</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="callout">
-      Tally: 22 of 31 rows land at a clean <b>Met</b>; 9 land at <b>Met with a stand-in</b>, every one of them
-      named above with the exact thing standing in and the exact thing that would remove it (a credential, an
-      environment variable, a real recording, or a live n8n import). Zero rows are theater — nothing here
-      claims a status its own evidence column can't back up.
-    </div>
-  </section>
-
-  <section id="economics">
-    <h2>Unit economics</h2>
-    <p class="section-sub">
-      Stated estimates, not a metered bill (no Clay/HubSpot account exists yet). Full assumptions and
-      math in <a href="economics.md">economics.md</a>.
-    </p>
-
-    <div class="table-wrap">
-      <table>
         <thead>
-          <tr><th>Module</th><th>Manual task</th><th>Manual $</th><th>AI $ (LLM + Clay)</th><th>Multiple</th></tr>
+          <tr><th>Workflow file</th><th>Nodes</th><th>What it drives</th><th>Audit</th><th>State</th></tr>
         </thead>
         <tbody>
-          <tr><td>M1 — Enrichment</td><td>3h @ $40/h</td><td>$120.00</td><td>$22.79</td><td>5.3x</td></tr>
-          <tr><td>M2 — Comms</td><td>2h @ $40/h</td><td>$80.00</td><td>$0.16</td><td>~493x</td></tr>
-          <tr><td>M3 — Repurposing</td><td>6h @ $40/h</td><td>$240.00</td><td>$0.68</td><td>~351x</td></tr>
-          <tr><td>M4 — Dashboard</td><td>2h @ $40/h</td><td>$80.00</td><td>$0.03</td><td>~2,390x</td></tr>
-          <tr class="total"><td>Total</td><td>13h</td><td>$520.00</td><td>$23.67</td><td>~22x</td></tr>
+          <tr>
+            <td><code class="mono">orchestrator/n8n/railway/m1-lead-enrichment.json</code></td>
+            <td>21</td>
+            <td>Trigger → module API <code class="mono">prepare</code> → Clay table webhook leg → <code class="mono">finalize</code> (push) → evidence summary</td>
+            <td>green, 0 failures, 3 warnings (2 sticky-note orphans + 1 template-literal false positive)</td>
+            <td>not imported</td>
+          </tr>
+          <tr>
+            <td><code class="mono">orchestrator/n8n/railway/m2-post-event-comms.json</code></td>
+            <td>28</td>
+            <td><code class="mono">generate</code> → approval request → wait → <code class="mono">approve</code> → send → <code class="mono">log</code> engagements</td>
+            <td>green, 0 failures, warnings listed in the workflow README</td>
+            <td>not imported</td>
+          </tr>
+          <tr>
+            <td><code class="mono">orchestrator/n8n/railway/m3-content-repurposing.json</code></td>
+            <td>26</td>
+            <td><code class="mono">transcribe</code> → <code class="mono">run</code> → create Drive folder → upload <code class="mono">next.files</code> → <code class="mono">record</code></td>
+            <td>green, 0 failures, 2 warnings (sticky-note orphans); 0 unresolved node references</td>
+            <td>not imported</td>
+          </tr>
+          <tr>
+            <td><code class="mono">orchestrator/n8n/railway/m4-lead-intelligence.json</code></td>
+            <td>15</td>
+            <td>Schedule every 6h (or manual seed-once) → <code class="mono">seed</code> → <code class="mono">sync</code> → <code class="mono">analyze</code> → <code class="mono">render</code> → evidence item</td>
+            <td>green, 0 failures, 2 warnings; 0 unresolved node references, 0 duplicate names</td>
+            <td>not imported</td>
+          </tr>
         </tbody>
       </table>
     </div>
-
-    <div class="stat-row">
-      <div class="stat"><div class="num">$1.17</div><div class="lbl">LLM cost / event (120k tok, Sonnet pricing)</div></div>
-      <div class="stat"><div class="num">$22.50</div><div class="lbl">Clay cost / event (150 contacts × 3cr × $0.05)</div></div>
-      <div class="stat"><div class="num">~22x</div><div class="lbl">infra-only multiple vs. 13 manual hours</div></div>
-      <div class="stat"><div class="num">~13x</div><div class="lbl">fully-loaded, incl. ~25min human approval time</div></div>
-    </div>
-
     <div class="callout">
-      Clay is ~19x the entire LLM spend — it's the real cost line, not tokens. The multiple swings from
-      5.3x (M1, bottlenecked by a paid enrichment provider) to ~2,390x (M4, pure generation against
-      near-zero marginal token cost) — that's the honest shape of the number, not an accounting trick.
-    </div>
-  </section>
-
-  <section id="buildlog">
-    <h2>Build log</h2>
-    <p class="section-sub">
-      Disclosed on purpose. Full skeleton (per-unit agent/wall-clock/token/touchpoint table) in
-      <a href="build_log.md">build_log.md</a> — filled in as each parallel unit closes out.
-    </p>
-    <div class="buildlog-grid">
-      <div class="bl-card"><div class="bl-label">Agents</div><div class="bl-val">8 parallel units (FIX-A/B, M1–M4, ORCH, DOCS)</div></div>
-      <div class="bl-card"><div class="bl-label">Wall-clock</div><div class="bl-val">received 2026-08-21 15:25 IST → shipped 2026-08-23 (~52h, two judge rounds + two fix waves inside it)</div></div>
-      <div class="bl-card"><div class="bl-label">Token spend</div><div class="bl-val">build: not metered per unit (flat-rate seat) · per-event run: est. 120k tokens; live lane ran on OpenRouter <code class="mono">nvidia/nemotron-3-ultra-550b-a55b:free</code> at $0 (<code class="mono">stealth/ox-alpha</code> was tried first and abandoned — see below) — see <code class="mono">out/live-proof/</code></div></div>
-      <div class="bl-card"><div class="bl-label">Human touchpoints</div><div class="bl-val">webinar identity · Clay workspace + credit budget · HubSpot sandbox + private app + token · LLM key/model choice · M2 approval gate · final send</div></div>
+      Every node parameter that could not be confirmed against a live instance is listed as unverified, by workflow,
+      in <code class="mono">orchestrator/n8n/railway/README.md</code> — Drive resourceLocator shapes,
+      <code class="mono">readWriteFile</code> parameter names, IF-node operator naming, and the
+      <code class="mono">$env</code>-inside-Code-node assumption. The module API's request and response shape per
+      phase is in <a href="module-api.md">module-api.md</a>; the deployment procedure is in
+      <a href="deploy-module-api.md">deploy-module-api.md</a>. Credentials are supplied as variables on the n8n and
+      module-API services: <code class="mono">MODULE_API_URL</code>, <code class="mono">MODULE_API_TOKEN</code>,
+      <code class="mono">OPENROUTER_API_KEY</code>, <code class="mono">OPENROUTER_MODEL</code>,
+      <code class="mono">HUBSPOT_TOKEN</code>, <code class="mono">SARVAM_API_KEY</code> — names only, never values.
     </div>
   </section>
 
   <section id="runit">
-    <h2>Run it yourself — right here</h2>
+    <h2>Run it</h2>
     <p class="section-sub">
-      Drop your own registrant CSV and transcript below and click Run. This talks to the same live
-      engine as <a href="https://postevent-engine.vercel.app">the console at the site root</a> —
-      embedded directly in this page so it works even if you opened this file from the submission zip
-      rather than clicking through. Nothing is uploaded until you click Run; nothing is saved server-side
-      after the response comes back.
+      The live lane is the default in every module. The replay lane is an explicit flag for a reviewer with no keys —
+      it replays this repo's own checked-in output and refuses to run if the cache came from a different transcript or
+      event (SHA-256 fingerprint check), so a replay can never be another webinar's output.
     </p>
-    <div class="run-box">
-      <div class="run-status-line">
-        <span class="run-dot" id="runEngineDot"></span>
-        <span id="runEngineStatus">checking engine reachability…</span>
-      </div>
-      <div class="run-grid">
-        <div class="run-field">
-          <label class="run-label" for="runCsvFile">Registrant list <span class="run-label-sub">.csv — leave empty to use the bundled fixture</span></label>
-          <input type="file" id="runCsvFile" accept=".csv,text/csv" />
-          <textarea id="runCsvText" class="run-textarea" placeholder="Or paste registrant CSV rows here…" spellcheck="false"></textarea>
-        </div>
-        <div class="run-field">
-          <label class="run-label" for="runTranscriptFile">Transcript <span class="run-label-sub">.md / .txt / .vtt — leave empty to use the bundled fixture</span></label>
-          <input type="file" id="runTranscriptFile" accept=".md,.txt,.vtt,text/plain,text/markdown" />
-          <textarea id="runTranscriptText" class="run-textarea" placeholder="Or paste transcript text here…" spellcheck="false"></textarea>
-        </div>
-      </div>
-      <div class="run-controls">
-        <div class="run-field run-field-inline">
-          <label class="run-label" for="runEventName">Event name <span class="run-label-sub">optional</span></label>
-          <input type="text" id="runEventName" class="run-text-input" placeholder="Leave blank to use the fixture event name" />
-        </div>
-        <div class="run-field run-field-inline">
-          <label class="run-label" for="runModule">Module</label>
-          <select id="runModule" class="run-select">
-            <option value="chain" selected>Whole chain (M1 → M2 → M3 → M4)</option>
-            <option value="m1">M1 — Enrichment</option>
-            <option value="m2">M2 — Comms</option>
-            <option value="m3">M3 — Repurposing</option>
-            <option value="m4">M4 — Dashboard</option>
-          </select>
-        </div>
-        <label class="run-live-toggle">
-          <input type="checkbox" id="runLiveToggle" /> Live AI
-          <span class="run-label-sub">real model calls — slower, needs a key on the deployment; falls back to offline and says so if there isn't one</span>
-        </label>
-      </div>
-      <button type="button" class="run-btn" id="runBtn">Run</button>
-      <div class="run-result" id="runResult" hidden></div>
+    <div class="diagram-block">
+      <h3>Live lane (default)</h3>
+      <div class="runcmd">python3 orchestrator/run_pipeline.py --out out/live</div>
+      <p class="section-sub" style="margin-top:12px;">
+        Needs <code class="mono">OPENROUTER_API_KEY</code> and <code class="mono">HUBSPOT_TOKEN</code> in the
+        environment or <code class="mono">~/.config/postevent/*.env</code>;
+        <code class="mono">SARVAM_API_KEY</code> for M3's transcription phase. M3's clips also need
+        <code class="mono">ffmpeg</code> and <code class="mono">ffprobe</code> on <code class="mono">PATH</code> plus
+        Pillow. Clips and images are live-only and are never replayed.
+      </p>
+      <h3 style="margin-top:22px;">Replay lane (no keys, zero network)</h3>
+      <div class="runcmd">python3 orchestrator/run_pipeline.py --offline --out out/replay
+open out/replay/m4/index.html</div>
+      <h3 style="margin-top:22px;">Through the module API, the way n8n calls it</h3>
+      <div class="runcmd">curl -s -X POST "$MODULE_API_URL/run" \
+  -H "Authorization: Bearer $MODULE_API_TOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{"module":"m1","live":true,"inputs":{"registrants_csv_path":"data/incoming/registrants.csv"}}'</div>
+    </div>
+    <div class="callout">
+      To point this at a different event: replace the four files in <code class="mono">data/incoming/</code>
+      (<code class="mono">event.json</code>, <code class="mono">speakers.json</code>,
+      <code class="mono">registrants.csv</code>, the recording), regenerate
+      <code class="mono">transcript.md</code> with the transcription phase, and adjust
+      <code class="mono">config/icp.yaml</code> if the buyer profile changes. M3 and M4 also accept an
+      <code class="mono">event_slug</code> that resolves to <code class="mono">data/events/&lt;slug&gt;/</code> and
+      fails loud rather than falling back to the bundled fixture.
     </div>
   </section>
-
-  <section id="swap">
-    <h2>Swap to your real event</h2>
-    <div class="swap-box">
-      <p>
-        Everything above ran on a synthetic-but-realistic stand-in webinar because your real event
-        wasn't named before the deadline — the pipeline itself doesn't know the difference. Swapping in
-        your actual webinar is five files: drop your registrant export, transcript, and speaker/event
-        metadata into the four files under <code class="inline">data/incoming/</code>
-        (<code class="inline">event.json</code>, <code class="inline">registrants.csv</code>,
-        <code class="inline">speakers.json</code>, <code class="inline">transcript.md</code>), and point
-        <code class="inline">config/icp.yaml</code> at your real ICP tiers, regions, and owner routing.
-        No code changes, no re-architecture.
-      </p>
-      <p>
-        <span class="swap-cta">That means we can point this at your next webinar Monday morning</span> —
-        same four modules, same human-approval gate before any send, same dashboard — and have enriched
-        leads, drafted comms, a repurposed content package, and a live lead-intelligence view ready
-        before your SDR team finishes their coffee.
-      </p>
-    </div>
-  </section>
-
 
 </div>
 
 <footer>
-  Post-Event Engine — working prototype for the AI-led post-event content automation assignment.
-  Repo shared with the reviewer alongside this submission ·
-  Submission draft: <a href="submission_email.md">submission_email.md</a>
+  Post-Event Engine — working prototype for the AI-led post-event content automation assignment, run on Darwinbox's
+  own public webinar. Brief: <a href="../SPEC.md">SPEC.md</a> ·
+  Repo: <a href="https://github.com/Kai8karma/postevent-engine">github.com/Kai8karma/postevent-engine</a> ·
+  Console page: <a href="../web/index.html">web/index.html</a>
 </footer>
 
 <script>
@@ -1288,139 +715,6 @@
       var next = current === 'dark' ? 'light' : 'dark';
       root.setAttribute('data-theme', next);
       try { localStorage.setItem('pe-theme', next); } catch (e) {}
-    });
-  })();
-</script>
-
-<script>
-  (function () {
-    // Absolute URL, deliberately -- this page is opened three ways: on the
-    // Vercel deployment (same-origin, would work with a relative path too),
-    // as a static /control-room/ route on that same deployment (still
-    // same-origin), and as a bare file:// page straight out of the
-    // submission zip (relative paths resolve against the local filesystem
-    // there and silently 404 -- there is no way to make that work except an
-    // absolute URL). api/run.py sends Access-Control-Allow-Origin: * for
-    // exactly this reason.
-    var API = 'https://postevent-engine.vercel.app/api/run';
-
-    function qs(sel) { return document.querySelector(sel); }
-
-    var csvFile = qs('#runCsvFile'), csvText = qs('#runCsvText');
-    var trFile = qs('#runTranscriptFile'), trText = qs('#runTranscriptText');
-    var eventName = qs('#runEventName'), moduleSel = qs('#runModule'), liveToggle = qs('#runLiveToggle');
-    var btn = qs('#runBtn'), resultBox = qs('#runResult');
-    var dot = qs('#runEngineDot'), statusText = qs('#runEngineStatus');
-
-    function readFileInto(fileInput, textArea) {
-      fileInput.addEventListener('change', function () {
-        var f = fileInput.files && fileInput.files[0];
-        if (!f) return;
-        var reader = new FileReader();
-        reader.onload = function () { textArea.value = String(reader.result || ''); };
-        reader.onerror = function () { textArea.value = ''; alert('Could not read "' + f.name + '": ' + (reader.error && reader.error.message)); };
-        reader.readAsText(f);
-      });
-    }
-    readFileInto(csvFile, csvText);
-    readFileInto(trFile, trText);
-
-    // Reachability check on load -- tells you *before* you click Run whether
-    // this embed can reach the engine at all (e.g. no network, or the
-    // deployment is down), instead of only finding out after typing
-    // everything in.
-    fetch(API, { method: 'GET' })
-      .then(function (res) { return res.json(); })
-      .then(function (json) {
-        if (json && json.ok) {
-          dot.className = 'run-dot ok';
-          statusText.textContent = 'engine reachable' + (json.live_available ? ' — live AI lane available' : ' — offline lane only (no key on this deployment)');
-        } else {
-          dot.className = 'run-dot bad';
-          statusText.textContent = 'engine responded but reported not-ok: ' + (json && json.error || 'unknown error');
-        }
-      })
-      .catch(function (e) {
-        dot.className = 'run-dot bad';
-        statusText.textContent = 'engine unreachable (' + (e && e.message || 'network error') + ') — check your connection, or this deployment may be down';
-      });
-
-    function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
-
-    function renderSummary(summary) {
-      if (!summary) return '';
-      var rows = [];
-      function walk(obj, prefix) {
-        Object.keys(obj).forEach(function (k) {
-          var v = obj[k];
-          if (v && typeof v === 'object' && !Array.isArray(v)) { walk(v, prefix + k + '.'); return; }
-          rows.push('<div class="stat"><div class="num">' + esc(v) + '</div><div class="lbl">' + esc(prefix + k) + '</div></div>');
-        });
-      }
-      walk(summary, '');
-      return '<div class="stat-row">' + rows.join('') + '</div>';
-    }
-
-    btn.addEventListener('click', function () {
-      btn.disabled = true;
-      btn.textContent = 'Running…';
-      resultBox.hidden = false;
-      resultBox.innerHTML = '<div class="run-msg">running — this can take a few seconds (offline) or up to a minute (live)…</div>';
-
-      var payload = {
-        module: moduleSel.value,
-        live: !!liveToggle.checked,
-      };
-      if (csvText.value.trim()) payload.registrants_csv = csvText.value;
-      if (trText.value.trim()) payload.transcript_md = trText.value;
-      if (eventName.value.trim()) payload.event_name = eventName.value.trim();
-
-      fetch(API, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      })
-        .then(function (res) { return res.text(); })
-        .then(function (text) {
-          var json;
-          try { json = JSON.parse(text); }
-          catch (e) { throw new Error('non-JSON response from /api/run: ' + text.slice(0, 200)); }
-          return json;
-        })
-        .then(function (json) {
-          var html = '';
-          if (json.ok) {
-            html += '<div class="run-msg ok">done — module: ' + esc(json.module) + ' · lane: ' + esc(json.lane) + ' · ' + esc(json.seconds) + 's' + (json.model ? ' · model: ' + esc(json.model) : '') + '</div>';
-            if (json.notes && json.notes.length) {
-              html += '<ul class="run-notes">' + json.notes.map(function (n) { return '<li>' + esc(n) + '</li>'; }).join('') + '</ul>';
-            }
-            html += renderSummary(json.summary);
-            if (json.log && json.log.length) {
-              html += '<details><summary>view run log (' + json.log.length + ' lines)</summary><pre>' + esc(json.log.join('\n')) + '</pre></details>';
-            }
-            if (json.artifacts && json.artifacts.length) {
-              html += '<details><summary>view artifacts (' + json.artifacts.length + ')</summary><pre>' + esc(json.artifacts.map(function (a) { return a.name + ' (' + a.bytes + ' bytes)'; }).join('\n')) + '</pre></details>';
-            }
-          } else {
-            html += '<div class="run-msg err">failed — module: ' + esc(json.module || '?') + '</div>';
-            html += '<pre>' + esc(json.error || 'unknown error') + (json.hint ? '\n\nhint: ' + json.hint : '') + '</pre>';
-            if (json.log && json.log.length) {
-              html += '<details><summary>view run log (' + json.log.length + ' lines)</summary><pre>' + esc(json.log.join('\n')) + '</pre></details>';
-            }
-          }
-          resultBox.innerHTML = html;
-        })
-        .catch(function (e) {
-          // Deliberately never falls back to canned/mock data here -- if the
-          // real engine can't be reached, this says so in plain text instead
-          // of silently showing numbers that don't reflect what was
-          // actually uploaded.
-          resultBox.innerHTML = '<div class="run-msg err">could not reach the engine: ' + esc(e && e.message || e) + '</div><pre>Nothing was faked as a real run. Check your network connection, or try https://postevent-engine.vercel.app directly.</pre>';
-        })
-        .then(function () {
-          btn.disabled = false;
-          btn.textContent = 'Run';
-        });
     });
   })();
 </script>
