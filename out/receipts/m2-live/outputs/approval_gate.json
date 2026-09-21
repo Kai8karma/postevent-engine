@@ -1,0 +1,45 @@
+{
+  "status": "pending_human_approval",
+  "approved_by": null,
+  "approved_at": null,
+  "mode": null,
+  "run_id": "m2-20260913-111534",
+  "requested_at": "2026-09-13T11:15:34.996037+00:00",
+  "event": "From Hype to High-Impact: How to Start and Scale AI in HR",
+  "dispatch_plan": "dispatch_plan.json",
+  "counts": {
+    "attendee": 71,
+    "no_show": 60,
+    "speaker": 2,
+    "mailable": 133,
+    "suppressed": 9
+  },
+  "demo_recipients": [
+    "ahmad.hassan98@gmail.com",
+    "abautista@jollibee.com.ph",
+    "kai8karma+speaker-qhamirani@gmail.com",
+    "kai8karma+speaker-sudikorba@gmail.com"
+  ],
+  "demo_selection": [
+    {
+      "segment": "attendee",
+      "selected": "ahmad.hassan98@gmail.com",
+      "tier_used": "tier3",
+      "redirect_to": "kai8karma+attendee@gmail.com",
+      "fallback": true
+    },
+    {
+      "segment": "no_show",
+      "selected": "abautista@jollibee.com.ph",
+      "tier_used": "tier3",
+      "redirect_to": "kai8karma+noshow@gmail.com",
+      "fallback": true
+    },
+    {
+      "segment": "speaker",
+      "selected": null,
+      "tier_used": null
+    }
+  ],
+  "note": "No mail is sent by this module. A human sets status:'approved' with approved_by/approved_at and mode:'demo'|'full'; only then does the n8n dispatch node read dispatch_plan.json."
+}

@@ -1012,9 +1012,16 @@ def movement_disclosure(total: int, mix: dict, dates: dict) -> str:
         return "No stage transitions in this window."
     parts = []
     seeded = mix.get("seeded", 0)
+    history = mix.get("hubspot_history", 0)
     if seeded:
         parts.append(f"{seeded} of {total} transitions were written into the CRM by this "
                      f"pipeline's seed phase, not organic movement")
+    if seeded and history:
+        # Without this clause the seeded count reads as the only synthetic part, and
+        # the remainder as organic. In a demo portal the remainder was written by an
+        # earlier step of this same pipeline (M1's push), seconds or minutes earlier.
+        parts.append(f"the other {history} carry the CRM's own property-history label, which in a "
+                     f"seeded demo portal means an earlier step of this pipeline wrote them, not a buyer")
     if dates:
         day, count = max(dates.items(), key=lambda kv: kv[1])
         if count > total / 2 and len(dates) <= 2:

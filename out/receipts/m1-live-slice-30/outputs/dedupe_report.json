@@ -1,0 +1,38 @@
+{
+  "generated_at": "2026-09-13T09:44:22.228098+00:00",
+  "threshold": 0.8,
+  "method": "difflib.SequenceMatcher combined score = 0.25*ratio(email localpart) + 0.75*ratio(firstname+lastname+company); matched at combined >= 0.8",
+  "hubspot_source": "live",
+  "hubspot_dedupe_source": "live",
+  "counts": {
+    "total_input_rows": 30,
+    "fake_rows_excluded": 0,
+    "within_batch_duplicate_pairs": 0,
+    "hubspot_matches": 0,
+    "hubspot_candidate_pool_size": 21,
+    "net_new_contacts": 32,
+    "output_rows": 32,
+    "speakers_loaded": 2
+  },
+  "within_batch_duplicates": [],
+  "fake_rows_excluded": [],
+  "gray_zone_adjudication": {
+    "mode": "live",
+    "pairs_in_band": 1,
+    "pairs_evaluated": 1,
+    "pairs_skipped_over_cap": 0,
+    "pairs_merged": 0,
+    "pairs_no_merge": 1,
+    "parse_failures": 0,
+    "decisions": [
+      {
+        "pair_id": "wb:ahmad.hassan98@gmail.com|ahassan@maybank.com",
+        "kind": "within_batch",
+        "score": 0.656,
+        "decision": "no_merge",
+        "rationale": "Same first and last name, but email localparts differ (ahmad.hassan98 vs ahassan) with no clear pattern indicating they belong to the same person, and companies differ (Self-employed vs Maybank) with no overlapping detail to suggest a single individual; insufficient evidence to merge."
+      }
+    ],
+    "prompt": null
+  }
+}

@@ -146,7 +146,7 @@
       "linkedin": 5,
       "x": 3
     },
-    "images": 3,
+    "images": 0,
     "clips": 3,
     "grounding": {
       "checked": 39,
@@ -206,8 +206,8 @@
   "grounding": {
     "overall_pass": true,
     "totals": {
-      "claims_checked": 39,
-      "verified": 39,
+      "claims_checked": 46,
+      "verified": 46,
       "failed": 0
     },
     "report": "grounding_report.json"
@@ -224,7 +224,8 @@
     "youtube-thumbnail: image model returned HTTP 402 ({\"error\":{\"message\":\"Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more a) -- file skipped, no placeholder emitted",
     "social-square: image model returned HTTP 402 ({\"error\":{\"message\":\"Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more a) -- file skipped, no placeholder emitted",
     "social-portrait: image model returned HTTP 402 ({\"error\":{\"message\":\"Insufficient credits. This account never purchased credits. Make sure your key is on the correct account or org, and if so, purchase more a) -- file skipped, no placeholder emitted",
-    "no visuals shipped this run -- see per-image errors above"
+    "no visuals shipped this run -- see per-image errors above",
+    "grounding_report.json and summary.images were corrected after the run: the verifier had skipped every blog.md quote because it matched speakers by surname only, and the image count in summary counted attempts rather than files written. Re-verified at 46/46 with blog.md contributing 7 claims; 0 images shipped, as receipts/m3_images.json has always recorded."
   ],
   "assets": {
     "blog.md": {

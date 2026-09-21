@@ -4,7 +4,7 @@
   "source": {
     "type": "webhook",
     "description": "Zoom Webinar Registrants report (or GoTo/ON24 equivalent), same columns as data/incoming/registrants.csv, posted one row per registrant by n8n after the webinar platform's post-event export webhook fires.",
-    "n8n_upstream_workflow": "orchestrator/n8n/cloud/master.json (node before 'Push to Clay Table')",
+    "n8n_upstream_workflow": "orchestrator/n8n/railway/m1-lead-enrichment.json (node before the Clay push)",
     "webhook_url_placeholder": "https://api.clay.com/v3/sources/webhook/<CLAY_WEBHOOK_ID>",
     "trigger": "manual CSV import today; production trigger is the webinar platform's post-event webhook per clay_spec.md 'Source' section"
   },
@@ -255,7 +255,7 @@
     {
       "order": 1,
       "action": "HTTP API",
-      "description": "Callback that resumes the n8n workflow's Wait node once this Clay table's run completes, so the downstream 'Shape M1 Payload' step never reads clay_* fields before Clay finishes writing them (same pattern as orchestrator/n8n/cloud/master.json's 'Wait for Clay Enrichment Callback' node).",
+      "description": "Callback that resumes the n8n workflow's Wait node once this Clay table's run completes, so the downstream 'Shape M1 Payload' step never reads clay_* fields before Clay finishes writing them (same pattern as the Clay callback wait in orchestrator/n8n/railway/m1-lead-enrichment.json).",
       "trigger": "Clay table-level 'run complete' webhook (table Settings -> Webhooks -- NOT a per-column trigger, so partial/in-progress rows are never posted)",
       "target_url_placeholder": "https://<N8N_HOST>/webhook-waiting/<WORKFLOW_ID>/wait-for-clay-enrichment",
       "payload_shape": "body.rows[], each row containing every enrichment_columns field above under its clay_* key",

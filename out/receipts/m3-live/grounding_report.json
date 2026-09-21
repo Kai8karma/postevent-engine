@@ -1,15 +1,15 @@
 {
   "overall_pass": true,
   "totals": {
-    "claims_checked": 39,
-    "verified": 39,
+    "claims_checked": 46,
+    "verified": 46,
     "failed": 0
   },
   "assets": {
     "blog.md": {
       "asset": "blog.md",
-      "claims_checked": 0,
-      "verified": 0,
+      "claims_checked": 7,
+      "verified": 7,
       "failed_count": 0,
       "failed": [],
       "pass": true

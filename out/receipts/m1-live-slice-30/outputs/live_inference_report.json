@@ -1,0 +1,24 @@
+{
+  "mode": "live",
+  "backend": "openrouter",
+  "model_chain": [
+    "nvidia/nemotron-3-super-120b-a12b:free"
+  ],
+  "inference_batches": 1,
+  "inference_rows_flagged": 6,
+  "inference_rows_patched": 1,
+  "inference_parse_failures": 0,
+  "firmographics_batches": 4,
+  "firmographics_companies": 27,
+  "firmographics_companies_resolved": 27,
+  "firmographics_parse_failures": 0,
+  "icp_batches": 3,
+  "icp_rows_flagged": 32,
+  "icp_rows_annotated": 0,
+  "icp_rows_scored_by_llm": 0,
+  "icp_rows_rules_fallback": 32,
+  "icp_parse_failures": 3,
+  "prompts": [],
+  "icp_rows_agreeing_with_rules": 0,
+  "icp_disagreements_flagged": 0
+}

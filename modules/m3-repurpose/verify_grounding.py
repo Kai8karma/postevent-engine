@@ -85,6 +85,11 @@ QUOTE_ATTRIBUTION_WINDOW_AFTER = 120
 # a thumbnail headline or a title option quoted for emphasis is not a claim
 # that a speaker said those words, even if a speaker's name is nearby.
 SKIP_QUOTE_HEADING_RE = re.compile(r"headline options|thumbnail brief", re.IGNORECASE)
+# A quote may elide material with an ellipsis. Each side is verified separately.
+ELLIPSIS_RE = re.compile(r"\s*(?:\u2026|\.\.\.)\s*")
+# Below this length a fragment carries too little signal to fuzzy-match usefully
+# (an "and so..." tail), so it is not treated as a separate claim.
+MIN_QUOTE_FRAGMENT_CHARS = 25
 HEADING_RE = re.compile(r"^#{1,6}\s+(.*)$", re.MULTILINE)
 
 
@@ -162,12 +167,21 @@ def best_quote_match(quote: str, windows: list):
 
 
 def _mentions_speaker(window: str, speaker_names: list) -> bool:
+    """True when the window attributes speech to a named speaker.
+
+    Matches the full name and ANY token of it on word boundaries, not just the
+    surname. An earlier version checked the surname only, so prose that refers to
+    a speaker by first name -- "As Q explained," -- attributed nothing as far as
+    this function was concerned, and every quote in the blog was silently skipped
+    rather than checked. Over-matching is the safe direction here: a false positive
+    means an extra quote gets verified against the transcript, while a false
+    negative means an unverified quote ships looking verified."""
     for name in speaker_names:
         if name in window:
             return True
-        last = name.split()[-1]
-        if len(last) > 2 and last in window:
-            return True
+        for token in name.split():
+            if re.search(rf"\b{re.escape(token)}\b", window):
+                return True
     return False
 
 
@@ -293,6 +307,33 @@ def verify_asset(name: str, text: str, turns: list, windows: list, valid_ts_seco
                     claims.append(claim2)
 
     for q in find_quotes(text, speaker_names):
+        # An elided quote ("first part... second part") is one claim made of several
+        # spans. Matched whole, it can never score well against any single transcript
+        # window, because the transcript contains the words the ellipsis removed. Each
+        # fragment is therefore matched on its own and the quote passes only if every
+        # fragment does -- eliding is allowed, misquoting is not.
+        fragments = [f.strip(" ,;:") for f in ELLIPSIS_RE.split(q)]
+        fragments = [f for f in fragments if len(f) >= MIN_QUOTE_FRAGMENT_CHARS]
+        if len(fragments) > 1:
+            per_fragment = [(f,) + best_quote_match(f, windows) for f in fragments]
+            worst = min(per_fragment, key=lambda r: r[1])
+            ok = all(r[1] >= QUOTE_RATIO_THRESHOLD for r in per_fragment)
+            claim = {
+                "type": "quote",
+                "elided": True,
+                "text": q,
+                "verified": ok,
+                "fragments": [{"text": f, "ratio": round(r, 3), "location": label}
+                              for f, r, _snippet, label in per_fragment],
+                "best_match_ratio": round(worst[1], 3),
+                "best_match_window": worst[2],
+                "best_match_location": worst[3],
+            }
+            if not ok:
+                claim["reason"] = (f"elided quote: fragment {worst[0]!r} matched no transcript window "
+                                   f"at ratio >= {QUOTE_RATIO_THRESHOLD} (best {worst[1]:.3f})")
+            claims.append(claim)
+            continue
         ratio, snippet, label = best_quote_match(q, windows)
         ok = ratio >= QUOTE_RATIO_THRESHOLD
         claim = {

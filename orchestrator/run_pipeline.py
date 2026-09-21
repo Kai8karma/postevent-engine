@@ -53,13 +53,11 @@ runs, one line stating plainly whether this is the offline cached-output
 replay or a live LLM call -- so a judge watching the terminal is never
 left to assume AI ran live when it didn't.
 
-MODULE LANE BANNER (added post-judge-review): the offline lane runs in well
-under a second, which reads as "just scripts" to a judge who runs before
-reading docs/index.html. On offline runs only, main() prints a compact
-per-module table (mirrors the thesis table in docs/index.html) before any
-stage runs, showing what each module replays/computes offline vs. what the
-LLM actually does with --live. demo.sh's offline fallback path re-execs this
-same script without --live, so it inherits the banner automatically.
+MODULE LANE BANNER: the --offline lane runs in well under a second, which
+reads as "just scripts" to a reviewer who runs before reading the README. On
+offline runs only, main() prints a compact per-module table before any stage
+runs, showing what each module replays or computes offline versus what the
+model does on the default live lane.
 
 M3 EXTRA STAGES (transcription / visuals / publish): SPEC.md's M3 tool list
 names a "Transcription API" and "image generation for visual assets", and
@@ -479,15 +477,15 @@ def m4_summary(stdout: str, stderr: str, key_output: Path) -> str:
 
 
 MODULE_LANES = [
-    ("M1 Enrichment", "Deterministic rules: difflib dedupe + lookup-table field inference. No LLM call.",
-     "Real LLM field inference via --live (claude -p or OpenRouter, per LLM_BACKEND); Clay waterfall enrichment in production."),
-    ("M2 Comms", "Cached LLM-generated copy replayed from sample_output/, fingerprint-guarded.",
-     "Live LLM call regenerates the segment's takeaway/quote copy; recipients come from M1's deduped output."),
-    ("M3 Repurposing", "Cached LLM-generated copy replayed from sample_output/, fingerprint-guarded.",
-     "Live LLM call regenerates blog/YouTube/infographic/social, then verify_grounding.py checks every quote and timestamp back against the transcript."),
-    ("M4 Dashboard", "Computed metrics (real math over the synced snapshot) + labeled rules-lane narrative.",
-     "Live LLM anomalies/interest scores/narrative in the analyze phase, deterministic math validating "
-     "it; the rendered page refreshes the narrative from the module API's /narrative/<run_id>."),
+    ("M1 Enrichment", "--offline: difflib dedupe + lookup-table field inference, rule-table ICP. No model call.",
+     "default: model adjudicates gray-zone duplicate pairs and infers firmographics; rules validate the ICP tier."),
+    ("M2 Comms", "--offline: replays sample_output/, guarded by a transcript fingerprint.",
+     "default: model extracts from the transcript and writes the three segment variants; the grounding verifier checks them."),
+    ("M3 Repurposing", "--offline: replays sample_output/, guarded by a transcript fingerprint.",
+     "default: model writes blog/YouTube/infographic/social, then verify_grounding.py checks quotes and timestamps against the transcript."),
+    ("M4 Dashboard", "--offline: real math over a fixture snapshot + a labelled rules-lane narrative.",
+     "default: model produces anomalies, interest scores, the movement narrative and committees; deterministic math "
+     "validates it and records every disagreement."),
 ]
 
 
@@ -497,8 +495,8 @@ def print_module_lane_banner():
     docs/index.html sees 'some scripts ran fast' instead of the AI substance
     behind each module. Wording mirrors the thesis table in docs/index.html
     verbatim; keep the two in sync if either changes. Budget: <=12 lines."""
-    print("=== What each module does: offline lane (this run) vs --live (production) ===")
-    headers = ("Module", "Offline lane -- what it replays/computes", "--live lane -- what the LLM does")
+    print("=== What each module does: --offline replay (this run) vs the default live lane ===")
+    headers = ("Module", "--offline -- what it replays/computes", "default lane -- what the model does")
     widths = [max(len(headers[i]), *(len(row[i]) for row in MODULE_LANES)) for i in range(3)]
     fmt = "  ".join(f"{{:<{w}}}" for w in widths)
     print(fmt.format(*headers))
@@ -508,18 +506,13 @@ def print_module_lane_banner():
 
 def print_stage_banner(stage_name: str, live: bool):
     if live:
-        backend = (os.environ.get("LLM_BACKEND") or "auto").strip().lower()
-        if backend == "openrouter":
-            engine = f"OpenRouter ({os.environ.get('OPENROUTER_MODEL') or 'module default model'})"
-        elif backend == "claude":
-            engine = "claude -p"
-        else:
-            engine = "claude -p (OpenRouter fallback if unavailable)"
-        print(f"[live lane] {stage_name}: invoking {engine} at runtime for real generation "
-              f"-- use no flag / omit --live to replay cached outputs instead")
+        model = (os.environ.get("OPENROUTER_MODEL") or "the module's default model chain").split(",")[0]
+        print(f"[live lane] {stage_name}: calling OpenRouter ({model}) at runtime for real "
+              f"generation -- pass --offline to replay this repo's checked-in output instead")
     else:
-        print(f"[offline lane] {stage_name}: replaying cached AI outputs (generated by Claude "
-              f"at build time) -- use --live for runtime generation")
+        print(f"[offline lane] {stage_name}: replaying this repo's checked-in model output "
+              f"(the model that produced it is recorded in that module's "
+              f"sample_output/.fingerprint.json) -- omit --offline for a live run")
 
 
 # The M3 extras (transcribe/visuals/publish) are real code, not LLM-cached-

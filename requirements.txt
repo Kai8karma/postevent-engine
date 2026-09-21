@@ -1,5 +1,12 @@
-# No third-party dependencies. api/run.py and every modules/*/**.py script
-# it invokes are stdlib-only by design (see modules/*/README.md).
+# No third-party dependencies are installed for the pipeline itself: every
+# modules/*/**.py script and the module API in api/server.py are stdlib-only
+# by design (see modules/*/README.md).
+#
+# One optional exception, deliberately not pinned here: M3's clip captions and
+# image post-processing import Pillow lazily (modules/m3-repurpose/make_clips.py
+# and gen_visuals.py). Without it those two features degrade with a warning
+# instead of failing; nothing else in the pipeline imports it. It is left out of
+# this file so the deployed function stays dependency-free.
 #
 # This file exists so Vercel's build detects a Python runtime for api/run.py
 # (a Python function directory needs a requirements.txt present at the repo
