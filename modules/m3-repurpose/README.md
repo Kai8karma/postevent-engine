@@ -12,7 +12,7 @@ compatibility.
 | YouTube chapters + description + thumbnail brief | `youtube.md` | `## Chapters` / `## Description` / `## Thumbnail Brief` |
 | Infographic outline | `infographic.md` | `## Headline Options` / `## Data Points` (6–8 points) / `## Layout` |
 | Social posts | `social.md` | 5–10 `### Post` blocks (`prompts/social.md` currently asks for exactly 8: 5 LinkedIn + 3 X, one hook style each, never used twice) |
-| Clips, 16:9 + 9:16, burned captions | `clips/*.mp4` + `*.srt` | top 3 moments, `--clips` (ffmpeg) |
+| Clips, 16:9 + 9:16, burned captions | `clips/*.mp4` + `*.srt` | top 3 moments, `--clips` (ffmpeg). The committed run under `out/receipts/m3-live/clips/` ships the 3 `.srt` files and 3 `-thumb.png` stills only — the six MP4s are **not** in the package; re-run `make_clips.py` against the source media to regenerate them |
 | Thumbnail + 2 social images | `visuals/*.png` | `--images` (real image model) |
 | Saved to shared drive, tagged by event | not written by this script | the n8n M3 workflow uploads `manifest.json`'s files to a Drive folder named `Post-Event/<event_slug>/<run_id>`; the module API's `record` phase then writes the folder/file ids back into `manifest.json.shared_drive` |
 
@@ -44,7 +44,10 @@ compatibility.
    checks that every `Stat N` referenced in `## Layout` exists in `## Data Points`. This is a
    hard gate: a failing report first gets one corrective regeneration per failing asset if LLM
    budget remains (`repair_grounding`), and if it still fails, `run()` raises and the run fails —
-   the drafts stay on disk but are not shipped.
+   the drafts stay on disk but are not shipped. On the committed run
+   (`out/receipts/m3-live/grounding_report.json`) that came to 39 checks, all passing, split
+   `youtube.md` 18 / `infographic.md` 12 / `social.md` 9. `blog.md` records `claims_checked: 0`
+   in that report — the blog draft was not covered by it, so do not read 39/39 as covering it.
 4. **Call budget**: `--budget` (default `LLM_CALL_BUDGET = 8`) caps completions —1 extraction + 4
    assets + spec-gate/grounding retries all draw from it. A separate `transient_allowance` (4)
    caps failed HTTP attempts (timeouts, 429/5xx) before the run gives up rather than hammering a

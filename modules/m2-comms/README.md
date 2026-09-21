@@ -91,6 +91,8 @@ transcript or event.
 ## Receipts
 
 `receipts/m2_llm_calls.json` logs every HTTP attempt: `ts`, `backend`, `model`, `purpose`,
-`prompt_chars`, `latency_ms`, `http_status`, `parse_ok`, `error`. It is written even when the run
+`prompt_chars`, `latency_ms`, `http_status`, `parse_ok`, `error`. The committed run
+(`out/receipts/m2-live/m2_llm_calls.json`) ran all four calls on `google/gemini-2.5-flash-lite`,
+a paid model, not the free chain the command above exports — roughly half a US cent for the run. It is written even when the run
 fails, so the cost of a failed run is visible. `grounding.json` lists every check and its verdict;
 `comms.json` carries the lane, model, call count, snapshot and the suppressed-contact trail.

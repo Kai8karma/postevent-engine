@@ -28,9 +28,20 @@ rather than trusted blind:
   checked against `icp_tier()`'s deterministic formula as validator; a model
   tier more than one level from the rule tier still ships, but sets
   `needs_review_reason=icp_disagreement` for a human to adjudicate.
+  **In the committed live slice this job produced nothing.** All three ICP
+  batches came back unusable against the free model's per-batch deadline, so
+  `quality_report.json` records `icp_parse_failures: 3`,
+  `icp_rows_scored_by_llm: 0`, `icp_rows_rules_fallback: 32` and
+  `source_mix.icp_source: {rules: 32}` -- every tier in that slice is the
+  rule table's. Read the ICP bullet as a capability the code exercises, and
+  that receipt as a run where it degraded, loudly and on the record.
 - **Gray-zone dedupe adjudication** (`prompts/dedupe_adjudication.md`) --
   pairs scoring in `[0.65, 0.80)`, too ambiguous for the fixed threshold,
-  capped at 20 pairs/run.
+  capped at 20 pairs/run. In the committed live slice the band caught one
+  pair (within-batch), the model ruled `no_merge` with a written rationale
+  (`outputs/dedupe_report.json.gray_zone_adjudication`), and the live
+  HubSpot-side search logged `matches: 0, gray_zone_pairs: 0` in
+  `m1_hubspot_dedupe.json` -- so no CRM-side pair reached the model there.
 
 Lifecycle stage is **not** inferred -- `lifecycle_target()` derives it from
 tier + attendance + session length by a pinned rubric, only overwriting an
@@ -99,9 +110,12 @@ Every LLM call appends to `<out>/receipts/m1_llm_calls.json`; every HubSpot
 dedupe search appends to `<out>/receipts/m1_hubspot_dedupe.json`
 (`hubspot_dedupe_source` records which: `live`, `live_error`, `unavailable`,
 or `fixture`). A real 30-row live slice is checked in at
-`out/receipts/m1-live-slice-30/` -- 96.2% contact / 93.0% company verified
-completeness, 10 LLM calls, 7 parsed cleanly; cite it as a slice, not the
-full-file result.
+`out/receipts/m1-live-slice-30/`, with that run's own output files under
+`outputs/` (`hubspot_ready.csv`, `hubspot_contacts.csv`,
+`hubspot_companies.csv`, `enriched.json`, `dedupe_report.json`,
+`live_inference_report.json`) -- 96.2% contact / 93.0% company verified
+completeness, 10 LLM calls attempted and 7 parsed cleanly, ICP tiers 32/32
+from the rule table; cite it as a slice, not the full-file result.
 
 ## Known limits
 

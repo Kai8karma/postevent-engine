@@ -11,5 +11,5 @@ fresh against the current build:
 
 - `docs/module-api.md` for the phase-by-phase contract each module exposes.
 - `modules/*/README.md` for what each module actually produces and shows.
-- `_internal/REVISION-PLAN-2026-09-12.md` for the current build state —
-  what's live, what's still gated on a key or a scope.
+- `README.md`'s Status section for the current build state — what a receipt
+  backs, and what is still gated on a key or a scope.

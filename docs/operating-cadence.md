@@ -26,10 +26,12 @@ by default now, `--offline` opts out, `--modules m1,m4` runs a subset (see
    leaves the system before that.
 4. **M3 runs independently of M1/M2's gate** — content repurposing doesn't
    block on comms approval, and vice versa.
-5. **M4 needs M1's push and M2's logged sends already in HubSpot before it
-   means anything.** It seeds this event's engagement stream into HubSpot
-   itself (once, by hand, `seed:true`), then every scheduled run reads the
-   portal back — it does not read M1's local output files directly; HubSpot
+5. **M4 needs M1's push already in HubSpot before it means anything**, and
+   would also read M2's engagement logs once sends actually happen — they
+   have not: no email has been dispatched on any run, and the only `emails`
+   object in the committed snapshot is a logger probe. It seeds this event's
+   engagement stream into HubSpot itself (once, by hand, `seed:true`), then
+   every scheduled run reads the portal back — it does not read M1's local output files directly; HubSpot
    is the source of truth (see `docs/module-api.md`'s M4 table).
 
 There is no cross-event step in this cycle today — each run is scoped to

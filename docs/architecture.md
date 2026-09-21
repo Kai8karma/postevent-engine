@@ -35,15 +35,18 @@ Reading it: M1 is the only module that writes to HubSpot's contact/company
 records — M2 and M4 both trust what it wrote rather than re-reading the raw
 registrant list. M3 has zero dependency on M1/M2 — it works straight off
 the transcript. M4 is the sink: it seeds this event's engagement stream
-into HubSpot itself, then reads the portal back (M1's push, M2's logged
-sends, and its own seed), so it can't produce a meaningful dashboard until
-M1 has run at least once.
+into HubSpot itself, then reads the portal back (M1's push, its own seed,
+and whatever `emails` objects the portal holds), so it can't produce a
+meaningful dashboard until M1 has run at least once. The M2 leg of that
+read is empty in practice: **no email has been sent**, and the only
+`emails` object in the committed snapshot is a logger probe.
 
 ## How it runs today
 
 Live is the default lane end to end — every module calls its real backend
-(HubSpot, Clay, OpenRouter, Sarvam, Google Drive) unless a run explicitly
-asks for the offline lane (`--offline` on the module CLIs, `"live": false`
+(HubSpot, Clay, OpenRouter, Sarvam) unless a run explicitly
+asks for the offline lane. The Google Drive leg is wired but has never run:
+no OAuth credential is connected and `manifest.json.shared_drive` is empty (`--offline` on the module CLIs, `"live": false`
 on the module API). Offline replays a labelled fixture and makes zero
 network calls; it's the fallback, not the demo default.
 
@@ -56,17 +59,17 @@ flowchart LR
     api --> or["OpenRouter (LLM + image gen)"]
     api --> sarvam["Sarvam STT (M3)"]
     n8n --> drive["Google Drive (M3 upload)"]
-    api -. "GET /narrative?refresh=1" .-> vercel["Vercel: web/index.html console<br/>+ docs/index.html control room<br/>+ api/narrative.js proxy"]
+    api -. "GET /narrative?refresh=1" .-> vercel["Vercel: web/index.html console<br/>+ docs/index.html control room<br/>+ modules/m4-dashboard/api/narrative.js proxy"]
 ```
 
 `api/server.py` is the one process that shells out to each module's real
 script (`enrich.py`, `comms.py`, `repurpose.py`, `dashboard.py`) — n8n never
-calls a module script directly, only this HTTP layer. n8n's earlier Cloud
-trial instance expired (404, gone); the persistent orchestrator today is
-self-hosted n8n on Railway. `orchestrator/n8n/local-demo/*.json` still
-imports into a no-account local n8n (Docker) and mirrors the same DAG via
-Execute Command nodes, for a walkthrough with no credentials — it isn't the
-shipped path.
+calls a module script directly, only this HTTP layer. The orchestrator this
+package ships is self-hosted n8n on Railway — the four workflows under
+`orchestrator/n8n/railway/` — and **none of them has been imported into a
+running n8n instance**. For a walkthrough with no n8n at all, the local
+equivalent of the same DAG is
+`python3 orchestrator/run_pipeline.py --offline --out out/replay`.
 
 Each module owns its own LLM-call helper rather than sharing one chokepoint
 script. Primary path is OpenRouter (`OPENROUTER_API_KEY`, read from env or

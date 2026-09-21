@@ -2,9 +2,11 @@
 
 HubSpot in, dashboard out. `dashboard.py` runs in four phases — `seed`, `sync`, `analyze`,
 `render` — and the portal is the source of truth: M1 pushed this event's contacts (tagged with
-the `postevent_event` property), M2 logged the email engagements as CRM `emails` objects, and M4
-writes the engagement stream and the lifecycle changes **into** HubSpot before reading anything
-back. Live is the default lane; `--offline` is the labelled fixture lane.
+the `postevent_event` property), M4 writes the engagement stream and the lifecycle changes
+**into** HubSpot before reading anything back, and `sync` reads back whatever `emails` objects
+the portal holds. **No email has been sent by M2** — the only `emails` object in the committed
+snapshot is a single logger probe (`snapshot.json.email_engagements`, subject `W2 logger probe`),
+not a delivered message. Live is the default lane; `--offline` is the labelled fixture lane.
 
 ## 1. What M4 produces
 
@@ -90,8 +92,10 @@ themselves: `seed` writes that stream into HubSpot through the public API, and H
 property history then holds the movement. Everything that came from it is labelled
 `source: "seeded"` in the seed receipt, on every snapshot engagement block, inside each movement
 window's `source_mix`, and on the page's badges. What is not seeded: the contacts and companies
-themselves (M1's push), the email engagements (M2's real sends), the CRM property history
-(HubSpot's), and every number on the dashboard (computed from what the API returned).
+themselves (M1's push), the CRM property history (HubSpot's), and every number on the dashboard
+(computed from what the API returned). The one email engagement in the committed snapshot is a
+logger probe, not a real send: M2 stops at `pending_human_approval` and no message has been
+dispatched on any run so far.
 
 ## 6. Tests
 

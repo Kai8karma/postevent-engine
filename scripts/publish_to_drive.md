@@ -7,21 +7,21 @@ implements both lanes below. Run it after any M3 run:
 python3 scripts/publish_deliverables.py --m3-out out/<slug>/m3
 ```
 
-It always copies the run's deliverables into a real local "shared drive"
+It copies the run's deliverables into a local "shared drive" directory
 (`out/shared-drive/<event_tag>/`, tagged by event, with an `INDEX.md` —
-zero network, zero credentials, genuinely works every time) and additionally
+zero network, zero credentials) and additionally
 uploads to Google Drive via the exact mechanism documented below whenever
 `GOOGLE_DRIVE_ACCESS_TOKEN` (or `--drive-token-env NAME`) holds a live OAuth
-access token — see the README's "Google Drive handoff" for how to mint one.
-No token → the Drive lane is skipped with a labelled reason in
-`publish_manifest.json`, never faked. This document remains the reference
-for the exact Drive API shape that code calls.
+access token. No token → the Drive lane is skipped with a labelled reason in
+`publish_manifest.json`, never faked. This document is the reference for the
+exact Drive API shape that code calls.
 
-Tonight's actual first Drive upload (`out/live-proof-drive/`) was done
-through the Google Drive MCP connector (an authenticated session, not raw
-HTTP), which was the right tool for a one-off interactive proof before this
-script existed but not something a script should shell out to in
-production. Below is the real mechanism `publish_deliverables.py` calls.
+**No Drive upload has run.** No Google Drive OAuth credential is connected
+to this project, `out/receipts/m3-live/manifest.json`'s `shared_drive` block
+is empty (`folder_url: null`, `folder_id: null`, `files: []`), and no Drive
+receipt exists anywhere in the package. Everything below is the mechanism
+`publish_deliverables.py` would call once a token exists — a specification,
+not a record.
 
 ## What `publish_deliverables.py` does, after M3 writes the 6 local files
 
@@ -45,7 +45,7 @@ for each event run:
        no share-by-email, unless a human explicitly requests it downstream.
 
     5. Record { folder_id, folder_webViewLink, [{name, id, webViewLink, size}] }
-       to the run's manifest (mirrors out/live-proof-drive/drive_manifest.json).
+       into the run manifest's shared_drive block (empty on every run so far).
 ```
 
 ## Endpoint
@@ -78,7 +78,7 @@ Content-Type: multipart/related; boundary=foo_bar_baz
 Content-Type: application/json; charset=UTF-8
 
 {
-  "name": "acmerevenue-2026-07-20 — blog.md",
+  "name": "darwinbox-ai-in-hr-2026-08-13 — blog.md",
   "parents": ["{folder_id}"],
   "mimeType": "text/markdown"
 }
@@ -98,14 +98,14 @@ Response is a `File` resource; `id` and (with `fields=id,webViewLink` on the
 request, or a follow-up `files.get`) `webViewLink` are what gets recorded in
 the manifest.
 
-## What was actually used tonight (not this)
+## State: not run
 
-Tonight's upload used the Google Drive MCP connector's `create_folder` /
-`create_file` / `search_files` tools, authenticated as the operator's own
-Google account via the existing MCP OAuth session — not a direct call to the
-endpoint above. That is the honest record of tonight's mechanism; see
-`out/live-proof-drive/README.md` and `out/live-proof-drive/drive_manifest.json`
-for the receipt (folder + 7 file ids/links). The API shape documented above
-is what a production integration in `repurpose.py` (or an n8n Google Drive
-node in `orchestrator/n8n/**`) would call instead of depending on an
-interactive MCP session.
+To be explicit, because this page reads like a runbook: **nothing here has
+been executed against Google Drive.** There is no Drive folder, no uploaded
+file, no folder or file id, and no Drive receipt in this repo. The local
+lane of `publish_deliverables.py` (copying deliverables into
+`out/shared-drive/<event_tag>/` with an `INDEX.md`) has likewise not been
+run for the committed M3 run — no such directory exists in the package. The
+Drive upload itself is wired into the n8n M3 workflow
+(`orchestrator/n8n/railway/m3-content-repurposing.json`), which has not been
+imported into a running n8n instance either.
