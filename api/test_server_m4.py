@@ -31,6 +31,8 @@ Scenarios:
      PUBLIC_DASHBOARD=1.
 
 Run: python3 api/test_server_m4.py
+
+NOTE: this is a plain script, not unittest.TestCase. "python3 -m unittest <this file>" exits 0 reporting "Ran 0 tests" -- it does not find anything to run. Run it directly, as the Run line above shows.
 """
 import json
 import os

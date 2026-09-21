@@ -11,7 +11,7 @@ M1 slice was pushed with `--event-tag darwinbox-ai-in-hr-2026-08-13`.
   same portal exactly, plus 1 email engagement logged earlier by M2. `events` is empty because
   the portal refuses custom event definitions; the counters carry the stream.
 - `analyze` — 4 of 4 LLM calls on a free OpenRouter model. The deterministic math graded the
-  model: 5 fields agreed, 2 disagreed, and every disagreement is recorded in
+  model: 4 fields agreed, 3 disagreed, and every disagreement is recorded in
   `analysis.json.llm.validator` rather than being overwritten.
 - `render` — `index.html`, numbers reconciling to `snapshot.json`.
 
@@ -22,7 +22,11 @@ seed phase, all on 2026-09-21, plus one older row. HubSpot's property history re
 history, which is true but would read as organic movement over weeks. Rows written inside the
 seed run are therefore labelled `seeded`, each window reports its timestamp dates, and the
 dashboard card states how many transitions the pipeline wrote and that this is a seeded
-developer test portal. The narrative states it too, in its second paragraph -- its opening
-sentence is about movement plateauing across the three windows.
+developer test portal. The narrative states it too: its opening sentence attributes the
+burst to the pipeline's seed phase, and its source-mix paragraph gives the 7 / 32 split. The
+narrative is model-written, so a re-run rewords it; the disclosure is what is enforced, not the
+wording or the paragraph order.
 
 Re-run on 2026-09-21 after the movement disclosure was sharpened: the earlier wording named only the 7 seed-written transitions, which left the other 32 reading as organic. They were written by this pipeline's own M1 push minutes earlier, and the disclosure now says so.
+
+Re-run again later the same day so the receipt records which model served each analysis purpose (`analysis.json.llm.model_by_purpose`) instead of a single run-level model name. That re-run changed the validator split from 5 agreements / 2 disagreements to 4 / 3, and rewrote the model-written narrative; the deterministic numbers (MQL rate, the 40 lifecycle transitions and every window's source mix) were identical across both runs. `index.html` was re-rendered from the committed `analysis.json`, so the page, `dashboard_data.json` and `analysis.json` all describe this run.

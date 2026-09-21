@@ -19,6 +19,8 @@ Scenarios:
   4. POST /run with a wrong bearer token -- asserts 401.
 
 Run: python3 api/test_server_m3.py
+
+NOTE: this is a plain script, not unittest.TestCase. "python3 -m unittest <this file>" exits 0 reporting "Ran 0 tests" -- it does not find anything to run. Run it directly, as the Run line above shows.
 """
 import json
 import os
