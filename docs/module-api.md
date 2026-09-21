@@ -1,8 +1,9 @@
 # Module API — contract (v2)
 
 One small HTTP service (`api/server.py`, stdlib only) hosts the four modules so n8n can call them
-as real pipeline stages. Deployed on Railway next to n8n (no serverless timeout). Vercel keeps
-the console + dashboard only.
+as real pipeline stages. Designed to run on Railway next to n8n (no serverless timeout). **Not deployed — no module-API
+URL is live;** `docs/deploy-module-api.md` is the procedure, not a record of a deployment. Vercel
+keeps the console + dashboard only, and is likewise not deployed in this build.
 
 ## Endpoints
 

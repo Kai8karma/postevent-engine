@@ -331,9 +331,9 @@
           </tr>
           <tr>
             <td><b>M1 — Lead List Enrichment</b><br>fuzzy match + dedupe against HubSpot, infer missing fields, enrich company data, score ICP fit, HubSpot-ready file above 90% complete</td>
-            <td><code class="mono">modules/m1-enrichment/enrich.py</code> (live default): HubSpot Search API dedupe → LLM adjudicates gray-zone pairs → LLM row inference + firmographics + ICP tier with rationale, rules validate → <code class="mono">--clay-results</code> merge with per-field <code class="mono">*_source</code> provenance (<b>wired, never executed</b> — no Clay run has happened) → <code class="mono">push_to_hubspot.py</code> upsert.<br><b>In the committed slice the ICP step produced nothing:</b> all three ICP batches came back unusable, so <code class="mono">icp_rows_scored_by_llm: 0</code> and all 32 tiers are the rule table's. The model work that receipt backs is the dedupe adjudication and the firmographic inference.</td>
+            <td><code class="mono">modules/m1-enrichment/enrich.py</code> (live default): HubSpot Search API dedupe → LLM adjudicates gray-zone pairs → LLM row inference + firmographics + ICP tier with rationale, rules validate → <code class="mono">--clay-results</code> merge with per-field <code class="mono">*_source</code> provenance (<b>wired, never executed</b> — no Clay run has happened) → <code class="mono">push_to_hubspot.py</code> upsert.<br><b>In the committed slice the ICP step produced nothing:</b> two ICP batches timed out against the free model's 90-second per-batch deadline, which retired that model for the run, so the third was never attempted, so <code class="mono">icp_rows_scored_by_llm: 0</code> and all 32 tiers are the rule table's. The model work that receipt backs is the dedupe adjudication and the firmographic inference.</td>
             <td><code class="mono">hubspot_ready.csv</code>, <code class="mono">hubspot_contacts.csv</code>, <code class="mono">hubspot_companies.csv</code>, <code class="mono">quality_report.json</code>, <code class="mono">dedupe_report.json</code>, <code class="mono">live_inference_report.json</code>.<br>Committed and openable: <code class="mono">out/receipts/m1-live-slice-30/outputs/hubspot_ready.csv</code>, <code class="mono">hubspot_contacts.csv</code>, <code class="mono">hubspot_companies.csv</code>, <code class="mono">enriched.json</code>, <code class="mono">dedupe_report.json</code>, <code class="mono">live_inference_report.json</code></td>
-            <td><code class="mono">out/receipts/m1-live-slice-30/</code> — live slice of 32 rows (30 registrants + the 2 speakers): 96.2% contact / 93.0% company verified completeness (bar is 90), 10 LLM calls attempted and 7 parsed cleanly, live HubSpot search, ICP tiers 32/32 from the rule table · push: <code class="mono">out/receipts/m1-push-slice30-2026-09-16.json</code> — 32 contacts, 23 companies, 27 associations <b>as reported by the upsert calls</b>; that receipt's <code class="mono">verify</code> block reads <code class="mono">not_run</code>, so no independent read-back ships with it</td>
+            <td><code class="mono">out/receipts/m1-live-slice-30/</code> — live slice of 32 rows (30 registrants + the 2 speakers): 96.2% contact / 93.0% company verified completeness (bar is 90), 10 LLM calls attempted and 7 parsed cleanly, live HubSpot search, ICP tiers 32/32 from the rule table · push: <code class="mono">out/receipts/m1-push-slice30-2026-09-21.json</code> — 32 contacts, 23 companies, 27 associations <b>as reported by the upsert calls</b>; that receipt's <code class="mono">verify</code> block reads <code class="mono">not_run</code>, so no independent read-back ships with it</td>
           </tr>
           <tr>
             <td><b>M2 — Post-Event Communications</b><br>segment-specific copy, subject variants, takeaways personalised by role/industry, UTM on every link, three variants inside 24h of close</td>
@@ -377,7 +377,7 @@
         <li><b>Gray-zone dedupe adjudication.</b> Pairs scoring in <code class="mono">[0.65, 0.80)</code> are too ambiguous for a fixed threshold, so the model sees both records and rules same-person or not — capped at 20 pairs per run, every decision written to <code class="mono">dedupe_report.json.gray_zone_adjudication</code>. In the committed slice the band caught exactly one pair, within-batch, and the model ruled <i>no merge</i> with a written rationale; the live HubSpot-side search logged <code class="mono">matches: 0, gray_zone_pairs: 0</code>, so no CRM-side pair reached the model in that run.</li>
         <li><b>Row inference.</b> Title, function and seniority for the contacts the rule cascade could not resolve (<code class="mono">modules/m1-enrichment/prompts/inference.md</code>).</li>
         <li><b>Firmographic inference.</b> Industry from <code class="mono">config/icp.yaml</code>'s own vocabulary, plus an employee-count estimate and a confidence, batched once per distinct company. Clay values overwrite the model's when they arrive; each field carries <code class="mono">industry_source</code> / <code class="mono">numemployees_source</code> (<code class="mono">clay|llm|rules|synthetic</code>).</li>
-        <li><b>ICP tier + rationale.</b> The model scores; <code class="mono">icp_tier()</code> recomputes the same tier deterministically. A model tier more than one level away still ships but sets <code class="mono">needs_review_reason=icp_disagreement</code> for a human to adjudicate. <b>That is the capability, not the committed receipt's result:</b> all three ICP batches came back unusable, so <code class="mono">icp_rows_scored_by_llm: 0</code>, <code class="mono">icp_rows_rules_fallback: 32</code> and <code class="mono">source_mix.icp_source: {rules: 32}</code> — every tier in that slice is the rule table's, recorded as such rather than passed off as model output.</li>
+        <li><b>ICP tier + rationale.</b> The model scores; <code class="mono">icp_tier()</code> recomputes the same tier deterministically. A model tier more than one level away still ships but sets <code class="mono">needs_review_reason=icp_disagreement</code> for a human to adjudicate. <b>That is the capability, not the committed receipt's result:</b> two ICP batches timed out against the free model's 90-second per-batch deadline, which retired that model for the run, so the third was never attempted, so <code class="mono">icp_rows_scored_by_llm: 0</code>, <code class="mono">icp_rows_rules_fallback: 32</code> and <code class="mono">source_mix.icp_source: {rules: 32}</code> — every tier in that slice is the rule table's, recorded as such rather than passed off as model output.</li>
       </ul>
     </div>
 
@@ -415,7 +415,7 @@
       (Q3 + 1.5×IQR) outlier fence, the weighted engagement score, the funnel and the 7/14/30-day movement windows
       compute the same quantities independently. Every mismatch is written to
       <code class="mono">analysis.json.llm.validator.disagreements</code> and printed on the dashboard — the committed
-      portal run records <b>5 agreements and 2 disagreements</b>, and nothing the model returned overwrote a number. Where a
+      portal run records <b>4 agreements and 3 disagreements</b>, and nothing the model returned overwrote a number. Where a
       model call fails, the module says so: M1 degrades that batch to the rule table with a warning and a lane reason,
       M2 and M3 fail the run rather than ship stale copy. No module presents a rules output as a model output.
     </div>
@@ -485,7 +485,7 @@
           <b>M1</b> — live slice of 32 rows (30 registrants + the 2 speakers): 96.2% contact / 93.0% company
           verified completeness, PASS against the brief's
           90% bar; live HubSpot dedupe search logged; 10 LLM calls attempted, 7 parsed. <b>ICP tiering in this slice
-          was not model work</b> — all three ICP batches came back unusable and all 32 tiers came from the rule
+          was not model work</b> — two ICP batches timed out against the free model's 90-second per-batch deadline, which retired that model for the run, so the third was never attempted and all 32 tiers came from the rule
           table; what this receipt backs as model work is one gray-zone adjudication and the firmographic inference.
           The push of 32 contacts / 23 companies / 27 associations into the test portal is <b>what the upsert calls
           reported</b>; that receipt's <code class="mono">verify</code> block reads
@@ -503,7 +503,7 @@
           12 lifecycle updates through the contact-property fallback — that 12 is writes issued; the movement windows
           attribute 7 transitions to the seed (<code class="mono">source_mix.seeded: 7</code>), and the receipts do
           not reconcile the gap further; sync 32 contacts + 23 companies over 6 HubSpot
-          calls all HTTP 200; analyze 4/4 completions, validator 5 agreements / 2 disagreements recorded), plus the
+          calls all HTTP 200; analyze 4/4 completions, validator 4 agreements / 3 disagreements recorded), plus the
           earlier fixture-snapshot analyze receipt. Tests: 37 zero-network tests in
           <code class="mono">modules/m4-dashboard/test_dashboard.py</code> and 76 assertions over the module API's M4
           surface in <code class="mono">api/test_server_m4.py</code>.
@@ -564,7 +564,7 @@
         <div class="label">Key output</div>
         <div class="keyout">hubspot_ready.csv + quality_report.json — verified completeness per the brief's own field list, ICP tier and rationale, region, owner, lifecycle stage, and a per-field source column</div>
         <div class="label">Receipt</div>
-        <div class="keyout mono">out/receipts/m1-live-slice-30/ · out/receipts/m1-push-slice30-2026-09-16.json</div>
+        <div class="keyout mono">out/receipts/m1-live-slice-30/ · out/receipts/m1-push-slice30-2026-09-21.json</div>
         <div class="card-links"><a href="../modules/m1-enrichment/README.md">Module README →</a> <a href="module-api.md">API contract →</a></div>
       </div>
 

@@ -4,8 +4,8 @@
 #
 # One optional exception, deliberately not pinned here: M3's clip captions and
 # image post-processing import Pillow lazily (modules/m3-repurpose/make_clips.py
-# and gen_visuals.py). Without it those two features degrade with a warning
-# instead of failing; nothing else in the pipeline imports it. It is left out of
+# and gen_visuals.py). gen_visuals.py degrades with a warning without it; make_clips.py
+# fails loud, because captions cannot be rendered at all; nothing else in the pipeline imports it. It is left out of
 # this file so the deployed function stays dependency-free.
 #
 # This file exists so Vercel's build detects a Python runtime for api/run.py

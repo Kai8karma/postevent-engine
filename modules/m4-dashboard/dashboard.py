@@ -7,9 +7,11 @@
     phases: seed | sync | analyze | render | all
 
 The HubSpot portal is the source of truth, not a local file: M1 pushed the event's
-contacts (tagged with the `postevent_event` contact property), M2 logged the email
-engagements as CRM v3 `emails` objects, and `seed` writes this event's engagement
-stream and lifecycle changes INTO HubSpot before `sync` reads anything back.
+contacts (tagged with the `postevent_event` contact property), M2 would log email
+engagements as CRM v3 `emails` objects once a dispatch happens -- none has in this
+build, so the only such object in the committed snapshot is a logger probe -- and
+`seed` writes this event's engagement stream and lifecycle changes INTO HubSpot
+before `sync` reads anything back.
 
 Lanes
   live (default)   real HubSpot + real OpenRouter calls; every call writes a receipt.
@@ -1695,7 +1697,12 @@ def build_dashboard_data(snapshot: dict, analysis: dict, event: dict) -> dict:
             for a in det["anomalies"]],
         "anomaly_detection": det["anomaly_detection"],
         "narrative": {"text": analysis["movement_narrative"], "source": analysis["narrative_source"],
-                      "generated_at": analysis["generated_at"], "model": analysis.get("model")},
+                      "generated_at": analysis["generated_at"],
+                      # The model that actually answered the movement-narrative prompt. When the
+                      # head of the fallback chain 503s on that prompt and a later model answers,
+                      # analysis["model"] (the first model to answer anything) misattributes it.
+                      "model": ((analysis.get("llm") or {}).get("model_by_purpose") or {})
+                               .get("movement_narrative") or analysis.get("model")},
         "validator": llm.get("validator", {"agreements": 0, "disagreements": []}),
         "receipts": ["receipts/m4_seed.json", "receipts/m4_hubspot_sync.json",
                      "receipts/m4_llm_calls.json"],

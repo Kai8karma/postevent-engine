@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 """Validate an M3 manifest.json against docs/module-api.md's M3 contract.
 
-Usage: python3 test_manifest.py <run_dir>   (default: out/verify-w3/m3)
+Usage: python3 test_manifest.py <run_dir>   (default: out/receipts/m3-live)
+
+The default is the committed run receipt, so this passes from a clean checkout of
+the package with no arguments. Point it at a fresh run dir to check that run.
 """
 import json
 import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-RUN = Path(sys.argv[1]) if len(sys.argv) > 1 else REPO_ROOT / "out" / "verify-w3" / "m3"
+RUN = Path(sys.argv[1]) if len(sys.argv) > 1 else REPO_ROOT / "out" / "receipts" / "m3-live"
 M = json.loads((RUN / "manifest.json").read_text())
 # Every value any current code path emits. "html_render" was a retired template
 # fallback: nothing writes it now, so accepting it would let a CSS render pass as
@@ -34,8 +37,25 @@ check("every file entry is complete", all({"name", "kind", "bytes", "source", "g
                                           for f in M["files"]))
 check("every source is a declared provenance", all(f["source"] in SOURCES for f in M["files"]))
 check("every kind is a declared kind", all(f["kind"] in KINDS for f in M["files"]))
-check("every listed file exists on disk with the stated size",
-      all((RUN / f["name"]).exists() and (RUN / f["name"]).stat().st_size == f["bytes"] for f in M["files"]))
+# make_package.sh deliberately excludes rendered video: the six clip MP4s total
+# ~460 MB, which is not a sendable attachment. They are listed in the manifest with
+# their real byte sizes because the run produced them. Everything else must be on
+# disk at the stated size, and each excluded MP4 must still be backed by the thumb
+# and SRT that ffmpeg and Sarvam wrote beside it -- so an MP4 that was never
+# rendered still fails, rather than hiding behind the packaging exclusion.
+EXCLUDED_SUFFIXES = (".mp4",)
+shipped = [f for f in M["files"] if not f["name"].endswith(EXCLUDED_SUFFIXES)]
+excluded = [f for f in M["files"] if f["name"].endswith(EXCLUDED_SUFFIXES)]
+
+check("every shipped file exists on disk with the stated size",
+      all((RUN / f["name"]).exists() and (RUN / f["name"]).stat().st_size == f["bytes"]
+          for f in shipped))
+check(f"every excluded video ({len(excluded)}) is declared with a real byte size",
+      bool(excluded) and all(f["bytes"] > 0 and f["source"] == "ffmpeg" for f in excluded))
+check("every excluded video has its thumb and SRT shipped as corroboration",
+      all((RUN / f["name"]).with_name(Path(f["name"]).name.rsplit("-", 1)[0] + "-thumb.png").exists()
+          and (RUN / f["name"]).with_name(Path(f["name"]).name.rsplit("-", 1)[0] + ".srt").exists()
+          for f in excluded))
 check("the four channel assets are listed", {"blog", "youtube", "infographic", "social"}
       <= {f["kind"] for f in M["files"]})
 check("text assets carry a grounded flag", all(isinstance(f["grounded"], bool) for f in M["files"]

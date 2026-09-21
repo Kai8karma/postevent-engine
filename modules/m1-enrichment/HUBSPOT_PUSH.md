@@ -24,7 +24,6 @@ nothing writes that file any more -- M2 writes `dispatch_plan.json` and
 missing-file guard before the `approval_gate.json` gate is even reached. The
 engagement logging that does run is `modules/m2-comms/log_dispatch.py` (the
 module API's m2 `log` phase, over n8n's `dispatch_results.json`), and
-`tools/log_dispatch_engagements.py` for the n8n demo dispatch's real Gmail
 sends.
 
 **Company sync, not upsert**: `run_company_sync()` searches

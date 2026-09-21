@@ -1,10 +1,10 @@
 {
   "event_slug": "darwinbox-ai-in-hr-2026-08-13",
-  "generated_at": "2026-09-21T15:58:13",
+  "generated_at": "2026-09-21T17:16:39",
   "lane": "live",
   "model": "nvidia/nemotron-3-super-120b-a12b:free",
   "narrative_source": "live",
-  "movement_narrative": "Pipeline movement has plateaued across the 7, 14, and 30-day windows, with nearly all activity concentrated in the last 7 days. The vast majority of transitions occurred on 2026-09-21, showing a sudden burst of movement rather than a steady climb. This activity was heavily concentrated in the subscriber and lead stages, though it pushed a few contacts further down the funnel.\n\nKey movement was seen with dsmith@chewy.com moving to opportunity and contacts from Apollo Hospitals and Chewy Ltd reaching marketingqualifiedlead. We also saw a transition to evangelist for kai8karma+speaker-qhamirani@gmail.com. It is important to note that 7 of the 39 transitions in the 7-day window were seeded by the pipeline, and the remaining 32 were written by the system in a demo portal, meaning this is not organic buyer movement.\n\nDespite the high volume of transitions, several engaged contacts have stalled. Specifically, contacts like rjohnson@wayfair.com, jwilson@planetfitness.com, and maryam.alzaabi@almarai.com remain in the subscriber stage without further progression.",
+  "movement_narrative": "In the last 7 days, 39 transitions occurred, all timestamped on 2026-09-21, reflecting a concentrated burst of activity driven by the pipeline\u2019s seed phase. Of these, 32 were labeled as hubspot_history \u2014 meaning they originated from earlier pipeline steps in the demo portal, not organic buyer behavior \u2014 while 7 were explicitly seeded movements. The movement concentrated in the subscriber and lead stages, with 17 subscribers and 14 leads created or updated, alongside 2 evangelists, 5 marketingqualifiedleads, and 1 opportunity. This contrasts with the 14- and 30-day windows, which each show 40 transitions: the additional transition in those longer windows occurred on 2026-09-13, when kai8karma+speaker-qhamirani@gmail.com moved from no stage to lead at HighLevel, indicating a slight early engagement that did not repeat or accelerate in the final week.\n\nThe accounts driving the 7-day movement include HighLevel (lead), Maybank (lead), Sea Limited Ltd (lead), Majid Al Futtaim (lead), Almarai (subscriber), Axis Bank (lead), Asian Paints (two leads), Qatar Airways (subscriber), HDFC Bank Ltd (subscriber), Chewy (lead and opportunity), Havells (lead), Persistent Systems (subscriber), OCBC (subscriber and lead), Sun Pharma (lead and subscriber), Godrej Consumer Products (lead), Talabat (lead), Emirates Group (subscriber), Apollo Hospitals (marketingqualifiedlead), and Darwinbox (evangelist, subscriber, lead). The seeded transitions on 2026-09-21 at 15:11:42 moved siriporn@ninjavan.co, yalsayed@qatarairways.com, sanjay.rao@hdfcbank.com, dsmith@chewy.com, neha.rao@havells.com, siti@ocbc.com, and vikramn@darwinbox.com to marketingqualifiedlead or opportunity stages \u2014 these are the only moves explicitly tagged as seeded and should not be mistaken for organic progression.\n\nContacts with engagement but no stage change include divya@gmail.com (Self-employed), rjohnson@wayfair.com (Wayfair), jwilson@planetfitness.com (PF), ahmad.hassan98@gmail.com (Self-employed), maryam.alzaabi@almarai.com (Almarai), nisha@yahoo.com (Self-employed Ltd), siriporn@ninjavan.co (NV), pkulkarni@asianpaints.com (asian paints), sanjay.reddy@asianpaints.com (asian paints), yalsayed@qatarairways.com (Qatar Airways), sanjay.rao@hdfcbank.com (HDFC Bank Ltd), dsmith@chewy.com (Chewy), siripornw@ocbc.com (OCBC Ltd), dgupta@persistent.com (Persistent Systems), siti@ocbc.com (OCBC), rverma82@rediffmail.com (Unknown), nehai@sunpharma.com (Sun Pharma), karan.sharma@godrejcp.com (Godrej Consumer Products), muhammad.abdullah@axiata.com (Axiata Ltd), rohann@sunpharma.com (Sun Pharma Ltd), nalfarsi@talabat.com (talabat), djohnson@chewy.com (Chewy Ltd), vikramn@darwinbox.com (Darwinbox), ahmeda@emirates.com (Emirates Group), amit@apollohospitals.com (Apollo Hospitals), and kai8karma+speaker-sudikorba@gmail.com (Darwinbox) \u2014 all of whom engaged but remained in their prior stage, indicating no progression despite interaction.\n\nSource mix: 7 of the 39 transitions in the 7-day window were seeded by the pipeline; the remaining 32 carry the hubspot_history label, which in this seeded demo portal reflects prior pipeline steps, not organic buyer movement.",
   "deterministic": {
     "as_of": "2026-09-21T15:11:42",
     "mql_rate": 0.5455,
@@ -1083,7 +1083,7 @@
         "contact": "dsmith@chewy.com",
         "metric": "engagement_interactions",
         "value": 14,
-        "rationale": "Extremely high engagement (14 interactions, weighted_score 43) yet stalled in 'opportunity' stage with no progression to customer; indicates possible sales process breakdown despite strong post-event intent.",
+        "rationale": "Extremely high engagement (14 interactions, weighted score 43) yet stalled in 'opportunity' stage with no progression to customer; indicates possible sales process breakdown despite strong post-event intent.",
         "evidence": [
           "opens=4",
           "clicks=2",
@@ -1095,25 +1095,40 @@
         ]
       },
       {
-        "contact": "sanjay.rao@hdfcbank.com",
+        "contact": "nalfarsi@talabat.com",
         "metric": "weighted_score",
-        "value": 11.5,
-        "rationale": "High engagement (3 opens, 3 clicks, 1 pageview) but zero form fills and stalled in 'marketingqualifiedlead' \u2014 suggests interest without conversion action, requiring SDR follow-up to uncover barriers.",
+        "value": 21.5,
+        "rationale": "High weighted score (21.5) from 2 form fills suggests strong intent, but contact remains in 'lead' stage with no movement to MQL or opportunity; SDR should prioritize for nurturing to avoid leakage.",
         "evidence": [
-          "opens=3",
-          "clicks=3",
+          "opens=1",
+          "clicks=0",
           "pageviews=1",
-          "form_fills=0",
-          "weighted_score=11.5",
-          "stage=marketingqualifiedlead",
+          "form_fills=2",
+          "weighted_score=21.5",
+          "stage=lead",
           "stage_history=[]"
+        ]
+      },
+      {
+        "contact": "amit@apollohospitals.com",
+        "metric": "weighted_score",
+        "value": 12.0,
+        "rationale": "Moderate engagement (weighted score 12.0) with 1 form fill and 1 pageview, yet stalled in 'marketingqualifiedlead' for over 20 days (last engaged 2026-09-11); suggests MQLs are not being routed to sales promptly.",
+        "evidence": [
+          "opens=2",
+          "clicks=0",
+          "pageviews=1",
+          "form_fills=1",
+          "weighted_score=12.0",
+          "stage=marketingqualifiedlead",
+          "last_engaged=2026-09-11T04:13:00"
         ]
       }
     ],
     "interest_scores": [
       {
         "contact_id": "dsmith@chewy.com",
-        "score": 100,
+        "score": 95,
         "rationale": "Highest weighted score, opportunity stage, senior title, recent engagement",
         "evidence": [
           "weighted_score=43.0",
@@ -1135,121 +1150,129 @@
         ]
       },
       {
+        "contact_id": "aisyah.abdullah@sea.com",
+        "score": 80,
+        "rationale": "VP title, recent engagement, solid form fill and clicks, lead stage",
+        "evidence": [
+          "title=VP Human Resources",
+          "weighted_score=17.0",
+          "stage=lead",
+          "last_engaged=2026-09-12T09:01:00",
+          "form_fills=1",
+          "clicks=2"
+        ]
+      },
+      {
         "contact_id": "siriporn@ninjavan.co",
         "score": 78,
-        "rationale": "MQL stage, balanced engagement, recent enough, mid-level title",
+        "rationale": "Marketing qualified lead, balanced engagement, recent enough",
         "evidence": [
           "stage=marketingqualifiedlead",
           "weighted_score=19.0",
           "opens=2",
           "clicks=2",
+          "pageviews=2",
+          "form_fills=1",
           "last_engaged=2026-08-21T14:50:00"
         ]
       },
       {
-        "contact_id": "aisyah.abdullah@sea.com",
-        "score": 75,
-        "rationale": "VP title, lead stage, recent engagement, solid form fill and clicks",
-        "evidence": [
-          "title=VP Human Resources",
-          "stage=lead",
-          "weighted_score=17.0",
-          "last_engaged=2026-09-12T09:01:00",
-          "form_fills=1"
-        ]
-      },
-      {
-        "contact_id": "yalsayed@qatarairways.com",
-        "score": 68,
-        "rationale": "Consistent engagement, lead stage, consultant title, recent",
-        "evidence": [
-          "opens=1",
-          "clicks=1",
-          "pageviews=1",
-          "form_fills=1",
-          "weighted_score=14.5",
-          "stage=lead",
-          "last_engaged=2026-08-21T23:04:00"
-        ]
-      },
-      {
-        "contact_id": "siti@ocbc.com",
-        "score": 65,
-        "rationale": "Lead stage, recent engagement, solid opens and clicks, attendee title",
-        "evidence": [
-          "stage=lead",
-          "weighted_score=14.0",
-          "opens=2",
-          "clicks=1",
-          "last_engaged=2026-09-08T03:15:00",
-          "form_fills=1"
-        ]
-      },
-      {
         "contact_id": "amit@apollohospitals.com",
-        "score": 60,
-        "rationale": "MQL stage, HRIS Manager, recent engagement, decent opens",
+        "score": 75,
+        "rationale": "Marketing qualified lead, recent engagement, HRIS Manager title",
         "evidence": [
           "stage=marketingqualifiedlead",
-          "title=HRIS Manager",
           "weighted_score=12.0",
+          "title=HRIS Manager",
+          "last_engaged=2026-09-11T04:13:00",
           "opens=2",
-          "last_engaged=2026-09-11T04:13:00"
-        ]
-      },
-      {
-        "contact_id": "mohammed.alsayed@majidalfuttaim.com",
-        "score": 58,
-        "rationale": "Lead stage, Head of People title, recent engagement, form fill",
-        "evidence": [
-          "stage=lead",
-          "title=Head of People",
-          "weighted_score=11.5",
-          "last_engaged=2026-09-04T21:02:00",
           "form_fills=1"
         ]
       },
       {
         "contact_id": "sanjay.rao@hdfcbank.com",
-        "score": 55,
-        "rationale": "MQL stage, high opens/clicks, no form fills, recent engagement",
+        "score": 72,
+        "rationale": "Marketing qualified lead, high opens and clicks, no form fills but strong activity",
         "evidence": [
           "stage=marketingqualifiedlead",
+          "weighted_score=11.5",
           "opens=3",
           "clicks=3",
-          "weighted_score=11.5",
+          "pageviews=1",
           "last_engaged=2026-08-30T19:48:00"
         ]
       },
       {
-        "contact_id": "ahmad.hassan98@gmail.com",
-        "score": 50,
-        "rationale": "Subscriber stage, self-employed, form fill, moderate recency",
+        "contact_id": "siti@ocbc.com",
+        "score": 70,
+        "rationale": "Lead stage, recent engagement, solid opens and form fill",
         "evidence": [
-          "stage=subscriber",
-          "title=HRIS Lead",
-          "weighted_score=10.5",
+          "stage=lead",
+          "weighted_score=14.0",
+          "opens=2",
+          "clicks=1",
           "form_fills=1",
-          "last_engaged=2026-08-16T19:15:00"
+          "last_engaged=2026-09-08T03:15:00"
+        ]
+      },
+      {
+        "contact_id": "mohammed.alsayed@majidalfuttaim.com",
+        "score": 68,
+        "rationale": "Lead stage, Head of People title, recent engagement, modest engagement",
+        "evidence": [
+          "stage=lead",
+          "weighted_score=11.5",
+          "title=Head of People",
+          "last_engaged=2026-09-04T21:02:00",
+          "opens=1",
+          "pageviews=1",
+          "form_fills=1"
         ]
       },
       {
         "contact_id": "ahassan@maybank.com",
-        "score": 45,
-        "rationale": "Lead stage, Head of Talent Acquisition, good clicks/pageviews, no form fill",
+        "score": 65,
+        "rationale": "Lead stage, Head of Talent Acquisition, good clicks and pageviews",
         "evidence": [
           "stage=lead",
-          "title=Head of Talent Acquisition",
           "weighted_score=8.5",
+          "title=Head of Talent Acquisition",
           "clicks=2",
           "pageviews=2",
           "last_engaged=2026-08-20T16:32:00"
         ]
       },
       {
+        "contact_id": "yalsayed@qatarairways.com",
+        "score": 62,
+        "rationale": "Lead stage, balanced low-to-moderate engagement, Consultant title",
+        "evidence": [
+          "stage=lead",
+          "weighted_score=14.5",
+          "opens=1",
+          "clicks=1",
+          "pageviews=1",
+          "form_fills=1",
+          "last_engaged=2026-08-21T23:04:00"
+        ]
+      },
+      {
+        "contact_id": "ahmad.hassan98@gmail.com",
+        "score": 58,
+        "rationale": "Subscriber stage but recent form fill, HRIS Lead title, self-employed",
+        "evidence": [
+          "stage=subscriber",
+          "weighted_score=10.5",
+          "title=HRIS Lead",
+          "form_fills=1",
+          "last_engaged=2026-08-16T19:15:00",
+          "opens=1"
+        ]
+      },
+      {
         "contact_id": "siripornw@ocbc.com",
-        "score": 30,
-        "rationale": "Subscriber stage, low engagement, recent but minimal signals",
+        "score": 45,
+        "rationale": "Subscriber stage, low engagement, recent activity, minimal signals",
         "evidence": [
           "stage=subscriber",
           "weighted_score=4.0",
@@ -1259,7 +1282,7 @@
         ]
       }
     ],
-    "movement_narrative": "Pipeline movement has plateaued across the 7, 14, and 30-day windows, with nearly all activity concentrated in the last 7 days. The vast majority of transitions occurred on 2026-09-21, showing a sudden burst of movement rather than a steady climb. This activity was heavily concentrated in the subscriber and lead stages, though it pushed a few contacts further down the funnel.\n\nKey movement was seen with dsmith@chewy.com moving to opportunity and contacts from Apollo Hospitals and Chewy Ltd reaching marketingqualifiedlead. We also saw a transition to evangelist for kai8karma+speaker-qhamirani@gmail.com. It is important to note that 7 of the 39 transitions in the 7-day window were seeded by the pipeline, and the remaining 32 were written by the system in a demo portal, meaning this is not organic buyer movement.\n\nDespite the high volume of transitions, several engaged contacts have stalled. Specifically, contacts like rjohnson@wayfair.com, jwilson@planetfitness.com, and maryam.alzaabi@almarai.com remain in the subscriber stage without further progression.",
+    "movement_narrative": "In the last 7 days, 39 transitions occurred, all timestamped on 2026-09-21, reflecting a concentrated burst of activity driven by the pipeline\u2019s seed phase. Of these, 32 were labeled as hubspot_history \u2014 meaning they originated from earlier pipeline steps in the demo portal, not organic buyer behavior \u2014 while 7 were explicitly seeded movements. The movement concentrated in the subscriber and lead stages, with 17 subscribers and 14 leads created or updated, alongside 2 evangelists, 5 marketingqualifiedleads, and 1 opportunity. This contrasts with the 14- and 30-day windows, which each show 40 transitions: the additional transition in those longer windows occurred on 2026-09-13, when kai8karma+speaker-qhamirani@gmail.com moved from no stage to lead at HighLevel, indicating a slight early engagement that did not repeat or accelerate in the final week.\n\nThe accounts driving the 7-day movement include HighLevel (lead), Maybank (lead), Sea Limited Ltd (lead), Majid Al Futtaim (lead), Almarai (subscriber), Axis Bank (lead), Asian Paints (two leads), Qatar Airways (subscriber), HDFC Bank Ltd (subscriber), Chewy (lead and opportunity), Havells (lead), Persistent Systems (subscriber), OCBC (subscriber and lead), Sun Pharma (lead and subscriber), Godrej Consumer Products (lead), Talabat (lead), Emirates Group (subscriber), Apollo Hospitals (marketingqualifiedlead), and Darwinbox (evangelist, subscriber, lead). The seeded transitions on 2026-09-21 at 15:11:42 moved siriporn@ninjavan.co, yalsayed@qatarairways.com, sanjay.rao@hdfcbank.com, dsmith@chewy.com, neha.rao@havells.com, siti@ocbc.com, and vikramn@darwinbox.com to marketingqualifiedlead or opportunity stages \u2014 these are the only moves explicitly tagged as seeded and should not be mistaken for organic progression.\n\nContacts with engagement but no stage change include divya@gmail.com (Self-employed), rjohnson@wayfair.com (Wayfair), jwilson@planetfitness.com (PF), ahmad.hassan98@gmail.com (Self-employed), maryam.alzaabi@almarai.com (Almarai), nisha@yahoo.com (Self-employed Ltd), siriporn@ninjavan.co (NV), pkulkarni@asianpaints.com (asian paints), sanjay.reddy@asianpaints.com (asian paints), yalsayed@qatarairways.com (Qatar Airways), sanjay.rao@hdfcbank.com (HDFC Bank Ltd), dsmith@chewy.com (Chewy), siripornw@ocbc.com (OCBC Ltd), dgupta@persistent.com (Persistent Systems), siti@ocbc.com (OCBC), rverma82@rediffmail.com (Unknown), nehai@sunpharma.com (Sun Pharma), karan.sharma@godrejcp.com (Godrej Consumer Products), muhammad.abdullah@axiata.com (Axiata Ltd), rohann@sunpharma.com (Sun Pharma Ltd), nalfarsi@talabat.com (talabat), djohnson@chewy.com (Chewy Ltd), vikramn@darwinbox.com (Darwinbox), ahmeda@emirates.com (Emirates Group), amit@apollohospitals.com (Apollo Hospitals), and kai8karma+speaker-sudikorba@gmail.com (Darwinbox) \u2014 all of whom engaged but remained in their prior stage, indicating no progression despite interaction.\n\nSource mix: 7 of the 39 transitions in the 7-day window were seeded by the pipeline; the remaining 32 carry the hubspot_history label, which in this seeded demo portal reflects prior pipeline steps, not organic buyer movement.",
     "committees": [
       {
         "company": "OCBC Ltd",
@@ -1267,15 +1290,15 @@
           "siti@ocbc.com",
           "siripornw@ocbc.com"
         ],
-        "why": "Siti (Attendee, lead) shows strong engagement with opens, clicks, and a form fill, indicating evaluator behavior, while Siripornw (Attendee, subscriber) engaged via a click and pageview, suggesting shared interest in AI in HR from different roles within the same organization."
+        "why": "Siti (Attendee, lead) shows strong engagement with opens, clicks, and a form fill, indicating economic buyer interest, while Siripornw (Attendee, subscriber) engaged with a click and pageview, suggesting evaluator-level research into AI in HR."
       }
     ],
     "top_contacts": [
       "dsmith@chewy.com",
       "nalfarsi@talabat.com",
-      "siriporn@ninjavan.co",
       "aisyah.abdullah@sea.com",
-      "yalsayed@qatarairways.com"
+      "siriporn@ninjavan.co",
+      "amit@apollohospitals.com"
     ],
     "top_accounts": [
       "OCBC Ltd"
@@ -1286,20 +1309,65 @@
       "30d": 40
     },
     "stalled_contacts": [
+      "divya@gmail.com",
       "rjohnson@wayfair.com",
       "jwilson@planetfitness.com",
-      "maryam.alzaabi@almarai.com"
+      "ahmad.hassan98@gmail.com",
+      "maryam.alzaabi@almarai.com",
+      "nisha@yahoo.com",
+      "siriporn@ninjavan.co",
+      "pkulkarni@asianpaints.com",
+      "sanjay.reddy@asianpaints.com",
+      "yalsayed@qatarairways.com",
+      "sanjay.rao@hdfcbank.com",
+      "dsmith@chewy.com",
+      "siripornw@ocbc.com",
+      "dgupta@persistent.com",
+      "siti@ocbc.com",
+      "rverma82@rediffmail.com",
+      "nehai@sunpharma.com",
+      "karan.sharma@godrejcp.com",
+      "muhammad.abdullah@axiata.com",
+      "rohann@sunpharma.com",
+      "nalfarsi@talabat.com",
+      "djohnson@chewy.com",
+      "vikramn@darwinbox.com",
+      "ahmeda@emirates.com",
+      "amit@apollohospitals.com",
+      "kai8karma+speaker-sudikorba@gmail.com"
     ],
     "rejected_candidates": [],
     "not_committees": [],
     "models_used": [
-      "nvidia/nemotron-3-super-120b-a12b:free",
-      "google/gemma-4-31b-it:free"
+      "nvidia/nemotron-3-super-120b-a12b:free"
     ],
+    "model_by_purpose": {
+      "anomalies": "nvidia/nemotron-3-super-120b-a12b:free",
+      "interest_scores": "nvidia/nemotron-3-super-120b-a12b:free",
+      "movement_narrative": "nvidia/nemotron-3-super-120b-a12b:free",
+      "committees": "nvidia/nemotron-3-super-120b-a12b:free"
+    },
     "shape_notes": [],
     "validator": {
-      "agreements": 5,
+      "agreements": 4,
       "disagreements": [
+        {
+          "field": "top_contacts_top5",
+          "deterministic": [
+            "dsmith@chewy.com",
+            "nalfarsi@talabat.com",
+            "siriporn@ninjavan.co",
+            "aisyah.abdullah@sea.com",
+            "yalsayed@qatarairways.com"
+          ],
+          "llm": [
+            "dsmith@chewy.com",
+            "nalfarsi@talabat.com",
+            "aisyah.abdullah@sea.com",
+            "siriporn@ninjavan.co",
+            "amit@apollohospitals.com"
+          ]
+        },
         {
           "field": "top_accounts_top5",
           "deterministic": [
@@ -1319,8 +1387,9 @@
             "dsmith@chewy.com"
           ],
           "llm": [
+            "amit@apollohospitals.com",
             "dsmith@chewy.com",
-            "sanjay.rao@hdfcbank.com"
+            "nalfarsi@talabat.com"
           ]
         }
       ]

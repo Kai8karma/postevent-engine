@@ -1,13 +1,31 @@
 #!/usr/bin/env python3
-"""Schema + grounding gate for an M2 run: python3 test_plan_schema.py <out_dir>"""
+"""Schema + grounding gate for an M2 run: python3 test_plan_schema.py <out_dir>
+
+Defaults to out/receipts/m2-live, the committed run receipt, so this passes from a
+clean checkout with no arguments and no prior run. A live run directory nests the
+plan at its root and the LLM receipt under receipts/; the committed receipt keeps
+the plan under outputs/ and the LLM receipt at its root. _resolve() accepts either
+layout and fails loudly naming every place it looked.
+"""
 import json
 import sys
 from pathlib import Path
 
-OUT = Path(sys.argv[1] if len(sys.argv) > 1 else "out/verify-w2/m2")
-plan = json.loads((OUT / "dispatch_plan.json").read_text())
-grounding = json.loads((OUT / "grounding.json").read_text())
-calls = json.loads((OUT / "receipts" / "m2_llm_calls.json").read_text())
+REPO_ROOT = Path(__file__).resolve().parents[2]
+OUT = Path(sys.argv[1]) if len(sys.argv) > 1 else REPO_ROOT / "out" / "receipts" / "m2-live"
+
+
+def _resolve(*candidates: str) -> Path:
+    for rel in candidates:
+        path = OUT / rel
+        if path.exists():
+            return path
+    raise SystemExit(f"test_plan_schema: none of {list(candidates)} found under {OUT}")
+
+
+plan = json.loads(_resolve("dispatch_plan.json", "outputs/dispatch_plan.json").read_text())
+grounding = json.loads(_resolve("grounding.json", "outputs/grounding.json").read_text())
+calls = json.loads(_resolve("receipts/m2_llm_calls.json", "m2_llm_calls.json").read_text())
 
 for key in ("run_id", "event_slug", "generated_at", "lane", "event_close_ts", "variants",
             "recipients", "approval", "counts"):

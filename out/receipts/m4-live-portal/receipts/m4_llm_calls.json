@@ -3,7 +3,7 @@
   "model": "nvidia/nemotron-3-super-120b-a12b:free",
   "budget": 4,
   "completions": 4,
-  "attempts": 9,
+  "attempts": 4,
   "deadline_s": 90,
   "calls": [
     {
@@ -14,105 +14,45 @@
       "prompt_chars": 4185,
       "tokens": {
         "prompt": 1436,
-        "completion": 300,
-        "total": 1736
+        "completion": 479,
+        "total": 1915
       },
-      "latency_ms": 4025,
+      "latency_ms": 5613,
       "http_status": 200,
-      "chars": 1013,
-      "ts": "2026-09-21T15:57:22"
+      "chars": 1503,
+      "ts": "2026-09-21T17:16:07"
     },
     {
       "model": "nvidia/nemotron-3-super-120b-a12b:free",
       "purpose": "interest_scores",
       "attempt": 1,
-      "ok": false,
-      "prompt_chars": 4036,
-      "tokens": null,
-      "latency_ms": 364,
-      "http_status": null,
-      "error": "provider error for 'nvidia/nemotron-3-super-120b-a12b:free': 503 Upstream error from Nvidia: Service temporarily overloaded",
-      "ts": "2026-09-21T15:57:22"
-    },
-    {
-      "model": "nvidia/nemotron-3-super-120b-a12b:free",
-      "purpose": "interest_scores",
-      "attempt": 2,
       "ok": true,
       "prompt_chars": 4036,
       "tokens": {
         "prompt": 1411,
-        "completion": 1387,
-        "total": 2798
+        "completion": 1429,
+        "total": 2840
       },
-      "latency_ms": 10963,
+      "latency_ms": 12452,
       "http_status": 200,
-      "chars": 3786,
-      "ts": "2026-09-21T15:57:38"
+      "chars": 3926,
+      "ts": "2026-09-21T17:16:19"
     },
     {
       "model": "nvidia/nemotron-3-super-120b-a12b:free",
       "purpose": "movement_narrative",
       "attempt": 1,
-      "ok": false,
-      "prompt_chars": 8481,
-      "tokens": null,
-      "latency_ms": 391,
-      "http_status": null,
-      "error": "provider error for 'nvidia/nemotron-3-super-120b-a12b:free': 503 Upstream error from Nvidia: Service temporarily overloaded",
-      "ts": "2026-09-21T15:57:39"
-    },
-    {
-      "model": "nvidia/nemotron-3-super-120b-a12b:free",
-      "purpose": "movement_narrative",
-      "attempt": 2,
-      "ok": false,
-      "prompt_chars": 8481,
-      "tokens": null,
-      "latency_ms": 287,
-      "http_status": null,
-      "error": "provider error for 'nvidia/nemotron-3-super-120b-a12b:free': 503 Upstream error from Nvidia: Service temporarily overloaded",
-      "ts": "2026-09-21T15:57:44"
-    },
-    {
-      "model": "nvidia/nemotron-3-super-120b-a12b:free",
-      "purpose": "movement_narrative",
-      "attempt": 3,
-      "ok": false,
-      "prompt_chars": 8481,
-      "tokens": null,
-      "latency_ms": 318,
-      "http_status": null,
-      "error": "provider error for 'nvidia/nemotron-3-super-120b-a12b:free': 503 Upstream error from Nvidia: Service temporarily overloaded",
-      "ts": "2026-09-21T15:57:54"
-    },
-    {
-      "model": "google/gemma-4-31b-it:free",
-      "purpose": "movement_narrative",
-      "attempt": 1,
-      "ok": false,
-      "prompt_chars": 8481,
-      "tokens": null,
-      "latency_ms": 501,
-      "http_status": 429,
-      "error": "HTTP 429 for 'google/gemma-4-31b-it:free': {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"google/gemma-4-31b-it:free is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integration",
-      "ts": "2026-09-21T15:57:55"
-    },
-    {
-      "model": "google/gemma-4-31b-it:free",
-      "purpose": "movement_narrative",
-      "attempt": 2,
       "ok": true,
       "prompt_chars": 8481,
       "tokens": {
-        "prompt": 3325,
-        "completion": 361,
-        "total": 3686
+        "prompt": 3229,
+        "completion": 1254,
+        "total": 4483
       },
-      "latency_ms": 11436,
+      "latency_ms": 18148,
       "http_status": 200,
-      "chars": 1291,
-      "ts": "2026-09-21T15:58:11"
+      "chars": 4042,
+      "ts": "2026-09-21T17:16:37"
     },
     {
       "model": "nvidia/nemotron-3-super-120b-a12b:free",
@@ -122,13 +62,13 @@
       "prompt_chars": 2196,
       "tokens": {
         "prompt": 626,
-        "completion": 132,
-        "total": 758
+        "completion": 136,
+        "total": 762
       },
-      "latency_ms": 1784,
+      "latency_ms": 1409,
       "http_status": 200,
-      "chars": 473,
-      "ts": "2026-09-21T15:58:13"
+      "chars": 472,
+      "ts": "2026-09-21T17:16:39"
     }
   ]
 }

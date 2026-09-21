@@ -139,17 +139,17 @@ def _script_help(script_path: Path) -> str:
 
 
 def lane_flags(script_path: Path, live: bool) -> list:
-    """Flip-default lane flag for one module script, detected from its own
-    --help rather than hardcoded here -- modules gain --offline support on
-    their own schedule (see enrich.py's in-progress --offline), independent
-    of this file. A script that already knows --offline: this file's own
-    default is now live, so only pass --offline when the offline lane was
-    requested. A script that still only knows --live (comms.py/repurpose.py
-    as of this writing): pass --live only when the live lane was requested
-    -- its own no-flag default stays offline, unchanged. Neither flag
-    supported: no flag either way. M4 does not come through here at all --
-    its lane flag is passed straight from the run's lane, see
-    build_m4_stages()."""
+    """Lane flag for one module script, detected from its own --help rather
+    than hardcoded here. In v2 live is the default lane everywhere and
+    --offline is the opt-out; enrich.py, comms.py and repurpose.py all
+    advertise --offline now, so in practice every module takes the first
+    branch below and --offline is passed only when the offline lane was
+    asked for. The --live branch is a fallback for a script that still
+    carries the v1 convention (offline default, --live to opt in); no module
+    in this repo takes it today, and the three that accept --live accept it
+    only for backward compatibility. Neither flag supported: no flag either
+    way. M4 does not come through here at all -- its lane flag is passed
+    straight from the run's lane, see build_m4_stages()."""
     help_text = _script_help(script_path)
     if "--offline" in help_text:
         return [] if live else ["--offline"]
@@ -162,8 +162,9 @@ def m3_extra_flags(script_path: Path, live: bool) -> list:
     """--clips/--images opt-in flags for repurpose.py's run phase -- only
     passed when the live lane is requested AND repurpose.py's own --help
     currently advertises them (same call-time-detection reasoning as
-    lane_flags() above; repurpose.py is gaining these concurrently, see
-    docs/module-api.md's M3 phase table)."""
+    lane_flags() above). repurpose.py advertises both today; the detection
+    stays so this file does not hard-depend on that, see
+    docs/module-api.md's M3 phase table."""
     if not live:
         return []
     help_text = _script_help(script_path)
@@ -250,7 +251,7 @@ def build_m4_stages(out_dir: Path, live: bool, event_dir: Path, args) -> list:
     return stages
 
 
-IMAGE_GEN_COST_ESTIMATE = "~$0.04-0.08 for 2 images (google/gemini-2.5-flash-image via OpenRouter). No image has been generated in this build: every attempt returned HTTP 402 on an unfunded key -- see out/receipts/m3-live/receipts/m3_images.json"
+IMAGE_GEN_COST_ESTIMATE = "~$0.06-0.12 for 3 images (google/gemini-2.5-flash-image via OpenRouter). No image has been generated in this build: every attempt returned HTTP 402 on an unfunded key -- see out/receipts/m3-live/receipts/m3_images.json"
 
 
 def build_transcribe_stage(event_dir: Path, out_dir: Path, args) -> tuple:
@@ -307,9 +308,9 @@ def build_visuals_stage(out_dir: Path, args) -> tuple:
         return ("skip", "M3 visuals", "--gen-visuals not passed (off by default -- real generation spends "
                 f"real OpenRouter credits, {IMAGE_GEN_COST_ESTIMATE})")
     m3_out = out_dir / "m3"
-    youtube_md, infographic_md = m3_out / "youtube.md", m3_out / "infographic.md"
-    if not (youtube_md.exists() and infographic_md.exists()):
-        return ("skip", "M3 visuals", f"M3 outputs not found ({youtube_md} / {infographic_md}) -- M3 must run and pass first")
+    youtube_md, extraction_json = m3_out / "youtube.md", m3_out / "extraction.json"
+    if not (youtube_md.exists() and extraction_json.exists()):
+        return ("skip", "M3 visuals", f"M3 outputs not found ({youtube_md} / {extraction_json}) -- M3 must run and pass first")
     manifest_path = m3_out / "manifest.json"
     if manifest_path.exists():
         try:
@@ -322,14 +323,17 @@ def build_visuals_stage(out_dir: Path, args) -> tuple:
                     "generated visuals inline, via --live-visuals passed straight through to the m3 "
                     "stage) -- skipping this separate post-stage so it doesn't silently overwrite "
                     "files the manifest already describes")
-    out = m3_out / "visuals"
+    # gen_visuals.py takes the M3 *run* directory as --out (it writes visuals/ and
+    # receipts/ beneath it) and builds its prompts from extraction.json + youtube.md
+    # + event.json. Same four arguments repurpose.py passes on its inline path.
     cmd = [sys.executable, str(REPO_ROOT / "modules" / "m3-repurpose" / "gen_visuals.py"),
-           "--youtube", str(youtube_md), "--infographic", str(infographic_md), "--out", str(out)]
+           "--out", str(m3_out), "--extraction", str(extraction_json),
+           "--youtube", str(youtube_md), "--event", str(Path(args.event_dir) / "event.json")]
     if not args.live_visuals:
         cmd.append("--dry-run")
     else:
         print(f"[cost] M3 visuals: about to spend real money -- {IMAGE_GEN_COST_ESTIMATE}")
-    return ("run", {"stage": "M3 visuals", "cmd": cmd, "key_output": out / "image_prompts.json"})
+    return ("run", {"stage": "M3 visuals", "cmd": cmd, "key_output": m3_out / "receipts" / "m3_images.json"})
 
 
 def build_publish_stage(out_dir: Path, args) -> tuple:

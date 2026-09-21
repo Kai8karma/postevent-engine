@@ -27,9 +27,9 @@ Steps, always run in order unless --dry-run just plans them:
      comms.json), so run_log_emails() hits its missing-file guard and returns
      status:"skipped" every time. The engagement logging that does run is
      modules/m2-comms/log_dispatch.py (the module API's m2 `log` phase, over
-     n8n's dispatch_results.json); tools/log_dispatch_engagements.py logs the
-     n8n demo dispatch's real Gmail sends. The code below is kept, unchanged,
-     for whenever a sends_log.json writer exists again.
+     n8n's dispatch_results.json). No dispatch has run in this build, so the
+     only email engagement in the portal is a logger probe. The code below is
+     kept, unchanged, for whenever a sends_log.json writer exists again.
   6. --verify           -- search contacts/companies by event_tag, print counts.
 
 Two lanes:

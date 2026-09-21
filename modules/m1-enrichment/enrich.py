@@ -3016,9 +3016,10 @@ def write_outputs(out_dir: Path, rows, fake_rows, dup_pairs, total_input, hs_mat
         "within_batch_duplicates": dup_pairs,
         "fake_rows_excluded": fake_rows,
     }
-    # only present when --live/--live-dry-run were passed AND at least one
-    # gray-zone pair existed -- default (offline) run leaves dedupe_report.json
-    # exactly as before. See run_dedupe_adjudication()'s docstring.
+    # only present when the live or --live-dry-run lane ran AND at least one
+    # gray-zone pair existed. Live is the default lane, so a plain run does
+    # include this block; an --offline run leaves dedupe_report.json without
+    # it. See run_dedupe_adjudication()'s docstring.
     if dedupe_adjudication_report is not None:
         dedupe_report["gray_zone_adjudication"] = dedupe_adjudication_report
     with open(out_dir / "dedupe_report.json", "w", encoding="utf-8") as f:

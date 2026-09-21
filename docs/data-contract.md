@@ -76,9 +76,9 @@ in from `speakers.json`/`segments.json`. Live counts (excluded/duplicate/
 HubSpot-matched/output rows) are per-run, written fresh to
 `dedupe_report.json` — don't trust a fixed number here over that file. A
 checked-in 30-row live slice with real counts is at
-`out/verify-w1/m1/dedupe_report.json` and `out/receipts/m1-live-slice-30/`
+`out/receipts/m1-live-slice-30/outputs/dedupe_report.json` and `out/receipts/m1-live-slice-30/`
 (0 fake rows excluded, 0 within-batch duplicates against the post-purge
-sandbox, 32 output rows, 9 gray-zone pairs adjudicated; 96.2% contact /
+sandbox, 32 output rows, 1 gray-zone pair adjudicated; 96.2% contact /
 93.0% company verified completeness, per M1's own README) — cite that as a
 slice, not a full-150-row result.
 

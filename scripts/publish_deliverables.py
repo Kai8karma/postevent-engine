@@ -24,8 +24,7 @@ Why local is the default and Drive is opt-in: Drive OAuth access tokens
 expire hourly and require a 3-legged consent flow this stdlib-only,
 non-interactive script correctly refuses to perform on its own (that would
 mean handling a client secret and a redirect, well past "call an HTTP
-API" scope) -- see README's "Google Drive handoff" for the exact command
-to mint one. The local lane is a directory on this machine, not a shared
+API" scope) -- see scripts/publish_to_drive.md for how one would be minted. The local lane is a directory on this machine, not a shared
 drive anyone else can open; it is shipped as proof the publish step and the
 event tagging work, not as a substitute for the Drive leg, which has never run. Both lanes tag every file by event (folder/prefix = event_tag)
 and neither ever makes a file public (no permissions.create call, ever).

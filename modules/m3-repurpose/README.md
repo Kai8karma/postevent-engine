@@ -172,7 +172,8 @@ contract: required top-level keys, `lane` is `live`/`offline`, a non-empty `file
 entry has `name`/`kind`/`bytes`/`source`/`grounded` and exists on disk at the stated byte size, the
 four channel kinds are present, text assets carry a boolean `grounded`, visuals only claim a visual
 source, `shared_drive` starts empty, and the LLM receipt exists with `calls_made <= budget`. Run:
-`python3 test_manifest.py <run_dir>` (defaults to `out/verify-w3/m3`).
+`python3 test_manifest.py <run_dir>` (defaults to `out/receipts/m3-live`, the committed run receipt, so it
+passes from a clean checkout with no arguments and no prior run).
 
 ## 9. Module API / n8n
 
