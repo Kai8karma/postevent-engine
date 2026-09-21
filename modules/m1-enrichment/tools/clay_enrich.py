@@ -1,7 +1,20 @@
 #!/usr/bin/env python3
-"""Live Clay enrichment via the official `clay` CLI (Clay's managed
-"Enrich Company" function) — the production-lane company step of Module 1,
-executed for real against the Clay workspace this CLI is signed into.
+"""Standalone operator tool: enrich company domains via the official `clay`
+CLI (Clay's managed "Enrich Company" function). Written to call Clay for
+real, against whatever workspace the CLI is signed into.
+
+NOT RUN IN THIS BUILD. No Clay call has ever been made here -- the evidence
+is out/receipts/m1-live-slice-30/quality_report.json, whose `clay` block is
+all zeros with `run_urls: {}`. Every firmographic value in this package came
+from the LLM or the rule cascade, never from Clay.
+
+Nothing invokes this file: not enrich.py, not api/server.py, not n8n. It is
+also NOT how Clay would reach M1. M1's only Clay door is `--clay-results
+PATH`, a `{domain: {industry, employee_count, country, source, run_url}}`
+map (see clay_spec.md) -- and this tool does not write that shape. It writes
+a run receipt (clay_enrich_results.json: routine id, run id, workspace,
+credit balances, raw response) plus a flattened clay_enrich_summary.csv;
+feeding M1 from it would mean reshaping those fields into the map above.
 
 Credit discipline: hard-capped by --max (default 3). Prints the workspace
 credit balance before and after so spend is auditable. Never runs without
@@ -10,7 +23,7 @@ an explicit domain list.
 Usage:
   python3 modules/m1-enrichment/tools/clay_enrich.py clay.com hubspot.com n8n.io
   python3 modules/m1-enrichment/tools/clay_enrich.py --from-csv out/<slug>/m1/hubspot_companies.csv --max 3
-  add --out DIR to choose where clay_enrich_results.json lands (default out/clay-live-proof/)
+  add --out DIR to choose where clay_enrich_results.json lands (default out/clay-enrich/)
 
 Stdlib only. Requires `clay` on PATH or CLAY_BIN env pointing at the launcher.
 """
@@ -120,7 +133,7 @@ def main():
     ap.add_argument("domains", nargs="*", help="company domains to enrich")
     ap.add_argument("--from-csv", help="CSV with a 'domain' column (e.g. M1 hubspot_companies.csv)")
     ap.add_argument("--max", type=int, default=3, help="hard cap on enrichments (credit guard)")
-    ap.add_argument("--out", default=str(ROOT / "out" / "clay-live-proof"))
+    ap.add_argument("--out", default=str(ROOT / "out" / "clay-enrich"))
     ap.add_argument("--poll", type=int, default=90, help="seconds to wait for results")
     args = ap.parse_args()
 

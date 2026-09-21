@@ -10,12 +10,12 @@ those for the exact logic; this page is the summary.
 ## 1. Contact fields (`hubspot_ready.csv`, `hubspot_contacts.csv`)
 
 `hubspot_ready.csv`'s full analyst-view column set is `FIELDS` in
-[`enrich.py`](../modules/m1-enrichment/enrich.py) (line 2734); the subset
+[`enrich.py`](../modules/m1-enrichment/enrich.py) (line 2736); the subset
 pushed to HubSpot's Contact object is `CONTACT_FIELDS` (no `industry`/
 `numemployees` — those are Company-object properties), and of that, the
 subset written as HubSpot *custom* properties is `CONTACT_PROPERTIES` in
 [`push_to_hubspot.py`](../modules/m1-enrichment/push_to_hubspot.py) (line
-81, via `build_contact_inputs()` at line 425). Everything else on the
+89, via `build_contact_inputs()` at line 433). Everything else on the
 contact (`email`, `firstname`, `lastname`, `jobtitle`, `company`, `country`)
 is a HubSpot standard property, mapped 1:1.
 
@@ -27,15 +27,15 @@ is a HubSpot standard property, mapped 1:1.
 | `company` | string | registrant export | passthrough, or `"Unknown"` sentinel | `"Unknown"` sets `industry="Unknown"` and (offline lane only) forces `numemployees=10` |
 | `function` | enum: `executive`, `revops`, `customer_success`, `sales`, `marketing`, `general` | rule cascade, `classify_function()` (`enrich.py` line 452) | keyword match on `jobtitle`; live also runs the LLM row-inference prompt (`prompts/inference.md`) on rows the cascade can't resolve | falls through to `general` |
 | `seniority` | enum: `c_suite`, `vp`, `head`, `director`, `manager`, `intern`, `individual_contributor`, `unknown` | `classify_seniority()` (`enrich.py` line 467) + live LLM inference, same as `function` | keyword/pattern match | falls through to `unknown` |
-| `industry` (contact/company bucket) | string against `config/icp.yaml`'s tier-industry vocabulary (IT/ITES, BFSI, Manufacturing, Pharma, Retail, ... — see the file for Darwinbox's full list) or `Other`/`Unknown` | `industry_source`: `clay` \| `llm` \| `rules` | live: Clay's firmographics win when present, else the LLM firmographics prompt (`prompts/firmographics.md`, batched once per distinct company); the offline rule fallback, `classify_industry()` (`enrich.py` line 444), is a small fixed keyword table (fintech/saas/software/commerce/analytics/it services/cloud → `Fintech`/`SaaS`/`Ecommerce`/`IT Services`, else `Other`) that predates this event's Darwinbox vocabulary and won't produce most of `icp.yaml`'s labels | `company=="Unknown"` → `"Unknown"`; a non-ASCII-dominant name the rules table can't place sets `needs_review_reason=non_ascii_company_unclassified` and docks `confidence` by 0.30 (`enrich.py` line 2583) instead of counting as a confident match — live LLM resolves most of these and clears the flag (`enrich.py` line 1662) |
+| `industry` (contact/company bucket) | string against `config/icp.yaml`'s tier-industry vocabulary (IT/ITES, BFSI, Manufacturing, Pharma, Retail, ... — see the file for Darwinbox's full list) or `Other`/`Unknown` | `industry_source`: `clay` \| `llm` \| `rules` | live: Clay's firmographics win when present, else the LLM firmographics prompt (`prompts/firmographics.md`, batched once per distinct company); the offline rule fallback, `classify_industry()` (`enrich.py` line 444), is a small fixed keyword table (fintech/saas/software/commerce/analytics/it services/cloud → `Fintech`/`SaaS`/`Ecommerce`/`IT Services`, else `Other`) that predates this event's Darwinbox vocabulary and won't produce most of `icp.yaml`'s labels | `company=="Unknown"` → `"Unknown"`; a non-ASCII-dominant name the rules table can't place sets `needs_review_reason=non_ascii_company_unclassified` and docks `confidence` by 0.30 (`enrich.py` line 2585) instead of counting as a confident match — live LLM resolves most of these and clears the flag (`enrich.py` line 1664) |
 | `numemployees` | integer | `numemployees_source`: `clay` \| `llm` \| `synthetic` | live: Clay's employee-count wins when present, else the LLM firmographics estimate; `--offline` is the only lane where `synthetic_company_size(seed)` runs — a deterministic hash of the domain/name, **not a real headcount lookup** (`enrich.py` line 486) | `company=="Unknown"` → fixed `10`, `numemployees_source=synthetic` |
-| `country` | string | registrant export | passthrough, normalised to ISO-2 (`normalise_country()`, `enrich.py` line 536 — Zoom/GoTo/ON24 all write country differently) | `""` → `region_for_country()` returns `"UNASSIGNED"` |
-| `region` | enum: `INDIA`, `SEA`, `MENA`, `NA`, `UKEU` (Darwinbox's sales pods), or the legacy `AMER`/`EMEA`/`APAC` fallback (see §5), or `UNASSIGNED` | derived from `country` | `region_for_country()` (`enrich.py` line 546) — see §5 | unrecognized country → `UNASSIGNED` |
+| `country` | string | registrant export | passthrough, normalised to ISO-2 (`normalise_country()`, `enrich.py` line 538 — Zoom/GoTo/ON24 all write country differently) | `""` → `region_for_country()` returns `"UNASSIGNED"` |
+| `region` | enum: `INDIA`, `SEA`, `MENA`, `NA`, `UKEU` (Darwinbox's sales pods), or the legacy `AMER`/`EMEA`/`APAC` fallback (see §5), or `UNASSIGNED` | derived from `country` | `region_for_country()` (`enrich.py` line 548) — see §5 | unrecognized country → `UNASSIGNED` |
 | `hubspot_owner_email` | string | derived from `region` | `config/icp.yaml`'s `icp.owners` map | see §5 — not every fallback path resolves to an owner today |
-| `icp_tier` | enum: `tier1`, `tier2`, `tier3`, `unqualified` | rule cascade, `icp_tier()` (`enrich.py` line 564) — see §3 | title/size/industry checked against `config/icp.yaml`'s tiers; live also scores the same rubric with an LLM (`prompts/icp_scoring.md`) as a second opinion — a model tier more than one level off the rule tier still ships but sets `needs_review_reason=icp_disagreement` | title/size/industry outside every tier's bounds → `unqualified` |
+| `icp_tier` | enum: `tier1`, `tier2`, `tier3`, `unqualified` | rule cascade, `icp_tier()` (`enrich.py` line 566) — see §3 | title/size/industry checked against `config/icp.yaml`'s tiers; live also scores the same rubric with an LLM (`prompts/icp_scoring.md`) as a second opinion — a model tier more than one level off the rule tier still ships but sets `needs_review_reason=icp_disagreement` | title/size/industry outside every tier's bounds → `unqualified` |
 | `icp_rationale` | free text | generated alongside `icp_tier` | one sentence naming which title/size/industry check passed or failed | always populated |
 | `confidence` | float, starts at 1.0 | derived | decremented per uncertain step above (rule-table industry fallback, synthetic company size, weak dedupe match — see §2) — never a raw model logprob | n/a |
-| `lifecyclestage` | enum, HubSpot standard property | derived | `lifecycle_target()` rubric (`enrich.py` line 594) — see §4; no-regression check against any pre-existing HubSpot stage (`LIFECYCLE_RANK`, `enrich.py` line 124, applied at line 1739) | new contact, no match → target stage applies directly |
+| `lifecyclestage` | enum, HubSpot standard property | derived | `lifecycle_target()` rubric (`enrich.py` line 596) — see §4; no-regression check against any pre-existing HubSpot stage (`LIFECYCLE_RANK`, `enrich.py` line 124, applied at line 1741) | new contact, no match → target stage applies directly |
 | `hs_lead_status` | string | HubSpot read-back or `"NEW"` | `"NEW"` for a new contact; existing HubSpot value otherwise | n/a |
 | `hubspot_contact_id` | string | HubSpot Search API (dedupe step, live) | populated on a HubSpot match | `""` for new contacts |
 | `attendance_status` | enum: `attended`, `no_show` | registrant export | `r["attended"] == "Yes"` | absent input treated as not-attended |
@@ -58,13 +58,13 @@ combined = 0.25 * ratio(email_localpart_a, email_localpart_b)
 
 `ratio()` is `difflib.SequenceMatcher.ratio()`, case-insensitive. A pair at
 `combined >= 0.80` is the same person — within the batch
-(`dedupe_within_batch()`, `enrich.py` line 653) and against live HubSpot
-contacts via the Search API (`dedupe_against_hubspot()`, line 938, same
+(`dedupe_within_batch()`, `enrich.py` line 655) and against live HubSpot
+contacts via the Search API (`dedupe_against_hubspot()`, line 940, same
 formula/threshold). A within-batch match is flagged `_merged_away` on the
 losing row rather than deleted outright, so a case-only duplicate email
 (`RHADDAD@…` vs `rhaddad@…`) merges into its primary instead of dropping
 both rows. A HubSpot match sets `merge_action = update_existing:<vid>` and,
-below 0.95, docks `confidence` proportionally (`enrich.py` line 2619)
+below 0.95, docks `confidence` proportionally (`enrich.py` line 2621)
 rather than treating every match at the threshold as equally certain. Pairs
 scoring in `[0.65, 0.80)` are too ambiguous for the rule engine and go to
 the LLM gray-zone adjudicator instead (capped at 20 pairs/run,
@@ -84,7 +84,7 @@ slice, not a full-150-row result.
 
 ## 3. ICP tier rubric
 
-`icp_tier()` (`enrich.py` line 564) checks, in order: **tier1** — title in
+`icp_tier()` (`enrich.py` line 566) checks, in order: **tier1** — title in
 `icp.tiers.tier1.titles` and company size in `tier1.company_size` and
 industry in `tier1.industries`; **tier2** — same shape against `tier2`'s
 lists; **tier3** — catch-all, any title/industry, size in
@@ -100,7 +100,7 @@ second-opinion check described in §1.
 
 ## 4. Lifecycle-stage rubric
 
-From `lifecycle_target()` (`enrich.py` line 594) — unchanged since the v1
+From `lifecycle_target()` (`enrich.py` line 596) — unchanged since the v1
 fix that replaced a blanket assignment which put most attendees at MQL
 regardless of tier or attendance:
 
@@ -111,13 +111,13 @@ regardless of tier or attendance:
 | everything else (incl. `unqualified` tier) | `subscriber` |
 
 Target only — the no-regression check (`LIFECYCLE_RANK`, `enrich.py` line
-124, applied at line 1739) never demotes a pre-existing HubSpot stage below
+124, applied at line 1741) never demotes a pre-existing HubSpot stage below
 its current rank.
 
 ## 5. Region + owner routing
 
 From `config/icp.yaml`'s `icp.regions`/`icp.owners`, resolved by
-`region_for_country()` (`enrich.py` line 546):
+`region_for_country()` (`enrich.py` line 548):
 
 | Region (Darwinbox sales pod) | Countries | Owner |
 |---|---|---|
@@ -133,7 +133,7 @@ comment. `hubspot_owner_email` above is the CSV/routing value, independent
 of that sandbox shortcut.)
 
 A country not in that explicit list falls through to a second, built-in
-table (`REGION_BY_COUNTRY`, `enrich.py` line 528) that still uses the old
+table (`REGION_BY_COUNTRY`, `enrich.py` line 530) that still uses the old
 `AMER`/`EMEA`/`APAC` region names from the pre-Darwinbox build — and
 `icp.yaml`'s `owners` map has no entry under those names any more, so a
 registrant whose country only matches this fallback table (e.g. AU, JP, ZA,
@@ -153,9 +153,10 @@ The two that aren't obvious from the API docs:
   HubSpot doesn't unique-index company `domain`, and that call 400s.
   `push_to_hubspot.py` instead searches by `domain` first, then
   `batch/update` for hits and `batch/create` for misses
-  (`build_company_inputs()`, line 405).
+  (`run_company_sync()`, line 669; `build_company_inputs()` at line 413 only
+  builds the records it syncs).
 - **`industry` is a fixed enum** on the Company object. M1's labels are
-  mapped through `HUBSPOT_INDUSTRY_ENUM` (`push_to_hubspot.py` line 386)
+  mapped through `HUBSPOT_INDUSTRY_ENUM` (`push_to_hubspot.py` line 394)
   before the write; an unmapped label is dropped from that record's
   payload, not sent raw. The table currently covers the old SaaS/Fintech/
   IT-Services/Ecommerce buckets plus a handful of Darwinbox ones
@@ -165,12 +166,13 @@ The two that aren't obvious from the API docs:
 
 ## 7. Company fields (`hubspot_companies.csv`)
 
-`COMPANY_FIELDS` (`enrich.py` line 2783): `domain`, `name`, `industry`,
+`COMPANY_FIELDS` (`enrich.py` line 2785): `domain`, `name`, `industry`,
 `numemployees` — one row per resolvable domain, deduped by majority vote
-across ties (`build_company_rows()`, `enrich.py` line 2934). Pushed
-properties: `name`, `domain` (idProperty), `numberofemployees`, `industry`
+across ties (`build_company_rows()`, `enrich.py` line 2937). Pushed
+properties: `name`, `domain` (the match key §6 searches on, not an
+`idProperty`), `numberofemployees`, `industry`
 (enum-mapped per §6), `event_tag` (`COMPANY_PROPERTIES`,
-`push_to_hubspot.py` line 125). A row with no resolvable domain is excluded
+`push_to_hubspot.py` line 133). A row with no resolvable domain is excluded
 from this file entirely — it still exists as a Contact row with a blank
 `company_domain`, just with no Company object to associate to.
 

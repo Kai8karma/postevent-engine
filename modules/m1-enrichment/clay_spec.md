@@ -1,9 +1,19 @@
 # Production Path: Clay Table Spec
 
+**No Clay run has happened in this build.** Every firmographic value in this
+package came from the LLM or the rule cascade. The receipt is
+[`out/receipts/m1-live-slice-30/quality_report.json`](../../out/receipts/m1-live-slice-30/quality_report.json)
+-- its `clay` block reads `clay_domains_supplied: 0`, `clay_domains_applied: 0`,
+empty verified-domain lists and `run_urls: {}`. This page is therefore the
+production *design*, not a record of something that ran.
+
 `enrich.py` runs the rule+LLM equivalent of this table so the pipeline works
-without a Clay account. In production, Clay only ever reaches M1 through
-`--clay-results` -- the old Clay-CLI flag and its shell-out are gone; there
-is no other path in. The trigger, wait, and evidence receipt around the
+without a Clay account. Clay only ever reaches M1 through `--clay-results` --
+the old Clay-CLI flag and its shell-out are gone; there is no other path in.
+`tools/clay_enrich.py` is a standalone operator utility that would call the
+`clay` CLI directly; nothing invokes it, it has never been run, and its output
+is a run receipt rather than the `--clay-results` map, so it is not a second
+door into M1 either. The trigger, wait, and evidence receipt around the
 table live in n8n, not here -- see
 [`orchestrator/n8n/railway/README.md`](../../orchestrator/n8n/railway/README.md)
 for the full workflow (trigger curl, env vars, why the wait is time-based
@@ -60,7 +70,11 @@ rank in `SOURCE_RANK`, so a `clay` value is never displaced by a later LLM
 pass. Domains still missing or below the firmographics confidence floor after
 inference are the ones a run should send to Clay next; write them out with
 `--emit-clay-domains PATH` (matches `docs/module-api.md`'s
-`next.clay_domains`).
+`next.clay_domains`). The live slice did emit that list --
+[`out/receipts/m1-live-slice-30/clay_domains.json`](../../out/receipts/m1-live-slice-30/clay_domains.json)
+-- but no Clay run consumed it, so no `--clay-results` file was ever produced
+and no field in this build carries `industry_source`/`numemployees_source` =
+`clay`.
 
 ## What doesn't change between demo and production
 

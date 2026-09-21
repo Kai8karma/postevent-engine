@@ -10,7 +10,7 @@ Speakers: Q Hamirani (Chief People Officer, HighLevel) and Sudi Bjornstad Korba 
 | `speakers.json` | speaker names, titles, companies, bios | public event page, verbatim |
 | `media/chapter{1,2,3}.mp4` (git-ignored) | the recording, three chapters, ~33 min total | Darwinbox's HubSpot file CDN (URLs in `event.json`) |
 | `media/chapter{1,2,3}.mp3` (git-ignored) | mono 16 kHz audio extracted with ffmpeg | `ffmpeg -i chapterN.mp4 -vn -ac 1 -ar 16000 -b:a 48k chapterN.mp3` |
-| `transcript.md` | canonical transcript, `[MM:SS] **Speaker:** text` turns | **Sarvam saaras:v3 batch STT** on the chapter audio (`modules/m3-repurpose/transcribe_batch.py`) → `tools/build_transcript.py`. No captions exist for this recording, so this is the pipeline's real transcription step, receipt in `out/transcription/receipt.json` |
+| `transcript.md` | canonical transcript, `[MM:SS] **Speaker:** text` turns | **Sarvam saaras:v3 batch STT** on the chapter audio (`modules/m3-repurpose/transcribe_batch.py`) → `tools/build_transcript.py`. No captions exist for this recording, so this is the pipeline's real transcription step, receipt in `out/receipts/transcription.json` (per-chapter Sarvam responses in `out/receipts/transcription/`) |
 | `transcript.vtt` | WebVTT twin of the transcript (platform-export shape) | `python3 data/incoming/tools/md_to_vtt.py` — never hand-edit |
 | `registrants.csv` | 150-row Zoom-webinar registrant export, deliberately messy | `python3 data/incoming/tools/gen_registrants.py` (seeded, deterministic) |
 

@@ -233,7 +233,9 @@ def m1_cmd(reg_path: Path, m1_out: Path, phase, live_requested: bool, inputs: di
         if "--offline" in help_text:
             cmd.append("--offline")
         else:
-            notes.append("enrich.py has no --offline flag yet -- omitted (offline is its no-flag default)")
+            notes.append("enrich.py --help did not list --offline, so no lane flag was passed -- "
+                          "enrich.py's no-flag default is LIVE, so this run's lane is unconfirmed. "
+                          "This branch should be unreachable: enrich.py does define --offline.")
 
     if phase == "prepare":
         if "--emit-clay-domains" in help_text:
@@ -327,9 +329,9 @@ def run_m1(payload: dict, run_id: str, out_dir: Path, log: list) -> dict:
 # --------------------------------------------------------------------------
 # M2 (generate / approve / log) -- see docs/module-api.md's "M2 -- phases and
 # files" table for the dispatch_plan.json / dispatch_results.json schemas
-# this section builds against. M2's three phases don't share stage_m2()'s old
-# comms.json/sends_log.json contract -- that legacy function is untouched but
-# no longer called for m2.
+# this section builds against. M2's three phases don't share api/run.py's retired
+# stage_m2() contract -- that legacy function is untouched but no longer called
+# for m2.
 def m2_generate_cmd(m2_out: Path, enriched_path, event_path: Path, segments_path: Path,
                      transcript_path: Path, live_requested: bool, notes: list) -> list:
     help_text = script_help(COMMS_SCRIPT)
@@ -341,11 +343,14 @@ def m2_generate_cmd(m2_out: Path, enriched_path, event_path: Path, segments_path
     if live_requested:
         if "--live" in help_text:
             cmd.append("--live")
-        # else: comms.py is live by default once the M2 rewrite lands -- no flag needed.
+        # else: expected -- comms.py registers --live with help=argparse.SUPPRESS, so it never
+        # shows up in --help, and live is its no-flag default anyway. Nothing to pass.
     elif "--offline" in help_text:
         cmd.append("--offline")
     elif "--live" in help_text:
-        notes.append("comms.py has no --offline flag yet -- omitted (offline is its no-flag default while --live exists)")
+        notes.append("comms.py --help listed --live but not --offline, so no lane flag was passed -- "
+                      "comms.py's no-flag default is LIVE, so this run's lane is unconfirmed. "
+                      "This branch should be unreachable: comms.py does define --offline.")
     else:
         notes.append("comms.py exposes neither --offline nor --live in --help -- cannot confirm lane; running with no flags")
     return cmd
@@ -774,8 +779,10 @@ def run_m3_run(payload: dict, run_id: str, out_dir: Path, log: list) -> dict:
     elif "--offline" in help_text:
         cmd.append("--offline")
     else:
-        notes.append("repurpose.py does not support --offline yet -- omitted (its own no-flag default replays "
-                      "sample_output, so this still runs zero LLM calls)")
+        notes.append("repurpose.py --help did not list --offline, so no lane flag was passed -- "
+                      "repurpose.py's no-flag default is LIVE, so this run's lane is unconfirmed and "
+                      "may have made real model calls. This branch should be unreachable: repurpose.py "
+                      "does define --offline.")
 
     if options.get("clips"):
         if "--clips" in help_text:

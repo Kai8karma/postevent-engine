@@ -1,15 +1,27 @@
 #!/usr/bin/env python3
-"""Vercel Python serverless function: POST/GET /api/run.
+"""Vercel Python serverless function: /api/run -- v1. POST is retired.
 
-Runs the real M1-M4 module scripts (modules/m1-enrichment/enrich.py,
-modules/m2-comms/comms.py, modules/m3-repurpose/repurpose.py,
-modules/m4-dashboard/build_dashboard.py) as subprocesses against either the
-caller's own registrant CSV / transcript or the bundled fixture, and returns
-their real output files as artifacts. No module logic is reimplemented here.
+GET still answers (build_get_response(): deployment health + whether a live
+lane is available). POST runs nothing: handle_run() returns a refusal naming
+its replacement -- see RETIRED_NOTE and api/vercel-api-notes.md's "Retired:
+this endpoint no longer runs modules".
 
-See api/vercel-api-notes.md for the deploy contract (routes, maxDuration,
-which repo directories must ship next to this file) and the exact request/
-response JSON shape this implements.
+The v1 request body is kept for reference as _handle_run_v1_disabled(),
+which nothing calls. Everything it reaches -- materialize_event(),
+stage_m1/m2/m3/m4(), summarize_m4(), CHAIN_LIVE_NOTE, degraded_note() and
+the M4 artifact specs -- is part of that retired v1 body and still speaks
+v1's flag convention (--live opts in), which v2 inverted: every module now
+runs live by default and --offline is the opt-out.
+
+This file still ships because api/server.py imports it for helpers:
+REPO_ROOT, PY, run_module(), build_env(), lines_for_log(), the OpenRouter
+key helpers, summarize_m1() and M1_ARTIFACT_SPECS.
+
+The supported entry point is the module API in api/server.py (POST /run with
+a module and a phase) -- see docs/module-api.md. There, M4 is driven by
+modules/m4-dashboard/dashboard.py, whose CLI takes a phase positional
+(seed | sync | analyze | render | all) plus --out, not the single-shot v1
+builder this file's retired M4 stage was written against.
 
 Stdlib only -- same constraint as the modules it drives.
 """
@@ -101,8 +113,8 @@ CHAIN_LIVE_NOTE = (
     "the full offline chain instead. To see a real live LLM call, POST "
     "module:'m1' (or 'm2'/'m3') with live:true directly -- each gets its "
     f"own {LIVE_TIMEOUT_S}s budget, though even that can time out under "
-    "current OpenRouter load -- or see the pre-computed full live run "
-    "committed at out/live-proof/."
+    "current OpenRouter load -- or see the committed live receipts under "
+    "out/receipts/ (m1-live-slice-30/, m2-live/, m3-live/, m4-live-portal/)."
 )
 
 ARTIFACT_PREVIEW_CAP = 20000
@@ -237,8 +249,8 @@ def degraded_note(module: str, reason: str, key_present: bool) -> str:
         note += f" Direct OpenRouter probe just now: {probe['detail']}."
     note += (
         " To see a real live run: supply your own OPENROUTER_API_KEY (this deployment's free-tier "
-        "quota is exhausted as of this run), or inspect the pre-computed real live run committed at "
-        "out/live-proof/."
+        "quota is exhausted as of this run), or inspect the live receipts committed under "
+        "out/receipts/ (m1-live-slice-30/, m2-live/, m3-live/, m4-live-portal/)."
     )
     return note
 
@@ -250,8 +262,12 @@ def materialize_event(tmp_dir: Path, registrants_csv, transcript_md, event_name,
     """Writes this request's event inputs into tmp_dir, using the caller's
     values where supplied and the bundled fixture (data/incoming/ or
     data/fixtures/) otherwise. engagement_json/segments_json are already-
-    parsed dicts (M4's inputs -- see build_dashboard.py --engagement/--segments)
-    -- the caller validates JSON-ness before this function ever sees them.
+    parsed dicts -- v1's M4 inputs, passed as --engagement/--segments to the
+    single-shot builder v1 ran. v2's modules/m4-dashboard/dashboard.py has
+    neither flag: it reads data/fixtures/engagement.json and
+    data/fixtures/segments.json directly (ENGAGEMENT_FIXTURE /
+    SEGMENTS_FIXTURE). Retired v1 path -- the caller validates JSON-ness
+    before this function ever sees them.
     Returns (registrants_path, event_path, transcript_path, engagement_path,
     segments_path, custom)."""
     incoming = REPO_ROOT / "data" / "incoming"
@@ -431,6 +447,8 @@ def summarize_m2(out_dir: Path):
 
 
 def m2_artifact_specs(out_dir: Path):
+    # Retired v1 spec. sends_log.json has had no writer since M2 moved to
+    # dispatch_plan.json + comms.json; collect_artifacts() just skips it.
     specs = [("comms.json", "json"), ("approval_gate.json", "json"), ("sends_log.json", "json")]
     comms_path = out_dir / "comms.json"
     if comms_path.exists():
@@ -479,10 +497,12 @@ M4_STAT_RE_2 = re.compile(r"top_accounts=(\d+)\s+committee_accounts=(\d+)\s+anom
 
 
 def summarize_m4(stdout: str):
-    """M4's numbers are parsed from build_dashboard.py's own summary print
-    lines (not recomputed here) -- the KPI data itself only exists embedded
-    in index.html's JSON blob, and the script's stdout is the script's own
-    authoritative restatement of it."""
+    """Retired v1 helper -- nothing calls it. It scraped the stat lines v1's
+    single-shot M4 builder printed, because that script's KPI data only
+    existed embedded in index.html's JSON blob. v2's M4 summaries are read
+    from real files instead, by api/server.py's own per-phase summarisers
+    (summarize_m4_seed/sync/analyze/render over snapshot.json, analysis.json
+    and dashboard_data.json)."""
     m1 = M4_STAT_RE_1.search(stdout)
     m2 = M4_STAT_RE_2.search(stdout)
     summary = {
@@ -493,11 +513,12 @@ def summarize_m4(stdout: str):
         "top_accounts": int(m2.group(1)) if m2 else 0,
         "committee_accounts": int(m2.group(2)) if m2 else 0,
         "anomalies": int(m2.group(3)) if m2 else 0,
-        # build_dashboard.py has no --live path; the dashboard's live
-        # narrative call (modules/m4-dashboard/api/narrative.js) happens
-        # client-side, in the reviewer's browser, after index.html loads --
-        # this endpoint only ever runs the offline Python builder, which
-        # always embeds the cached fallback narrative into the HTML.
+        # v1's builder had no --live path, so this hard-codes v1's only
+        # possible answer. Not true of v2: modules/m4-dashboard/dashboard.py's
+        # analyze phase writes narrative_source "live" when the LLM ran and
+        # "rules" when it fell back to the templated numbers, and the
+        # browser-side refresh (modules/m4-dashboard/api/narrative.js) is a
+        # separate path again.
         "narrative_source": "cached_fallback",
     }
     return summary
@@ -538,7 +559,7 @@ def stage_m1(out_dir: Path, reg_path: Path, live: bool, log: list):
             "m1", f"m1 timed out after {result['elapsed']:.1f}s (limit {timeout_s}s)",
             "the live lane's LLM batching (inference + ICP scoring) can outrun a single "
             "serverless request for larger registrant lists -- try a smaller CSV, retry "
-            "offline, or see the pre-computed full live run at out/live-proof/m1/",
+            "offline, or see the committed live receipt at out/receipts/m1-live-slice-30/",
             log,
         )
     if not result["ok"]:
@@ -575,7 +596,7 @@ def stage_m2(out_dir: Path, m1_ready_csv, ev_path: Path, tr_path: Path, live: bo
         raise ModuleFailure(
             "m2", f"m2 timed out after {result['elapsed']:.1f}s (limit {timeout_s}s)",
             "M2 --live measured ~795s on a slow model in earlier testing -- try offline, "
-            "or see the pre-computed full live run at out/live-proof/m2/", log,
+            "or see the committed live receipt at out/receipts/m2-live/", log,
         )
     if not result["ok"]:
         raise ModuleFailure("m2", f"m2 exited {result['returncode']}", "check the log for the module's own error message", log)
@@ -601,7 +622,7 @@ def stage_m3(out_dir: Path, ev_path: Path, tr_path: Path, live: bool, log: list)
         raise ModuleFailure(
             "m3", f"m3 timed out after {result['elapsed']:.1f}s (limit {timeout_s}s)",
             "M3 --live measured ~548s on a slow model in earlier testing -- try offline, "
-            "or see the pre-computed full live run at out/live-proof/m3/", log,
+            "or see the committed live receipt at out/receipts/m3-live/", log,
         )
     if not result["ok"]:
         raise ModuleFailure("m3", f"m3 exited {result['returncode']}", "check the log for the module's own error message", log)
@@ -609,22 +630,19 @@ def stage_m3(out_dir: Path, ev_path: Path, tr_path: Path, live: bool, log: list)
 
 
 def stage_m4(out_dir: Path, m1_ready_csv: Path, engagement_path: Path, segments_path: Path, log: list):
-    cmd = [
-        PY, str(REPO_ROOT / "modules" / "m4-dashboard" / "build_dashboard.py"),
-        "--out", str(out_dir),
-        "--enriched", str(m1_ready_csv),
-        "--engagement", str(engagement_path),
-        "--segments", str(segments_path),
-    ]
-    timeout_s = OFFLINE_TIMEOUT_S
-    log.append(f"[m4] offline (no --live flag exists on build_dashboard.py) -- invoking build_dashboard.py (timeout {timeout_s}s)")
-    result = run_module(cmd, build_env(False), timeout_s)
-    log.extend(lines_for_log(result["stdout"], result["stderr"]))
-    if result["timed_out"]:
-        raise ModuleFailure("m4", f"m4 timed out after {result['elapsed']:.1f}s (limit {timeout_s}s)", "unexpected -- m4 is pure computation, no LLM call; check for a script hang", log)
-    if not result["ok"]:
-        raise ModuleFailure("m4", f"m4 exited {result['returncode']}", "check the log for the module's own error message", log)
-    return result
+    """Retired with the rest of the v1 body -- unreachable, since handle_run()
+    refuses before _handle_run_v1_disabled() is ever entered.
+
+    It shelled out to v1's single-shot M4 builder with --enriched/--engagement/
+    --segments. That script no longer exists and none of those flags do either:
+    M4 ships as modules/m4-dashboard/dashboard.py, a phased CLI
+    (seed | sync | analyze | render | all) driven by api/server.py -- see
+    docs/module-api.md's M4 table. Left as a loud refusal rather than repointed
+    at dashboard.py, so nothing can quietly resurrect a v1 M4 lane."""
+    raise ModuleFailure(
+        "m4", "api/run.py's v1 M4 stage is retired -- it drove a builder that no longer exists",
+        "use the module API instead: POST /run {\"module\": \"m4\", \"phase\": "
+        "\"seed|sync|analyze|render\"} -- see docs/module-api.md", log)
 
 
 class ModuleFailure(Exception):
@@ -682,9 +700,10 @@ def _handle_run_v1_disabled(payload: dict) -> dict:
             return {"ok": False, "module": module, "error": f"'{field}' must be a string if provided",
                     "hint": f"remove {field} or pass it as a JSON string", "log": []}
 
-    # M4's two remaining inputs (see build_dashboard.py --engagement/--segments):
-    # sent as parsed JSON objects in the request body, not strings -- the
-    # underlying files are already JSON, so no double-encoding round trip.
+    # v1's two remaining M4 inputs (its builder's --engagement/--segments;
+    # v2's dashboard.py reads both from data/fixtures/ instead): sent as
+    # parsed JSON objects in the request body, not strings -- the underlying
+    # files are already JSON, so no double-encoding round trip.
     engagement_json = payload.get("engagement_json")
     segments_json = payload.get("segments_json")
     for field, value in (("engagement_json", engagement_json), ("segments_json", segments_json)):
@@ -789,12 +808,12 @@ def _handle_run_v1_disabled(payload: dict) -> dict:
                     # live was requested but this module has zero capacity to honor
                     # it -- that is exactly the definition of "degraded", not "live".
                     lane = "degraded"
-                    notes.append("build_dashboard.py has no --live flag -- it is pure computation over M1's "
+                    notes.append("v1's M4 builder had no --live flag -- it was pure computation over M1's "
                                   "output plus engagement/segments fixtures. Ran M1 offline to feed it (M1 "
-                                  "itself has no LLM dependency for the fields M4 reads). The dashboard's live "
-                                  "narrative call is client-side (modules/m4-dashboard/api/narrative.js), not "
-                                  "invoked by this endpoint. This response is labelled lane:'degraded' because "
-                                  "live:true was requested but no model call was ever possible for m4.")
+                                  "itself has no LLM dependency for the fields M4 reads). This response is "
+                                  "labelled lane:'degraded' because live:true was requested but no model call "
+                                  "was ever possible for m4 on this retired path. v2's M4 does have a live "
+                                  "lane -- dashboard.py's analyze phase -- reachable only via api/server.py.")
                     model = None
         except ModuleFailure as fail:
             return {"ok": False, "module": fail.module, "error": fail.error, "hint": fail.hint, "log": fail.log}

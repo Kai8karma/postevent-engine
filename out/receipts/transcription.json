@@ -15,7 +15,7 @@
       "seconds": 20.3,
       "download_links_status": 200,
       "outputs": [
-        "out/transcription/chapter1.sarvam.json"
+        "out/receipts/transcription/chapter1.sarvam.json"
       ]
     },
     {
@@ -30,7 +30,7 @@
       "seconds": 19.8,
       "download_links_status": 200,
       "outputs": [
-        "out/transcription/chapter2.sarvam.json"
+        "out/receipts/transcription/chapter2.sarvam.json"
       ]
     },
     {
@@ -45,7 +45,7 @@
       "seconds": 7.5,
       "download_links_status": 200,
       "outputs": [
-        "out/transcription/chapter3.sarvam.json"
+        "out/receipts/transcription/chapter3.sarvam.json"
       ]
     }
   ]

@@ -66,11 +66,14 @@ its executions — the standard n8n pattern for collecting N async callbacks bef
 
 ## Audit result
 
-`validate.py` → **GREEN, 0 failures, 3 warnings**:
-- 2× orphan warnings on the sticky notes (expected — sticky notes never have incoming connections)
-- 1× `${...}` warning inside `Build Evidence Summary`'s `jsCode` — false positive, that's a real
+Audited with an n8n workflow linter that **is not part of this package**, so its verdict — 0
+failures, 3 warnings — is not reproducible from this repo. Its warnings were:
+- 2× orphan on the sticky notes (expected — sticky notes never have incoming connections)
+- 1× `${...}` inside `Build Evidence Summary`'s `jsCode` — false positive, that's a real
   JS template literal (`` `${summary.run_id}.json` ``) inside a Code node, not an n8n expression
   field.
+
+For the part a reviewer *can* re-run here, see [Reproducible static check](#reproducible-static-check).
 
 **Flagged as unverified against a live instance** (per the skill's own guidance — don't claim
 full verification you don't have):
@@ -247,10 +250,11 @@ point at each other — the "saved to a shared drive and tagged by event" proof.
 
 ### Audit result
 
-`validate.py` → **GREEN, 0 failures, 2 warnings** (both expected — orphan warnings on the 2 sticky
-notes, which never have incoming connections, same as m1/m2). `json.load` parses; every `$('Node')`
-reference in the file resolves to a node that exists (checked programmatically, 26 nodes, 0
-unresolved references, 0 duplicate names).
+Same off-package linter as m1: 0 failures, 2 warnings, both expected — orphan warnings on the 2
+sticky notes, which never have incoming connections. That verdict is not reproducible from this
+repo. What is: `json.load` parses and every `$('Node')` reference resolves to a node that exists —
+26 nodes, 0 unresolved references, 0 duplicate names, via
+[Reproducible static check](#reproducible-static-check).
 
 **Flagged as unverified against a live instance** (per the skill's own audit rule):
 - Both `Create Drive Folder` and `Upload File to Drive` use `n8n-nodes-base.googleDrive` v3 with a
@@ -299,11 +303,44 @@ event_slug, sync: {contacts, companies, engagements, events, lifecycle_changes, 
 {anomalies, scored, committees, model, lane}, render: {mql_rate, top_accounts, narrative_source},
 dashboard_url, narrative_refresh_url, finished_at}`.
 
-**Audit result**: `validate.py` → GREEN, 0 failures, 2 warnings (orphan on the sticky note,
-expected; `${...}` false positive inside `Assert * OK`'s `jsCode`, same as m1/m2/m3) — 15 nodes, 0
-unresolved `$('Node')` refs, 0 duplicates.
+**Audit result**: same off-package linter — 0 failures, 2 warnings (orphan on the sticky note,
+expected; `${...}` false positive inside `Assert * OK`'s `jsCode`, same as m1/m2/m3); not
+reproducible from this repo. Reproducible here: 15 nodes, 0 unresolved `$('Node')` refs, 0
+duplicates — see [Reproducible static check](#reproducible-static-check).
 
 **Unverified until import**: `$env.*` readable inside a Code node like an expression field; the
 `Assert * OK` throw halting the execution like `stopAndError` does elsewhere; pinning data on
 `Manual Trigger` as the override path (no webhook exists otherwise); `scheduleTrigger`'s
 `rule.interval` shape — none confirmed against a live instance.
+
+## Reproducible static check
+
+No validator ships with this package. This is the whole of what can be checked from the repo, with
+no n8n instance and no network — JSON parses, no duplicate node names, and every `$('Node')`
+reference resolves to a node that exists:
+
+```bash
+python3 - <<'EOF'
+import json, re, pathlib
+for f in sorted(pathlib.Path("orchestrator/n8n/railway").glob("*.json")):
+    t = f.read_text(); wf = json.loads(t)
+    names = [n["name"] for n in wf["nodes"]]
+    refs = set(re.findall(r"\$\('([^']+)'\)", t)) - {"Node", "NodeName"}
+    print(f.name, "nodes", len(names), "dupes", len(names) - len(set(names)), "unresolved", sorted(refs - set(names)))
+EOF
+```
+
+Expected output:
+
+```
+m1-lead-enrichment.json nodes 21 dupes 0 unresolved []
+m2-post-event-comms.json nodes 28 dupes 0 unresolved []
+m3-content-repurposing.json nodes 26 dupes 0 unresolved []
+m4-lead-intelligence.json nodes 15 dupes 0 unresolved []
+```
+
+`Node` and `NodeName` are excluded because they appear only as literal placeholders in node `notes`
+prose (e.g. "`$('NodeName').all()` collects every run of that named node"), never as expressions.
+
+This check says nothing about whether the workflows *run*. None of the four has been imported into
+a running n8n instance — every "Unverified until import" note above still stands.

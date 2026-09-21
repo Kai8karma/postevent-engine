@@ -647,7 +647,8 @@ def _call_openrouter(prompt: str, purpose: str) -> str:
 
 def _call_claude_cli(prompt: str, purpose: str) -> str:
     """`claude -p` backend. USER must not propagate into the child process or
-    keychain auth 401s (documented gotcha, see PLAN.md)."""
+    keychain auth 401s (documented gotcha, see docs/architecture.md's
+    "How it runs today" section)."""
     _check_budget(purpose)
     env = os.environ.copy()
     env.pop("USER", None)

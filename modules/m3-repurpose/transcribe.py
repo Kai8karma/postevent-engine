@@ -41,7 +41,8 @@ verified in this repo's dev machine (no SARVAM_API_KEY available here); the
 real network call to Sarvam's saaras:v3 endpoint has not been exercised
 from this exact machine/script -- it was exercised via the Sarvam MCP tool
 in an earlier interactive session instead (see README.md's Transcription
-lane section, out/live-proof-transcription/). Swap in a real key
+lane section). The transcript this build ships came from a real Sarvam
+batch run -- see out/receipts/transcription.json. Swap in a real key
 (--api-key-env or the SARVAM_API_KEY default) to close that gap.
 """
 import argparse

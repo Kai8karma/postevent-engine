@@ -1,7 +1,6 @@
 # HubSpot Push -- `push_to_hubspot.py`
 
-Real CRM v3/v4 client for M1's upsert CSVs + M2's `sends_log.json`. Stdlib
-only, zero network for every write call unless a token is present and
+Real CRM v3/v4 client for M1's upsert CSVs. Stdlib only, zero network for every write call unless a token is present and
 `--dry-run` is absent -- owner routing's `GET /crm/v3/owners` is the one
 read-only exception, see "Ownership" below.
 
@@ -10,12 +9,29 @@ resolve each mapped email to a real `ownerId` via live `GET /crm/v3/owners`
 (read-only, runs even under `--dry-run`) -> (1) ensure-properties (`icp_tier`,
 `icp_rationale`, `confidence`, `attendance_status`, `needs_review`,
 `event_tag` on Contacts; `event_tag` on Companies; 409 = success) -> (2)
-upsert companies -- `POST .../companies/batch/upsert`, `idProperty=domain`
--> (3) upsert contacts (`idProperty=email`, `hubspot_owner_id` set from step
-0's resolution when available), optionally extended by `--include-speakers`
-(see below) -> (4) associate, using the IDs the two upserts returned -> (5)
-`--log-emails` (optional, gated on `m2/approval_gate.json`, `--force-log` to
-override) -> (6) `--verify` (optional).
+sync companies -- search by `domain`, then `POST .../companies/batch/update`
+for matches and `POST .../companies/batch/create` for misses (**not**
+`batch/upsert` with `idProperty=domain`: HubSpot doesn't unique-index company
+`domain` and that call 400s -- see below) -> (3) upsert contacts
+(`idProperty=email`, `hubspot_owner_id` set from step 0's resolution when
+available), optionally extended by `--include-speakers` (see below) -> (4)
+associate, using the IDs steps 2-3 returned -> (5) `--log-emails` (optional,
+and inert in this build -- see below) -> (6) `--verify` (optional).
+
+**`--log-emails` cannot run in this build.** It reads `m2/sends_log.json`, and
+nothing writes that file any more -- M2 writes `dispatch_plan.json` and
+`comms.json` -- so `run_log_emails()` returns `status: "skipped"` on its
+missing-file guard before the `approval_gate.json` gate is even reached. The
+engagement logging that does run is `modules/m2-comms/log_dispatch.py` (the
+module API's m2 `log` phase, over n8n's `dispatch_results.json`), and
+`tools/log_dispatch_engagements.py` for the n8n demo dispatch's real Gmail
+sends.
+
+**Company sync, not upsert**: `run_company_sync()` searches
+`POST /crm/v3/objects/companies/search` on `domain` in chunks, then splits the
+chunk into `batch/update` (id from the search hit) and `batch/create` (no hit).
+Returns the same `(ok, fail, sample_body, responses)` shape as the contact
+batch step, so the caller and `extract_id_map()` are unchanged.
 
 **`--include-speakers`** (step 3 extra): upserts the `data/incoming/speakers.json`
 contacts directly, joined to their address in `data/fixtures/segments.json`'s
@@ -49,12 +65,12 @@ unmapped labels are dropped from the payload rather than 400-ing the whole
 batch.
 
 **Dry-run** (no token, zero network -- `network_calls_made=0` in the plan):
-`python3 modules/m1-enrichment/push_to_hubspot.py --dry-run --log-emails --verify`
+`python3 modules/m1-enrichment/push_to_hubspot.py --dry-run --verify`
 `python3 modules/m1-enrichment/push_to_hubspot.py --dry-run --include-speakers`
 
 **Live** (needs `HUBSPOT_TOKEN` env or `~/.config/postevent/hubspot.env`):
 `python3 modules/m1-enrichment/push_to_hubspot.py --limit 10` (smoke), then
-`python3 modules/m1-enrichment/push_to_hubspot.py --log-emails --verify`
+`python3 modules/m1-enrichment/push_to_hubspot.py --verify`
 
 **Read-back**: `--verify` calls the same search API a judge/dashboard would
 use -- `POST /crm/v3/objects/{contacts,companies}/search` filtered on

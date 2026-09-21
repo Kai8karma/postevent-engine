@@ -250,7 +250,7 @@ def build_m4_stages(out_dir: Path, live: bool, event_dir: Path, args) -> list:
     return stages
 
 
-IMAGE_GEN_COST_ESTIMATE = "~$0.04-0.08 for 2 images (google/gemini-2.5-flash-image via OpenRouter -- see out/live-proof-visuals/visuals_meta.json for the real $0.077647 receipt from the run that estimate is based on)"
+IMAGE_GEN_COST_ESTIMATE = "~$0.04-0.08 for 2 images (google/gemini-2.5-flash-image via OpenRouter). No image has been generated in this build: every attempt returned HTTP 402 on an unfunded key -- see out/receipts/m3-live/receipts/m3_images.json"
 
 
 def build_transcribe_stage(event_dir: Path, out_dir: Path, args) -> tuple:

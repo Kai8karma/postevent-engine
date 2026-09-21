@@ -19,9 +19,10 @@ repeat attendee never proven to merge" (ops judge). This test:
           "create_new" (sanity check that the matcher isn't just
           rubber-stamping everything as a match).
 
-Only M1 is exercised (M2/M3 need a transcript event 2 doesn't ship with --
-see data/fixtures/event2/ and PLAN.md; run the full pipeline for event 2 with
-`run_pipeline.py --event-dir data/fixtures/event2 --modules m1,m4`).
+Only M1 is exercised: data/fixtures/event2/ ships event.json, registrants.csv
+and segments.json but no transcript, and M2/M3 both require one. Run the full
+pipeline for event 2 with
+`run_pipeline.py --event-dir data/fixtures/event2 --modules m1,m4`.
 
 Usage: python3 orchestrator/test_webinar2.py
 Exit 0 = all assertions passed. Exit 1 = a real failure (printed loudly).

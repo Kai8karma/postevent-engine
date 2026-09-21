@@ -484,9 +484,11 @@ def classify_seniority(title: str) -> str:
 
 
 def synthetic_company_size(seed: str) -> int:
-    """Deterministic offline stand-in for a real firmographic lookup (Clay,
-    in production -- see clay_spec.md). Hash-bucket the domain/company name
-    into one of the three ICP size bands so tiering is stable across runs."""
+    """NOT a headcount lookup. Hash-buckets the domain/company name into one
+    of the three ICP size bands so tiering is stable across runs. Only the
+    --offline lane calls this; the live lane gets the real number from Clay
+    or the firmographics model (see clay_spec.md). Values it produces are
+    labelled numemployees_source=synthetic and never count as verified."""
     digest = hashlib.md5(seed.encode("utf-8")).digest()
     bucket_roll = digest[0] % 100
     if bucket_roll < 55:       # SMB -- most webinar registrants
@@ -735,7 +737,7 @@ HUBSPOT_DEDUPE_FILTER_CHUNK = 100  # HubSpot's search IN operator has a practica
 
 def resolve_hubspot_token():
     """Mirrors modules/m1-enrichment/push_to_hubspot.py::resolve_token /
-    modules/m4-dashboard/build_dashboard.py::resolve_hubspot_token (read-only
+    modules/m4-dashboard/dashboard.py::resolve_hubspot_token (read-only
     reference -- not imported, so this module's HubSpot code stays
     independent of the other two lanes' files, same convention those two
     already use). Token is never printed, logged, or written to any output
@@ -756,8 +758,8 @@ def resolve_hubspot_token():
 
 def hubspot_dedupe_search(token, filter_groups):
     """POST /crm/v3/objects/contacts/search, paginated via 'after' -- same
-    idiom as push_to_hubspot.py's http_call() / build_dashboard.py's
-    hubspot_search_contacts(). Returns (results, error_or_None)."""
+    idiom as push_to_hubspot.py's http_call() / dashboard.py's
+    HubSpotClient.search_contacts(). Returns (results, error_or_None)."""
     results = []
     after = None
     while True:
@@ -860,9 +862,9 @@ def resolve_hubspot_dedupe_source(records, fixture_hubspot, lane: str, use_fixtu
       --hubspot-fixture    -> 'fixture'      (explicit opt-in, the only path
                                               that reads the fixture on the
                                               live lane)
-      --offline            -> 'fixture'      (offline means zero network; the
-                                              fixture is the honest stand-in
-                                              and the lane says so)
+      --offline            -> 'fixture'      (offline means zero network, so the
+                                              fixture is the only source there
+                                              is -- and the lane says so)
       live + token         -> 'live'         (candidate_count may be 0 -- that
                                               is a live answer, not a failure)
       live + search error  -> 'live_error'   (error recorded, 0 candidates, NOT
@@ -2850,8 +2852,9 @@ def spec_completeness(rows, clay_verified_domains=None):
 
     Reports both numbers side by side rather than picking one:
     - "fields"/"completeness_pct"/"pass_90" (unchanged key names, for
-      backward compat with modules/m4-dashboard/build_dashboard.py and
-      api/run.py, which read this exact shape) are the RAW numbers --
+      backward compat with api/run.py's summarize_m1(), which reads this
+      exact shape and is what api/server.py reports for M1) are the RAW
+      numbers --
       synthetic company_size and generic fallbacks count as filled, same as
       always.
     - "fields_verified"/"spec_completeness_raw_pct"/

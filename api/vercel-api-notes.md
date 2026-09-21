@@ -67,7 +67,7 @@ exists to avoid, so it's now a third lane value:
 
 A degraded response's `notes` array carries the module's own verbatim
 evidence, a plain-English gloss, and what the reviewer can do next (supply
-their own key, or read `out/live-proof/`) -- see `degraded_note()` in
+their own key, or read the committed receipts under `out/receipts/`) -- see `degraded_note()` in
 `api/run.py`. If an `OPENROUTER_API_KEY` is present, it also runs the
 `probe_openrouter_liveness()` ping described above and appends the
 provider's real error text, since `enrich.py`'s internal preflight discards

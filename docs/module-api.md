@@ -30,7 +30,7 @@ Response (always JSON, always HTTP 200 unless the service itself broke):
  "seconds": 84.2, "model": "nvidia/nemotron-3-super-120b-a12b:free",
  "summary": {"input_rows": 150, "output_rows": 142, "hubspot_matches": 25, "llm_calls": 9},
  "artifacts": {"hubspot_ready.csv": "/artifacts/m1-…/hubspot_ready.csv", "quality_report.json": "…"},
- "receipts": ["/artifacts/m1-…/receipts/m1_inference.json"],
+ "receipts": ["/artifacts/m1-…/receipts/m1_llm_calls.json"],
  "next": {"clay_domains": ["infosys.com", "…"]}, "notes": []}
 ```
 
@@ -50,8 +50,15 @@ response says `lane: "offline"` and lists what was skipped in `notes`.
 
 ## Receipts (every live call writes one)
 
-`out/<run_id>/receipts/*.json` — provider, model, request count, tokens, latency, HTTP statuses,
-input/output ids. The dashboard and README link to these; nothing in prose without a file behind it.
+On disk under the module API's run root, `out/api/<run_id>/` (`OUT_API_ROOT` in `api/server.py`;
+same path `docs/deploy-module-api.md` gives): each module writes its own
+`out/api/<run_id>/<module>/receipts/*.json` — e.g.
+`out/api/<run_id>/m1/receipts/m1_llm_calls.json` — and the HubSpot push receipt lands at
+`out/api/<run_id>/receipts/hubspot_push.json`. All of them are served as
+`/artifacts/<run_id>/receipts/<file>`, which is the form the `receipts` array above uses.
+
+Contents: provider, model, request count, tokens, latency, HTTP statuses, input/output ids. The
+dashboard and README link to these; nothing in prose without a file behind it.
 
 ## Env
 
