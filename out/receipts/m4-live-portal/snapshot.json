@@ -1,0 +1,1243 @@
+{
+  "event_slug": "darwinbox-ai-in-hr-2026-08-13",
+  "pulled_at": "2026-09-21T15:17:11",
+  "lane": "live",
+  "method": "contact_properties",
+  "contacts": [
+    {
+      "id": "551422124744",
+      "email": "kai8karma+speaker-qhamirani@gmail.com",
+      "firstname": "Q",
+      "lastname": "Hamirani",
+      "company": "HighLevel",
+      "domain": "gmail.com",
+      "jobtitle": "Chief People Officer",
+      "country": null,
+      "lifecyclestage": "evangelist",
+      "lifecycle_history": [
+        {
+          "stage": "lead",
+          "ts": "2026-09-13T11:05:41",
+          "source": "hubspot_history"
+        },
+        {
+          "stage": "evangelist",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        }
+      ],
+      "icp_tier": "tier3",
+      "region": "",
+      "owner": "",
+      "attendance_status": "attended",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 0,
+        "clicks": 0,
+        "pageviews": 0,
+        "form_fills": 0,
+        "last_engaged": null,
+        "source": "hubspot"
+      }
+    },
+    {
+      "id": "555891030773",
+      "email": "divya@gmail.com",
+      "firstname": "Divya",
+      "lastname": "Patel",
+      "company": "Self-employed",
+      "domain": "gmail.com",
+      "jobtitle": "HR Business Partner",
+      "country": "IN",
+      "lifecyclestage": "subscriber",
+      "lifecycle_history": [
+        {
+          "stage": "subscriber",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        }
+      ],
+      "icp_tier": "tier3",
+      "region": "INDIA",
+      "owner": "97706400",
+      "attendance_status": "no_show",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 0,
+        "clicks": 0,
+        "pageviews": 0,
+        "form_fills": 0,
+        "last_engaged": null,
+        "source": "hubspot"
+      }
+    },
+    {
+      "id": "555891030774",
+      "email": "rjohnson@wayfair.com",
+      "firstname": "Robert",
+      "lastname": "Johnson",
+      "company": "Wayfair",
+      "domain": "wayfair.com",
+      "jobtitle": "Student",
+      "country": "US",
+      "lifecyclestage": "subscriber",
+      "lifecycle_history": [
+        {
+          "stage": "subscriber",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        }
+      ],
+      "icp_tier": "unqualified",
+      "region": "NA",
+      "owner": "97706400",
+      "attendance_status": "no_show",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 0,
+        "clicks": 0,
+        "pageviews": 0,
+        "form_fills": 0,
+        "last_engaged": null,
+        "source": "hubspot"
+      }
+    },
+    {
+      "id": "555891030775",
+      "email": "jwilson@planetfitness.com",
+      "firstname": "James",
+      "lastname": "Wilson",
+      "company": "PF",
+      "domain": "planetfitness.com",
+      "jobtitle": "Head of Shared Services",
+      "country": "US",
+      "lifecyclestage": "subscriber",
+      "lifecycle_history": [
+        {
+          "stage": "subscriber",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        }
+      ],
+      "icp_tier": "unqualified",
+      "region": "NA",
+      "owner": "97706400",
+      "attendance_status": "no_show",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 0,
+        "clicks": 0,
+        "pageviews": 0,
+        "form_fills": 0,
+        "last_engaged": null,
+        "source": "hubspot"
+      }
+    },
+    {
+      "id": "555891030776",
+      "email": "ahassan@maybank.com",
+      "firstname": "Ahmad",
+      "lastname": "Hassan",
+      "company": "Maybank",
+      "domain": "maybank.com",
+      "jobtitle": "Head of Talent Acquisition",
+      "country": "MY",
+      "lifecyclestage": "lead",
+      "lifecycle_history": [
+        {
+          "stage": "lead",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        }
+      ],
+      "icp_tier": "tier2",
+      "region": "SEA",
+      "owner": "97706400",
+      "attendance_status": "no_show",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 1,
+        "clicks": 2,
+        "pageviews": 2,
+        "form_fills": 0,
+        "last_engaged": "2026-08-20T16:32:00",
+        "source": "seeded"
+      }
+    },
+    {
+      "id": "555891030777",
+      "email": "ahmad.hassan98@gmail.com",
+      "firstname": "Ahmad",
+      "lastname": "Hassan",
+      "company": "Self-employed",
+      "domain": "gmail.com",
+      "jobtitle": "HRIS Lead",
+      "country": "MY",
+      "lifecyclestage": "subscriber",
+      "lifecycle_history": [
+        {
+          "stage": "subscriber",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        }
+      ],
+      "icp_tier": "tier3",
+      "region": "SEA",
+      "owner": "97706400",
+      "attendance_status": "attended",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 1,
+        "clicks": 0,
+        "pageviews": 0,
+        "form_fills": 1,
+        "last_engaged": "2026-08-16T19:15:00",
+        "source": "seeded"
+      }
+    },
+    {
+      "id": "555891031738",
+      "email": "aisyah.abdullah@sea.com",
+      "firstname": "Aisyah",
+      "lastname": "Abdullah",
+      "company": "Sea Limited Ltd",
+      "domain": "sea.com",
+      "jobtitle": "VP Human Resources",
+      "country": "SG",
+      "lifecyclestage": "lead",
+      "lifecycle_history": [
+        {
+          "stage": "lead",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        }
+      ],
+      "icp_tier": "tier1",
+      "region": "SEA",
+      "owner": "97706400",
+      "attendance_status": "no_show",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 2,
+        "clicks": 2,
+        "pageviews": 0,
+        "form_fills": 1,
+        "last_engaged": "2026-09-12T09:01:00",
+        "source": "seeded"
+      }
+    },
+    {
+      "id": "555891031739",
+      "email": "mohammed.alsayed@majidalfuttaim.com",
+      "firstname": "Mohammed",
+      "lastname": "Al-Sayed",
+      "company": "Majid Al Futtaim",
+      "domain": "majidalfuttaim.com",
+      "jobtitle": "Head of People",
+      "country": "UAE",
+      "lifecyclestage": "lead",
+      "lifecycle_history": [
+        {
+          "stage": "lead",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        }
+      ],
+      "icp_tier": "tier1",
+      "region": "",
+      "owner": "97706400",
+      "attendance_status": "no_show",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 1,
+        "clicks": 0,
+        "pageviews": 1,
+        "form_fills": 1,
+        "last_engaged": "2026-09-04T21:02:00",
+        "source": "seeded"
+      }
+    },
+    {
+      "id": "555891031740",
+      "email": "maryam.alzaabi@almarai.com",
+      "firstname": "Maryam",
+      "lastname": "Al-Zaabi",
+      "company": "Almarai",
+      "domain": "almarai.com",
+      "jobtitle": "Student",
+      "country": "SA",
+      "lifecyclestage": "subscriber",
+      "lifecycle_history": [
+        {
+          "stage": "subscriber",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        }
+      ],
+      "icp_tier": "unqualified",
+      "region": "MENA",
+      "owner": "97706400",
+      "attendance_status": "no_show",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 0,
+        "clicks": 0,
+        "pageviews": 0,
+        "form_fills": 0,
+        "last_engaged": null,
+        "source": "hubspot"
+      }
+    },
+    {
+      "id": "555891031741",
+      "email": "nisha@yahoo.com",
+      "firstname": "Nisha",
+      "lastname": "Mukherjee",
+      "company": "Self-employed Ltd",
+      "domain": "yahoo.com",
+      "jobtitle": "HRIS Lead",
+      "country": "IN",
+      "lifecyclestage": "subscriber",
+      "lifecycle_history": [
+        {
+          "stage": "subscriber",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        }
+      ],
+      "icp_tier": "tier3",
+      "region": "INDIA",
+      "owner": "97706400",
+      "attendance_status": "no_show",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 0,
+        "clicks": 0,
+        "pageviews": 0,
+        "form_fills": 0,
+        "last_engaged": null,
+        "source": "hubspot"
+      }
+    },
+    {
+      "id": "555891031742",
+      "email": "sureshd@axisbank.com",
+      "firstname": "Suresh",
+      "lastname": "Desai",
+      "company": "Axis Bank",
+      "domain": "axisbank.com",
+      "jobtitle": "HRIS Manager",
+      "country": "india",
+      "lifecyclestage": "lead",
+      "lifecycle_history": [
+        {
+          "stage": "lead",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        }
+      ],
+      "icp_tier": "tier1",
+      "region": "",
+      "owner": "97706400",
+      "attendance_status": "no_show",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 1,
+        "clicks": 0,
+        "pageviews": 0,
+        "form_fills": 0,
+        "last_engaged": "2026-08-16T19:32:00",
+        "source": "seeded"
+      }
+    },
+    {
+      "id": "555891031743",
+      "email": "siriporn@ninjavan.co",
+      "firstname": "Siriporn",
+      "lastname": "Srisuk",
+      "company": "NV",
+      "domain": "ninjavan.co",
+      "jobtitle": "N/A",
+      "country": "SG",
+      "lifecyclestage": "marketingqualifiedlead",
+      "lifecycle_history": [
+        {
+          "stage": "subscriber",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        },
+        {
+          "stage": "marketingqualifiedlead",
+          "ts": "2026-09-21T15:11:42",
+          "source": "seeded"
+        }
+      ],
+      "icp_tier": "unqualified",
+      "region": "SEA",
+      "owner": "97706400",
+      "attendance_status": "no_show",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 2,
+        "clicks": 2,
+        "pageviews": 2,
+        "form_fills": 1,
+        "last_engaged": "2026-08-21T14:50:00",
+        "source": "seeded"
+      }
+    },
+    {
+      "id": "555891031744",
+      "email": "pkulkarni@asianpaints.com",
+      "firstname": "Pooja",
+      "lastname": "Kulkarni",
+      "company": "asian paints",
+      "domain": "asianpaints.com",
+      "jobtitle": "Head of L&D",
+      "country": "IN",
+      "lifecyclestage": "lead",
+      "lifecycle_history": [
+        {
+          "stage": "lead",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        }
+      ],
+      "icp_tier": "tier2",
+      "region": "INDIA",
+      "owner": "97706400",
+      "attendance_status": "no_show",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 0,
+        "clicks": 0,
+        "pageviews": 0,
+        "form_fills": 0,
+        "last_engaged": null,
+        "source": "hubspot"
+      }
+    },
+    {
+      "id": "555891031745",
+      "email": "sanjay.reddy@asianpaints.com",
+      "firstname": "Sanjay",
+      "lastname": "Reddy",
+      "company": "asian paints",
+      "domain": "asianpaints.com",
+      "jobtitle": "Senior HRBP",
+      "country": "IN",
+      "lifecyclestage": "lead",
+      "lifecycle_history": [
+        {
+          "stage": "lead",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        }
+      ],
+      "icp_tier": "tier2",
+      "region": "INDIA",
+      "owner": "97706400",
+      "attendance_status": "no_show",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 0,
+        "clicks": 0,
+        "pageviews": 0,
+        "form_fills": 0,
+        "last_engaged": null,
+        "source": "hubspot"
+      }
+    },
+    {
+      "id": "555891031746",
+      "email": "yalsayed@qatarairways.com",
+      "firstname": "Yousfe",
+      "lastname": "Al-Sayed",
+      "company": "Qatar Airways",
+      "domain": "qatarairways.com",
+      "jobtitle": "Consultant",
+      "country": "Qatar",
+      "lifecyclestage": "lead",
+      "lifecycle_history": [
+        {
+          "stage": "subscriber",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        },
+        {
+          "stage": "lead",
+          "ts": "2026-09-21T15:11:42",
+          "source": "seeded"
+        }
+      ],
+      "icp_tier": "unqualified",
+      "region": "",
+      "owner": "",
+      "attendance_status": "no_show",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 1,
+        "clicks": 1,
+        "pageviews": 1,
+        "form_fills": 1,
+        "last_engaged": "2026-08-21T23:04:00",
+        "source": "seeded"
+      }
+    },
+    {
+      "id": "555891031747",
+      "email": "sanjay.rao@hdfcbank.com",
+      "firstname": "Sanjay",
+      "lastname": "Rao",
+      "company": "HDFC Bank Ltd",
+      "domain": "hdfcbank.com",
+      "jobtitle": "Attendee",
+      "country": "IN",
+      "lifecyclestage": "marketingqualifiedlead",
+      "lifecycle_history": [
+        {
+          "stage": "subscriber",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        },
+        {
+          "stage": "marketingqualifiedlead",
+          "ts": "2026-09-21T15:11:42",
+          "source": "seeded"
+        }
+      ],
+      "icp_tier": "unqualified",
+      "region": "INDIA",
+      "owner": "97706400",
+      "attendance_status": "attended",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 3,
+        "clicks": 3,
+        "pageviews": 1,
+        "form_fills": 0,
+        "last_engaged": "2026-08-30T19:48:00",
+        "source": "seeded"
+      }
+    },
+    {
+      "id": "555891031748",
+      "email": "dsmith@chewy.com",
+      "firstname": "David",
+      "lastname": "Smith",
+      "company": "Chewy",
+      "domain": "chewy.com",
+      "jobtitle": "TA Manager",
+      "country": "united states",
+      "lifecyclestage": "opportunity",
+      "lifecycle_history": [
+        {
+          "stage": "lead",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        },
+        {
+          "stage": "opportunity",
+          "ts": "2026-09-21T15:11:42",
+          "source": "seeded"
+        }
+      ],
+      "icp_tier": "tier2",
+      "region": "",
+      "owner": "97706400",
+      "attendance_status": "attended",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 4,
+        "clicks": 2,
+        "pageviews": 5,
+        "form_fills": 3,
+        "last_engaged": "2026-08-31T22:33:00",
+        "source": "seeded"
+      }
+    },
+    {
+      "id": "555891031749",
+      "email": "siripornw@ocbc.com",
+      "firstname": "Siriporn",
+      "lastname": "Wongsa",
+      "company": "OCBC Ltd",
+      "domain": "ocbc.com",
+      "jobtitle": "Attendee",
+      "country": "SG",
+      "lifecyclestage": "subscriber",
+      "lifecycle_history": [
+        {
+          "stage": "subscriber",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        }
+      ],
+      "icp_tier": "unqualified",
+      "region": "SEA",
+      "owner": "97706400",
+      "attendance_status": "no_show",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 0,
+        "clicks": 1,
+        "pageviews": 1,
+        "form_fills": 0,
+        "last_engaged": "2026-09-08T09:32:00",
+        "source": "seeded"
+      }
+    },
+    {
+      "id": "555891031750",
+      "email": "neha.rao@havells.com",
+      "firstname": "Neha",
+      "lastname": "Rao",
+      "company": "Havells",
+      "domain": "havells.com",
+      "jobtitle": "HRIS Lead",
+      "country": "india",
+      "lifecyclestage": "marketingqualifiedlead",
+      "lifecycle_history": [
+        {
+          "stage": "lead",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        },
+        {
+          "stage": "marketingqualifiedlead",
+          "ts": "2026-09-21T15:11:42",
+          "source": "seeded"
+        }
+      ],
+      "icp_tier": "tier1",
+      "region": "",
+      "owner": "97706400",
+      "attendance_status": "no_show",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 5,
+        "clicks": 0,
+        "pageviews": 1,
+        "form_fills": 0,
+        "last_engaged": "2026-09-02T15:29:00",
+        "source": "seeded"
+      }
+    },
+    {
+      "id": "555891031751",
+      "email": "dgupta@persistent.com",
+      "firstname": "Gupta",
+      "lastname": "Divya",
+      "company": "Persistent Systems",
+      "domain": "persistent.com",
+      "jobtitle": "Attendee",
+      "country": "india",
+      "lifecyclestage": "subscriber",
+      "lifecycle_history": [
+        {
+          "stage": "subscriber",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        }
+      ],
+      "icp_tier": "unqualified",
+      "region": "",
+      "owner": "97706400",
+      "attendance_status": "no_show",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 0,
+        "clicks": 0,
+        "pageviews": 0,
+        "form_fills": 0,
+        "last_engaged": null,
+        "source": "hubspot"
+      }
+    },
+    {
+      "id": "555891031752",
+      "email": "siti@ocbc.com",
+      "firstname": "Siti",
+      "lastname": "Rahman",
+      "company": "OCBC",
+      "domain": "ocbc.com",
+      "jobtitle": "Attendee",
+      "country": "sg",
+      "lifecyclestage": "lead",
+      "lifecycle_history": [
+        {
+          "stage": "subscriber",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        },
+        {
+          "stage": "lead",
+          "ts": "2026-09-21T15:11:42",
+          "source": "seeded"
+        }
+      ],
+      "icp_tier": "unqualified",
+      "region": "SEA",
+      "owner": "97706400",
+      "attendance_status": "no_show",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 2,
+        "clicks": 1,
+        "pageviews": 0,
+        "form_fills": 1,
+        "last_engaged": "2026-09-08T03:15:00",
+        "source": "seeded"
+      }
+    },
+    {
+      "id": "555891031753",
+      "email": "rverma82@rediffmail.com",
+      "firstname": "Rahul",
+      "lastname": "Verma",
+      "company": "Unknown",
+      "domain": "rediffmail.com",
+      "jobtitle": "Founder",
+      "country": "IN",
+      "lifecyclestage": "subscriber",
+      "lifecycle_history": [
+        {
+          "stage": "subscriber",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        }
+      ],
+      "icp_tier": "unqualified",
+      "region": "INDIA",
+      "owner": "97706400",
+      "attendance_status": "attended",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 0,
+        "clicks": 1,
+        "pageviews": 1,
+        "form_fills": 0,
+        "last_engaged": "2026-09-02T06:38:00",
+        "source": "seeded"
+      }
+    },
+    {
+      "id": "555891031754",
+      "email": "nehai@sunpharma.com",
+      "firstname": "Neha",
+      "lastname": "Iyer",
+      "company": "Sun Pharma",
+      "domain": "sunpharma.com",
+      "jobtitle": "HR Operations Manager",
+      "country": "India",
+      "lifecyclestage": "lead",
+      "lifecycle_history": [
+        {
+          "stage": "lead",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        }
+      ],
+      "icp_tier": "tier2",
+      "region": "",
+      "owner": "97706400",
+      "attendance_status": "no_show",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 0,
+        "clicks": 0,
+        "pageviews": 0,
+        "form_fills": 0,
+        "last_engaged": null,
+        "source": "hubspot"
+      }
+    },
+    {
+      "id": "555891031755",
+      "email": "karan.sharma@godrejcp.com",
+      "firstname": "Karan",
+      "lastname": "Sharma",
+      "company": "Godrej Consumer Products",
+      "domain": "godrejcp.com",
+      "jobtitle": "Digital Transformation Head",
+      "country": "IN",
+      "lifecyclestage": "lead",
+      "lifecycle_history": [
+        {
+          "stage": "lead",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        }
+      ],
+      "icp_tier": "tier2",
+      "region": "INDIA",
+      "owner": "97706400",
+      "attendance_status": "attended",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 0,
+        "clicks": 0,
+        "pageviews": 0,
+        "form_fills": 0,
+        "last_engaged": null,
+        "source": "hubspot"
+      }
+    },
+    {
+      "id": "555891031756",
+      "email": "muhammad.abdullah@axiata.com",
+      "firstname": "Muhammad",
+      "lastname": "Abdullah",
+      "company": "Axiata Ltd",
+      "domain": "axiata.com",
+      "jobtitle": "Consultant",
+      "country": "MY",
+      "lifecyclestage": "subscriber",
+      "lifecycle_history": [
+        {
+          "stage": "subscriber",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        }
+      ],
+      "icp_tier": "unqualified",
+      "region": "SEA",
+      "owner": "97706400",
+      "attendance_status": "no_show",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 0,
+        "clicks": 0,
+        "pageviews": 0,
+        "form_fills": 0,
+        "last_engaged": null,
+        "source": "hubspot"
+      }
+    },
+    {
+      "id": "555891031757",
+      "email": "rohann@sunpharma.com",
+      "firstname": "Rohan",
+      "lastname": "Nair",
+      "company": "Sun Pharma Ltd",
+      "domain": "sunpharma.com",
+      "jobtitle": "N/A",
+      "country": "IN",
+      "lifecyclestage": "subscriber",
+      "lifecycle_history": [
+        {
+          "stage": "subscriber",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        }
+      ],
+      "icp_tier": "unqualified",
+      "region": "INDIA",
+      "owner": "97706400",
+      "attendance_status": "no_show",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 0,
+        "clicks": 0,
+        "pageviews": 0,
+        "form_fills": 0,
+        "last_engaged": null,
+        "source": "hubspot"
+      }
+    },
+    {
+      "id": "555891031758",
+      "email": "nalfarsi@talabat.com",
+      "firstname": "Noura",
+      "lastname": "Al-Farsi",
+      "company": "talabat",
+      "domain": "talabat.com",
+      "jobtitle": "Senior HRBP",
+      "country": "United Arab Emirates",
+      "lifecyclestage": "lead",
+      "lifecycle_history": [
+        {
+          "stage": "lead",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        }
+      ],
+      "icp_tier": "tier2",
+      "region": "",
+      "owner": "97706400",
+      "attendance_status": "no_show",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 1,
+        "clicks": 0,
+        "pageviews": 1,
+        "form_fills": 2,
+        "last_engaged": "2026-08-31T21:15:00",
+        "source": "seeded"
+      }
+    },
+    {
+      "id": "555891031759",
+      "email": "djohnson@chewy.com",
+      "firstname": "David",
+      "lastname": "Johnson",
+      "company": "Chewy Ltd",
+      "domain": "chewy.com",
+      "jobtitle": "HRIS Manager",
+      "country": "US",
+      "lifecyclestage": "marketingqualifiedlead",
+      "lifecycle_history": [
+        {
+          "stage": "marketingqualifiedlead",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        }
+      ],
+      "icp_tier": "tier1",
+      "region": "NA",
+      "owner": "97706400",
+      "attendance_status": "attended",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 0,
+        "clicks": 0,
+        "pageviews": 0,
+        "form_fills": 0,
+        "last_engaged": null,
+        "source": "hubspot"
+      }
+    },
+    {
+      "id": "555891031760",
+      "email": "vikramn@darwinbox.com",
+      "firstname": "Vikram",
+      "lastname": "Nair",
+      "company": "Darwinbox",
+      "domain": "darwinbox.com",
+      "jobtitle": "Sales Development Rep",
+      "country": "in",
+      "lifecyclestage": "lead",
+      "lifecycle_history": [
+        {
+          "stage": "subscriber",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        },
+        {
+          "stage": "lead",
+          "ts": "2026-09-21T15:11:42",
+          "source": "seeded"
+        }
+      ],
+      "icp_tier": "unqualified",
+      "region": "INDIA",
+      "owner": "97706400",
+      "attendance_status": "attended",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 0,
+        "clicks": 2,
+        "pageviews": 1,
+        "form_fills": 0,
+        "last_engaged": "2026-09-06T14:58:00",
+        "source": "seeded"
+      }
+    },
+    {
+      "id": "555891031761",
+      "email": "ahmeda@emirates.com",
+      "firstname": "Ahmed",
+      "lastname": "Al-Qahtani",
+      "company": "Emirates Group",
+      "domain": "emirates.com",
+      "jobtitle": "Attendee",
+      "country": "ae",
+      "lifecyclestage": "subscriber",
+      "lifecycle_history": [
+        {
+          "stage": "subscriber",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        }
+      ],
+      "icp_tier": "unqualified",
+      "region": "MENA",
+      "owner": "97706400",
+      "attendance_status": "attended",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 0,
+        "clicks": 0,
+        "pageviews": 0,
+        "form_fills": 0,
+        "last_engaged": null,
+        "source": "hubspot"
+      }
+    },
+    {
+      "id": "555891031762",
+      "email": "amit@apollohospitals.com",
+      "firstname": "Amit",
+      "lastname": "Patel",
+      "company": "Apollo Hospitals",
+      "domain": "apollohospitals.com",
+      "jobtitle": "HRIS Manager",
+      "country": "in",
+      "lifecyclestage": "marketingqualifiedlead",
+      "lifecycle_history": [
+        {
+          "stage": "marketingqualifiedlead",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        }
+      ],
+      "icp_tier": "tier1",
+      "region": "INDIA",
+      "owner": "97706400",
+      "attendance_status": "attended",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 2,
+        "clicks": 0,
+        "pageviews": 1,
+        "form_fills": 1,
+        "last_engaged": "2026-09-11T04:13:00",
+        "source": "seeded"
+      }
+    },
+    {
+      "id": "555891031763",
+      "email": "kai8karma+speaker-sudikorba@gmail.com",
+      "firstname": "Sudi",
+      "lastname": "Bjornstad Korba",
+      "company": "Darwinbox",
+      "domain": "gmail.com",
+      "jobtitle": "Senior Vice President of Sales, North America",
+      "country": null,
+      "lifecyclestage": "evangelist",
+      "lifecycle_history": [
+        {
+          "stage": "evangelist",
+          "ts": "2026-09-21T15:10:07",
+          "source": "hubspot_history"
+        }
+      ],
+      "icp_tier": "unqualified",
+      "region": "",
+      "owner": "",
+      "attendance_status": "attended",
+      "postevent_event": "darwinbox-ai-in-hr-2026-08-13",
+      "engagement": {
+        "opens": 0,
+        "clicks": 0,
+        "pageviews": 0,
+        "form_fills": 0,
+        "last_engaged": null,
+        "source": "hubspot"
+      }
+    }
+  ],
+  "companies": [
+    {
+      "id": "347824002784",
+      "name": "asian paints",
+      "domain": "asianpaints.com",
+      "contact_ids": [
+        "555891031744",
+        "555891031745"
+      ]
+    },
+    {
+      "id": "347824002785",
+      "name": "PF",
+      "domain": "planetfitness.com",
+      "contact_ids": [
+        "555891030775"
+      ]
+    },
+    {
+      "id": "347824002786",
+      "name": "Axiata Ltd",
+      "domain": "axiata.com",
+      "contact_ids": [
+        "555891031756"
+      ]
+    },
+    {
+      "id": "347824002787",
+      "name": "Qatar Airways",
+      "domain": "qatarairways.com",
+      "contact_ids": [
+        "555891031746"
+      ]
+    },
+    {
+      "id": "347824002788",
+      "name": "Sun Pharma",
+      "domain": "sunpharma.com",
+      "contact_ids": [
+        "555891031754",
+        "555891031757"
+      ]
+    },
+    {
+      "id": "347824002789",
+      "name": "Sea Limited Ltd",
+      "domain": "sea.com",
+      "contact_ids": [
+        "555891031738"
+      ]
+    },
+    {
+      "id": "347824002790",
+      "name": "Godrej Consumer Products",
+      "domain": "godrejcp.com",
+      "contact_ids": [
+        "555891031755"
+      ]
+    },
+    {
+      "id": "347824002791",
+      "name": "OCBC Ltd",
+      "domain": "ocbc.com",
+      "contact_ids": [
+        "555891031749",
+        "555891031752"
+      ]
+    },
+    {
+      "id": "347824002792",
+      "name": "Emirates Group",
+      "domain": "emirates.com",
+      "contact_ids": [
+        "555891031761"
+      ]
+    },
+    {
+      "id": "347824002793",
+      "name": "Apollo Hospitals",
+      "domain": "apollohospitals.com",
+      "contact_ids": [
+        "555891031762"
+      ]
+    },
+    {
+      "id": "347824002794",
+      "name": "Persistent Systems",
+      "domain": "persistent.com",
+      "contact_ids": [
+        "555891031751"
+      ]
+    },
+    {
+      "id": "347824002795",
+      "name": "HDFC Bank Ltd",
+      "domain": "hdfcbank.com",
+      "contact_ids": [
+        "555891031747"
+      ]
+    },
+    {
+      "id": "347824002796",
+      "name": "Wayfair",
+      "domain": "wayfair.com",
+      "contact_ids": [
+        "555891030774"
+      ]
+    },
+    {
+      "id": "347824002797",
+      "name": "NV",
+      "domain": "ninjavan.co",
+      "contact_ids": [
+        "555891031743"
+      ]
+    },
+    {
+      "id": "347824002798",
+      "name": "talabat",
+      "domain": "talabat.com",
+      "contact_ids": [
+        "555891031758"
+      ]
+    },
+    {
+      "id": "347824002799",
+      "name": "Chewy",
+      "domain": "chewy.com",
+      "contact_ids": [
+        "555891031748",
+        "555891031759"
+      ]
+    },
+    {
+      "id": "347824002800",
+      "name": "Unknown",
+      "domain": "rediffmail.com",
+      "contact_ids": [
+        "555891031753"
+      ]
+    },
+    {
+      "id": "347824002801",
+      "name": "Almarai",
+      "domain": "almarai.com",
+      "contact_ids": [
+        "555891031740"
+      ]
+    },
+    {
+      "id": "347824002802",
+      "name": "Havells",
+      "domain": "havells.com",
+      "contact_ids": [
+        "555891031750"
+      ]
+    },
+    {
+      "id": "347824002803",
+      "name": "Maybank",
+      "domain": "maybank.com",
+      "contact_ids": [
+        "555891030776"
+      ]
+    },
+    {
+      "id": "347824002804",
+      "name": "Axis Bank",
+      "domain": "axisbank.com",
+      "contact_ids": [
+        "555891031742"
+      ]
+    },
+    {
+      "id": "347824002805",
+      "name": "Darwinbox",
+      "domain": "darwinbox.com",
+      "contact_ids": [
+        "555891031760"
+      ]
+    },
+    {
+      "id": "347824002806",
+      "name": "Majid Al Futtaim",
+      "domain": "majidalfuttaim.com",
+      "contact_ids": [
+        "555891031739"
+      ]
+    }
+  ],
+  "email_engagements": [
+    {
+      "id": "399708396251",
+      "contact_id": "551422124744",
+      "subject": "W2 logger probe",
+      "ts": "2026-09-13T11:04:48",
+      "source": "hubspot"
+    }
+  ],
+  "events": [],
+  "notes": [
+    "engagement counters were seeded onto contact properties (the portal refuses custom event definitions), so `events` is empty and the per-contact counters carry the stream; every engagement block is labelled source: \"seeded\"."
+  ]
+}

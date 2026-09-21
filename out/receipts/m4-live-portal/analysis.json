@@ -1,0 +1,1395 @@
+{
+  "event_slug": "darwinbox-ai-in-hr-2026-08-13",
+  "generated_at": "2026-09-21T15:17:58",
+  "lane": "live",
+  "model": "nvidia/nemotron-3-super-120b-a12b:free",
+  "narrative_source": "live",
+  "movement_narrative": "In the last 7 days, 39 transitions occurred, all timestamped on 2026-09-21, driven primarily by seeded entries from the pipeline\u2019s synthetic registrant list. This represents a sharp acceleration from the prior week, where only 1 transition occurred on 2026-09-13, and reflects a concentrated burst of activity in the lead and marketingqualifiedlead stages, with 14 leads and 5 MQLs created in the window. The movement was not organic: 7 of the 39 transitions were seeded, including the sole opportunity created for dsmith@chewy.com (Chewy) and multiple MQL advances for contacts like djohnson@chewy.com, amit@apollohospitals.com, neha.rao@havells.com, and siriporn@ninjavan.co, all pushed via the seed phase on 2026-09-21T15:11:42.\n\nOver the 14- and 30-day windows, the total transitions remained flat at 40, indicating that the 7-day surge was followed by no further movement \u2014 a plateau after the initial spike. The same 32 contacts accounted for all transitions across all windows, with no new stage progression beyond what was seen in the 7-day window. The bulk of organic movement (hubspot_history) occurred on 2026-09-21T15:10:07, where 32 contacts moved into subscriber, lead, or evangelist stages \u2014 including kai8karma+speaker-qhamirani@gmail.com (HighLevel) to lead and evangelist, and divya@gmail.com, rjohnson@wayfair.com, and others to subscriber \u2014 but none advanced beyond lead without seeded intervention.\n\nContacts with engagement that did not move stages include kai8karma+speaker-qhamirani@gmail.com (HighLevel), divya@gmail.com (Self-employed), rjohnson@wayfair.com (Wayfair), jwilson@planetfitness.com (PF), ahmad.hassan98@gmail.com (Self-employed), aiyah.abdullah@sea.com (Sea Limited Ltd), mohammed.alsayed@majidalfuttaim.com (Majid Al Futtaim), maryam.alzaabi@almarai.com (Almarai), nisha@yahoo.com (Self-employed Ltd), sureshd@axisbank.com (Axis Bank), siriporn@ninjavan.co (NV), pkulkarni@asianpaints.com (asian paints), sanjay.reddy@asianpaints.com (asian paints), yalsayed@qatarairways.com (Qatar Airways), sanjay.rao@hdfcbank.com (HDFC Bank Ltd), siripornw@ocbc.com (OCBC Ltd), neha.rao@havells.com (Havells), dgupta@persistent.com (Persistent Systems), siti@ocbc.com (OCBC), rverma82@rediffmail.com (Unknown), nehai@sunpharma.com (Sun Pharma), karan.sharma@godrejcp.com (Godrej Consumer Products), muhammad.abdullah@axiata.com (Axiata Ltd), rohann@sunpharma.com (Sun Pharma Ltd), nalfarsi@talabat.com (talabat), vikramn@darwinbox.com (Darwinbox), ahmeda@emirates.com (Emirates Group), and kai8karma+speaker-sudikorba@gmail.com (Darwinbox) \u2014 all of whom engaged but remained in subscriber, lead, or evangelist stages without further progression.\n\nSource mix: 7 of the 40 transitions in the 14- and 30-day windows were seeded by this pipeline, not organic CRM history, and must not be mistaken for genuine engagement-driven movement.",
+  "deterministic": {
+    "as_of": "2026-09-21T15:11:42",
+    "mql_rate": 0.5455,
+    "attendee_to_mql": {
+      "attendees": 11,
+      "mqls": 6,
+      "sqls": 3
+    },
+    "movement": {
+      "7d": {
+        "transitions": 39,
+        "contacts": 32,
+        "by_stage": {
+          "evangelist": 2,
+          "subscriber": 17,
+          "lead": 14,
+          "marketingqualifiedlead": 5,
+          "opportunity": 1
+        },
+        "source_mix": {
+          "hubspot_history": 32,
+          "seeded": 7
+        },
+        "dates": {
+          "2026-09-21": 39
+        },
+        "disclosure": "7 of 39 transitions were written into the CRM by this pipeline's seed phase, not organic movement; 39 of 39 share one timestamp date (2026-09-21), because this is a developer test portal seeded for the demo rather than a portal with months of real history.",
+        "window_start": "2026-09-14T15:11:42",
+        "window_end": "2026-09-21T15:11:42"
+      },
+      "14d": {
+        "transitions": 40,
+        "contacts": 32,
+        "by_stage": {
+          "lead": 15,
+          "evangelist": 2,
+          "subscriber": 17,
+          "marketingqualifiedlead": 5,
+          "opportunity": 1
+        },
+        "source_mix": {
+          "hubspot_history": 33,
+          "seeded": 7
+        },
+        "dates": {
+          "2026-09-13": 1,
+          "2026-09-21": 39
+        },
+        "disclosure": "7 of 40 transitions were written into the CRM by this pipeline's seed phase, not organic movement; 39 of 40 share one timestamp date (2026-09-21), because this is a developer test portal seeded for the demo rather than a portal with months of real history.",
+        "window_start": "2026-09-07T15:11:42",
+        "window_end": "2026-09-21T15:11:42"
+      },
+      "30d": {
+        "transitions": 40,
+        "contacts": 32,
+        "by_stage": {
+          "lead": 15,
+          "evangelist": 2,
+          "subscriber": 17,
+          "marketingqualifiedlead": 5,
+          "opportunity": 1
+        },
+        "source_mix": {
+          "hubspot_history": 33,
+          "seeded": 7
+        },
+        "dates": {
+          "2026-09-13": 1,
+          "2026-09-21": 39
+        },
+        "disclosure": "7 of 40 transitions were written into the CRM by this pipeline's seed phase, not organic movement; 39 of 40 share one timestamp date (2026-09-21), because this is a developer test portal seeded for the demo rather than a portal with months of real history.",
+        "window_start": "2026-08-22T15:11:42",
+        "window_end": "2026-09-21T15:11:42"
+      }
+    },
+    "movement_timeline": [
+      {
+        "date": "2026-09-13",
+        "count": 1
+      },
+      {
+        "date": "2026-09-21",
+        "count": 39
+      }
+    ],
+    "top_accounts": [
+      {
+        "company": "Chewy",
+        "domain": "chewy.com",
+        "score": 43.0,
+        "engaged_contacts": 1,
+        "known_contacts": 2,
+        "coverage_pct": 50.0,
+        "contacts": [
+          {
+            "email": "dsmith@chewy.com",
+            "name": "David Smith",
+            "title": "TA Manager",
+            "company": "Chewy",
+            "stage": "opportunity",
+            "score": 43.0,
+            "engagement": {
+              "opens": 4,
+              "clicks": 2,
+              "pageviews": 5,
+              "form_fills": 3,
+              "last_engaged": "2026-08-31T22:33:00",
+              "source": "seeded"
+            }
+          }
+        ]
+      },
+      {
+        "company": "talabat",
+        "domain": "talabat.com",
+        "score": 21.5,
+        "engaged_contacts": 1,
+        "known_contacts": 1,
+        "coverage_pct": 100.0,
+        "contacts": [
+          {
+            "email": "nalfarsi@talabat.com",
+            "name": "Noura Al-Farsi",
+            "title": "Senior HRBP",
+            "company": "talabat",
+            "stage": "lead",
+            "score": 21.5,
+            "engagement": {
+              "opens": 1,
+              "clicks": 0,
+              "pageviews": 1,
+              "form_fills": 2,
+              "last_engaged": "2026-08-31T21:15:00",
+              "source": "seeded"
+            }
+          }
+        ]
+      },
+      {
+        "company": "NV",
+        "domain": "ninjavan.co",
+        "score": 19.0,
+        "engaged_contacts": 1,
+        "known_contacts": 1,
+        "coverage_pct": 100.0,
+        "contacts": [
+          {
+            "email": "siriporn@ninjavan.co",
+            "name": "Siriporn Srisuk",
+            "title": "N/A",
+            "company": "NV",
+            "stage": "marketingqualifiedlead",
+            "score": 19.0,
+            "engagement": {
+              "opens": 2,
+              "clicks": 2,
+              "pageviews": 2,
+              "form_fills": 1,
+              "last_engaged": "2026-08-21T14:50:00",
+              "source": "seeded"
+            }
+          }
+        ]
+      },
+      {
+        "company": "OCBC Ltd",
+        "domain": "ocbc.com",
+        "score": 18.0,
+        "engaged_contacts": 2,
+        "known_contacts": 2,
+        "coverage_pct": 100.0,
+        "contacts": [
+          {
+            "email": "siti@ocbc.com",
+            "name": "Siti Rahman",
+            "title": "Attendee",
+            "company": "OCBC",
+            "stage": "lead",
+            "score": 14.0,
+            "engagement": {
+              "opens": 2,
+              "clicks": 1,
+              "pageviews": 0,
+              "form_fills": 1,
+              "last_engaged": "2026-09-08T03:15:00",
+              "source": "seeded"
+            }
+          },
+          {
+            "email": "siripornw@ocbc.com",
+            "name": "Siriporn Wongsa",
+            "title": "Attendee",
+            "company": "OCBC Ltd",
+            "stage": "subscriber",
+            "score": 4.0,
+            "engagement": {
+              "opens": 0,
+              "clicks": 1,
+              "pageviews": 1,
+              "form_fills": 0,
+              "last_engaged": "2026-09-08T09:32:00",
+              "source": "seeded"
+            }
+          }
+        ]
+      },
+      {
+        "company": "Sea Limited Ltd",
+        "domain": "sea.com",
+        "score": 17.0,
+        "engaged_contacts": 1,
+        "known_contacts": 1,
+        "coverage_pct": 100.0,
+        "contacts": [
+          {
+            "email": "aisyah.abdullah@sea.com",
+            "name": "Aisyah Abdullah",
+            "title": "VP Human Resources",
+            "company": "Sea Limited Ltd",
+            "stage": "lead",
+            "score": 17.0,
+            "engagement": {
+              "opens": 2,
+              "clicks": 2,
+              "pageviews": 0,
+              "form_fills": 1,
+              "last_engaged": "2026-09-12T09:01:00",
+              "source": "seeded"
+            }
+          }
+        ]
+      },
+      {
+        "company": "Qatar Airways",
+        "domain": "qatarairways.com",
+        "score": 14.5,
+        "engaged_contacts": 1,
+        "known_contacts": 1,
+        "coverage_pct": 100.0,
+        "contacts": [
+          {
+            "email": "yalsayed@qatarairways.com",
+            "name": "Yousfe Al-Sayed",
+            "title": "Consultant",
+            "company": "Qatar Airways",
+            "stage": "lead",
+            "score": 14.5,
+            "engagement": {
+              "opens": 1,
+              "clicks": 1,
+              "pageviews": 1,
+              "form_fills": 1,
+              "last_engaged": "2026-08-21T23:04:00",
+              "source": "seeded"
+            }
+          }
+        ]
+      },
+      {
+        "company": "Apollo Hospitals",
+        "domain": "apollohospitals.com",
+        "score": 12.0,
+        "engaged_contacts": 1,
+        "known_contacts": 1,
+        "coverage_pct": 100.0,
+        "contacts": [
+          {
+            "email": "amit@apollohospitals.com",
+            "name": "Amit Patel",
+            "title": "HRIS Manager",
+            "company": "Apollo Hospitals",
+            "stage": "marketingqualifiedlead",
+            "score": 12.0,
+            "engagement": {
+              "opens": 2,
+              "clicks": 0,
+              "pageviews": 1,
+              "form_fills": 1,
+              "last_engaged": "2026-09-11T04:13:00",
+              "source": "seeded"
+            }
+          }
+        ]
+      },
+      {
+        "company": "HDFC Bank Ltd",
+        "domain": "hdfcbank.com",
+        "score": 11.5,
+        "engaged_contacts": 1,
+        "known_contacts": 1,
+        "coverage_pct": 100.0,
+        "contacts": [
+          {
+            "email": "sanjay.rao@hdfcbank.com",
+            "name": "Sanjay Rao",
+            "title": "Attendee",
+            "company": "HDFC Bank Ltd",
+            "stage": "marketingqualifiedlead",
+            "score": 11.5,
+            "engagement": {
+              "opens": 3,
+              "clicks": 3,
+              "pageviews": 1,
+              "form_fills": 0,
+              "last_engaged": "2026-08-30T19:48:00",
+              "source": "seeded"
+            }
+          }
+        ]
+      },
+      {
+        "company": "Majid Al Futtaim",
+        "domain": "majidalfuttaim.com",
+        "score": 11.5,
+        "engaged_contacts": 1,
+        "known_contacts": 1,
+        "coverage_pct": 100.0,
+        "contacts": [
+          {
+            "email": "mohammed.alsayed@majidalfuttaim.com",
+            "name": "Mohammed Al-Sayed",
+            "title": "Head of People",
+            "company": "Majid Al Futtaim",
+            "stage": "lead",
+            "score": 11.5,
+            "engagement": {
+              "opens": 1,
+              "clicks": 0,
+              "pageviews": 1,
+              "form_fills": 1,
+              "last_engaged": "2026-09-04T21:02:00",
+              "source": "seeded"
+            }
+          }
+        ]
+      },
+      {
+        "company": "Maybank",
+        "domain": "maybank.com",
+        "score": 8.5,
+        "engaged_contacts": 1,
+        "known_contacts": 1,
+        "coverage_pct": 100.0,
+        "contacts": [
+          {
+            "email": "ahassan@maybank.com",
+            "name": "Ahmad Hassan",
+            "title": "Head of Talent Acquisition",
+            "company": "Maybank",
+            "stage": "lead",
+            "score": 8.5,
+            "engagement": {
+              "opens": 1,
+              "clicks": 2,
+              "pageviews": 2,
+              "form_fills": 0,
+              "last_engaged": "2026-08-20T16:32:00",
+              "source": "seeded"
+            }
+          }
+        ]
+      }
+    ],
+    "top_contacts": [
+      {
+        "email": "dsmith@chewy.com",
+        "name": "David Smith",
+        "title": "TA Manager",
+        "company": "Chewy",
+        "stage": "opportunity",
+        "score": 43.0,
+        "engagement": {
+          "opens": 4,
+          "clicks": 2,
+          "pageviews": 5,
+          "form_fills": 3,
+          "last_engaged": "2026-08-31T22:33:00",
+          "source": "seeded"
+        },
+        "interactions": 14
+      },
+      {
+        "email": "nalfarsi@talabat.com",
+        "name": "Noura Al-Farsi",
+        "title": "Senior HRBP",
+        "company": "talabat",
+        "stage": "lead",
+        "score": 21.5,
+        "engagement": {
+          "opens": 1,
+          "clicks": 0,
+          "pageviews": 1,
+          "form_fills": 2,
+          "last_engaged": "2026-08-31T21:15:00",
+          "source": "seeded"
+        },
+        "interactions": 4
+      },
+      {
+        "email": "siriporn@ninjavan.co",
+        "name": "Siriporn Srisuk",
+        "title": "N/A",
+        "company": "NV",
+        "stage": "marketingqualifiedlead",
+        "score": 19.0,
+        "engagement": {
+          "opens": 2,
+          "clicks": 2,
+          "pageviews": 2,
+          "form_fills": 1,
+          "last_engaged": "2026-08-21T14:50:00",
+          "source": "seeded"
+        },
+        "interactions": 7
+      },
+      {
+        "email": "aisyah.abdullah@sea.com",
+        "name": "Aisyah Abdullah",
+        "title": "VP Human Resources",
+        "company": "Sea Limited Ltd",
+        "stage": "lead",
+        "score": 17.0,
+        "engagement": {
+          "opens": 2,
+          "clicks": 2,
+          "pageviews": 0,
+          "form_fills": 1,
+          "last_engaged": "2026-09-12T09:01:00",
+          "source": "seeded"
+        },
+        "interactions": 5
+      },
+      {
+        "email": "yalsayed@qatarairways.com",
+        "name": "Yousfe Al-Sayed",
+        "title": "Consultant",
+        "company": "Qatar Airways",
+        "stage": "lead",
+        "score": 14.5,
+        "engagement": {
+          "opens": 1,
+          "clicks": 1,
+          "pageviews": 1,
+          "form_fills": 1,
+          "last_engaged": "2026-08-21T23:04:00",
+          "source": "seeded"
+        },
+        "interactions": 4
+      },
+      {
+        "email": "siti@ocbc.com",
+        "name": "Siti Rahman",
+        "title": "Attendee",
+        "company": "OCBC",
+        "stage": "lead",
+        "score": 14.0,
+        "engagement": {
+          "opens": 2,
+          "clicks": 1,
+          "pageviews": 0,
+          "form_fills": 1,
+          "last_engaged": "2026-09-08T03:15:00",
+          "source": "seeded"
+        },
+        "interactions": 4
+      },
+      {
+        "email": "amit@apollohospitals.com",
+        "name": "Amit Patel",
+        "title": "HRIS Manager",
+        "company": "Apollo Hospitals",
+        "stage": "marketingqualifiedlead",
+        "score": 12.0,
+        "engagement": {
+          "opens": 2,
+          "clicks": 0,
+          "pageviews": 1,
+          "form_fills": 1,
+          "last_engaged": "2026-09-11T04:13:00",
+          "source": "seeded"
+        },
+        "interactions": 4
+      },
+      {
+        "email": "mohammed.alsayed@majidalfuttaim.com",
+        "name": "Mohammed Al-Sayed",
+        "title": "Head of People",
+        "company": "Majid Al Futtaim",
+        "stage": "lead",
+        "score": 11.5,
+        "engagement": {
+          "opens": 1,
+          "clicks": 0,
+          "pageviews": 1,
+          "form_fills": 1,
+          "last_engaged": "2026-09-04T21:02:00",
+          "source": "seeded"
+        },
+        "interactions": 3
+      },
+      {
+        "email": "sanjay.rao@hdfcbank.com",
+        "name": "Sanjay Rao",
+        "title": "Attendee",
+        "company": "HDFC Bank Ltd",
+        "stage": "marketingqualifiedlead",
+        "score": 11.5,
+        "engagement": {
+          "opens": 3,
+          "clicks": 3,
+          "pageviews": 1,
+          "form_fills": 0,
+          "last_engaged": "2026-08-30T19:48:00",
+          "source": "seeded"
+        },
+        "interactions": 7
+      },
+      {
+        "email": "ahmad.hassan98@gmail.com",
+        "name": "Ahmad Hassan",
+        "title": "HRIS Lead",
+        "company": "Self-employed",
+        "stage": "subscriber",
+        "score": 10.5,
+        "engagement": {
+          "opens": 1,
+          "clicks": 0,
+          "pageviews": 0,
+          "form_fills": 1,
+          "last_engaged": "2026-08-16T19:15:00",
+          "source": "seeded"
+        },
+        "interactions": 2
+      }
+    ],
+    "interest_scores": [
+      {
+        "contact_id": "dsmith@chewy.com",
+        "score": 100,
+        "rationale": "weighted engagement 43.0 of this run's top score 43.0 (form fills 3, clicks 2, pageviews 5, opens 4)",
+        "evidence": [
+          "opens=4",
+          "clicks=2",
+          "pageviews=5",
+          "form_fills=3"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "nalfarsi@talabat.com",
+        "score": 50,
+        "rationale": "weighted engagement 21.5 of this run's top score 43.0 (form fills 2, clicks 0, pageviews 1, opens 1)",
+        "evidence": [
+          "opens=1",
+          "clicks=0",
+          "pageviews=1",
+          "form_fills=2"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "siriporn@ninjavan.co",
+        "score": 44,
+        "rationale": "weighted engagement 19.0 of this run's top score 43.0 (form fills 1, clicks 2, pageviews 2, opens 2)",
+        "evidence": [
+          "opens=2",
+          "clicks=2",
+          "pageviews=2",
+          "form_fills=1"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "aisyah.abdullah@sea.com",
+        "score": 40,
+        "rationale": "weighted engagement 17.0 of this run's top score 43.0 (form fills 1, clicks 2, pageviews 0, opens 2)",
+        "evidence": [
+          "opens=2",
+          "clicks=2",
+          "pageviews=0",
+          "form_fills=1"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "yalsayed@qatarairways.com",
+        "score": 34,
+        "rationale": "weighted engagement 14.5 of this run's top score 43.0 (form fills 1, clicks 1, pageviews 1, opens 1)",
+        "evidence": [
+          "opens=1",
+          "clicks=1",
+          "pageviews=1",
+          "form_fills=1"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "siti@ocbc.com",
+        "score": 33,
+        "rationale": "weighted engagement 14.0 of this run's top score 43.0 (form fills 1, clicks 1, pageviews 0, opens 2)",
+        "evidence": [
+          "opens=2",
+          "clicks=1",
+          "pageviews=0",
+          "form_fills=1"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "amit@apollohospitals.com",
+        "score": 28,
+        "rationale": "weighted engagement 12.0 of this run's top score 43.0 (form fills 1, clicks 0, pageviews 1, opens 2)",
+        "evidence": [
+          "opens=2",
+          "clicks=0",
+          "pageviews=1",
+          "form_fills=1"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "mohammed.alsayed@majidalfuttaim.com",
+        "score": 27,
+        "rationale": "weighted engagement 11.5 of this run's top score 43.0 (form fills 1, clicks 0, pageviews 1, opens 1)",
+        "evidence": [
+          "opens=1",
+          "clicks=0",
+          "pageviews=1",
+          "form_fills=1"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "sanjay.rao@hdfcbank.com",
+        "score": 27,
+        "rationale": "weighted engagement 11.5 of this run's top score 43.0 (form fills 0, clicks 3, pageviews 1, opens 3)",
+        "evidence": [
+          "opens=3",
+          "clicks=3",
+          "pageviews=1",
+          "form_fills=0"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "ahmad.hassan98@gmail.com",
+        "score": 24,
+        "rationale": "weighted engagement 10.5 of this run's top score 43.0 (form fills 1, clicks 0, pageviews 0, opens 1)",
+        "evidence": [
+          "opens=1",
+          "clicks=0",
+          "pageviews=0",
+          "form_fills=1"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "ahassan@maybank.com",
+        "score": 20,
+        "rationale": "weighted engagement 8.5 of this run's top score 43.0 (form fills 0, clicks 2, pageviews 2, opens 1)",
+        "evidence": [
+          "opens=1",
+          "clicks=2",
+          "pageviews=2",
+          "form_fills=0"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "vikramn@darwinbox.com",
+        "score": 16,
+        "rationale": "weighted engagement 7.0 of this run's top score 43.0 (form fills 0, clicks 2, pageviews 1, opens 0)",
+        "evidence": [
+          "opens=0",
+          "clicks=2",
+          "pageviews=1",
+          "form_fills=0"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "rverma82@rediffmail.com",
+        "score": 9,
+        "rationale": "weighted engagement 4.0 of this run's top score 43.0 (form fills 0, clicks 1, pageviews 1, opens 0)",
+        "evidence": [
+          "opens=0",
+          "clicks=1",
+          "pageviews=1",
+          "form_fills=0"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "siripornw@ocbc.com",
+        "score": 9,
+        "rationale": "weighted engagement 4.0 of this run's top score 43.0 (form fills 0, clicks 1, pageviews 1, opens 0)",
+        "evidence": [
+          "opens=0",
+          "clicks=1",
+          "pageviews=1",
+          "form_fills=0"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "neha.rao@havells.com",
+        "score": 8,
+        "rationale": "weighted engagement 3.5 of this run's top score 43.0 (form fills 0, clicks 0, pageviews 1, opens 5)",
+        "evidence": [
+          "opens=5",
+          "clicks=0",
+          "pageviews=1",
+          "form_fills=0"
+        ],
+        "source": "rules"
+      },
+      {
+        "contact_id": "sureshd@axisbank.com",
+        "score": 1,
+        "rationale": "weighted engagement 0.5 of this run's top score 43.0 (form fills 0, clicks 0, pageviews 0, opens 1)",
+        "evidence": [
+          "opens=1",
+          "clicks=0",
+          "pageviews=0",
+          "form_fills=0"
+        ],
+        "source": "rules"
+      }
+    ],
+    "committees": [
+      {
+        "company": "OCBC Ltd",
+        "domain": "ocbc.com",
+        "contacts": [
+          "siti@ocbc.com",
+          "siripornw@ocbc.com"
+        ],
+        "why": "2 engaged contacts at one account (100.0% of the known roster), combined weighted score 18.0",
+        "why_source": "rules"
+      }
+    ],
+    "anomalies": [
+      {
+        "contact": "dsmith@chewy.com",
+        "company": "Chewy",
+        "metric": "engagement_interactions",
+        "value": 14,
+        "threshold": 9,
+        "evidence_rows": [
+          {
+            "metric": "opens",
+            "value": 4
+          },
+          {
+            "metric": "clicks",
+            "value": 2
+          },
+          {
+            "metric": "pageviews",
+            "value": 5
+          },
+          {
+            "metric": "form_fills",
+            "value": 3
+          },
+          {
+            "metric": "last_engaged",
+            "value": "2026-08-31T22:33:00"
+          },
+          {
+            "metric": "lifecycle_history",
+            "value": 2
+          }
+        ]
+      }
+    ],
+    "anomaly_detection": {
+      "threshold": 9,
+      "rationale": "Tukey IQR fence over 16 engaged contacts (median 4.0, Q1 2.8, Q3 5.2, IQR 2.5): threshold = ceil(Q3 + 1.5*IQR) = 9 interactions.",
+      "engaged_contacts": 16,
+      "flagged": 1
+    },
+    "counts": {
+      "contacts": 32,
+      "companies": 23,
+      "engaged_contacts": 16,
+      "email_engagements": 1,
+      "events": 0
+    },
+    "transitions": [
+      {
+        "email": "kai8karma+speaker-qhamirani@gmail.com",
+        "company": "HighLevel",
+        "stage": "lead",
+        "ts": "2026-09-13T11:05:41",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "kai8karma+speaker-qhamirani@gmail.com",
+        "company": "HighLevel",
+        "stage": "evangelist",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "divya@gmail.com",
+        "company": "Self-employed",
+        "stage": "subscriber",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "rjohnson@wayfair.com",
+        "company": "Wayfair",
+        "stage": "subscriber",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "jwilson@planetfitness.com",
+        "company": "PF",
+        "stage": "subscriber",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "ahassan@maybank.com",
+        "company": "Maybank",
+        "stage": "lead",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "ahmad.hassan98@gmail.com",
+        "company": "Self-employed",
+        "stage": "subscriber",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "aisyah.abdullah@sea.com",
+        "company": "Sea Limited Ltd",
+        "stage": "lead",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "mohammed.alsayed@majidalfuttaim.com",
+        "company": "Majid Al Futtaim",
+        "stage": "lead",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "maryam.alzaabi@almarai.com",
+        "company": "Almarai",
+        "stage": "subscriber",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "nisha@yahoo.com",
+        "company": "Self-employed Ltd",
+        "stage": "subscriber",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "sureshd@axisbank.com",
+        "company": "Axis Bank",
+        "stage": "lead",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "siriporn@ninjavan.co",
+        "company": "NV",
+        "stage": "subscriber",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "pkulkarni@asianpaints.com",
+        "company": "asian paints",
+        "stage": "lead",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "sanjay.reddy@asianpaints.com",
+        "company": "asian paints",
+        "stage": "lead",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "yalsayed@qatarairways.com",
+        "company": "Qatar Airways",
+        "stage": "subscriber",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "sanjay.rao@hdfcbank.com",
+        "company": "HDFC Bank Ltd",
+        "stage": "subscriber",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "dsmith@chewy.com",
+        "company": "Chewy",
+        "stage": "lead",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "siripornw@ocbc.com",
+        "company": "OCBC Ltd",
+        "stage": "subscriber",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "neha.rao@havells.com",
+        "company": "Havells",
+        "stage": "lead",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "dgupta@persistent.com",
+        "company": "Persistent Systems",
+        "stage": "subscriber",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "siti@ocbc.com",
+        "company": "OCBC",
+        "stage": "subscriber",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "rverma82@rediffmail.com",
+        "company": "Unknown",
+        "stage": "subscriber",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "nehai@sunpharma.com",
+        "company": "Sun Pharma",
+        "stage": "lead",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "karan.sharma@godrejcp.com",
+        "company": "Godrej Consumer Products",
+        "stage": "lead",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "muhammad.abdullah@axiata.com",
+        "company": "Axiata Ltd",
+        "stage": "subscriber",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "rohann@sunpharma.com",
+        "company": "Sun Pharma Ltd",
+        "stage": "subscriber",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "nalfarsi@talabat.com",
+        "company": "talabat",
+        "stage": "lead",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "djohnson@chewy.com",
+        "company": "Chewy Ltd",
+        "stage": "marketingqualifiedlead",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "vikramn@darwinbox.com",
+        "company": "Darwinbox",
+        "stage": "subscriber",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "ahmeda@emirates.com",
+        "company": "Emirates Group",
+        "stage": "subscriber",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "amit@apollohospitals.com",
+        "company": "Apollo Hospitals",
+        "stage": "marketingqualifiedlead",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "kai8karma+speaker-sudikorba@gmail.com",
+        "company": "Darwinbox",
+        "stage": "evangelist",
+        "ts": "2026-09-21T15:10:07",
+        "source": "hubspot_history"
+      },
+      {
+        "email": "siriporn@ninjavan.co",
+        "company": "NV",
+        "stage": "marketingqualifiedlead",
+        "ts": "2026-09-21T15:11:42",
+        "source": "seeded"
+      },
+      {
+        "email": "yalsayed@qatarairways.com",
+        "company": "Qatar Airways",
+        "stage": "lead",
+        "ts": "2026-09-21T15:11:42",
+        "source": "seeded"
+      },
+      {
+        "email": "sanjay.rao@hdfcbank.com",
+        "company": "HDFC Bank Ltd",
+        "stage": "marketingqualifiedlead",
+        "ts": "2026-09-21T15:11:42",
+        "source": "seeded"
+      },
+      {
+        "email": "dsmith@chewy.com",
+        "company": "Chewy",
+        "stage": "opportunity",
+        "ts": "2026-09-21T15:11:42",
+        "source": "seeded"
+      },
+      {
+        "email": "neha.rao@havells.com",
+        "company": "Havells",
+        "stage": "marketingqualifiedlead",
+        "ts": "2026-09-21T15:11:42",
+        "source": "seeded"
+      },
+      {
+        "email": "siti@ocbc.com",
+        "company": "OCBC",
+        "stage": "lead",
+        "ts": "2026-09-21T15:11:42",
+        "source": "seeded"
+      },
+      {
+        "email": "vikramn@darwinbox.com",
+        "company": "Darwinbox",
+        "stage": "lead",
+        "ts": "2026-09-21T15:11:42",
+        "source": "seeded"
+      }
+    ]
+  },
+  "llm": {
+    "anomalies": [
+      {
+        "contact": "dsmith@chewy.com",
+        "metric": "engagement_interactions",
+        "value": 14,
+        "rationale": "Extremely high engagement (14 interactions, weighted_score 43) yet stalled in 'opportunity' stage with no progression to customer; indicates possible sales process breakdown despite strong post-webinar intent.",
+        "evidence": [
+          "opens=4",
+          "clicks=2",
+          "pageviews=5",
+          "form_fills=3",
+          "weighted_score=43.0",
+          "stage=opportunity",
+          "stage_history=[]"
+        ]
+      },
+      {
+        "contact": "nalfarsi@talabat.com",
+        "metric": "engagement_interactions",
+        "value": 4,
+        "rationale": "Moderate engagement (4 interactions, weighted_score 21.5) but stalled in 'lead' stage with no movement to MQL or opportunity despite repeated engagement; suggests nurturing gap for a Senior HRBP at a major company.",
+        "evidence": [
+          "opens=1",
+          "clicks=0",
+          "pageviews=1",
+          "form_fills=2",
+          "weighted_score=21.5",
+          "stage=lead",
+          "stage_history=[]"
+        ]
+      },
+      {
+        "contact": "sanjay.rao@hdfcbank.com",
+        "metric": "engagement_interactions",
+        "value": 7,
+        "rationale": "High engagement (7 interactions, weighted_score 11.5) with zero form fills but multiple opens/clicks/pageviews, yet stalled in 'marketingqualifiedlead' without advancing to opportunity; indicates interest not being converted by sales.",
+        "evidence": [
+          "opens=3",
+          "clicks=3",
+          "pageviews=1",
+          "form_fills=0",
+          "weighted_score=11.5",
+          "stage=marketingqualifiedlead",
+          "stage_history=[]"
+        ]
+      }
+    ],
+    "interest_scores": [
+      {
+        "contact_id": "dsmith@chewy.com",
+        "score": 100,
+        "rationale": "Highest weighted score, opportunity stage, senior title, recent engagement",
+        "evidence": [
+          "weighted_score=43.0",
+          "stage=opportunity",
+          "title=TA Manager",
+          "last_engaged=2026-08-31T22:33:00"
+        ]
+      },
+      {
+        "contact_id": "nalfarsi@talabat.com",
+        "score": 92,
+        "rationale": "Senior HRBP, 2 form fills, lead stage, strong engagement",
+        "evidence": [
+          "form_fills=2",
+          "weighted_score=21.5",
+          "title=Senior HRBP",
+          "stage=lead",
+          "last_engaged=2026-08-31T21:15:00"
+        ]
+      },
+      {
+        "contact_id": "siriporn@ninjavan.co",
+        "score": 88,
+        "rationale": "MQL stage, balanced engagement, recent activity",
+        "evidence": [
+          "stage=marketingqualifiedlead",
+          "weighted_score=19.0",
+          "opens=2",
+          "clicks=2",
+          "pageviews=2",
+          "form_fills=1",
+          "last_engaged=2026-08-21T14:50:00"
+        ]
+      },
+      {
+        "contact_id": "aisyah.abdullah@sea.com",
+        "score": 85,
+        "rationale": "VP HR, 1 form fill, lead stage, very recent engagement",
+        "evidence": [
+          "title=VP Human Resources",
+          "form_fills=1",
+          "weighted_score=17.0",
+          "stage=lead",
+          "last_engaged=2026-09-12T09:01:00"
+        ]
+      },
+      {
+        "contact_id": "amit@apollohospitals.com",
+        "score": 82,
+        "rationale": "MQL stage, HRIS Manager, decent engagement",
+        "evidence": [
+          "stage=marketingqualifiedlead",
+          "weighted_score=12.0",
+          "title=HRIS Manager",
+          "opens=2",
+          "pageviews=1",
+          "form_fills=1",
+          "last_engaged=2026-09-11T04:13:00"
+        ]
+      },
+      {
+        "contact_id": "sanjay.rao@hdfcbank.com",
+        "score": 80,
+        "rationale": "MQL, high opens/clicks, no form fills but strong activity",
+        "evidence": [
+          "stage=marketingqualifiedlead",
+          "weighted_score=11.5",
+          "opens=3",
+          "clicks=3",
+          "pageviews=1",
+          "form_fills=0",
+          "last_engaged=2026-08-30T19:48:00"
+        ]
+      },
+      {
+        "contact_id": "yalsayed@qatarairways.com",
+        "score": 78,
+        "rationale": "Consistent engagement across metrics, lead stage",
+        "evidence": [
+          "weighted_score=14.5",
+          "opens=1",
+          "clicks=1",
+          "pageviews=1",
+          "form_fills=1",
+          "stage=lead",
+          "last_engaged=2026-08-21T23:04:00"
+        ]
+      },
+      {
+        "contact_id": "siti@ocbc.com",
+        "score": 76,
+        "rationale": "Recent engagement, 1 form fill, lead stage",
+        "evidence": [
+          "weighted_score=14.0",
+          "opens=2",
+          "clicks=1",
+          "form_fills=1",
+          "stage=lead",
+          "last_engaged=2026-09-08T03:15:00"
+        ]
+      },
+      {
+        "contact_id": "mohammed.alsayed@majidalfuttaim.com",
+        "score": 74,
+        "rationale": "Head of People, 1 form fill, lead stage, recent",
+        "evidence": [
+          "title=Head of People",
+          "form_fills=1",
+          "weighted_score=11.5",
+          "stage=lead",
+          "last_engaged=2026-09-04T21:02:00"
+        ]
+      },
+      {
+        "contact_id": "ahassan@maybank.com",
+        "score": 72,
+        "rationale": "Head of TA, 2 clicks, 2 pageviews, lead stage",
+        "evidence": [
+          "title=Head of Talent Acquisition",
+          "clicks=2",
+          "pageviews=2",
+          "weighted_score=8.5",
+          "stage=lead",
+          "last_engaged=2026-08-20T16:32:00"
+        ]
+      },
+      {
+        "contact_id": "ahmad.hassan98@gmail.com",
+        "score": 70,
+        "rationale": "Self-employed HRIS Lead, 1 form fill, subscriber stage",
+        "evidence": [
+          "title=HRIS Lead",
+          "form_fills=1",
+          "weighted_score=10.5",
+          "stage=subscriber",
+          "last_engaged=2026-08-16T19:15:00"
+        ]
+      },
+      {
+        "contact_id": "siripornw@ocbc.com",
+        "score": 40,
+        "rationale": "Low engagement, subscriber stage, minimal signals",
+        "evidence": [
+          "weighted_score=4.0",
+          "clicks=1",
+          "pageviews=1",
+          "opens=0",
+          "form_fills=0",
+          "stage=subscriber",
+          "last_engaged=2026-09-08T09:32:00"
+        ]
+      }
+    ],
+    "movement_narrative": "In the last 7 days, 39 transitions occurred, all timestamped on 2026-09-21, driven primarily by seeded entries from the pipeline\u2019s synthetic registrant list. This represents a sharp acceleration from the prior week, where only 1 transition occurred on 2026-09-13, and reflects a concentrated burst of activity in the lead and marketingqualifiedlead stages, with 14 leads and 5 MQLs created in the window. The movement was not organic: 7 of the 39 transitions were seeded, including the sole opportunity created for dsmith@chewy.com (Chewy) and multiple MQL advances for contacts like djohnson@chewy.com, amit@apollohospitals.com, neha.rao@havells.com, and siriporn@ninjavan.co, all pushed via the seed phase on 2026-09-21T15:11:42.\n\nOver the 14- and 30-day windows, the total transitions remained flat at 40, indicating that the 7-day surge was followed by no further movement \u2014 a plateau after the initial spike. The same 32 contacts accounted for all transitions across all windows, with no new stage progression beyond what was seen in the 7-day window. The bulk of organic movement (hubspot_history) occurred on 2026-09-21T15:10:07, where 32 contacts moved into subscriber, lead, or evangelist stages \u2014 including kai8karma+speaker-qhamirani@gmail.com (HighLevel) to lead and evangelist, and divya@gmail.com, rjohnson@wayfair.com, and others to subscriber \u2014 but none advanced beyond lead without seeded intervention.\n\nContacts with engagement that did not move stages include kai8karma+speaker-qhamirani@gmail.com (HighLevel), divya@gmail.com (Self-employed), rjohnson@wayfair.com (Wayfair), jwilson@planetfitness.com (PF), ahmad.hassan98@gmail.com (Self-employed), aiyah.abdullah@sea.com (Sea Limited Ltd), mohammed.alsayed@majidalfuttaim.com (Majid Al Futtaim), maryam.alzaabi@almarai.com (Almarai), nisha@yahoo.com (Self-employed Ltd), sureshd@axisbank.com (Axis Bank), siriporn@ninjavan.co (NV), pkulkarni@asianpaints.com (asian paints), sanjay.reddy@asianpaints.com (asian paints), yalsayed@qatarairways.com (Qatar Airways), sanjay.rao@hdfcbank.com (HDFC Bank Ltd), siripornw@ocbc.com (OCBC Ltd), neha.rao@havells.com (Havells), dgupta@persistent.com (Persistent Systems), siti@ocbc.com (OCBC), rverma82@rediffmail.com (Unknown), nehai@sunpharma.com (Sun Pharma), karan.sharma@godrejcp.com (Godrej Consumer Products), muhammad.abdullah@axiata.com (Axiata Ltd), rohann@sunpharma.com (Sun Pharma Ltd), nalfarsi@talabat.com (talabat), vikramn@darwinbox.com (Darwinbox), ahmeda@emirates.com (Emirates Group), and kai8karma+speaker-sudikorba@gmail.com (Darwinbox) \u2014 all of whom engaged but remained in subscriber, lead, or evangelist stages without further progression.\n\nSource mix: 7 of the 40 transitions in the 14- and 30-day windows were seeded by this pipeline, not organic CRM history, and must not be mistaken for genuine engagement-driven movement.",
+    "committees": [
+      {
+        "company": "OCBC Ltd",
+        "contacts": [
+          "siti@ocbc.com",
+          "siripornw@ocbc.com"
+        ],
+        "why": "Siti (Attendee, lead) engaged deeply with opens, clicks, and a form fill indicating evaluator behavior, while Siripornw (Attendee, subscriber) showed lighter but aligned engagement with a click and pageview, suggesting shared interest in AI in HR from different roles within the same buying process."
+      }
+    ],
+    "top_contacts": [
+      "dsmith@chewy.com",
+      "nalfarsi@talabat.com",
+      "siriporn@ninjavan.co",
+      "aisyah.abdullah@sea.com",
+      "amit@apollohospitals.com"
+    ],
+    "top_accounts": [
+      "OCBC Ltd"
+    ],
+    "movement_counts": {
+      "7d": 39,
+      "14d": 40,
+      "30d": 40
+    },
+    "stalled_contacts": [
+      "kai8karma+speaker-qhamirani@gmail.com",
+      "divya@gmail.com",
+      "rjohnson@wayfair.com",
+      "jwilson@planetfitness.com",
+      "ahmad.hassan98@gmail.com",
+      "aisyah.abdullah@sea.com",
+      "mohammed.alsayed@majidalfuttaim.com",
+      "maryam.alzaabi@almarai.com",
+      "nisha@yahoo.com",
+      "sureshd@axisbank.com",
+      "siriporn@ninjavan.co",
+      "pkulkarni@asianpaints.com",
+      "sanjay.reddy@asianpaints.com",
+      "yalsayed@qatarairways.com",
+      "sanjay.rao@hdfcbank.com",
+      "siripornw@ocbc.com",
+      "neha.rao@havells.com",
+      "dgupta@persistent.com",
+      "siti@ocbc.com",
+      "rverma82@rediffmail.com",
+      "nehai@sunpharma.com",
+      "karan.sharma@godrejcp.com",
+      "muhammad.abdullah@axiata.com",
+      "rohann@sunpharma.com",
+      "nalfarsi@talabat.com",
+      "vikramn@darwinbox.com",
+      "ahmeda@emirates.com",
+      "kai8karma+speaker-sudikorba@gmail.com"
+    ],
+    "rejected_candidates": [],
+    "not_committees": [],
+    "models_used": [
+      "nvidia/nemotron-3-super-120b-a12b:free"
+    ],
+    "shape_notes": [],
+    "validator": {
+      "agreements": 4,
+      "disagreements": [
+        {
+          "field": "top_contacts_top5",
+          "deterministic": [
+            "dsmith@chewy.com",
+            "nalfarsi@talabat.com",
+            "siriporn@ninjavan.co",
+            "aisyah.abdullah@sea.com",
+            "yalsayed@qatarairways.com"
+          ],
+          "llm": [
+            "dsmith@chewy.com",
+            "nalfarsi@talabat.com",
+            "siriporn@ninjavan.co",
+            "aisyah.abdullah@sea.com",
+            "amit@apollohospitals.com"
+          ]
+        },
+        {
+          "field": "top_accounts_top5",
+          "deterministic": [
+            "Chewy",
+            "talabat",
+            "NV",
+            "OCBC Ltd",
+            "Sea Limited Ltd"
+          ],
+          "llm": [
+            "OCBC Ltd"
+          ]
+        },
+        {
+          "field": "anomaly_contacts",
+          "deterministic": [
+            "dsmith@chewy.com"
+          ],
+          "llm": [
+            "dsmith@chewy.com",
+            "nalfarsi@talabat.com",
+            "sanjay.rao@hdfcbank.com"
+          ]
+        }
+      ]
+    }
+  },
+  "notes": []
+}

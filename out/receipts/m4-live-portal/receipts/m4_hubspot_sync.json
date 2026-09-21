@@ -1,0 +1,59 @@
+{
+  "event_slug": "darwinbox-ai-in-hr-2026-08-13",
+  "lane": "live",
+  "pulled_at": "2026-09-21T15:17:11",
+  "endpoints": [
+    {
+      "method": "POST",
+      "url": "https://api.hubapi.com/crm/v3/objects/contacts/search",
+      "pages": 1,
+      "count": 32,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "url": "https://api.hubapi.com/crm/v3/objects/contacts/batch/read",
+      "pages": 1,
+      "count": 32,
+      "status": 200,
+      "note": "propertiesWithHistory=lifecyclestage"
+    },
+    {
+      "method": "POST",
+      "url": "https://api.hubapi.com/crm/v4/associations/contacts/companies/batch/read",
+      "pages": 1,
+      "count": 23,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "url": "https://api.hubapi.com/crm/v3/objects/companies/batch/read",
+      "pages": 1,
+      "count": 23,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "url": "https://api.hubapi.com/crm/v4/associations/contacts/emails/batch/read",
+      "pages": 1,
+      "count": 1,
+      "status": 200,
+      "note": "email->contact association type 198"
+    },
+    {
+      "method": "POST",
+      "url": "https://api.hubapi.com/crm/v3/objects/emails/batch/read",
+      "pages": 1,
+      "count": 1,
+      "status": 200
+    }
+  ],
+  "totals": {
+    "contacts": 32,
+    "companies": 23,
+    "email_engagements": 1,
+    "events": 0,
+    "lifecycle_history_rows": 40,
+    "requests": 6
+  }
+}

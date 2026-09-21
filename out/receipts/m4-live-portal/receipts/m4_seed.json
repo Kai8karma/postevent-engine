@@ -1,0 +1,44 @@
+{
+  "event_slug": "darwinbox-ai-in-hr-2026-08-13",
+  "lane": "live",
+  "method": "contact_properties",
+  "source": "seeded",
+  "contacts_matched": 16,
+  "events_written": 73,
+  "lifecycle_updates": 12,
+  "errors": [],
+  "endpoints": [
+    {
+      "method": "POST",
+      "url": "https://api.hubapi.com/crm/v3/objects/contacts/search",
+      "pages": 1,
+      "count": 32,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "url": "https://api.hubapi.com/events/v3/event-definitions",
+      "pages": 1,
+      "count": 0,
+      "status": 403
+    },
+    {
+      "method": "POST",
+      "url": "https://api.hubapi.com/crm/v3/properties/contacts",
+      "pages": 5,
+      "count": 5,
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "url": "https://api.hubapi.com/crm/v3/objects/contacts/batch/update",
+      "pages": 1,
+      "count": 16,
+      "status": 200
+    }
+  ],
+  "timestamps": {
+    "started": "2026-09-21T15:11:35",
+    "finished": "2026-09-21T15:11:43"
+  }
+}

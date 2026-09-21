@@ -1,0 +1,86 @@
+{
+  "lane": "live",
+  "model": "nvidia/nemotron-3-super-120b-a12b:free",
+  "budget": 4,
+  "completions": 4,
+  "attempts": 5,
+  "deadline_s": 90,
+  "calls": [
+    {
+      "model": "nvidia/nemotron-3-super-120b-a12b:free",
+      "purpose": "anomalies",
+      "attempt": 1,
+      "ok": true,
+      "prompt_chars": 4185,
+      "tokens": {
+        "prompt": 1436,
+        "completion": 443,
+        "total": 1879
+      },
+      "latency_ms": 11890,
+      "http_status": 200,
+      "chars": 1538,
+      "ts": "2026-09-21T15:17:23"
+    },
+    {
+      "model": "nvidia/nemotron-3-super-120b-a12b:free",
+      "purpose": "interest_scores",
+      "attempt": 1,
+      "ok": true,
+      "prompt_chars": 4036,
+      "tokens": {
+        "prompt": 1411,
+        "completion": 1421,
+        "total": 2832
+      },
+      "latency_ms": 10910,
+      "http_status": 200,
+      "chars": 3753,
+      "ts": "2026-09-21T15:17:34"
+    },
+    {
+      "model": "nvidia/nemotron-3-super-120b-a12b:free",
+      "purpose": "movement_narrative",
+      "attempt": 1,
+      "ok": false,
+      "prompt_chars": 8028,
+      "tokens": null,
+      "latency_ms": 1006,
+      "http_status": null,
+      "error": "provider error for 'nvidia/nemotron-3-super-120b-a12b:free': 503 Upstream error from Nvidia: Service temporarily overloaded",
+      "ts": "2026-09-21T15:17:35"
+    },
+    {
+      "model": "nvidia/nemotron-3-super-120b-a12b:free",
+      "purpose": "movement_narrative",
+      "attempt": 2,
+      "ok": true,
+      "prompt_chars": 8028,
+      "tokens": {
+        "prompt": 3124,
+        "completion": 1237,
+        "total": 4361
+      },
+      "latency_ms": 16405,
+      "http_status": 200,
+      "chars": 3845,
+      "ts": "2026-09-21T15:17:56"
+    },
+    {
+      "model": "nvidia/nemotron-3-super-120b-a12b:free",
+      "purpose": "committees",
+      "attempt": 1,
+      "ok": true,
+      "prompt_chars": 2196,
+      "tokens": {
+        "prompt": 626,
+        "completion": 144,
+        "total": 770
+      },
+      "latency_ms": 1560,
+      "http_status": 200,
+      "chars": 528,
+      "ts": "2026-09-21T15:17:58"
+    }
+  ]
+}

@@ -251,7 +251,8 @@ class MovementMath(unittest.TestCase):
             [{"email": "quiet@example.com", "company": "", "lifecycle_history": []}], self.AS_OF)
         self.assertEqual(rows, [])
         self.assertEqual(windows["30d"], {"transitions": 0, "contacts": 0, "by_stage": {},
-                                          "source_mix": {},
+                                          "source_mix": {}, "dates": {},
+                                          "disclosure": "No stage transitions in this window.",
                                           "window_start": dashboard.iso(self.AS_OF - timedelta(days=30)),
                                           "window_end": dashboard.iso(self.AS_OF)})
 
@@ -654,6 +655,38 @@ class LivePathAgainstAFakePortal(unittest.TestCase):
                 code, _ = run_cli("sync", "--out", tmp)
         self.assertEqual(code, 1)
         self.assertIn("HUBSPOT_TOKEN", err.getvalue())
+
+
+class SeededMovementIsDisclosed(unittest.TestCase):
+    """A stage change the seed phase wrote lands in HubSpot's property history seconds
+    later. It must not be presented as organic movement."""
+
+    def test_rows_at_or_after_the_seed_run_are_labelled_seeded(self):
+        contacts = [{"email": "a@b.com", "company": "B", "lifecycle_history": [
+            {"stage": "lead", "ts": "2026-08-30T10:00:00", "source": "hubspot_history"},
+            {"stage": "marketingqualifiedlead", "ts": "2026-09-21T15:11:40", "source": "seeded"},
+        ]}]
+        as_of = dashboard.parse_ts("2026-09-21T16:00:00")
+        windows, _rows = dashboard.movement_windows(contacts, as_of)
+        self.assertEqual(windows["7d"]["source_mix"], {"seeded": 1})
+        self.assertEqual(windows["30d"]["source_mix"], {"hubspot_history": 1, "seeded": 1})
+        self.assertIn("seed phase", windows["7d"]["disclosure"])
+
+    def test_disclosure_flags_transitions_bunched_on_one_day(self):
+        d = dashboard.movement_disclosure(40, {"hubspot_history": 40}, {"2026-09-21": 39,
+                                                                        "2026-09-13": 1})
+        self.assertIn("2026-09-21", d)
+        self.assertIn("developer test portal", d)
+
+    def test_clean_history_says_so_without_a_warning(self):
+        d = dashboard.movement_disclosure(6, {"hubspot_history": 6},
+                                          {"2026-09-01": 2, "2026-09-08": 2, "2026-09-15": 2})
+        self.assertIn("own property history", d)
+        self.assertNotIn("seed phase", d)
+
+    def test_empty_window_is_stated_plainly(self):
+        self.assertEqual(dashboard.movement_disclosure(0, {}, {}),
+                         "No stage transitions in this window.")
 
 
 if __name__ == "__main__":

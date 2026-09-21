@@ -813,9 +813,16 @@ def sync_live(ctx) -> dict:
         if not email:
             continue
         hist_rows = ((detail.get("propertiesWithHistory") or {}).get("lifecyclestage") or [])
+        # A stage change this run's `seed` phase wrote lands in HubSpot's own property
+        # history seconds later. It is still the CRM's history, but calling it
+        # `hubspot_history` would present a write this pipeline just made as organic
+        # movement -- so anything at or after the seed run is labelled `seeded`.
+        seed_cut = parse_ts(ctx.get("seed_started"))
         history = sorted(
             ({"stage": normalize_stage(h.get("value")), "ts": iso(parse_ts(h.get("timestamp"))),
-              "source": "hubspot_history"} for h in hist_rows if h.get("value") and h.get("timestamp")),
+              "source": ("seeded" if seed_cut and parse_ts(h.get("timestamp"))
+                         and parse_ts(h.get("timestamp")) >= seed_cut else "hubspot_history")}
+             for h in hist_rows if h.get("value") and h.get("timestamp")),
             key=lambda r: r["ts"])
         counters = {k: int(float(props.get(k) or 0)) for k in COUNTER_BY_TYPE.values()}
         eng = blank_engagement(engagement_source if any(counters.values()) else "hubspot")
@@ -905,7 +912,9 @@ def phase_sync(ctx) -> dict:
     seed_receipt_path = ctx["out"] / "receipts" / "m4_seed.json"
     if seed_receipt_path.exists():
         try:
-            ctx["seed_method"] = load_json(seed_receipt_path).get("method")
+            _seed_receipt = load_json(seed_receipt_path)
+            ctx["seed_method"] = _seed_receipt.get("method")
+            ctx["seed_started"] = (_seed_receipt.get("timestamps") or {}).get("started")
         except (ValueError, OSError):
             ctx["seed_method"] = None
     snapshot = sync_offline(ctx) if ctx["lane"] == "offline" else sync_live(ctx)
@@ -980,15 +989,40 @@ def movement_windows(contacts: list, as_of: datetime, days=(7, 14, 30)) -> dict:
     for d in days:
         cutoff = as_of - timedelta(days=d)
         window = [r for r in rows if cutoff <= r["dt"] <= as_of]
+        dates = dict(Counter(r["ts"][:10] for r in window))
+        mix = dict(Counter(r["source"] for r in window))
         out[f"{d}d"] = {
             "transitions": len(window),
             "contacts": len({r["email"] for r in window}),
             "by_stage": dict(Counter(r["stage"] for r in window)),
-            "source_mix": dict(Counter(r["source"] for r in window)),
+            "source_mix": mix,
+            "dates": dates,
+            "disclosure": movement_disclosure(len(window), mix, dates),
             "window_start": iso(cutoff),
             "window_end": iso(as_of),
         }
     return out, rows
+
+
+def movement_disclosure(total: int, mix: dict, dates: dict) -> str:
+    """One plain sentence a reviewer can check against the portal. Stage changes this
+    pipeline wrote, and transitions bunched on a single calendar day, are called out --
+    a demo portal has no organic weeks-long history and must not imply one."""
+    if not total:
+        return "No stage transitions in this window."
+    parts = []
+    seeded = mix.get("seeded", 0)
+    if seeded:
+        parts.append(f"{seeded} of {total} transitions were written into the CRM by this "
+                     f"pipeline's seed phase, not organic movement")
+    if dates:
+        day, count = max(dates.items(), key=lambda kv: kv[1])
+        if count > total / 2 and len(dates) <= 2:
+            parts.append(f"{count} of {total} share one timestamp date ({day}), because this "
+                         f"is a developer test portal seeded for the demo rather than a "
+                         f"portal with months of real history")
+    return ("; ".join(parts) + ".") if parts else (
+        f"All {total} transitions come from the CRM's own property history.")
 
 
 def deterministic_analysis(snapshot: dict) -> dict:
