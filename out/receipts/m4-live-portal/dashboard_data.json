@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-21T15:17:58",
+  "generated_at": "2026-09-21T15:58:13",
   "as_of": "2026-09-21T15:11:42",
   "event": {
     "name": "From Hype to High-Impact: How to Start and Scale AI in HR",
@@ -27,7 +27,7 @@
   },
   "source": {
     "method": "contact_properties",
-    "pulled_at": "2026-09-21T15:17:11",
+    "pulled_at": "2026-09-21T15:57:18",
     "contacts": "hubspot",
     "notes": [
       "engagement counters were seeded onto contact properties (the portal refuses custom event definitions), so `events` is empty and the per-contact counters carry the stream; every engagement block is labelled source: \"seeded\"."
@@ -280,8 +280,8 @@
       "score": 21.5,
       "interactions": 4,
       "rules_score": 50,
-      "llm_score": 92,
-      "llm_rationale": "Senior HRBP, 2 form fills, lead stage, strong engagement"
+      "llm_score": 85,
+      "llm_rationale": "Strong form fills, lead stage, senior HRBP, recent engagement"
     },
     {
       "email": "siriporn@ninjavan.co",
@@ -292,8 +292,8 @@
       "score": 19.0,
       "interactions": 7,
       "rules_score": 44,
-      "llm_score": 88,
-      "llm_rationale": "MQL stage, balanced engagement, recent activity"
+      "llm_score": 78,
+      "llm_rationale": "MQL stage, balanced engagement, recent enough, mid-level title"
     },
     {
       "email": "aisyah.abdullah@sea.com",
@@ -304,8 +304,8 @@
       "score": 17.0,
       "interactions": 5,
       "rules_score": 40,
-      "llm_score": 85,
-      "llm_rationale": "VP HR, 1 form fill, lead stage, very recent engagement"
+      "llm_score": 75,
+      "llm_rationale": "VP title, lead stage, recent engagement, solid form fill and clicks"
     },
     {
       "email": "yalsayed@qatarairways.com",
@@ -316,8 +316,8 @@
       "score": 14.5,
       "interactions": 4,
       "rules_score": 34,
-      "llm_score": 78,
-      "llm_rationale": "Consistent engagement across metrics, lead stage"
+      "llm_score": 68,
+      "llm_rationale": "Consistent engagement, lead stage, consultant title, recent"
     },
     {
       "email": "siti@ocbc.com",
@@ -328,8 +328,8 @@
       "score": 14.0,
       "interactions": 4,
       "rules_score": 33,
-      "llm_score": 76,
-      "llm_rationale": "Recent engagement, 1 form fill, lead stage"
+      "llm_score": 65,
+      "llm_rationale": "Lead stage, recent engagement, solid opens and clicks, attendee title"
     },
     {
       "email": "amit@apollohospitals.com",
@@ -340,8 +340,8 @@
       "score": 12.0,
       "interactions": 4,
       "rules_score": 28,
-      "llm_score": 82,
-      "llm_rationale": "MQL stage, HRIS Manager, decent engagement"
+      "llm_score": 60,
+      "llm_rationale": "MQL stage, HRIS Manager, recent engagement, decent opens"
     },
     {
       "email": "mohammed.alsayed@majidalfuttaim.com",
@@ -352,8 +352,8 @@
       "score": 11.5,
       "interactions": 3,
       "rules_score": 27,
-      "llm_score": 74,
-      "llm_rationale": "Head of People, 1 form fill, lead stage, recent"
+      "llm_score": 58,
+      "llm_rationale": "Lead stage, Head of People title, recent engagement, form fill"
     },
     {
       "email": "sanjay.rao@hdfcbank.com",
@@ -364,8 +364,8 @@
       "score": 11.5,
       "interactions": 7,
       "rules_score": 27,
-      "llm_score": 80,
-      "llm_rationale": "MQL, high opens/clicks, no form fills but strong activity"
+      "llm_score": 55,
+      "llm_rationale": "MQL stage, high opens/clicks, no form fills, recent engagement"
     },
     {
       "email": "ahmad.hassan98@gmail.com",
@@ -376,8 +376,8 @@
       "score": 10.5,
       "interactions": 2,
       "rules_score": 24,
-      "llm_score": 70,
-      "llm_rationale": "Self-employed HRIS Lead, 1 form fill, subscriber stage"
+      "llm_score": 50,
+      "llm_rationale": "Subscriber stage, self-employed, form fill, moderate recency"
     }
   ],
   "committees": [
@@ -388,7 +388,7 @@
         "siti@ocbc.com",
         "siripornw@ocbc.com"
       ],
-      "why": "Siti (Attendee, lead) engaged deeply with opens, clicks, and a form fill indicating evaluator behavior, while Siripornw (Attendee, subscriber) showed lighter but aligned engagement with a click and pageview, suggesting shared interest in AI in HR from different roles within the same buying process.",
+      "why": "Siti (Attendee, lead) shows strong engagement with opens, clicks, and a form fill, indicating evaluator behavior, while Siripornw (Attendee, subscriber) engaged via a click and pageview, suggesting shared interest in AI in HR from different roles within the same organization.",
       "why_source": "llm"
     }
   ],
@@ -410,7 +410,7 @@
       "dates": {
         "2026-09-21": 39
       },
-      "disclosure": "7 of 39 transitions were written into the CRM by this pipeline's seed phase, not organic movement; 39 of 39 share one timestamp date (2026-09-21), because this is a developer test portal seeded for the demo rather than a portal with months of real history.",
+      "disclosure": "7 of 39 transitions were written into the CRM by this pipeline's seed phase, not organic movement; the other 32 carry the CRM's own property-history label, which in a seeded demo portal means an earlier step of this pipeline wrote them, not a buyer; 39 of 39 share one timestamp date (2026-09-21), because this is a developer test portal seeded for the demo rather than a portal with months of real history.",
       "window_start": "2026-09-14T15:11:42",
       "window_end": "2026-09-21T15:11:42"
     },
@@ -432,7 +432,7 @@
         "2026-09-13": 1,
         "2026-09-21": 39
       },
-      "disclosure": "7 of 40 transitions were written into the CRM by this pipeline's seed phase, not organic movement; 39 of 40 share one timestamp date (2026-09-21), because this is a developer test portal seeded for the demo rather than a portal with months of real history.",
+      "disclosure": "7 of 40 transitions were written into the CRM by this pipeline's seed phase, not organic movement; the other 33 carry the CRM's own property-history label, which in a seeded demo portal means an earlier step of this pipeline wrote them, not a buyer; 39 of 40 share one timestamp date (2026-09-21), because this is a developer test portal seeded for the demo rather than a portal with months of real history.",
       "window_start": "2026-09-07T15:11:42",
       "window_end": "2026-09-21T15:11:42"
     },
@@ -454,7 +454,7 @@
         "2026-09-13": 1,
         "2026-09-21": 39
       },
-      "disclosure": "7 of 40 transitions were written into the CRM by this pipeline's seed phase, not organic movement; 39 of 40 share one timestamp date (2026-09-21), because this is a developer test portal seeded for the demo rather than a portal with months of real history.",
+      "disclosure": "7 of 40 transitions were written into the CRM by this pipeline's seed phase, not organic movement; the other 33 carry the CRM's own property-history label, which in a seeded demo portal means an earlier step of this pipeline wrote them, not a buyer; 39 of 40 share one timestamp date (2026-09-21), because this is a developer test portal seeded for the demo rather than a portal with months of real history.",
       "window_start": "2026-08-22T15:11:42",
       "window_end": "2026-09-21T15:11:42"
     }
@@ -502,7 +502,7 @@
           "value": 2
         }
       ],
-      "llm_rationale": "Extremely high engagement (14 interactions, weighted_score 43) yet stalled in 'opportunity' stage with no progression to customer; indicates possible sales process breakdown despite strong post-webinar intent."
+      "llm_rationale": "Extremely high engagement (14 interactions, weighted_score 43) yet stalled in 'opportunity' stage with no progression to customer; indicates possible sales process breakdown despite strong post-event intent."
     }
   ],
   "anomaly_detection": {
@@ -512,31 +512,14 @@
     "flagged": 1
   },
   "narrative": {
-    "text": "In the last 7 days, 39 transitions occurred, all timestamped on 2026-09-21, driven primarily by seeded entries from the pipeline\u2019s synthetic registrant list. This represents a sharp acceleration from the prior week, where only 1 transition occurred on 2026-09-13, and reflects a concentrated burst of activity in the lead and marketingqualifiedlead stages, with 14 leads and 5 MQLs created in the window. The movement was not organic: 7 of the 39 transitions were seeded, including the sole opportunity created for dsmith@chewy.com (Chewy) and multiple MQL advances for contacts like djohnson@chewy.com, amit@apollohospitals.com, neha.rao@havells.com, and siriporn@ninjavan.co, all pushed via the seed phase on 2026-09-21T15:11:42.\n\nOver the 14- and 30-day windows, the total transitions remained flat at 40, indicating that the 7-day surge was followed by no further movement \u2014 a plateau after the initial spike. The same 32 contacts accounted for all transitions across all windows, with no new stage progression beyond what was seen in the 7-day window. The bulk of organic movement (hubspot_history) occurred on 2026-09-21T15:10:07, where 32 contacts moved into subscriber, lead, or evangelist stages \u2014 including kai8karma+speaker-qhamirani@gmail.com (HighLevel) to lead and evangelist, and divya@gmail.com, rjohnson@wayfair.com, and others to subscriber \u2014 but none advanced beyond lead without seeded intervention.\n\nContacts with engagement that did not move stages include kai8karma+speaker-qhamirani@gmail.com (HighLevel), divya@gmail.com (Self-employed), rjohnson@wayfair.com (Wayfair), jwilson@planetfitness.com (PF), ahmad.hassan98@gmail.com (Self-employed), aiyah.abdullah@sea.com (Sea Limited Ltd), mohammed.alsayed@majidalfuttaim.com (Majid Al Futtaim), maryam.alzaabi@almarai.com (Almarai), nisha@yahoo.com (Self-employed Ltd), sureshd@axisbank.com (Axis Bank), siriporn@ninjavan.co (NV), pkulkarni@asianpaints.com (asian paints), sanjay.reddy@asianpaints.com (asian paints), yalsayed@qatarairways.com (Qatar Airways), sanjay.rao@hdfcbank.com (HDFC Bank Ltd), siripornw@ocbc.com (OCBC Ltd), neha.rao@havells.com (Havells), dgupta@persistent.com (Persistent Systems), siti@ocbc.com (OCBC), rverma82@rediffmail.com (Unknown), nehai@sunpharma.com (Sun Pharma), karan.sharma@godrejcp.com (Godrej Consumer Products), muhammad.abdullah@axiata.com (Axiata Ltd), rohann@sunpharma.com (Sun Pharma Ltd), nalfarsi@talabat.com (talabat), vikramn@darwinbox.com (Darwinbox), ahmeda@emirates.com (Emirates Group), and kai8karma+speaker-sudikorba@gmail.com (Darwinbox) \u2014 all of whom engaged but remained in subscriber, lead, or evangelist stages without further progression.\n\nSource mix: 7 of the 40 transitions in the 14- and 30-day windows were seeded by this pipeline, not organic CRM history, and must not be mistaken for genuine engagement-driven movement.",
+    "text": "Pipeline movement has plateaued across the 7, 14, and 30-day windows, with nearly all activity concentrated in the last 7 days. The vast majority of transitions occurred on 2026-09-21, showing a sudden burst of movement rather than a steady climb. This activity was heavily concentrated in the subscriber and lead stages, though it pushed a few contacts further down the funnel.\n\nKey movement was seen with dsmith@chewy.com moving to opportunity and contacts from Apollo Hospitals and Chewy Ltd reaching marketingqualifiedlead. We also saw a transition to evangelist for kai8karma+speaker-qhamirani@gmail.com. It is important to note that 7 of the 39 transitions in the 7-day window were seeded by the pipeline, and the remaining 32 were written by the system in a demo portal, meaning this is not organic buyer movement.\n\nDespite the high volume of transitions, several engaged contacts have stalled. Specifically, contacts like rjohnson@wayfair.com, jwilson@planetfitness.com, and maryam.alzaabi@almarai.com remain in the subscriber stage without further progression.",
     "source": "live",
-    "generated_at": "2026-09-21T15:17:58",
+    "generated_at": "2026-09-21T15:58:13",
     "model": "nvidia/nemotron-3-super-120b-a12b:free"
   },
   "validator": {
-    "agreements": 4,
+    "agreements": 5,
     "disagreements": [
-      {
-        "field": "top_contacts_top5",
-        "deterministic": [
-          "dsmith@chewy.com",
-          "nalfarsi@talabat.com",
-          "siriporn@ninjavan.co",
-          "aisyah.abdullah@sea.com",
-          "yalsayed@qatarairways.com"
-        ],
-        "llm": [
-          "dsmith@chewy.com",
-          "nalfarsi@talabat.com",
-          "siriporn@ninjavan.co",
-          "aisyah.abdullah@sea.com",
-          "amit@apollohospitals.com"
-        ]
-      },
       {
         "field": "top_accounts_top5",
         "deterministic": [
@@ -557,7 +540,6 @@
         ],
         "llm": [
           "dsmith@chewy.com",
-          "nalfarsi@talabat.com",
           "sanjay.rao@hdfcbank.com"
         ]
       }
