@@ -1,0 +1,57 @@
+name: CI
+
+# Everything here runs offline: the pipeline replays its checked-in model
+# output, so no key is needed and no call leaves the runner.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  offline:
+    name: offline pipeline + gates (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Replay the whole pipeline, M1 to M4
+        run: python3 orchestrator/run_pipeline.py --offline --out out/ci
+
+      - name: M2 dispatch plan passes its schema and grounding gate
+        run: python3 modules/m2-comms/test_plan_schema.py out/ci/m2
+
+      - name: Module tests
+        run: |
+          set -e
+          python3 modules/m2-comms/test_log_dispatch.py
+          python3 modules/m3-repurpose/test_spec_gate.py
+          python3 modules/m3-repurpose/test_manifest.py
+          python3 modules/m4-dashboard/test_dashboard.py
+
+      - name: Module API tests
+        run: |
+          set -e
+          python3 api/test_server_m3.py
+          python3 api/test_server_m4.py
+
+      - name: Second-event idempotency
+        run: python3 orchestrator/test_webinar2.py
+
+      - name: No machine-specific paths in the tree
+        run: |
+          if grep -rnI --exclude-dir=.git -E '/Users/[A-Za-z]|[A-Z]:\\\\Users' . ; then
+            echo "absolute local path found; derive it from __file__ instead" >&2
+            exit 1
+          fi

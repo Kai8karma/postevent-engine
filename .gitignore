@@ -20,3 +20,8 @@ __pycache__/
 *.pyc
 .DS_Store
 node_modules/
+
+# scratch output from local and CI replay runs
+out/ci/
+out/replay/
+out/shared-drive/
