@@ -1,0 +1,18 @@
+Post-Event Engine
+Copyright (c) 2026 Kai (Kai8karma)
+
+The MIT licence in LICENSE covers the source code and documentation written
+for this project.
+
+It does not cover material that belongs to others and is included here only
+as input to the pipeline:
+
+- data/incoming/transcript.md, transcript.vtt, event.json and speakers.json
+  describe a public webinar. The recording, what was said in it and the
+  speakers' names belong to the organiser and the speakers.
+- SPEC.md restates an assignment brief written by a third party.
+- Company names and domains in the registrant fixtures are real
+  organisations. Every registrant name and email address is invented, and
+  none refers to a real person.
+
+Remove or replace these before reusing the pipeline for another event.

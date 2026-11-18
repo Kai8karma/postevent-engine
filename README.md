@@ -221,3 +221,7 @@ them:
   every firmographic in the committed slice came from the model or the rule tables (`industry_source`: 29 `llm`,
   3 `rules`; `numemployees_source`: 32 `llm`).
 - **OpenRouter credits are at zero**, so the live lane runs free models and image generation stays at 402.
+
+## Licence
+
+The code is MIT licensed ([`LICENSE`](LICENSE)). The webinar transcript, the event and speaker details and the assignment brief in [`SPEC.md`](SPEC.md) belong to their owners and are not covered by it; see [`NOTICE`](NOTICE).
