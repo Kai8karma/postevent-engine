@@ -221,3 +221,9 @@ them:
   every firmographic in the committed slice came from the model or the rule tables (`industry_source`: 29 `llm`,
   3 `rules`; `numemployees_source`: 32 `llm`).
 - **OpenRouter credits are at zero**, so the live lane runs free models and image generation stays at 402.
+
+## License
+
+The code in this repository is released under the [MIT License](LICENSE).
+
+The MIT license covers the code only. The source event (Darwinbox's webinar, its recording and its speakers' words) and content derived from it (transcripts, quotes, clips, captions and the generated blog/social assets under `out/`) belong to their respective owners and are included here only to demonstrate the pipeline.
