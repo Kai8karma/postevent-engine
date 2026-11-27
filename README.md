@@ -222,6 +222,8 @@ them:
   3 `rules`; `numemployees_source`: 32 `llm`).
 - **OpenRouter credits are at zero**, so the live lane runs free models and image generation stays at 402.
 
-## Licence
+## License
 
-The code is MIT licensed ([`LICENSE`](LICENSE)). The webinar transcript, the event and speaker details and the assignment brief in [`SPEC.md`](SPEC.md) belong to their owners and are not covered by it; see [`NOTICE`](NOTICE).
+The code in this repository is released under the [MIT License](LICENSE).
+
+The MIT license covers the code only. The source event (Darwinbox's webinar, its recording and its speakers' words), content derived from it (transcripts, quotes, clips, captions and the generated blog/social assets under `out/`) and the assignment brief in [`SPEC.md`](SPEC.md) belong to their respective owners and are included here only to demonstrate the pipeline. See [`NOTICE`](NOTICE).
