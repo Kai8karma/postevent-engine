@@ -226,4 +226,4 @@ them:
 
 The code in this repository is released under the [MIT License](LICENSE).
 
-The MIT license covers the code only. The source event (Darwinbox's webinar, its recording and its speakers' words) and content derived from it — transcripts, quotes, clips, captions and the generated blog/social assets under `out/` — belong to their respective owners and are included here only to demonstrate the pipeline.
+The MIT license covers the code only. The source event (Darwinbox's webinar, its recording and its speakers' words) and content derived from it (transcripts, quotes, clips, captions and the generated blog/social assets under `out/`) belong to their respective owners and are included here only to demonstrate the pipeline.
